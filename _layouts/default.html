@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{% if page.title %}{{ page.title }} - Jeff Wilcox{% else %}Jeff Wilcox{% endif %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ page.description }}">
+    <meta name="author" content="Jeff Wilcox">
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/bootstrap-responsive.min.css" rel="stylesheet">
+    <link href="/css/jmw.css" rel="stylesheet">
+    <!-- TODO: favicon -->
+    <!--
+    <link rel="shortcut icon" href="//az83882.vo.msecnd.net/favicon.ico">
+    -->
+  </head>
+<body>
+
+{% include toolbar.html %}
+
+<div class="container">
+
+{{ content }}
+  
+{% include footer.html %}
+
+</div><!-- /container -->
+
+<!-- bootstrap -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+<script src="//js/bootstrap.min.js"></script>
+<!-- syntax highlighting -->
+<link type="text/css" rel="stylesheet" href="/scripts/syntax/shCore.css"></link>
+<script type="text/javascript" language="javascript" src="/scripts/syntax/shCore.js"></script>
+<link type="text/css" rel="stylesheet" href="/scripts/syntax/shThemeDefault.css"></link>
+<script type="text/javascript" language="javascript" src="/scripts/syntax/shLegacy.js"></script>
+<script src="/scripts/syntax/shBrushCSharp.js" type="text/javascript" language="javascript"></script>
+<script src="/scripts/syntax/shBrushXml.js" type="text/javascript" language="javascript"></script>
+<script src="/scripts/syntax/shBrushJscript.js" type="text/javascript" language="javascript"></script>
+<script src="/scripts/syntax/shBrushVb.js" type="text/javascript" language="javascript"></script>
+<script type="text/javascript" language="javascript">
+//dp.SyntaxHighlighter.ClipboardSwf = '/scripts/syntax/clipboard.swf';
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.all();
+dp.SyntaxHighlighter.HighlightAll('code', false, true); //, false /*showGutter*/, true /*showControls*/);
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

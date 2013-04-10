@@ -1,0 +1,48 @@
+---
+layout: default
+---
+<div class="container">
+<div class="row">
+<div class="span9">
+
+<div id="post">
+<h2><!--<a href="{{ page.url }}">-->{{ page.title }}<!--</a>--></h2>
+<p id="date" class="muted"><small>Posted {{ page.date | date: "%e %B %Y" }}</small></p>
+{{ content }}
+</div>
+
+</div>
+
+<div class="span3" style="margin-top:18px">
+	{% include sidebar.html %}
+</div>
+
+</div><!-- row -->
+</div><!-- container -->
+
+<div class="container">
+	<div class="row">
+		<div class="span12">
+			<h2>Share</h2>
+			<p><a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+			<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+		</div>
+	</div>
+</div>
+
+<div id="related">
+  <h2>Related Posts</h2>
+  <ul class="posts">
+    {% for post in site.related_posts limit:3 %}
+      <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% if page.categories %}
+<ul class="categories">
+{% for category in page.categories %}<li>{{category}}</li>{% endfor %}
+</ul>
+{% endif %}
+
+{% include comments.html %}
