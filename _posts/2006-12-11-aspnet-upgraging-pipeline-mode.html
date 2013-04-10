@@ -1,0 +1,160 @@
+---
+layout: post
+comments: true
+title: Upgrading ASP.NET Applications to the Integrated Pipeline
+wordpress_id: 5
+wordpress_url: http://linux.jeff.wilcox.name/2006/12/11/aspnet-upgraging-pipeline-mode/
+imported_categories:
+- title: vista
+  slug: vista
+  autoslug: vista
+- title: web-servers
+  slug: webservers
+  autoslug: web-servers
+- title: asp.net
+  slug: aspnet
+  autoslug: asp.net
+- title: windows
+  slug: windows
+  autoslug: windows
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+imported_link_categories: []
+tags:
+- title: asp.net
+  slug: aspnet
+  autoslug: asp.net
+- title: iis
+  slug: iis
+  autoslug: iis
+- title: windows-vista
+  slug: windows-vista
+  autoslug: windows-vista
+- title: vista
+  slug: vista
+  autoslug: vista
+---
+[RAW]
+
+<P>There's a <A class="" href="http://www.iis.net/default.aspx?tabid=2&amp;subtabid=25&amp;i=1223&amp;p=1" mce_href="http://www.iis.net/default.aspx?tabid=2&amp;subtabid=25&amp;i=1223&amp;p=1">helpful article</A> at the IIS.NET site detailing a lot of what it means to upgrade your developer workstation to Vista, what changes IIS 7.0 brings, and ASP.NET application compatibility.&nbsp; <A class="" href="http://www.iis.net/default.aspx?tabid=2&amp;subtabid=25&amp;i=1223&amp;p=1" mce_href="http://www.iis.net/default.aspx?tabid=2&amp;subtabid=25&amp;i=1223&amp;p=1">Direct link to the article.</A></P>
+
+
+
+<P>The most important content in this article, in my opinion, is that which <A class="" href="http://www.iis.net/default.aspx?tabid=2&amp;subtabid=25&amp;i=1223&amp;p=5" mce_href="http://www.iis.net/default.aspx?tabid=2&amp;subtabid=25&amp;i=1223&amp;p=5">outlines the specific ASP.NET changes</A>.</P>
+
+
+
+<P>Here is the list of known changes with IIS 7.0 at this time:</P>
+
+
+
+<UL>
+
+<LI>In Integrated mode, Application_OnError is not called for exceptions that occur in HttpApplication::Init</LI>
+
+
+
+<LI>Server.ClearError in EndRequest does not clear exception message in Integrated mode</LI>
+
+
+
+<LI>Integrated mode applications may write to a response in EndRequest after an exception has been formatted and written to the response</LI>
+
+
+
+<LI>In Integrated mode, ASP.NET no longer suppresses the content type when the response is empty</LI>
+
+
+
+<LI>Different windows identity in Forms authentication</LI>
+
+
+
+<LI>Default Authentication_OnAuthenticate event does not raise in Integrated mode</LI>
+
+
+
+<LI>In Integrated mode Request.RawUrl contains the new query string after RewritePath is called</LI>
+
+
+
+<LI>Passport Network credentials authentication is not supported in Windows Vista</LI>
+
+
+
+<LI>PassportAuthentication module is not part of the Integrated pipeline</LI>
+
+
+
+<LI>Large, valid forms auth tickets (length &lt;= 4096 bytes) present in the query string are rejected by IIS 7.0</LI>
+
+
+
+<LI>In Integrated mode, the ASP.NET request time-out is applied multiple times during the request, allowing the request to execute longer</LI>
+
+
+
+<LI>Trace settings are not transferred to Server.Transfer target page</LI>
+
+
+
+<LI>The method Httpcontext.Current.Response.Write() cannot work in Application_Onstart()</LI>
+
+
+
+<LI>HttpRequest.LogonUserIdentity throws an exception when accessed before PostAuthenticateRequest</LI>
+
+
+
+<LI>In Integrated mode, ASP.NET modules will receive the first unauthenticated request to IIS when Anonymous authentication is disabled</LI>
+
+
+
+<LI>ASP.NET cannot impersonate the client identity until PostAuthenticateRequest</LI>
+
+
+
+<LI>Content-Type header is not generated when charset and content type are set to empty string</LI>
+
+
+
+<LI>In Integrated mode, both synchronous and asynchronous events raise for each module before the next module executes</LI>
+
+
+
+<LI>Response headers are removed in Integrated mode after calling ClearHeader in a custom IHttpModule</LI>
+
+
+
+<LI>Using Windows and Forms authentication together in Integrated mode is not supported</LI>
+
+
+
+<LI>In Integrated mode, IIS always rejects new lines in response headers (even if ASP.NET enableHeaderChecking is set to false)</LI>
+
+
+
+<LI>PreSendRequestHeaders and PreSendRequestContent events will raise together for each module</LI>
+
+
+
+<LI>The ordering of modules is reversed for PreSendRequestHeaders and PreSendRequestContent when using Integrated mode</LI>
+
+
+
+<LI>In Integrated mode, threading and queuing settings in are ignored</LI>
+
+
+
+<LI>If a configuration file error is encountered when using Integrated mode, IIS, not ASP.NET, generates the error message</LI>
+
+
+
+<LI>In Integrated mode, ASP.NET applications must subscribe to pipeline events during a module’s Init call</LI>
+
+</UL>
+
+
+
+[/RAW]

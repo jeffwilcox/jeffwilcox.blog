@@ -1,0 +1,183 @@
+---
+layout: post
+comments: true
+title: Getting browser screen &amp; window information in a Silverlight 2 app
+wordpress_id: 63
+wordpress_url: http://www.jeff.wilcox.name/2008/06/24/browserscreeninformation/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+imported_link_categories: []
+tags: []
+---
+<p>While working on visual verification and user interface testing support for some Silverlight tests, I came up with this simple file that abstracts out the Firefox/Safari and Internet Explorer property differences.&nbsp; The browsers all expose this information in one way or another.</p> <p>Although mostly integer values, numbers are returned as doubles to stay in line with how the HTML DOM bridge APIs work.</p> <p>The properties exposed off of the static class are:</p> <table cellspacing="0" cellpadding="3" border="0"> <tbody> <tr> <td valign="top" cellspan="2"><strong>BrowserScreenInformation</strong></td></tr> <tr> <td valign="top">ClientWidth, ClientHeight </td> <td valign="top">Current window's inner size </td></tr> <tr> <td valign="top">ScrollLeft, ScrollTop</td> <td valign="top">Window's scrolled portion relative to the page</td></tr> <tr> <td valign="top">ScreenWidth, ScreenHeight </td> <td valign="top">Screen resolution</td></tr> <tr> <td valign="top">AvailableScreenWidth, AvailableScreenHeight</td> <td valign="top">Real estate of the screen excluding the task bar or dock</td></tr> <tr> <td valign="top">ScreenPositionLeft, ScreenPositionTop</td> <td valign="top">Location, in pixels, of the window's origin on the screen</td></tr></tbody></table> <p>Maybe someone will find this useful for their project!</p> <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:44f49475-e4d3-4861-91ba-2131520c51b8" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">using System;
+using System.Windows;
+using System.Windows.Browser;
+
+namespace YourNamespaceHere
+{
+    /// &lt;summary&gt;
+    /// Provides screen information about the browser
+    /// &lt;/summary&gt;
+    /// &lt;remarks&gt;A simple proxy to JavaScript window and screen variables, 
+    /// abstracts away common web browser differences&lt;/remarks&gt;
+    public static class BrowserScreenInformation
+    {
+
+        /// &lt;summary&gt;
+        /// During static instantiation, only the Netscape flag is checked
+        /// &lt;/summary&gt;
+        static BrowserScreenInformation()
+        {
+            _isNavigator = HtmlPage.BrowserInformation.Name.Contains("Netscape");
+        }
+
+        /// &lt;summary&gt;
+        /// Flag indicating Navigator/Firefox/Safari or Internet Explorer
+        /// &lt;/summary&gt;
+        private static bool _isNavigator;
+
+        /// &lt;summary&gt;
+        /// Provides quick access to the window.screen ScriptObject
+        /// &lt;/summary&gt;
+        private static ScriptObject Screen
+        {
+            get
+            {
+                ScriptObject screen = (ScriptObject)HtmlPage.Window.GetProperty("screen");
+                
+                if (screen == null)
+                {
+                    throw new InvalidOperationException();
+                }
+
+                return screen;
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Gets the window object's client width
+        /// &lt;/summary&gt;
+        public static double ClientWidth
+        {
+            get
+            {
+                return _isNavigator ? (double)HtmlPage.Window.GetProperty("innerWidth")
+                    : (double)HtmlPage.Document.Body.GetProperty("clientWidth");
+            }
+
+        }
+
+        /// &lt;summary&gt;
+        /// Gets the window object's client height
+        /// &lt;/summary&gt;
+        public static double ClientHeight
+        {
+            get
+            {
+                return _isNavigator ? (double)HtmlPage.Window.GetProperty("innerHeight")
+                    : (double)HtmlPage.Document.Body.GetProperty("clientHeight");
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Gets the current horizontal scrolling offset
+        /// &lt;/summary&gt;
+        public static double ScrollLeft
+        {
+            get
+            {
+                return _isNavigator ? (double)HtmlPage.Window.GetProperty("pageXOffset")
+                    : (double)HtmlPage.Document.Body.GetProperty("scrollLeft");
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Gets the current vertical scrolling offset
+        /// &lt;/summary&gt;
+        public static double ScrollTop
+        {
+            get
+            {
+                return _isNavigator ? (double)HtmlPage.Window.GetProperty("pageYOffset")
+                    : (double)HtmlPage.Document.Body.GetProperty("scrollHeight");
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Gets the width of the entire display
+        /// &lt;/summary&gt;
+        public static double ScreenWidth
+        {
+            get
+            {
+                return (double)Screen.GetProperty("width");
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Gets the height of the entire display
+        /// &lt;/summary&gt;
+        public static double ScreenHeight
+        {
+            get
+            {
+                return (double)Screen.GetProperty("height");
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Gets the width of the available screen real estate, excluding the dock 
+        /// or task bar
+        /// &lt;/summary&gt;
+        public static double AvailableScreenWidth
+        {
+            get
+            {
+                return (double)Screen.GetProperty("availWidth");
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Gets the height of the available screen real estate, excluding the dock 
+        /// or task bar
+        /// &lt;/summary&gt;
+        public static double AvailableScreenHeight
+        {
+            get
+            {
+                return (double)Screen.GetProperty("availHeight");
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Gets the absolute left pixel position of the window in display coordinates
+        /// &lt;/summary&gt;
+        public static double ScreenPositionLeft
+        {
+            get
+            {
+                return _isNavigator ? (double)HtmlPage.Window.GetProperty("screenX")
+                    : (double)HtmlPage.Window.GetProperty("screenLeft");
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Gets the absolute top pixel position of the window in display coordinates
+        /// &lt;/summary&gt;
+        public static double ScreenPositionTop
+        {
+            get
+            {
+                return _isNavigator ? (double)HtmlPage.Window.GetProperty("screenY")
+                    : (double)HtmlPage.Window.GetProperty("screenTop");
+            }
+        }
+
+    }
+}
+</pre></div>

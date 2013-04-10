@@ -1,0 +1,563 @@
+---
+layout: post
+comments: true
+title: ! 'AutoCompleteBox control: The missing guide'
+wordpress_id: 171
+wordpress_url: http://www.jeff.wilcox.name/?p=171
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: software-development
+  slug: dev
+  autoslug: software-development
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+imported_link_categories: []
+tags:
+- title: popular
+  slug: popular
+  autoslug: popular
+---
+<p>This is a comprehensive developer's guide to using AutoCompleteBox. With the initial Silverlight Toolkit release, we focused on providing API reference documentation. This is &quot;the missing guide&quot; that covers the full breadth of the control.</p>  <p>Along with the next toolkit release, I will release guides on the ISelectionAdapter interface and more involved customizations that people have been asking me about.</p>  <h3>AutoCompleteBox</h3>  <p><img src="http://media.jeff.wilcox.name/blog/AutoComplete/AutoCompleteBoxStocks.png" />    <br /><em>A customized auto complete box: custom item template; re-templated control for additional adornment; custom population events used for custom highlighting behaviors.</em></p>  <p>One of the new controls in the Silverlight Toolkit is the AutoCompleteBox control. It is a control that is composed of a text box for text entry, a rich set of properties for customization and item display, data binding support, and all the necessary logic to provide suggestions and completion.</p>  <p>Today, this control is in the <a href="http://www.codeplex.com/Silverlight/Wiki/View.aspx?title=Quality%20Bands&amp;referringTitle=Home&amp;ANCHOR#Preview">Preview quality band</a> of the toolkit, so it may have a moderate number of breaking API or behavior changes in response to customer feedback. This post is accurate for the December 2008 Silverlight Toolkit and November 2008 releases, with the few differences and changes indicated inline.</p>  <p>Our control is designed with the majority of developers in mind, so it covers a great number of scenarios, plus extensibility points and the ability to easily re-template the control to meet your needs. Inspired by many other auto complete controls, this implementation breaks new ground with its true data binding support, built-in set of search filters, and rich data template support.</p>  <p>You should know about some of its limitations: this control does not implement the &quot;delimiter&quot; feature, and is not designed to be drop-in compatible with an editable ComboBox. It also cannot restrict the user to selecting only the known items at this time, without some additional coding work. We're going to look towards customer feedback to help shape the eventual release of this control. We do envision bringing this control to WPF eventually, so look for that!</p>  <p>Covered in this guide:</p>  <ul>   <li>Getting started </li>    <li>Key features &amp; properties </li>    <li>Data binding to collections </li>    <li>Formatting items in the suggestions drop down </li>    <li>Built-in search filters </li>    <li>Building a custom search filter </li>    <li>Custom developer events </li>    <li>Connecting to a web service</li>    <li>Templating the control</li>    <li>Adorning the popup</li>    <li>Differences between the November and December release </li>    <li>License </li>    <li>Download </li>    <li>What's next </li> </ul>  <h3>Getting started</h3>  <p>To use AutoCompleteBox, add a reference to your Silverlight Application project. You should reference the Microsoft.Windows.Controls.dll binary from your <a href="http://www.codeplex.com/Silverlight/">Siverlight Toolkit</a> download. You will also need to add the &quot;controls&quot; prefix declaration for the toolkit. Make sure that your page declaration includes the &quot;controls&quot; namespace:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:eaaadebf-9c27-40dc-a081-5669408d0298" class="wlWriterSmartContent">   <pre class="xml" name="code">&lt;UserControl 
+    xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; 
+    xmlns:x=&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot; 
+    xmlns:controls=&quot;clr-namespace:Microsoft.Windows.Controls;assembly=Microsoft.Windows.Controls&quot;&gt;
+    &lt;!-- Page goes here --&gt;
+&lt;/UserControl&gt;</pre>
+</div>
+
+<p>To add the control to your page, simply add a new instance of AutoCompleteBox in XAML:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:5526c99c-e0ef-4b4f-a954-2e7851f60f57" class="wlWriterSmartContent">
+  <pre class="xml" name="code">&lt;controls:AutoCompleteBox x:Name=&quot;autoComplete1&quot; /&gt;</pre>
+</div>
+
+<p>Typically, you'll want to provide an x:Name for the control, too. The sample project includes a few XAML-only AutoCompleteBox examples, but most of the time you'll also be interacting with the control at least a little bit through code.</p>
+
+<p>The properties that you will find yourself setting most often to customize the experience you provide your end users are: ItemsSource, IsTextCompletionEnabled, MinimumPrefixLength, and MinimumPopulateDelay. These properties are covered in a few sections below.</p>
+
+<p>The text that is displayed in the AutoCompleteBox's nested text box will always be available through the Text dependency property of the control. The SelectedItem property will either be null, or set to the selected item instance.</p>
+
+<p>You can <a href="http://silverlight.net/samples/sl2/toolkitcontrolsamples/run/default.html">experience the AutoCompleteBox control today</a> by checking out the live samples hosted <a href="http://silverlight.net/samples/sl2/toolkitcontrolsamples/run/default.html">here</a>. Also,</p>
+
+<ul>
+  <li><a href="http://www.jeff.wilcox.name/2008/10/30/introducing-autocompletebox/">The original introductory post</a></li>
+
+  <li><a href="http://www.jeff.wilcox.name/2008/11/18/highlighting-autocompletebox/">The cool highlighting example</a></li>
+
+  <li><a href="http://silverlight.net/forums/35.aspx">The Silverlight controls community forum</a> on Silverlight.net</li>
+</ul>
+
+<h3>Key features</h3>
+
+<p>The AutoCompleteBox for Silverlight offers more or less the same experience as an AJAX auto complete implementation, with the added benefit of supporting collections of rich business objects, rich UI-based templating for items, and the ability to substitute a standard list box control with a custom selection control. Since it re-uses the built-in Silverlight text box, you also get additional support for IME support that has traditionally been a difficult issue for auto complete implementations in JavaScript.</p>
+
+<p>Some of the important features worth calling out are:</p>
+
+<ul>
+  <li>Many properties for customizing the control's behavior, appearance, and end-user experience</li>
+
+  <li>Observable collection support (added in the December release)</li>
+
+  <li>Accessibility &amp; UI automation support (added in December)</li>
+
+  <li>Extreme customization</li>
+</ul>
+
+<h3>Control properties</h3>
+
+<p>The toolkit's <a href="http://www.jeff.wilcox.name/2008/11/03/unblock-chms/">offline CHM help file</a>, included with every toolkit download, shows each and every property.</p>
+
+<p><strong>ItemsSource</strong></p>
+
+<p>The items source is an IEnumerable that should contain a collection of the items you would like to have available for the control.</p>
+
+<p><strong>IsTextCompletionEnabled</strong></p>
+
+<p>This property will perform the regular search on your items for a suggestion, and if any items are found, the first (the &quot;best match&quot;) will be selected, update the text box's string value, and the rest of the text will be highlighted so that your end user can either continue typing, or press backspace, to remove the suggestion.</p>
+
+<p><img src="http://media.jeff.wilcox.name/blog/AutoComplete/itce.png" /></p>
+
+<p>Default value: <em>False </em>(December release), <em>True </em>(November release)
+
+  <br />This is similar to the WPF ComboBox's IsTextSearchEnabled property, or the YUI AutoComplete's TypeAhead property.</p>
+
+<p><strong>MinimumPopulateDelay</strong></p>
+
+<p>This is the amount of time, in milliseconds, that elapses after the user types and the population event is fired. The default value is 0, but when connecting to external web services, you'll want to use this to gate request time by making it a larger value, such as 100 or 200.</p>
+
+<p>Keep in mind that the auto complete will feel a little slower in these scenarios: you have the minimum populate delay, the request to the server, network latency, the response, parsing the response, and updating the items before any suggestions will be shown.</p>
+
+<p><strong>MinimumPrefixLength</strong></p>
+
+<p>This is the minimum number of characters that must be entered before the control looks for suggestions. The default value is 1, but a lot of classic AJAX auto complete controls use 3 as the default value, so this is a common customization property.</p>
+
+<p>You may want to dynamically change this value based on the number of items you have available in your index or collection, since a prefix length of &quot;1&quot; with the complete English dictionary would have a massive performance impact, and not be helpful to most users.</p>
+
+<p>Setting a value of -1 is permitted, and will ensure that suggestions are never provide - effectively disabling the auto complete functionality of the control.</p>
+
+<p><strong>SearchMode</strong></p>
+
+<p>The control exposes a 'search mode' property that represents the filter used on items on the client side. The default search mode is 'StartsWith,' and represents a typical auto complete control's filter.</p>
+
+<p>If you'd like to change the filter to a different string comparison, build a filter to check several properties on a business object, or otherwise customize the experience, you can. You'll also probably want to simply set the SearchMode to &quot;None&quot; if you perform all the filtering in a server-side index or web service.</p>
+
+<p>The default &quot;StartsWith&quot; value simply checks that each item's string value starts with the user's search string. If it does match, then the item will appear as a suggestion.</p>
+
+<p>&quot;Contains&quot; is another oft-used property, and it checks that the user's search string appears anywhere in an item's string representation. For details on how a string value is found, take a look farther down at the data binding topic.</p>
+
+<h3>Data binding to collections</h3>
+
+<p>The AutoCompleteBox control is similar to other items controls in Silverlight, such as ComboBox, in that you set or bind the ItemsSource to a collection of items. The control then takes care of providing the filtering algorithm and walking through the items of the collection at the appropriate time.</p>
+
+<p>Although most users will set the ItemsSource one time, there are scenarios where you may be hooking up to a web service, searching through an index, or otherwise only interested in updating the items when necessary: in those situations, you may update ItemsSource each time.</p>
+
+<p>The control maintains a view of the suggestion data behind the scenes. You can get a read-only collection of that view in any Populated event handler. </p>
+
+<p><strong>Built-in ObservableCollection support was not available in original November release.
+    <br /></strong>ObservableCollection support has been checked into the internal development branch and will be released in the December Toolkit.</p>
+
+<p>To work around this for now, whenever changing an observable collection, you can just swap null and the collection: so set ItemsSource to null briefly, and then back to the observable collection - the cached items and the view will be updated.</p>
+
+<p><strong>How the text value of an item is determined
+    <br /></strong>For performance reasons, there is no binding expression for the text value. This is one of the differences between this control and a combo box - typically there is a DisplayMemberPath that helps with that association. Since every key press could theoretically require the control to walk through the entire collection of items, more efficient means are used for getting the text to show in the text box control.</p>
+
+<p>1. Converter property: If there is an IValueConverter set on the control, it is used to convert an item to a string value.</p>
+
+<p>2. ToString method: If there is no value converter, or the converter returns null, then the ToString of the item is called. For simple types, like integers and strings, no change is necessary. For complex business objects, WCF proxy types, etc., you will want to override the ToString to provide a meaningful text value.</p>
+
+<h3>Formatting items in the suggestions drop down</h3>
+
+<p>This control is not designed as a ComboBox replacement, but does offer similarities. By re-templating, for instance, you can set the actual DisplayMemberPath value on the nested list box. However, it is much easier to just create a new data template for the items to be displayed.</p>
+
+<p>To mimic the behavior of DisplayMemberPath, simply create a new data template for the items, and place a ContentPresenter or TextBlock in it. If binding to a &quot;FullName&quot; property, for instance, here would be the equivalent template:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:0d557cd1-bae6-418f-9503-bfe7b5817fa7" class="wlWriterSmartContent"><pre class="xml" name="code">&lt;controls:AutoCompleteBox x:Name="MyControl"&gt;
+    &lt;controls:AutoCompleteBox.ItemTemplate&gt;
+        &lt;DataTemplate&gt;
+            &lt;StackPanel&gt;
+                &lt;ContentPresenter Content="{Binding FullName}" /&gt;
+            &lt;/StackPanel&gt;
+        &lt;/DataTemplate&gt;
+    &lt;/controls:AutoCompleteBox.ItemTemplate&gt;
+&lt;/controls:AutoCompleteBox&gt;</pre></div>
+
+<p>For more advanced visualizations of data, you can place any set of UI elements and bindings in this template. Here is an example that shows a stock ticker, company name, and exchange market. This example has a few hard-coded strings to save you from having to see the highlighting code. For more information on actually implementing some of this functionality, <a href="http://www.jeff.wilcox.name/2008/11/18/highlighting-autocompletebox/">check out this previous post</a>.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1f037d9c-1969-49d4-b8f5-d1ff70894bdf" class="wlWriterSmartContent"><pre class="xml" name="code">&lt;controls:AutoCompleteBox 
+    Width="315"
+    x:Name="MyAutoCompleteControl" 
+    IsTextCompletionEnabled="False"
+    Style="{StaticResource MyAutoComplete}"&gt;
+    &lt;controls:AutoCompleteBox.ItemTemplate&gt;
+        &lt;DataTemplate&gt;
+            &lt;Grid Width="600"&gt;
+                &lt;Grid.ColumnDefinitions&gt;
+                    &lt;ColumnDefinition Width="150" /&gt;
+                    &lt;ColumnDefinition Width="350" /&gt;
+                    &lt;ColumnDefinition Width="100" /&gt;
+                &lt;/Grid.ColumnDefinitions&gt;
+                &lt;myapp:HighlightingTextBlock
+                     HighlightText="Micro"
+                    HighlightBrush="Black"
+                    HighlightFontWeight="Bold"
+                    Text="{Binding TickerSymbol}"
+                    /&gt;
+                &lt;myapp:HighlightingTextBlock
+                    Grid.Column="1"
+                    HighlightBrush="Black"
+                    HighlightFontWeight="Bold"
+                    HighlightText="Micro"
+                    Text="{Binding Title}"
+                    /&gt;
+                &lt;TextBlock
+                    HorizontalAlignment="Right"
+                    Foreground="Gray"
+                    Text="{Binding Exchange}" 
+                           Grid.Column="2"
+                           /&gt;
+            &lt;/Grid&gt;
+        &lt;/DataTemplate&gt;
+    &lt;/controls:AutoCompleteBox.ItemTemplate&gt;
+&lt;/controls:AutoCompleteBox&gt;</pre></div>
+
+<h3>Built-in search filters</h3>
+
+<p>The AutoCompleteSearchMode enum contains these entries:</p>
+
+<ul>
+  <li>None</li>
+
+  <li>StartsWith (Default)</li>
+
+  <li>StartsWithCaseSensitive</li>
+
+  <li>Contains</li>
+
+  <li>ContainsCaseSensitive</li>
+
+  <li>Equals</li>
+
+  <li>EqualsCaseSensitive</li>
+
+  <li>Custom</li>
+</ul>
+
+<p>&quot;None&quot; disables filtering and so all items in the items source will appear in the suggestions drop down.</p>
+
+<p>&quot;Custom&quot; signifies that a custom text or item filter is in use. You must set the SearchMode to 'Custom' or else any text or item filter will be ignored.</p>
+
+<h3>Building a custom search filter</h3>
+
+<p>This concept deserves a complete guide of its own. The custom filters are designed for coders who would rather write their own text handling logic, or work directly with the item instances, in determining whether items are actual suggestions.</p>
+
+<p>Text handling will be useful if you're building a search application and want to build some kind of AND/OR logic into the box: if you are writing a photo search box for Flickr, you might want to parse and tokenize the text in the AutoCompleteBox, then perform an AND search over a web service for that.</p>
+
+<p>When using your own ItemFilter or TextFilter, remember to set the SearchMode to Custom.</p>
+
+<p>The filter is called with every item in the items source collection, whenever population needs to happen (to go find suggestions).</p>
+
+<p>Most developers will use the ItemFilter: it is effectively a predicate that has two parameters: the first is the current string value of the text box that the user is typing into; the second is the item (of type object).</p>
+
+<p>Here's a sample item filter, set in the Loaded event of my page:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:bec59c1f-0eee-4939-baf5-4fb1a31b73a7" class="wlWriterSmartContent"><pre class="c-sharp" name="code">MyAutoCompleteControl.ItemsSource = Stocks;
+MyAutoCompleteControl.SearchMode = AutoCompleteSearchMode.Custom;
+MyAutoCompleteControl.ItemFilter = (search, item) =&gt;
+    {
+        Stock stock = item as Stock;
+        if (stock != null)
+        {
+            search = search.ToUpper();
+            return (stock.TickerSymbol.ToUpper().Contains(search) ||
+                stock.Title.ToUpper().Contains(search) ||
+                stock.Exchange.ToUpper().Contains(search));
+        }
+        else
+        {
+            return false;
+        }
+    };</pre></div>
+
+<p>The code can get messy when working with many auto complete box instances and related data types. I personally recommend adding an item filter static method, or extension method, to your client-side business objects and/or project.</p>
+
+<p>Here's the same code that goes in Loaded of my page, to use the filter:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:3bd972fc-ff5e-4ed3-bf5b-13421a330a19" class="wlWriterSmartContent"><pre class="c-sharp" name="code">MyAutoCompleteControl.ItemsSource = Stocks;
+MyAutoCompleteControl.SearchMode = AutoCompleteSearchMode.Custom;
+MyAutoCompleteControl.ItemFilter = (txt, i) =&gt; Stock.IsAutoCompleteSuggestion(txt, i);</pre></div>
+
+<p>And a simplified version of Stock.cs, used to represent a company, that contains the actual filter method. The code isn't great, and will fall flat on its face if any of the properties are null, but it demonstrates the concept:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:d28c19a2-f7bd-4edb-b937-23ba6256b24f" class="wlWriterSmartContent"><pre class="c-sharp" name="code">public class Stock
+{
+    public Stock(string symbol, string title, string exchange)
+    {
+        TickerSymbol = symbol;
+        Title = title;
+        Exchange = exchange;
+    }
+
+    public string TickerSymbol { get; set; }
+    public string Title { get; set; }
+    public string Exchange { get; set; }
+
+    public static bool IsAutoCompleteSuggestion(string search, object item)
+    {
+        Stock stock = item as Stock;
+        if (stock != null)
+        {
+            search = search.ToUpper();
+            return (stock.TickerSymbol.ToUpper().Contains(search) || 
+                stock.Title.ToUpper().Contains(search) || 
+                stock.Exchange.ToUpper().Contains(search));
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public override string ToString()
+    {
+        return TickerSymbol;
+    }
+}</pre></div>
+
+<p>This is a great feature because it means that you can provide an experience where you can search many of the properties of your business objects for the search string: first name, last name, full name, airport name, airport code, stock ticker symbol, car model, you name it - you can do it. The filter just returns true/false to indicate whether the item exists.</p>
+
+<p>A text filter is a little more simple. The parameters of it are both string values: the search string, and then the string representation of an item. The filter is called once for every item in the items source collection. Again, the string value is determined by first trying the Converter, and then the ToString.</p>
+
+<h3>Custom developer events</h3>
+
+<p>Several events are exposed that can open up the control to hooking up to custom data sources and services, building your own logic and suggestion filtering algorithm, or otherwise working around any limitations in the platform.</p>
+
+<p><strong>Suggestion population events: Populating, Populated</strong></p>
+
+<p>These events let you perform your own search logic, cancel the standard behavior optionally, and then call PopulateComplete when finished. The web service example was covered in the original <a href="http://www.jeff.wilcox.name/2008/10/30/introducing-autocompletebox/">Introducing AutoCompleteBox post</a>.</p>
+
+<p><em>Populating:</em></p>
+
+<p>Called whenever the control is ready to search for suggestions, this is your opportunity to intercept the standard filtering and manage the items source first.</p>
+
+<p>If you have the data available immediately, before your handler returns, you can simply change the ItemsSource property of the AutoCompleteBox control right here, no other changes necessary.</p>
+
+<p>But if you&#8217;re going to perform an asynchronous operation (background thread calculations; call a web service), you need to set the Cancel property of the event arguments to True. This will cancel the built-in AutoComplete filtering and effectively tell the control to hold off until you are ready.</p>
+
+<p>To continue the suggestion process, you need to then call the <em>PopulateComplete</em> method. In your web service completion event, you&#8217;ll want to place this call.</p>
+
+<p><em>Populated:</em></p>
+
+<p>This is called once suggestions are found and ready to be displayed. The Data property of the event arguments gives you read-only access to the view that will be provided to the selection control.</p>
+
+<p><strong>Drop down events</strong></p>
+
+<p>These events are exposed for the drop down, and may give you a chance to look through the visual tree to perform some fancier workarounds and effects. The Opening and Closing events can be canceled.</p>
+
+<p><em>DropDownOpening</em></p>
+
+<p><em>DropDownOpened</em></p>
+
+<p><em>DropDownClosing</em></p>
+
+<p><em>DropDownClosed</em></p>
+
+<p>Note that the state of the control and suggestion requests may be impacted by cancellation of the drop down events, and lead to undesirable results.</p>
+
+<h3>Connecting to a web service</h3>
+
+<p>In the JavaScript world, typically all auto complete controls connect straight to a service on a web server. In Silverlight, with the presence of rich client-side business objects, the auto complete control assumes that you instead use the Visual Studio tooling support for web services, or create your own web service plumbing for these types of servers. In Silverlight, working with JSON is super easy thanks to the System.Json client library that is included with the Silverlight 2 SDK.</p>
+
+<p>A JSON + PHP web service was connected <a href="http://www.jeff.wilcox.name/2008/10/30/introducing-autocompletebox/">in this post</a> near the bottom. You can connect to services using whatever you like: I've seen excellent SOAP, JSON, POX, and even traditional REST services like the complete <a href="http://flickr.com/services/api/">Flickr API</a> and the new <a href="http://search.live.com/developers">Live Search 2.0 APIs</a> work great with AutoCompleteBox from the Silverlight Toolkit.</p>
+
+<p>Here, again, is the point where the asynchronous web service call is made by the control:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:b8145b40-a6de-4718-840c-1bcfae644926" class="wlWriterSmartContent"><pre class="c-sharp" name="code">private void OnLoaded(object sender, RoutedEventArgs e)
+{
+	AutoComplete1.IsTextCompletionEnabled = false;
+
+	// Server does the filtering
+	AutoComplete1.SearchMode = AutoCompleteSearchMode.None;
+
+	AutoComplete1.Populating += (s, args) =&gt;
+		{
+			args.Cancel = true;
+			WebClient wc = new WebClient();
+			string prefix = HttpUtility.UrlEncode(args.Parameter);
+			Uri service = new Uri("http://www.jwpc.com/services/suggest/?prefix=" + prefix);
+			wc.DownloadStringCompleted += DownloadStringCompleted;
+			wc.DownloadStringAsync(service, s);
+		};
+}</pre></div>
+
+<p>And here's the JSON parsing of the result:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:8a3aea08-ea8d-4182-aaaf-52962e84e5cf" class="wlWriterSmartContent"><pre class="c-sharp" name="code">private void DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
+{
+	AutoCompleteBox acb = e.UserState as AutoCompleteBox;
+	if (acb != null && e.Error == null && !e.Cancelled && !string.IsNullOrEmpty(e.Result))
+	{
+		List&lt;string&gt; suggestions = new List&lt;string&gt;();
+		JsonArray ja = JsonArray.Parse(e.Result) as JsonArray;
+		foreach (JsonPrimitive suggestion in ja)
+		{
+			suggestions.Add(suggestion.ToString());
+		}
+		if (suggestions.Count &gt; 0)
+		{
+			acb.ItemsSource = suggestions;
+			acb.PopulateComplete();
+		}
+	}
+}</pre></div>
+
+<h3>Templating the control</h3>
+
+<p>The control is typically composed of a text box and a popup of some sort. Though not a core scenario that we test, in theory you can re-template the control without a popup. <a href="http://timheuer.com/blog/archive/2008/11/05/silverlight-editable-combobox-using-styles.aspx">Tim Heuer</a> has also <a href="http://timheuer.com/blog/archive/2008/11/05/silverlight-editable-combobox-using-styles.aspx">templated AutoCompleteBox to act like an editable ComboBox</a>, for instance.</p>
+
+<p><strong>Template parts</strong></p>
+
+<p>The AutoCompleteBox implementation looks for and uses the following template parts:</p>
+
+<ul>
+  <li>&quot;Text&quot; of type TextBox</li>
+
+  <li>&quot;SelectionAdapter&quot; of type ISelectionAdapter <em>or</em> a type that the control understands, such as ListBox, or something that derives from Selector.</li>
+
+  <li>&quot;DropDownToggle&quot; of type ToggleButton - the default template does not provide this part, however.</li>
+
+  <li>&quot;Popup&quot; of type Popup</li>
+</ul>
+
+<p>It also exposes these styles:</p>
+
+<ul>
+  <li>TextStyle</li>
+
+  <li>ItemContainerStyle [note: there was an issue in the November toolkit, where the style was named ContainerStyle; this will be fixed in the December release]</li>
+</ul>
+
+<p>On top of the standard Visual State Manager (VSM) states, you will also find:</p>
+
+<ul>
+  <li>PopupOpened (PopupStates group)</li>
+
+  <li>PopupClosed (PopupStates group)</li>
+</ul>
+
+<p>The default template uses these states to fade the popup in and out.</p>
+
+<p>And, you can re-template to bind to anything you like, add display member bindings, use different controls in the popup (like a TreeView, DataGrid, movie player, etc.). To use your own control inside the drop down, you'll need to implement the ISelectionAdapter interface or write your own wrapper/adapter for the control to interact with AutoCompleteBox.</p>
+
+<p><strong>Default style &amp; control template</strong></p>
+
+<p>Here is the default template used for the control, feel free to use this as a starting point for re-templating. It includes a text box, the list box, and the VSM glue to get the popup to fade in and out:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:9df5e264-a98e-46ee-8cd0-7569bdedcdb0" class="wlWriterSmartContent"><pre class="c-sharp" name="code">&lt;Style TargetType="controls:AutoCompleteBox"&gt;
+    &lt;Setter Property="IsTabStop" Value="False" /&gt;
+    &lt;Setter Property="Template"&gt;
+        &lt;Setter.Value&gt;
+            &lt;ControlTemplate TargetType="controls:AutoCompleteBox"&gt;
+                &lt;Grid Margin="{TemplateBinding Padding}" 
+                      Background="{TemplateBinding Background}"&gt;
+                    &lt;TextBox IsTabStop="True" x:Name="Text" Style="{TemplateBinding TextBoxStyle}" Margin="0" /&gt;
+                    &lt;Popup x:Name="Popup"&gt;
+                        &lt;Border x:Name="PopupBorder" HorizontalAlignment="Stretch" Opacity="0.0" BorderThickness="0" CornerRadius="3"&gt;
+                            &lt;Border.RenderTransform&gt;
+                                &lt;TranslateTransform X="1" Y="1" /&gt;
+                            &lt;/Border.RenderTransform&gt;
+                            &lt;Border.Background&gt;
+                                &lt;SolidColorBrush Color="#11000000" /&gt;
+                            &lt;/Border.Background&gt;
+                            &lt;Border
+                                HorizontalAlignment="Stretch" 
+                                Opacity="1.0" 
+                                Padding="0" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                CornerRadius="3"&gt;
+                                &lt;Border.RenderTransform&gt;
+                                    &lt;TransformGroup&gt;
+                                        &lt;TranslateTransform X="-1" Y="-1" /&gt;
+                                    &lt;/TransformGroup&gt;
+                                &lt;/Border.RenderTransform&gt;
+                                &lt;Border.Background&gt;
+                                    &lt;LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0"&gt;
+                                        &lt;GradientStop Color="#FFDDDDDD" Offset="0"/&gt;
+                                        &lt;GradientStop Color="#AADDDDDD" Offset="1"/&gt;
+                                    &lt;/LinearGradientBrush&gt;
+                                &lt;/Border.Background&gt;
+                                &lt;ListBox 
+                                        x:Name="SelectionAdapter" 
+                                        ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+                                        ScrollViewer.VerticalScrollBarVisibility="Auto" 
+                                        ItemContainerStyle="{TemplateBinding ItemContainerStyle}"
+                                        ItemTemplate="{TemplateBinding ItemTemplate}" /&gt;
+                            &lt;/Border&gt;
+                        &lt;/Border&gt;
+                    &lt;/Popup&gt;
+                    &lt;VisualStateManager.VisualStateGroups&gt;
+                        &lt;VisualStateGroup x:Name="PopupStates"&gt;
+                            &lt;VisualStateGroup.Transitions&gt;
+                                &lt;VisualTransition GeneratedDuration="0:0:0.1" To="PopupOpened" /&gt;
+                                &lt;VisualTransition GeneratedDuration="0:0:0.2" To="PopupClosed" /&gt;
+                            &lt;/VisualStateGroup.Transitions&gt;
+                            &lt;VisualState x:Name="PopupOpened"&gt;
+                                &lt;Storyboard&gt;
+                                    &lt;DoubleAnimation Storyboard.TargetName="PopupBorder" Storyboard.TargetProperty="Opacity" To="1.0" /&gt;
+                                &lt;/Storyboard&gt;
+                            &lt;/VisualState&gt;
+                            &lt;VisualState x:Name="PopupClosed"&gt;
+                                &lt;Storyboard&gt;
+                                    &lt;DoubleAnimation Storyboard.TargetName="PopupBorder" Storyboard.TargetProperty="Opacity" To="0.0" /&gt;
+                                &lt;/Storyboard&gt;
+                            &lt;/VisualState&gt;
+                        &lt;/VisualStateGroup&gt;
+                    &lt;/VisualStateManager.VisualStateGroups&gt;
+                &lt;/Grid&gt;
+            &lt;/ControlTemplate&gt;
+        &lt;/Setter.Value&gt;
+    &lt;/Setter&gt;
+&lt;/Style&gt;</pre></div>
+
+<h3>Adorning the popup</h3>
+
+<p>You can easily retemplate the control to add additional controls and functionality to the popup/drop-down used for suggestions. Simply retemplate and add your content alongside the list box! You'll want to do some validation of the experience, since clicking on or interacting with controls inside the popup may remove focus from the auto complete box control and disable and further typing functionality for the user.</p>
+
+<p>Here's a partial sample adornment used from a stock ticker lookup. Important: this is effectively the inside of the popup, inside the final border of the template listed above - it is not a complete listing. It also contains hard-coded text strings to skip the search text updating for the adorned text block and hyperlinks...</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:c58c5302-faca-4978-a15e-c3a701789ff5" class="wlWriterSmartContent"><pre class="xml" name="code">&lt;StackPanel&gt;
+&lt;ListBox 
+    x:Name="SelectionAdapter" 
+    BorderThickness="0"
+    BorderBrush="Transparent"
+    ScrollViewer.HorizontalScrollBarVisibility="Auto" 
+    ScrollViewer.VerticalScrollBarVisibility="Auto" 
+    ItemContainerStyle="{TemplateBinding ItemContainerStyle}"
+    ItemTemplate="{TemplateBinding ItemTemplate}" /&gt;
+    &lt;StackPanel Background="White"&gt;
+        &lt;TextBlock Margin="5" Foreground="#FF0066FF" FontWeight="Bold"&gt;Chart all results for &quot;Micro&quot;&lt;/TextBlock&gt;
+    &lt;StackPanel&gt;
+        &lt;StackPanel.Background&gt;
+            &lt;LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0"&gt;
+                &lt;GradientStop Color="#FFFFFFFF" Offset="0"/&gt;
+                &lt;GradientStop Color="#FFEEEEEE" Offset="0.277"/&gt;
+                &lt;GradientStop Color="#FFEEEEEE" Offset="1"/&gt;
+            &lt;/LinearGradientBrush&gt;
+        &lt;/StackPanel.Background&gt;
+        &lt;StackPanel Margin="5" Orientation="Horizontal"&gt;
+            &lt;TextBlock&gt;
+                &lt;Run FontWeight="Bold"&gt;Tip: &lt;/Run&gt;
+                &lt;Run&gt;If you haven't sold it, you haven't lost it. &lt;/Run&gt;
+            &lt;/TextBlock&gt;
+            &lt;HyperlinkButton Margin="8, 0, 0, 0" Content="Learn more..." Foreground="#FF0066FF" /&gt;
+        &lt;/StackPanel&gt;
+    &lt;/StackPanel&gt;
+        &lt;/StackPanel&gt;
+&lt;/StackPanel&gt;</pre></div>
+
+<h3>Differences between the November and December release</h3>
+
+<p>The December toolkit release added a few new features for this control, including a small breaking change and different default value. Take note when updating applications.</p>
+
+<ul>
+  <li>ObservableCollection support for the items source dependency property was added in the December release.</li>
+
+  <li>Design change: The SelectedItem property will always be updated if an appropriately matched item is found in the items collection. Previously, an explicit selection was required to update the item.</li>
+
+  <li>The default value of the IsTextCompletionEnabled property was changed from True (November release) to False (December release). The text completion feature is now opt-in.</li>
+
+  <li>The SelectedItemChanged event was renamed to SelectionChanged.</li>
+
+  <li>The IsEditable CLR property was added. It always returns True today.</li>
+
+  <li>The ISelectionAdapter interface added the the CreateAutomationPeer property for proper automation peers support. Existing selection adapter implementations should either be updated with proper automation support, or shim this method by returning null.</li>
+</ul>
+
+<p>There were additionally some minor bug fixes. As the control exits the Preview quality band, such simple churn should cease.</p>
+
+<h3>License</h3>
+
+<p>The Silverlight Toolkit is released under the <a href="http://www.microsoft.com/opensource/licenses.mspx#Ms-PL">Microsoft Public License (Ms-PL)</a>. I'm not a lawyer, but within the license rights, you can pretty do just about anything you want. Awesome!</p>
+
+<h3>Download</h3>
+
+<p>You'll find the latest version of the <a href="http://www.codeplex.com/Silverlight/">Silverlight Toolkit</a> on the associated <a href="http://www.codeplex.com/Silverlight/">CodePlex site</a>. And, as always, check out the interactive sample application that features all of the controls.</p>
+
+<p>On the site you will also be able to review and log feature requests, bugs, and vote on existing issues. Please feel free to discuss the control on the dedicated <a href="http://silverlight.net/forums/35.aspx">Silverlight.net forum</a>.</p>
+
+<h3>What's next</h3>
+
+<p>If you have any feature requests or bug reports, please <a href="http://www.codeplex.com/Silverlight/WorkItem/List.aspx">file them here</a>. And, as the developer of the control, I welcome your general <a href="http://www.jeff.wilcox.name/about/contact/">feedback</a> as well. After the holiday break, I will post about ISelectionAdapter and whatever you ask me to post about!</p>
+
+<p>If you're in the US, have a great Thanksgiving holiday!</p>
+
+<p>Jeff Wilcox 
+  <br />AutoCompleteBox Developer 
+
+  <br />Silverlight Toolkit</p>

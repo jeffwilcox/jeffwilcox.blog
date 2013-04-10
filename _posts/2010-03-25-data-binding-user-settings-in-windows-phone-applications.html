@@ -1,0 +1,180 @@
+---
+layout: post
+comments: true
+title: Data binding user settings in Windows Phone applications
+wordpress_id: 616
+wordpress_url: http://www.jeff.wilcox.name/2010/03/data-binding-user-settings-in-windows-phone-applications/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: windows-phone
+  slug: windows-phone
+  autoslug: windows-phone
+imported_link_categories: []
+tags: []
+---
+<p>Thanks to the rich data binding system built into <a href="http://www.silverlight.net/getstarted/devices/windows-phone/">Silverlight for Windows Phone</a>, you can easily store rich user settings without using code behind files.</p>  <p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/03/StartupPage1.png"><img style="border-bottom: 0px; border-left: 0px; display: inline; margin-left: 0px; border-top: 0px; margin-right: 0px; border-right: 0px" title="StartupPage" border="0" alt="StartupPage" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/03/StartupPage_thumb1.png" width="301" height="589" /></a> </p>  <p>The canonical example of user settings is a “Show this welcome screen at startup” checkbox so that your application can offer a nice out-of-box experience.</p>  <p>By writing a simple type with some properties, adding a few helper files, and setting up a two-way data binding, you can store any settings without having to write special code.</p>  <p>Here’s what the completed project’s two-way data binding looks like for the checkbox shown to the right:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:31a809df-3c54-45c6-9f71-e3939f303551" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;CheckBox 
+   IsChecked="{Binding Source={StaticResource MySettings}, Path=IsFirstRun, Mode=TwoWay}"
+   Content="Show this page at startup"
+/&gt;</pre></div>
+
+<p>You’ll see these components in the data binding:</p>
+
+<ul>
+  <li>Source is a static resource, a strongly typed settings class you define</li>
+
+  <li>Path points to the property name to bind to</li>
+
+  <li>Binding is two-way so that the value is stored automatically</li>
+
+  <li>Value and type converters can be applied as always in bindings if necessary</li>
+</ul>
+
+<p>Let’s quickly implement this functionality in a quick app. We’ll also add a text box to the main application page, to let the value always be persisted between application runs, and even application updates.</p>
+
+<h3>Getting started</h3>
+
+<p>You can use the free <a href="http://www.silverlight.net/getstarted/devices/windows-phone/">Windows Phone development tools</a>, or just Visual Studio 2010 if you have the phone tools CTP installed already.</p>
+
+<p>Create a new ‘Silverlight for Windows Phone’ application project.</p>
+
+<h3>Adding some helper code</h3>
+
+<p>Either add the class library project I have for download here, or just add the 4 C# files that make up the helper code:</p>
+
+<ul>
+  <li><a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/03/SettingsHelperCode.zip"><strong>SettingsHelperCode.zip</strong></a> (8 KB, zip)</li>
+</ul>
+
+<h3>Creating your configuration/settings type</h3>
+
+<p>Next, we need to create a strongly typed configuration class that derives from my SettingsProvider type. This class must:</p>
+
+<ul>
+  <li>Implement INotifyPropertyChanged, so that bindings work well</li>
+
+  <li>Have properties of the appropriate type for the settings you are interested in. Optionally, include the DefaultValue attribute to provide defaults.</li>
+</ul>
+
+<p>Here is the MySettings.cs file I’ve created for this app. It defines two properties that I always want to have stored:</p>
+
+<ul>
+  <li><strong>HelloWorld</strong> is just some text I let the user edit in the user interface. A more realistic setting might be “best friend” or a list of people to show on the home screen of the app.</li>
+
+  <li><strong>IsFirstRun</strong> is a true/false value that indicates whether the welcome screen should be shown.</li>
+</ul>
+
+<p>
+  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:f4b3a428-cf5a-4044-bad1-2a305d70a31b" class="wlWriterEditableSmartContent"><pre class="csharp" name="code">// (c) Copyright Microsoft Corporation.
+// This source is subject to the Microsoft Public License (Ms-PL).
+// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+// All other rights reserved.
+
+using System.ComponentModel;
+using JeffWilcox.Settings;
+
+namespace Sample
+{
+    /// &lt;summary&gt;
+    /// My settings class for storing application data and setting specific to
+    /// the user.
+    /// &lt;/summary&gt;
+    public class MySettings : SettingsProvider
+    {
+        private bool _isFirstRun;
+        private string _hello;
+
+        public MySettings() : base("MySettings.xml") { }
+
+        [DefaultValue("What's up?")]
+        public string HelloWorld
+        {
+            get { return _hello; }
+            set
+            {
+                _hello = value;
+                NotifyPropertyChanged("HelloWorld");
+            }
+        }
+
+        [DefaultValue(true)]
+        public bool IsFirstRun 
+        {
+            get { return _isFirstRun; }
+            set
+            {
+                bool old = _isFirstRun;
+                _isFirstRun = value;
+                if (value != old)
+                {
+                    NotifyPropertyChanged("IsFirstRun");
+                }
+            }
+        }
+    }
+}</pre></div>
+</p>
+
+<p>Looking closer, inside the MySettings file:</p>
+
+<ul>
+  <li>MySettings type derives from SettingsProvider, part of the helper code downloaded above.</li>
+
+  <li>The constructor calls the base class’s constructor with the name of a settings file to use within the isolated storage area for the phone application</li>
+
+  <li>Properties have backing fields and fire change notifications</li>
+
+  <li>Default values</li>
+</ul>
+
+<h3>Add the settings object to your App.xaml</h3>
+
+<p>Now, open up App.xaml. Add an XMLNS prefix declaration for your project. I named my app project “Sample”, so it’s short:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:acd9bf42-6d28-4915-bf66-d21d8e7c8936" class="wlWriterEditableSmartContent"><pre class="xml" name="code">xmlns:local="clr-namespace:Sample"</pre></div>
+
+<p>And then add your settings object to the resources (I’m omitting all the theme resources in App.xaml to make it clear where this goes only).</p>
+
+<p><strong>AlwaysSaveOnChange</strong> needs to be set to true for Windows Phone applications: if you’re building a regular Silverlight app, the Application.Exit event works well and can be used to store. But on the phone, since an app may be in a paused or unknown state, this property tells my helper code to save the settings <em>whenever</em> a binding has a change notification. For performance impact should be minimal.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:13458972-7b46-4eb1-bc09-09a5287a27df" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;Application.Resources&gt;
+        &lt;!-- Settings --&gt;
+        &lt;local:MySettings x:Key="MySettings" AlwaysSaveOnChange="True" /&gt;
+&lt;/Application.Resources&gt;</pre></div>
+
+<h3>A simple TextBox binding</h3>
+
+<p>Now on my MainPage.xaml, I am just going to bind to the Hello World property from the MySettings type. Any time you type characters into the text box, they will be saved, and always there when you run the app. No need to write code to save or read settings.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:30433b15-c4bf-475a-8a49-59b91a731f58" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;TextBox 
+    Text="{Binding Source={StaticResource MySettings}, Path=HelloWorld, Mode=TwoWay}" /&gt;
+</pre></div>
+
+<h3>Good to go</h3>
+
+<p>To pull it in, I’m going to add a page called FirstRun.xaml to the project. This will be the content that I want first-time users to see. Then, I need to add the code to call this from main page at startup:</p>
+
+<p>I define a loaded event for this that checks whether the current instance has run the page yet (hacky, and not a permanent setting), and then checks whether the user wants to see the screen (which defaults to true in my settings file):</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:3ec0659d-8aee-41bc-b130-2bd8f24eca37" class="wlWriterEditableSmartContent"><pre class="csharp" name="code">if (!((App)App.Current).HasFirstRunCheckHappenedYet)
+{
+    ((App)App.Current).HasFirstRunCheckHappenedYet = true;
+
+    MySettings settings = (MySettings)App.Current.Resources["MySettings"];
+    if (settings != null && settings.IsFirstRun)
+    {
+        NavigationService.Navigate(new Uri("/FirstRun.xaml", UriKind.Relative));
+    }
+}</pre></div>
+
+<p>It then uses the navigation service to navigate, if needed.</p>
+
+<p>If you’d like to learn more about Silverlight data binding, do check out this MSDN resource: <a title="http://msdn.microsoft.com/en-us/library/cc278072(VS.95).aspx" href="http://msdn.microsoft.com/en-us/library/cc278072(VS.95).aspx">http://msdn.microsoft.com/en-us/library/cc278072(VS.95).aspx</a></p>
+
+<p>Some people have experimented with directly binding to the isolated storage settings file, but this approach gives your some separation – by having your own class, you can provide default values, even upgrade logic, and do some neat work.</p>
+
+<p>This is based on a classic WPF post by <a href="http://blogs.msdn.com/patrickdanino/archive/2008/07/23/user-settings-in-wpf.aspx">Patrick Danino</a> which used the full .NET configuration classes. Enjoy!</p>

@@ -1,0 +1,255 @@
+---
+layout: post
+comments: true
+title: Useful managed HTML DOM methods for Microsoft Silverlight
+wordpress_id: 19
+wordpress_url: http://linux.jeff.wilcox.name/2007/09/30/managed-html-extensions/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: software-development
+  slug: dev
+  autoslug: software-development
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+imported_link_categories: []
+tags:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: c#
+  slug: c
+  autoslug: c#
+- title: software-development
+  slug: software-development
+  autoslug: software-development
+- title: web-development
+  slug: web-development
+  autoslug: web-development
+---
+In the versions of Microsoft Silverlight that have been released to date, the managed HTML DOM interfaces have stayed pretty basic.  In the process of building prototype applications on top of these bits, I've therefore developed some really simple methods that've proved useful to me, and cut down on typing repetitive code.  It's rainy in Seattle today, so I figured it would be a great time to post about a few of these methods.
+
+
+
+The methods and properties are all simple, and self explanatory...I should point out that the last method (HtmlElement.AppendChildren) does require C# 3.0 to compile as it is an <a href="http://weblogs.asp.net/scottgu/archive/2007/03/13/new-orcas-language-feature-extension-methods.aspx">extension method</a>.  And also, a friendly reminder to include a using statement for System.Windows.Browser.
+
+
+
+Update: Download of <a href="http://www.jeff.wilcox.name/blog/code/HtmlExtensions.cs.txt">HtmlExtensions.cs.txt</a> also available. 
+
+
+
+<tt><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;
+
+///</span><span style="color: #008000"> A set of C# 3.0 extension methods *as well* as a general 
+
+</span><span style="color: #808080">///</span><span style="color: #008000"> HTML DOM bridge helper &amp; utility library
+
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;
+
+</span><span style="color: #0000ff">public</span> <span style="color: #0000ff">static</span> <span style="color: #0000ff">class</span> <span style="color: #2b91af">HtmlExtensions
+
+</span>{
+
+    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> Retrieve the first HtmlElement in the document that matches 
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> the tag name
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;param name="tagName"&gt;</span><span style="color: #008000">HTML tag</span><span style="color: #808080">&lt;/param&gt;
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;returns&gt;</span><span style="color: #008000">The first HtmlElement of tagName on the page</span><span style="color: #808080">&lt;/returns&gt;
+
+</span>    <span style="color: #0000ff">public</span> <span style="color: #0000ff">static</span> <span style="color: #2b91af">HtmlElement</span> GetSingleElementByTagName(<span style="color: #0000ff">string</span> tagName)
+
+    {
+
+        <span style="color: #2b91af">HtmlElementCollection</span> hh = <span style="color: #2b91af">HtmlPage</span>.Document.GetElementsByTagName(tagName);
+
+        <span style="color: #0000ff">if</span> (hh.Count &gt; 0) {
+
+            <span style="color: #0000ff">return</span> hh[0];
+
+        }</tt><tt>        <span style="color: #0000ff">throw</span> <span style="color: #0000ff">new</span> <span style="color: #2b91af">InvalidOperationException</span>(
+
+            <span style="color: #2b91af">String</span>.Format(<span style="color: #a31515">@"There were no ""{0}"" HTML tags found on the page."</span>, tagName));
+
+    }
+
+
+
+    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> Property representing the &lt;head /&gt; element on 
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> the page.
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;remarks&gt;</span><span style="color: #008000">Although a static property, this get is actually 
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> a method call</span><span style="color: #808080">&lt;/remarks&gt;
+
+</span>    <span style="color: #0000ff">public</span> <span style="color: #0000ff">static</span> <span style="color: #2b91af">HtmlElement</span> HeadElement
+
+    {
+
+        <span style="color: #0000ff">get</span> { <span style="color: #0000ff">return</span> GetSingleElementByTagName(<span style="color: #a31515">"head"</span>); }
+
+    }
+
+
+
+    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> Property representing the &lt;body /&gt; element on 
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> the page.
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;remarks&gt;</span><span style="color: #008000">Although a static property, this get is actually 
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> a method call</span><span style="color: #808080">&lt;/remarks&gt;
+
+</span>    <span style="color: #0000ff">public</span> <span style="color: #0000ff">static</span> <span style="color: #2b91af">HtmlElement</span> BodyElement
+
+    {
+
+        <span style="color: #0000ff">get</span> { <span style="color: #0000ff">return</span> GetSingleElementByTagName(<span style="color: #a31515">"body"</span>); }
+
+    }
+
+
+
+    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> Evaluate some JavaScript code on the page body
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;
+
+</span>    <span style="color: #0000ff">public</span> <span style="color: #0000ff">static</span> <span style="color: #0000ff">void</span> Eval(<span style="color: #0000ff">string</span> code)
+
+    {
+
+        <span style="color: #2b91af">HtmlElement</span> js = CreateJavaScriptElement(code);
+
+        BodyElement.AppendChild(js);
+
+    }
+
+
+
+    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> Popup a JavaScript alert message
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;
+
+</span>    <span style="color: #0000ff">public</span> <span style="color: #0000ff">static</span> <span style="color: #0000ff">void</span> Alert(<span style="color: #0000ff">string</span> alertMessage)
+
+    {
+
+        Eval(<span style="color: #a31515">"alert('"</span> 
+
+            + alertMessage.Replace(<span style="color: #a31515">"'"</span>, <span style="color: #a31515">"\\'"</span>) 
+
+            + <span style="color: #a31515">"')"</span>);
+
+    }
+
+
+
+    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> Create a JavaScript code block
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;
+
+</span>    <span style="color: #0000ff">public</span> <span style="color: #0000ff">static</span> <span style="color: #2b91af">HtmlElement</span> CreateJavaScriptElement(<span style="color: #0000ff">string</span> code)
+
+    {
+
+        <span style="color: #2b91af">HtmlElement</span> js = CreateJavaScriptElement();
+
+        js.SetProperty(<span style="color: #a31515">"text"</span>, code);
+
+        <span style="color: #0000ff">return</span> js;
+
+    }
+
+
+
+    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> Create an HTML element that is a JavaScript include
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;
+
+</span>    <span style="color: #0000ff">public</span> <span style="color: #0000ff">static</span> <span style="color: #2b91af">HtmlElement</span> CreateJavaScriptInclude(<span style="color: #0000ff">string</span> src)
+
+    {
+
+        <span style="color: #2b91af">HtmlElement</span> js = CreateJavaScriptElement();
+
+        js.SetAttribute(<span style="color: #a31515">"src"</span>, src);
+
+        <span style="color: #0000ff">return</span> js;
+
+    }
+
+
+
+    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> Create a new &lt;script /&gt; tag
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;
+
+</span>    <span style="color: #0000ff">private</span> <span style="color: #0000ff">static</span> <span style="color: #2b91af">HtmlElement</span> CreateJavaScriptElement()
+
+    {
+
+        <span style="color: #2b91af">HtmlElement</span> js = <span style="color: #2b91af">HtmlPage</span>.Document.CreateElement(<span style="color: #a31515">"script"</span>);
+
+        js.SetAttribute(<span style="color: #a31515">"type"</span>, <span style="color: #a31515">"text/javascript"</span>);
+
+        <span style="color: #0000ff">return</span> js;
+
+    }
+
+
+
+    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> Append multiple HtmlElements to a single HtmlElement
+
+</span>    <span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;
+
+</span>    <span style="color: #0000ff">public</span> <span style="color: #0000ff">static</span> <span style="color: #0000ff">void</span> AppendChildren(<span style="color: #0000ff">this</span> <span style="color: #2b91af">HtmlElement</span> element, <span style="color: #0000ff">params</span> <span style="color: #2b91af">HtmlElement</span>[] children)
+
+    {
+
+        <span style="color: #0000ff">for</span> (<span style="color: #0000ff">int</span> i = 0; i &lt; children.Length; ++i) {
+
+            element.AppendChild(children[i]);
+
+        }
+
+    }
+
+
+
+}
+
+
+
+</tt>Hope this helps! 

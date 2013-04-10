@@ -1,0 +1,76 @@
+---
+layout: post
+comments: true
+title: A simple XML DOM interface for use with the Silverlight 1.1 Alpha
+wordpress_id: 12
+wordpress_url: http://linux.jeff.wilcox.name/2007/05/01/xml-dom-for-silverlight/
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: mix
+  slug: mix
+  autoslug: mix
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+imported_link_categories: []
+tags:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+- title: mix
+  slug: mix
+  autoslug: mix
+- title: mix07
+  slug: mix07
+  autoslug: mix07
+---
+[RAW]
+
+<P>The Silverlight 1.1 Alpha release that everyone got their hands on Monday is full of a surprising amount of functionality considering that quick, tiny download.&nbsp; I'd encourage everyone that hasn't picked up the Silverlight developer reference poster (which gives an overview of the namespaces and functionality you can take advantage of) to pick one up at MIX, or download <A class="" href="http://download.microsoft.com/download/f/2/e/f2ecc2ad-c498-4538-8a2c-15eb157c00a7/SL_Map_FinalNET.png" target=_blank mce_href="http://download.microsoft.com/download/f/2/e/f2ecc2ad-c498-4538-8a2c-15eb157c00a7/SL_Map_FinalNET.png">a PNG of the poster</A> from here. </P>
+
+
+
+<P>In my spare time the past week I've been building a managed client app powered by Silverlight, targeting a few web services.&nbsp; At this point I'm interfacing with Flickr's REST API, which returns results in a very simple XML payload which I need to parse; ideally interacting with it through a simple DOM interface instead of having to write a bunch of XmlReader code.&nbsp; To keep the size of the framework down, the Core XML library doesn't include an XmlDocument interface.</P>
+
+
+
+<P>I've implemented a quick wrapper over XmlReader to parse an XML string and provide simple DOM-style access to at least the elements by tagname.&nbsp; This likely isn't very performant, so parsing a large document may affect the UI thread.&nbsp; But its small, quick and works.</P>
+
+
+
+<P>Feel free to check out the two classes, SimpleXmlDocument and SimpleXmlElement.&nbsp; You can use a <A class="" href="http://msdn2.microsoft.com/en-us/library/sf0df423(vs.80).aspx" mce_href="http://msdn2.microsoft.com/en-us/library/sf0df423(vs.80).aspx">C# using alias</A> in your application to use more familiar XML framework names if you like.</P>
+
+
+
+<P>Start off by creating a new SimpleXmlDocument.&nbsp; You'll then have access to the root node, and a set of element access methods including GetElementsByTagName, GetElementByTagName, and GetTextOfSingleTagName.</P>
+
+
+
+<P><TT>SimpleXmlDocument doc = new SimpleXmlDocument("&lt;test&gt;&lt;node&gt;Some text&lt;/node&gt;&lt;/test&gt;");<BR>HtmlPage.Document.SetProperty("title", doc.Root.GetTextOfSingleTagName("node")); </TT></P>
+
+
+
+<P>CS files: <A class="" href="http://media.jeff.wilcox.name/blog/code/fx/SimpleXmlDocument.cs.txt" mce_href="http://media.jeff.wilcox.name/blog/code/fx/SimpleXmlDocument.cs.txt">SimpleXmlDocument.cs</A>, <A class="" href="http://media.jeff.wilcox.name/blog/code/fx/SimpleXmlElement.cs.txt" mce_href="http://media.jeff.wilcox.name/blog/code/fx/SimpleXmlElement.cs.txt">SimpleXmlElement.cs</A><BR>Include in your project and build for Silverlight with Whidbey or Orcas since its just simple C# 2.0 code.</P>
+
+
+
+<P>Hope this helps!&nbsp; Let me know if you build any cool apps or have suggestions, questions, or thoughts.</P>
+
+
+
+<P>Disclaimer: This is just some prototype code I wrote to help with the application I was building.&nbsp; I'm not a member of the XML team and this code isn't much of anything at all.&nbsp; It isn't actually the DOM, probably can't handle a lot of things, but it works enough as it stands today for those Flickr responses.</P>
+
+
+
+[/RAW]

@@ -1,0 +1,284 @@
+---
+layout: post
+comments: true
+title: Adding page up and down support to AutoCompleteBox
+wordpress_id: 203
+wordpress_url: http://www.jeff.wilcox.name/2008/12/pageup-pagedown/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+imported_link_categories: []
+tags: []
+---
+<p>Supporting the page up and page down keys for browsing through auto complete suggestions is one feature that we decided not to include in the production control to improve the flexibility of the control, plus the actual code is a little hacky.</p>  <p>If you have an application where your users are going to be exploring large sets of items in the auto complete drop down, it makes sense to add this functionality back. This is a place where Silverlight can add value: most standard AJAX auto complete controls do not support the paging keys, but with Silverlight, we can find a way.</p>  <p>In this post, I'm going to walk you through creating a derived AutoCompleteBox control that supports the page up and down keys. The control will be a little more specific than the shipping control in that it will be explicitly tied to a ListBox and a custom ListBoxSelectionAdapter.</p>  <h3>Overview</h3>  <p>To accomplish this work, we'll:</p>  <ul>   <li>Create a new class library for the custom control </li>    <li>Create a new selection adapter that derives from ListBox, and modify the navigation logic to support the paging keys </li>    <li>Create a derived auto complete control </li>    <li>Setup the default style and template for the control in generic.xaml </li> </ul>  <p>If you followed my post yesterday on customizing the <a href="http://www.jeff.wilcox.name/2008/12/cycle-navigation/">cycle navigation behavior of the control</a>, then you've already worked through most of the steps in this guide: both posts share the same source code actually. The source is attached to the post for download. Feel free to leave any questions that you may have.</p>  <h3>Why isn't this &quot;in the box&quot;?</h3>  <p>The shipping AutoCompleteBox doesn't make assumptions about the drop-down selection control that you use: in fact, it doesn't even care if the control derives from ListBox, Selector, or ItemsControl. All that you need is either for the control itself to derive from ISelectionAdapter, <em>or</em> to write a wrapper/adapter that derives from this interface.</p>  <p>This opens up the door for some great experiences, since you can use a tree view, data grid, or build your own rich control like a carousel. So not only can you re-template the auto complete control - but you can also use your own selection controls while keeping the nitty-gritty suggestion and items management to our stable production code.</p>  <p>To give you an idea of what we're talking about, in theory the only bounding box is ISelectionAdapter when it comes to what the AutoCompleteBox can interact with:</p>  <p><img alt="the ISelectionAdapter interface" src="http://media.jeff.wilcox.name/blog/view/isadiagram.png" /> </p>  <p>Anyway, the reason we weren't able to ship this is that it effectively would only allow us to offer page up and down support to ListBox controls, and the experience that we shipped actually supports all Selector controls in a consistent manner, without any special casing for ListBox.</p>  <h3>Creating a new custom control class library</h3>  <p>Open up Visual Studio with the Silverlight Tools installed and create a new Visual C# &quot;Silverlight Class Library&quot; project. I named my project &quot;CustomAutoComplete&quot;.</p>  <ul>   <li>Make sure that you've downloaded the <em>source code release</em> of the <a href="http://www.codeplex.com/Silverlight/Release/ProjectReleases.aspx">Silverlight Toolkit December 2008</a> release (alternatively, you can grab the source files we're borrowing from the <a href="http://www.codeplex.com/Silverlight/SourceControl/changeset/view/8633">source code browser online</a>) </li>    <li>Add a reference to the Microsoft.Windows.Controls.dll binary </li> </ul>  <h3>Hacking away at page up and down support</h3>  <p>Another reason we didn't ship with this is that the technique for easily intercepting and managing page up and down controls is a little complex to be done properly. In this example, instead we're going to intercept page down events and pass them into the ListBox - where the list box already has logic for paging down.</p>  <p>And then, for page up, we'll do some hacking to eventually pass it to the list box. However, TextBox actually handles the page up and will move the selection to the start of the text box - and then never send the key argument to our control. Our strategy here will be to intercept the <strong>key up</strong> event with the Key.PageUp, and then pass it directly to the list box's <strong>key down</strong> event handler.</p>  <p>This isn't a recommended strategy for control development, but gosh, it works here to enable this scenario.</p>  <h3>Making a new ISelectionAdapter</h3>  <p>A selection adapter is a concept that the auto complete control uses for handing off the suggestion navigation, presentation, and selection to another control.</p>  <p>Instead of requiring that the auto complete control always use a ListBox to work, we opted for a design with the ISelectionAdapter interface. This means that you can create a wrapper for any control, regardless of whether the control derives from Selector or not. This allows you to use DataGrid, for instance.</p>  <p>I copied the contents of the SelectorSelectionAdapter.cs file in the Source\Controls\AutoCompleteBox\ directory of the toolkit source download.</p>  <p>Although a good starting place for our adapter, we are going to switch from the &quot;wrapper&quot; style of selection adapter and instead make ours an actual control by deriving directly from the Silverlight ListBox control.</p>  <p>This is not particularly important for this scenario, but I'll be re-using this project for some other posts where it does make a difference.</p>  <p>Changes I've made: named the file and class ListBoxSelectionAdapter. Derived from ListBox:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:59f76829-318a-4755-a4e6-b8701f0bbb51" class="wlWriterSmartContent">   <pre class="c-sharp" name="code">namespace CustomAutoCompleteBox
+{
+    /// &lt;summary&gt;
+    /// A selection adapter that is also a ListBox, for use with the
+    /// AutoCompleteBox control.
+    /// &lt;/summary&gt;
+    public partial class ListBoxSelectionAdapter : ListBox, ISelectionAdapter
+    {</pre>
+</div>
+
+<p>Next, I've modified the standard HandleKeyDown method by adding support for Key.PageDown. This code handles the situation where no item is selected, then passes the key arguments directory to the base.OnKeyDown method (the ListBox itself, that then handles the right amount of navigation). It then marks the arguments as handled, just to be safe:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:8945e1ba-b2bc-4537-9d43-b64156391cfe" class="wlWriterSmartContent"><pre class="c-sharp" name="code">case Key.PageDown:
+    if (SelectedItem == null && Items.Count &gt; 0)
+    {
+        SelectedIndex = 0;
+    }
+    base.OnKeyDown(e);
+    e.Handled = true;
+    break;</pre></div>
+
+<p>Then, to handle the key up, we need to get a little more creative. I've added an internal method called HandleKeyUp, that is very similar, and will be called by our custom auto complete control:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1b451c76-e361-4957-928f-c362d9e4fce0" class="wlWriterSmartContent"><pre class="c-sharp" name="code">/// &lt;summary&gt;
+/// Workaround that will take the key up and send it as a key down to 
+/// the list box. This is because the text box will handle the first 
+/// page up and use it to move the caret on the text box up.
+/// &lt;/summary&gt;
+/// &lt;param name="e"&gt;The event data.&lt;/param&gt;
+internal void HandleKeyUp(KeyEventArgs e)
+{
+    if (e.Key == Key.PageUp)
+    {
+        base.OnKeyDown(e);
+    }
+}</pre></div>
+
+<p>Yes, that's not a typo: in the case of a page up, the key up handler should call the key down handler.</p>
+
+<h3>Derive CustomizedAutoCompleteBox from AutoCompleteBox</h3>
+
+<p>Now that the selection adapter is ready, we should create our own AutoCompleteBox control. We'll derive from the toolkit control and add a new dependency property for the cyclic navigation.</p>
+
+<p>First off, create the new code file, CustomizedAutoCompleteBox.cs:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:0e82bb03-076b-4205-a10f-fc970b0351fa" class="wlWriterSmartContent">
+  <pre class="c-sharp" name="code">// (c) Copyright Microsoft Corporation.
+// This source is subject to the Microsoft Public License (Ms-PL).
+// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+// All other rights reserved.
+
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using Microsoft.Windows.Controls;
+
+namespace CustomAutoCompleteBox
+{
+    /// &lt;summary&gt;
+    /// An AutoCompleteBox control implementation that has a few additional 
+    /// features, as a demonstration. &quot;Polished&quot; with features such as page up
+    /// and page down support, and cyclic navigation settings for the list box.
+    /// &lt;/summary&gt;
+    /// &lt;remarks&gt;This is a demonstration only and is strongly tied to the use of
+    /// a ListBox as the selection adapter.&lt;/remarks&gt;
+    public class CustomizedAutoCompleteBox : AutoCompleteBox
+    {</pre>
+</div>
+
+<p>The standard implementation of AutoCompleteBox handles most of the interaction with the SelectionAdapter, but we still need to find the template part in the OnApplyTemplate method, so that we can call the new HandleKeyUp method that we created. So, we add a private or internal automatic property for our ListBoxSelectionAdapter:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1964cd1c-6d0c-497c-aecb-879856fd5e46" class="wlWriterSmartContent">
+  <pre class="c-sharp" name="code">        /// &lt;summary&gt;
+        /// The selection adapter.
+        /// &lt;/summary&gt;
+        internal ListBoxSelectionAdapter SelectionAdapterPart { get; set; }</pre>
+</div>
+
+<p>We override the OnApplyTemplate method to grab the selection adapter instance and set it to our local SelectionAdapterPart property.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:cb1dc0fb-51f9-4eec-b5bf-a23575933ce4" class="wlWriterSmartContent"><pre class="c-sharp" name="code">/// &lt;summary&gt;
+/// Overrides the on apply template method.
+/// &lt;/summary&gt;
+public override void OnApplyTemplate()
+{
+    SelectionAdapterPart = GetTemplateChild("SelectionAdapter") as ListBoxSelectionAdapter;
+    base.OnApplyTemplate();
+}</pre></div>
+
+<p>Now, to actually grab the page up key, we'll override the OnKeyUp method of the AutoCompleteBox control:</p>
+
+<p></p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:8ff9434a-4cb3-4972-8a7c-b511aedb02a8" class="wlWriterSmartContent"><pre class="c-sharp" name="code">/// &lt;summary&gt;
+/// Overrides the key up method.
+/// &lt;/summary&gt;
+/// &lt;param name="e"&gt;The event data.&lt;/param&gt;
+protected override void OnKeyUp(KeyEventArgs e)
+{
+    if (e.Key == Key.PageUp && SelectionAdapterPart != null)
+    {
+        SelectionAdapterPart.HandleKeyUp(e);
+    }
+
+    base.OnKeyUp(e);
+}</pre></div>
+
+<p></p>
+
+<h3>Create the default template (generic.xaml)</h3>
+Last step: default styling. To do this, we must create our generic.xaml file inside the class library: 
+
+<ul>
+  <li>Create a new folder in the project (right-click on the project in the Solution Explorer &gt; select Add &gt; then New Folder) called <strong>Themes</strong> </li>
+
+  <li>Add a new Silverlight use control to the new Themes directory, call it <strong>generic.xaml</strong>. You can remove any associated generic.xaml.cs file, since there's no code behind for the default style file. </li>
+
+  <li>Change the file to compile as a Resource: right-click on generic.xaml, select Properties; then, in the property grid, change the <strong>Build Action</strong> to be <strong>Resource</strong> instead of Page. </li>
+</ul>
+
+<p>Next, open up the file, delete its contents, and replace it with the standard resource dictionary XML content, declare the local XMLNS for your assembly and namespace:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1606b245-c2b1-425d-af57-d00a54eaa9f5" class="wlWriterSmartContent">
+  <pre class="xml" name="code">&lt;!--
+// (c) Copyright Microsoft Corporation.
+// This source is subject to the Microsoft Public License (Ms-PL).
+// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+// All other rights reserved.
+--&gt;
+
+&lt;ResourceDictionary
+  xmlns=&quot;http://schemas.microsoft.com/client/2007&quot;
+  xmlns:x=&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot;
+  xmlns:controls=&quot;clr-namespace:CustomAutoCompleteBox&quot;&gt;
+
+&lt;/ResourceDictionary&gt;</pre>
+</div>
+
+<p>Now, we just have to add the style for the control. I've copied most of the template from the source download of the toolkit, but did modify the opacity of the list box a little bit. I also place an instance of ListBoxSelectionAdapter, with the x:Name of &quot;SelectionAdapter&quot; (the part name that AutoCompleteBox looks for), where the simple ListBox is in the default template:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:c9a1e0f8-9e09-4ca7-a75e-e68b80a3bbbb" class="wlWriterSmartContent">
+  <pre class="xml" name="code">&lt;Style TargetType=&quot;controls:CustomizedAutoCompleteBox&quot;&gt;
+    &lt;Setter Property=&quot;IsTabStop&quot; Value=&quot;False&quot; /&gt;
+    &lt;Setter Property=&quot;Template&quot;&gt;
+        &lt;Setter.Value&gt;
+            &lt;ControlTemplate TargetType=&quot;controls:CustomizedAutoCompleteBox&quot;&gt;
+                &lt;Grid Margin=&quot;{TemplateBinding Padding}&quot; 
+                      Background=&quot;{TemplateBinding Background}&quot;&gt;
+                    &lt;TextBox IsTabStop=&quot;True&quot; x:Name=&quot;Text&quot; Style=&quot;{TemplateBinding TextBoxStyle}&quot; Margin=&quot;0&quot; /&gt;
+                    &lt;Popup x:Name=&quot;Popup&quot;&gt;
+                        &lt;Border x:Name=&quot;PopupBorder&quot; HorizontalAlignment=&quot;Stretch&quot; Opacity=&quot;0.0&quot; BorderThickness=&quot;0&quot; CornerRadius=&quot;3&quot;&gt;
+                            &lt;Border.RenderTransform&gt;
+                                &lt;TranslateTransform X=&quot;1&quot; Y=&quot;1&quot; /&gt;
+                            &lt;/Border.RenderTransform&gt;
+                            &lt;Border
+                                HorizontalAlignment=&quot;Stretch&quot; 
+                                Opacity=&quot;1.0&quot; 
+                                Padding=&quot;0&quot; 
+                                BorderThickness=&quot;{TemplateBinding BorderThickness}&quot; 
+                                BorderBrush=&quot;{TemplateBinding BorderBrush}&quot; 
+                                CornerRadius=&quot;3&quot;&gt;
+                                &lt;Border.RenderTransform&gt;
+                                    &lt;TransformGroup&gt;
+                                        &lt;TranslateTransform X=&quot;-1&quot; Y=&quot;-1&quot; /&gt;
+                                    &lt;/TransformGroup&gt;
+                                &lt;/Border.RenderTransform&gt;
+                                &lt;controls:ListBoxSelectionAdapter 
+                                    x:Name=&quot;SelectionAdapter&quot; 
+                                    Background=&quot;#99ffffff&quot;
+                                    ItemContainerStyle=&quot;{TemplateBinding ItemContainerStyle}&quot;
+                                    ItemTemplate=&quot;{TemplateBinding ItemTemplate}&quot; /&gt;
+                            &lt;/Border&gt;
+                        &lt;/Border&gt;
+                    &lt;/Popup&gt;
+                    &lt;VisualStateManager.VisualStateGroups&gt;
+                        &lt;VisualStateGroup x:Name=&quot;PopupStates&quot;&gt;
+                            &lt;VisualStateGroup.Transitions&gt;
+                                &lt;VisualTransition GeneratedDuration=&quot;0:0:0.1&quot; To=&quot;PopupOpened&quot; /&gt;
+                                &lt;VisualTransition GeneratedDuration=&quot;0:0:0.2&quot; To=&quot;PopupClosed&quot; /&gt;
+                            &lt;/VisualStateGroup.Transitions&gt;
+                            &lt;VisualState x:Name=&quot;PopupOpened&quot;&gt;
+                                &lt;Storyboard&gt;
+                                    &lt;DoubleAnimation Storyboard.TargetName=&quot;PopupBorder&quot; Storyboard.TargetProperty=&quot;Opacity&quot; To=&quot;1.0&quot; /&gt;
+                                &lt;/Storyboard&gt;
+                            &lt;/VisualState&gt;
+                            &lt;VisualState x:Name=&quot;PopupClosed&quot;&gt;
+                                &lt;Storyboard&gt;
+                                    &lt;DoubleAnimation Storyboard.TargetName=&quot;PopupBorder&quot; Storyboard.TargetProperty=&quot;Opacity&quot; To=&quot;0.0&quot; /&gt;
+                                &lt;/Storyboard&gt;
+                            &lt;/VisualState&gt;
+                        &lt;/VisualStateGroup&gt;
+                    &lt;/VisualStateManager.VisualStateGroups&gt;
+                &lt;/Grid&gt;
+            &lt;/ControlTemplate&gt;
+        &lt;/Setter.Value&gt;
+    &lt;/Setter&gt;
+&lt;/Style&gt;</pre>
+</div>
+
+<p>That is a lot of code; here's just the selection adapter part to make that clear. Remember, since we derived ListBoxSelectionAdapter directly from ListBox, this XAML is actually talking directly to a ListBox instance when initialized.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:53a1c379-c88a-431a-8ef4-ae57ba44bb87" class="wlWriterSmartContent">
+  <pre class="xml" name="code">&lt;controls:ListBoxSelectionAdapter 
+    x:Name=&quot;SelectionAdapter&quot; 
+    Background=&quot;#99ffffff&quot;
+    ItemContainerStyle=&quot;{TemplateBinding ItemContainerStyle}&quot;
+    ItemTemplate=&quot;{TemplateBinding ItemTemplate}&quot; /&gt;</pre>
+</div>
+
+<h3>Validating the new experience</h3>
+
+<p>Ok, build the project. Hopefully you'll receive no errors, and we'll be ready to verify the new behavior.</p>
+
+<p>I added a regular Silverlight Application (with the auto-generated test page option) called 'Demo', and then:</p>
+
+<ul>
+  <li>Added a reference to Microsoft.Windows.Controls </li>
+
+  <li>Added a project reference to the CustomAutoCompleteBox project (that contains our CustomizedAutoCompleteBox control, the default template, and the ListBoxSelectionAdapter) </li>
+</ul>
+
+<p>Inside the page you're testing, make sure to add the XMLNS statement for your custom library; you can then place your custom control inside. I'm binding it to the data context. If you run the sample app, search for a few short characters, then press the page up and down keys - you're all set now!</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:72869f2d-9099-4135-81cd-ff9a33a75fc4" class="wlWriterSmartContent">
+  <pre class="xml" name="code">&lt;UserControl x:Class=&quot;Demo.WithListBoxSelectionAdapter&quot;
+    xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot; 
+    xmlns:custom=&quot;clr-namespace:CustomAutoCompleteBox;assembly=CustomAutoCompleteBox&quot;
+    xmlns:x=&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot;&gt;
+    &lt;Grid x:Name=&quot;LayoutRoot&quot;&gt;
+        &lt;StackPanel&gt;
+            &lt;custom:CustomizedAutoCompleteBox ItemsSource=&quot;{Binding}&quot; x:Name=&quot;autoComplete1&quot; /&gt;
+        &lt;/StackPanel&gt;
+    &lt;/Grid&gt;
+&lt;/UserControl&gt;</pre>
+</div>
+
+<p>In my example, I set the page's DataContext to a bunch of sample data in the Loaded method. The download includes this data, plus the ability to compare the regular AutoCompleteBox control to the new one.</p>
+
+<p><strong>Download and explore this sample app</strong></p>
+
+<ul>
+  <li><a href="http://media.jeff.wilcox.name/blog/AutoComplete/xap/AutoCompleteExamplesApp.html">View the sample application live</a> </li>
+
+  <li><a href="http://media.jeff.wilcox.name/blog/AutoComplete/AutoCompleteExamples.zip">Download the C# solution's source code</a> (includes the toolkit binary with the standard AutoCompleteBox, 86 KB) </li>
+</ul>
+
+<p><strong>Related sample post</strong></p>
+
+<ul>
+  <li><a href="http://www.jeff.wilcox.name/2008/12/cycle-navigation/">Adding a UseCyclicNavigation property</a> to the auto complete control (uses the same exact downloadable source and sample app)</li>
+</ul>
+
+<h3>Download the December 2008 release of the Silverlight Toolkit</h3>
+
+<p><img src="http://media.jeff.wilcox.name/blog/view/Silverlight-Toolkit.png" /></p>
+
+<ul>
+  <li><a href="http://www.codeplex.com/Release/ProjectReleases.aspx?ProjectName=Silverlight&amp;ReleaseId=19172">Binaries, samples and documentation</a> (10 MB) </li>
+
+  <li><a href="http://www.codeplex.com/Release/ProjectReleases.aspx?ProjectName=Silverlight&amp;ReleaseId=19172">Binaries, samples, documentation, unit tests and complete source code</a> (11 MB) </li>
+
+  <li><a href="http://silverlight.net/samples/sl2/toolkitcontrolsamples/run/default.html">Explore the updated, combined sample explorer</a> </li>
+
+  <li><a href="http://feeds.feedburner.com/SilverlightToolkitTeamMembersBlogFeeds">Subscribe to the syndicated feed of all team members</a> (RSS) </li>
+</ul>

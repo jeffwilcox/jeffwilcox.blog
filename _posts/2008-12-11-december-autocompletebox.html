@@ -1,0 +1,161 @@
+---
+layout: post
+comments: true
+title: ! 'Silverlight AutoCompleteBox: What''s new in the December release'
+wordpress_id: 187
+wordpress_url: http://www.jeff.wilcox.name/2008/12/11/december-autocompletebox/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: software-development
+  slug: dev
+  autoslug: software-development
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+imported_link_categories: []
+tags:
+- title: popular
+  slug: popular
+  autoslug: popular
+---
+<p>Here's the list of changes, new functionality, and breaking changes between the two official <a href="http://www.codeplex.com/Silverlight/">Silverlight Toolkit</a> releases so far. I covered key differences in the previously published &quot;<a href="http://www.jeff.wilcox.name/2008/11/24/autocompletebox-missing-guide/">AutoCompleteBox: The missing guide</a>,&quot; a must-read for anyone developing with the control. This will also guide application developers in updating their existing code.</p>  <p>AutoCompleteBox is one of the core controls in the Silverlight Toolkit. It provides suggestions when text is typed into the control, and supports rich collections of items, data templating, and extensibility opportunities for control developers. It can be found in the the Microsoft.Windows.Controls.dll assembly.</p>  <h3>New features &amp; changes</h3>  <h4>ObservableCollection support</h4>  <p>The original release of AutoCompleteBox did not support ObservableCollection objects and the underlying INotifyCollectionChanged system. The functionality to support this was added in the December release, so it is consistent with the items control experiene that ListBox, ComboBox, and other controls exhibit for working with dynamic data.</p>  <h4>Improvements to the text and SelectedItem experience</h4>  <p>In the November release, the only way for the SelectedItem property to be set was through two specific user interactions:</p>  <ul>   <li>Clicking on / selecting an item in the drop-down popup</li>    <li>Typing part of an item's value with the IsTextCompletionEnabled property set to 'True'</li> </ul>  <p>Less than ideal, this lead to a situation where your control could be bound to a rich set of business objects. You could have a business object that is offered as a suggest when &quot;Jeff Wilcox&quot; is typed into the field - a user could type &quot;Jeff Wilcox&quot;, but not select the suggestion in the drop-down, at which point SelectedItem would be null.</p>  <p>We've corrected this, and you'll now find that we always perform a search when text is updated over your local, existing items in the collection. This is not dependent on the IsTextCompletionEnabled property at all. This opens up form editing applications to make much better use of the AutoCompleteBox control.</p>  <p>To help demonstrate the use of the SelectionChanged event, that is fired when the SelectedItem value is updated, all of the <a href="http://silverlight.net/samples/sl2/toolkitcontrolsamples/run/default.html?path=Controls|AutoCompleteBox">sample application pages</a> for AutoCompleteBox have been updated to show the selected item's value next to the input control.</p>  <p>Here are some screen shots showing selected items on the right:</p>  <p><img src="http://media.jeff.wilcox.name/blog/view/SelectedItemExamples.png" /> </p>  <h4>The IsTextCompletionEnabled change</h4>  <p>After examining existing AutoCompleteBox controls out there, and fixing the aforementioned text and SelectedItem update experience, we decided to change the default text completion value to 'False'. It was 'True' in the November release.</p>  <p>Most users expect AutoComplete to offer suggestions, as opposed to automatically select the first suggestion. The only major browser that performs text completion automatically on the URL, for instance, is Safari. Hope you like this change - it won't affect any apps that explicitly set IsTextCompletionEnabled in code or XAML before, since the behavior stays the same.</p>  <p><img src="http://media.jeff.wilcox.name/blog/AutoComplete/itce.png" /> </p>  <h4>API updates</h4>  <p>To better resemble other common items controls, we're corrected the names of some of the APIs and events:</p>  <ul>   <li>The <strong>SelectedItemChanged</strong> event has been renamed to <strong>SelectionChanged</strong>. Along with that, the protected <strong>OnSelectedItemChanged </strong>method has been renamed to <strong>OnSelectionChanged</strong></li>    <li>A read-only CLR property named <strong>IsEditable</strong> was added, whose value is always 'True'</li>    <li>Additions to the <strong>AutoCompleteSearchMode</strong> enum, covered below.</li> </ul>  <h4>Automation support</h4>  <p>User interface automation peers were added for the AutoCompleteBox control. This supports accessibility tools, including screen readers when using Windows and Internet Explorer. The <strong>ISelectionAdapter</strong> interface and <strong>SelectorSelectionAdapter</strong> types were updated to expose a <strong>CreateAutomationPeer</strong> method.</p>  <h4>Community feedback</h4>  <p>We evaluated all of the great feedback observed in the forums, in CodePlex work items, and were able to incorporate that into the changes for the release. Specifically,</p>  <ul>   <li>Issue #1027: <a href="http://www.codeplex.com/Silverlight/WorkItem/View.aspx?WorkItemId=1027">Add ObservableCollection support</a></li>    <li>Issue #1031: <a href="http://www.codeplex.com/Silverlight/WorkItem/View.aspx?WorkItemId=1031">IsTextCompletionEnabled should default to False</a></li>    <li>Issue #1035: <a href="http://www.codeplex.com/Silverlight/WorkItem/View.aspx?WorkItemId=1035">Text updates should always update SelectedItem, if present in Items</a></li> </ul>  <h4>Vote to make SelectedItem settable</h4>  <p>There's also been some activity in the community that has not yet been implemented by the control, I'd like to point people to one in particular:</p>  <p>CodePlex work item #117, &quot;<a href="http://www.codeplex.com/Silverlight/WorkItem/View.aspx?WorkItemId=1117">Make SelectedItem property settable</a>,&quot; originated in our Silverlight.net forum and is now receiving votes. The request is that the read-only behavior be changed, so that bindings can be used.</p>  <p>I'm supportive of this change, but would love to see the vote count move higher - we use customer voting to help triage and make the call on what to fix for the next release.</p>  <p>So, get out and vote!</p>  <h4>Now a stable control</h4>  <p>The control moves into the <a href="http://www.codeplex.com/Silverlight/Wiki/View.aspx?title=Quality%20Bands&amp;referringTitle=Home&amp;ANCHOR#Stable">Stable quality band</a> with the December release. You can expect that the control will meet the vast majority of usage scenarios. As a stable component, it may experience a very small number of API or behavior changes if feedback demands it.</p>  <p>One note in particular, the binding and item-to-text conversion semantics of the control are heavily limited by the Silverlight 2 binding system: without accessible BindingExpression support in the platform, the performance penalty of introducing bindings would be too great. The current Converter + ToString logic will remain for the Silverlight 2 release of the control, unless there is an elegant workaround that magically appears.</p>  <h4>Ordinal string comparisons added to the AutoCompleteSearchMode enumeration</h4>  <p>Ordinal string comparisons were added to the <strong>AutoCompleteSearchMode</strong> enumeration. The standard StartsWith and Contains filters were moved from using ordinal comparisons to using the current culture.</p>  <p>This opens up new scenarios for developers who have a specific comparison in mind. You can, as always, provide your own TextFilter lambda expression or even ItemFilter expression, too.</p>  <p>The current set of enumeration values for the SearchMode property of the control, straight from the source:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:7fdecb7b-9361-415b-b944-868e06a7c711" class="wlWriterSmartContent"><pre class="c-sharp" name="code">// (c) Copyright Microsoft Corporation.
+// This source is subject to the Microsoft Public License (Ms-PL).
+// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+// All other rights reserved.
+
+using System;
+
+namespace Microsoft.Windows.Controls
+{
+    // When adding to this enum, please update the OnSearchModePropertyChanged
+    // in the AutoCompleteBox class that is used for validation.
+
+    /// &lt;summary&gt;
+    /// Represents the different types of built-in search modes available to 
+    /// the AutoCompleteBox control.
+    /// &lt;/summary&gt;
+    /// &lt;QualityBand&gt;Stable&lt;/QualityBand&gt;
+    public enum AutoCompleteSearchMode
+    {
+        /// &lt;summary&gt;
+        /// No search mode, all elements in a collection will be included in 
+        /// the results. This value would be used for a data source.
+        /// &lt;/summary&gt;
+        None = 0,
+
+        /// &lt;summary&gt;
+        /// Matches the text value to start of the string, a current culture 
+        /// case insensitive comparison is used.
+        /// &lt;/summary&gt;
+        StartsWith = 1,
+
+        /// &lt;summary&gt;
+        /// Matches the text value to start of the string, the current culture 
+        /// comparison is used.
+        /// &lt;/summary&gt;
+        StartsWithCaseSensitive = 2,
+
+        /// &lt;summary&gt;
+        /// Matches the text value to start of the string, an ordinal comparison
+        /// is used.
+        /// &lt;/summary&gt;
+        StartsWithOrdinal = 3,
+
+        /// &lt;summary&gt;
+        /// Matches the text value to start of the string, an ordinal, case
+        /// insensitive comparison is used.
+        /// &lt;/summary&gt;
+        StartsWithOrdinalCaseSensitive = 4,
+
+        /// &lt;summary&gt;
+        /// Matches the text value if it is contained inside the string, a case 
+        /// insensitive comparison is used. Uses the current culture value.
+        /// &lt;/summary&gt;
+        Contains = 5,
+
+        /// &lt;summary&gt;
+        /// Matches the text value if it is contained inside the string. Uses 
+        /// the current culture, case-sensitive comparison.
+        /// &lt;/summary&gt;
+        ContainsCaseSensitive = 6,
+
+        /// &lt;summary&gt;
+        /// Matches the text value if it is contained inside the string. Uses 
+        /// an ordinal comparison.
+        /// &lt;/summary&gt;
+        ContainsOrdinal = 7,
+
+        /// &lt;summary&gt;
+        /// Matches the text value if it is contained inside the string. Uses 
+        /// an ordinal comparison that is case-sensitive.
+        /// &lt;/summary&gt;
+        ContainsOrdinalCaseSensitive = 8,
+
+        /// &lt;summary&gt;
+        /// Matches that the text if it's value equals the string, the current
+        /// culture, case insensitive comparison is used.
+        /// &lt;/summary&gt;
+        Equals = 9,
+
+        /// &lt;summary&gt;
+        /// Matches that the text if it's value equals the string using the 
+        /// current culture's case sensitive comparison operator.
+        /// &lt;/summary&gt;
+        EqualsCaseSensitive = 10,
+
+        /// &lt;summary&gt;
+        /// Matches that the text if it's value equals the string using an 
+        /// ordinal case insensitive comparison operator.
+        /// &lt;/summary&gt;
+        EqualsOrdinal = 11,
+
+        /// &lt;summary&gt;
+        /// Matches that the text if it's value equals the string using an 
+        /// ordinal case sensitive comparison operator.
+        /// &lt;/summary&gt;
+        EqualsOrdinalCaseSensitive = 12,
+
+        /// &lt;summary&gt;
+        /// Custom search mode: setting any of the item or text delegate 
+        /// dependency properties and this value will enable non-standard, 
+        /// custom functions and lambdas to be used.
+        /// &lt;/summary&gt;
+        Custom = 13,
+    }
+}</pre></div>
+
+<h3>Updating your existing applications</h3>
+
+<p>This is a quick guide, should be pretty easy:</p>
+
+<ul>
+  <li>If you've set IsTextCompletionEnabled for your controls in code or XAML, no changes are necessary. But if you're using the default, double-check that you're OK with the new default value of 'False.'</li>
+
+  <li>Rename anything that uses SelectedItemChanged event, it is now SelectionChanged</li>
+
+  <li>If you've created or extended a selection adapter, make sure to add automation peer support (a CreateAutomationPeer method) - you can return a real automation peer (ideally), or, to get unblocked, simply return null.</li>
+</ul>
+
+<h3>Download the December 2008 release of the Silverlight Toolkit</h3>
+
+<p><img src="http://media.jeff.wilcox.name/blog/view/Silverlight-Toolkit.png" /> </p>
+
+<ul>
+  <li><a href="http://www.codeplex.com/Release/ProjectReleases.aspx?ProjectName=Silverlight&amp;ReleaseId=19172">Binaries, samples and documentation</a> (10 MB)</li>
+
+  <li><a href="http://www.codeplex.com/Release/ProjectReleases.aspx?ProjectName=Silverlight&amp;ReleaseId=19172">Binaries, samples, documentation, unit tests and complete source code</a> (11 MB)</li>
+
+  <li><a href="http://silverlight.net/samples/sl2/toolkitcontrolsamples/run/default.html">Explore the updated, combined sample explorer</a></li>
+
+  <li><a href="http://feeds.feedburner.com/SilverlightToolkitTeamMembersBlogFeeds">Subscribe to the syndicated feed of all team members</a> (RSS)</li>
+</ul>
+
+<p>Hope you're enjoying the control, and the toolkit as a whole! Let me know if you have any feedback.</p>

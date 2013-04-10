@@ -1,0 +1,290 @@
+---
+layout: post
+comments: true
+title: Creating a highlighting text block for Silverlight 3, revisited
+wordpress_id: 446
+wordpress_url: http://www.jeff.wilcox.name/2009/08/sl3-highlighting-text-block/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+imported_link_categories: []
+tags: []
+---
+<p>Now that Silverlight 3 has shipped, I’d like to take a moment to revisit the highlighting AutoCompleteBox control that I <a href="http://www.jeff.wilcox.name/2008/11/highlighting-autocompletebox/">blogged about back</a> in November of ‘08, and again <a href="http://www.jeff.wilcox.name/2009/03/sl3-highlighting-autocompletebox/">earlier this year</a>, thanks to tooling improvements: <a href="http://www.microsoft.com/expression/products/Blend_Overview.aspx">Expression Blend 3</a> is out, and the Visual Studio 2008 tools have changed as well. There are new project and item templates this time around.</p>  <p>This short post re-creates the HighlightingTextBlock control, using the <strong>Templated Silverlight Control</strong> item template that ships in the Silverlight Tools. When I last blogged about the highlighting text block control, I had to describe in detail how to go about creating a library, creating the default control styles file (Generic.xaml), setting properties, and putting it all together.</p>  <p>Now it is a lot easier! Using the advanced copy-and-paste coding technique, you can create and build this control in about 2 minutes.</p>  <h3>Create a new Silverlight Class Library Project</h3>  <ul>   <li>Open Visual Studio 2008 SP1 </li>    <li>File | New Project, Visual C# | Silverlight | Silverlight Class Library project type </li> </ul>  <h3>Remove Class1.cs</h3>  <p>The default class file, Class1.cs, can be removed. Right-click on it in the Solution Explorer and select the ‘Delete’ menu item.</p>  <h3>Use the ‘Silverlight Templated Control’ template</h3>  <p>The new template is great since it creates a simple class for the control, sets up the default style key, and then creates/modifies the Generic.xaml theme file for the library, setting all the right properties along the way.</p>  <ul>   <li>Click on the Project menu (or right-click on the project in the Solution Explorer) </li>    <li>Select ‘Add New Item’ </li>    <li>Use the ‘Silverlight Templated Control’ template </li>    <li>Change the name from TemplatedControl1.cs to HighlightingTextBlock.cs </li>    <li>Click ‘Add’ </li> </ul>  <p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="Templated" border="0" alt="Templated" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/08/Templated.png" width="541" height="324" /> </p>  <h3>Insert the control code</h3>  <p>Borrowed from my previous post on the topic, just paste this class’ code into the namespace, replacing what is already there:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1182d2c0-4aa2-4496-9350-0f266d7158b6" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">/// &lt;summary&gt;   
+    /// A specialized highlighting text block control.   
+    /// &lt;/summary&gt;   
+    public partial class HighlightingTextBlock : Control
+    {
+        /// &lt;summary&gt;   
+        /// The name of the TextBlock part.   
+        /// &lt;/summary&gt;   
+        private string TextBlockName = "Text";
+
+        /// &lt;summary&gt;   
+        /// Gets or sets the text block reference.   
+        /// &lt;/summary&gt;   
+        private TextBlock TextBlock { get; set; }
+
+        /// &lt;summary&gt;   
+        /// Gets or sets the inlines list.   
+        /// &lt;/summary&gt;   
+        private List&lt;Inline&gt; Inlines { get; set; }
+
+        #region public string Text
+        /// &lt;summary&gt;   
+        /// Gets or sets the contents of the TextBox.   
+        /// &lt;/summary&gt;   
+        public string Text
+        {
+            get { return GetValue(TextProperty) as string; }
+            set { SetValue(TextProperty, value); }
+        }
+
+        /// &lt;summary&gt;   
+        /// Identifies the Text dependency property.   
+        /// &lt;/summary&gt;   
+        public static readonly DependencyProperty TextProperty =
+            DependencyProperty.Register(
+                "Text",
+                typeof(string),
+                typeof(HighlightingTextBlock),
+                new PropertyMetadata(OnTextPropertyChanged));
+
+        /// &lt;summary&gt;   
+        /// TextProperty property changed handler.   
+        /// &lt;/summary&gt;   
+        /// &lt;param name="d"&gt;AutoCompleteBox that changed its Text.&lt;/param&gt;   
+        /// &lt;param name="e"&gt;Event arguments.&lt;/param&gt;   
+        private static void OnTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            HighlightingTextBlock source = d as HighlightingTextBlock;
+
+            if (source.TextBlock != null)
+            {
+                while (source.TextBlock.Inlines.Count &gt; 0)
+                {
+                    source.TextBlock.Inlines.RemoveAt(0);
+                }
+                string value = e.NewValue as string;
+                source.Inlines = new List&lt;Inline&gt;();
+                if (value != null)
+                {
+                    for (int i = 0; i &lt; value.Length; i++)
+                    {
+                        Inline run = new Run { Text = value[i].ToString() };
+                        source.TextBlock.Inlines.Add(run);
+                        source.Inlines.Add(run);
+                    }
+
+                    source.ApplyHighlighting();
+                }
+            }
+        }
+
+        #endregion public string Text
+
+        #region public string HighlightText
+        /// &lt;summary&gt;   
+        /// Gets or sets the highlighted text.   
+        /// &lt;/summary&gt;   
+        public string HighlightText
+        {
+            get { return GetValue(HighlightTextProperty) as string; }
+            set { SetValue(HighlightTextProperty, value); }
+        }
+
+        /// &lt;summary&gt;   
+        /// Identifies the HighlightText dependency property.   
+        /// &lt;/summary&gt;   
+        public static readonly DependencyProperty HighlightTextProperty =
+            DependencyProperty.Register(
+                "HighlightText",
+                typeof(string),
+                typeof(HighlightingTextBlock),
+                new PropertyMetadata(OnHighlightTextPropertyChanged));
+
+        /// &lt;summary&gt;   
+        /// HighlightText property changed handler.   
+        /// &lt;/summary&gt;   
+        /// &lt;param name="d"&gt;AutoCompleteBox that changed its HighlightText.&lt;/param&gt;   
+        /// &lt;param name="e"&gt;Event arguments.&lt;/param&gt;   
+        private static void OnHighlightTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            HighlightingTextBlock source = d as HighlightingTextBlock;
+            source.ApplyHighlighting();
+        }
+
+        #endregion public string HighlightText
+
+        #region public Brush HighlightBrush
+        /// &lt;summary&gt;   
+        /// Gets or sets the highlight brush.   
+        /// &lt;/summary&gt;   
+        public Brush HighlightBrush
+        {
+            get { return GetValue(HighlightBrushProperty) as Brush; }
+            set { SetValue(HighlightBrushProperty, value); }
+        }
+
+        /// &lt;summary&gt;   
+        /// Identifies the HighlightBrush dependency property.   
+        /// &lt;/summary&gt;   
+        public static readonly DependencyProperty HighlightBrushProperty =
+            DependencyProperty.Register(
+                "HighlightBrush",
+                typeof(Brush),
+                typeof(HighlightingTextBlock),
+                new PropertyMetadata(null, OnHighlightBrushPropertyChanged));
+
+        /// &lt;summary&gt;   
+        /// HighlightBrushProperty property changed handler.   
+        /// &lt;/summary&gt;   
+        /// &lt;param name="d"&gt;HighlightingTextBlock that changed its HighlightBrush.&lt;/param&gt;   
+        /// &lt;param name="e"&gt;Event arguments.&lt;/param&gt;   
+        private static void OnHighlightBrushPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            HighlightingTextBlock source = d as HighlightingTextBlock;
+            source.ApplyHighlighting();
+        }
+        #endregion public Brush HighlightBrush
+
+        #region public FontWeight HighlightFontWeight
+        /// &lt;summary&gt;   
+        /// Gets or sets the font weight used on highlighted text.   
+        /// &lt;/summary&gt;   
+        public FontWeight HighlightFontWeight
+        {
+            get { return (FontWeight)GetValue(HighlightFontWeightProperty); }
+            set { SetValue(HighlightFontWeightProperty, value); }
+        }
+
+        /// &lt;summary&gt;   
+        /// Identifies the HighlightFontWeight dependency property.   
+        /// &lt;/summary&gt;   
+        public static readonly DependencyProperty HighlightFontWeightProperty =
+            DependencyProperty.Register(
+                "HighlightFontWeight",
+                typeof(FontWeight),
+                typeof(HighlightingTextBlock),
+                new PropertyMetadata(FontWeights.Normal, OnHighlightFontWeightPropertyChanged));
+
+        /// &lt;summary&gt;   
+        /// HighlightFontWeightProperty property changed handler.   
+        /// &lt;/summary&gt;   
+        /// &lt;param name="d"&gt;HighlightingTextBlock that changed its HighlightFontWeight.&lt;/param&gt;   
+        /// &lt;param name="e"&gt;Event arguments.&lt;/param&gt;   
+        private static void OnHighlightFontWeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            HighlightingTextBlock source = d as HighlightingTextBlock;
+            FontWeight value = (FontWeight)e.NewValue;
+        }
+        #endregion public FontWeight HighlightFontWeight
+
+        /// &lt;summary&gt;   
+        /// Initializes a new HighlightingTextBlock class.   
+        /// &lt;/summary&gt;   
+        public HighlightingTextBlock()
+        {
+            DefaultStyleKey = typeof(HighlightingTextBlock);
+            Loaded += OnLoaded;
+        }
+
+        /// &lt;summary&gt;   
+        /// Loaded method handler.   
+        /// &lt;/summary&gt;   
+        /// &lt;param name="sender"&gt;The loaded event.&lt;/param&gt;   
+        /// &lt;param name="e"&gt;The event data.&lt;/param&gt;   
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            OnApplyTemplate();
+        }
+
+        /// &lt;summary&gt;   
+        /// Override the apply template handler.   
+        /// &lt;/summary&gt;   
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+
+            // Grab the template part   
+            TextBlock = GetTemplateChild(TextBlockName) as TextBlock;
+
+            // Re-apply the text value   
+            string text = Text;
+            Text = null;
+            Text = text;
+        }
+
+        /// &lt;summary&gt;   
+        /// Apply the visual highlighting.   
+        /// &lt;/summary&gt;   
+        private void ApplyHighlighting()
+        {
+            if (Inlines == null)
+            {
+                return;
+            }
+
+            string text = Text ?? string.Empty;
+            string highlight = HighlightText ?? string.Empty;
+            StringComparison compare = StringComparison.OrdinalIgnoreCase;
+
+            int cur = 0;
+            while (cur &lt; text.Length)
+            {
+                int i = highlight.Length == 0 ? -1 : text.IndexOf(highlight, cur, compare);
+                i = i &lt; 0 ? text.Length : i;
+
+                // Clear   
+                while (cur &lt; i && cur &lt; text.Length)
+                {
+                    Inlines[cur].Foreground = Foreground;
+                    Inlines[cur].FontWeight = FontWeight;
+                    cur++;
+                }
+
+                // Highlight   
+                int start = cur;
+                while (cur &lt; start + highlight.Length && cur &lt; text.Length)
+                {
+                    Inlines[cur].Foreground = HighlightBrush;
+                    Inlines[cur].FontWeight = HighlightFontWeight;
+                    cur++;
+                }
+            }
+        }
+    }</pre></div>
+
+<p>Then, refactor the Using statements to make the code a little crisper:</p>
+
+<ul>
+  <li>Right-click on one of the ‘using’ statements at the top of the file </li>
+
+  <li>Select ‘Organize Usings’, then ‘Remove and Sort’</li>
+</ul>
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="RefactorUsings" border="0" alt="RefactorUsings" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/08/RefactorUsings.png" width="409" height="374" /> </p>
+
+<h3>Define the default control style</h3>
+
+<p>Now, Generic.xaml is already created in the Themes folder – so go ahead and open it, then use this for the control template. Our default style is simple: sets the default highlight brush color, plus a single template part – a text block named ‘Text’.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:05362e20-1d92-4755-873c-e774656b7c75" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;Style TargetType="local:HighlightingTextBlock"&gt;
+        &lt;Setter Property="HighlightBrush" Value="Blue" /&gt;
+        &lt;Setter Property="Template"&gt;
+            &lt;Setter.Value&gt;
+                &lt;ControlTemplate TargetType="local:HighlightingTextBlock"&gt;
+                    &lt;TextBlock x:Name="Text" /&gt;
+                &lt;/ControlTemplate&gt;
+            &lt;/Setter.Value&gt;
+        &lt;/Setter&gt;
+    &lt;/Style&gt;</pre></div>
+
+<p>Build the project, and you’re good to go and use that control now. Hope this helps!</p>

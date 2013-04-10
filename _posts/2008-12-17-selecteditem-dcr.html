@@ -1,0 +1,29 @@
+---
+layout: post
+comments: true
+title: AutoCompleteBox - SelectedItem design change - source code download
+wordpress_id: 208
+wordpress_url: http://www.jeff.wilcox.name/2008/12/selecteditem-dcr/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+imported_link_categories: []
+tags:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: autocompletebox
+  slug: autocompletebox
+  autoslug: autocompletebox
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+---
+<p>One piece of feedback that has been recently made clear is that of the community on the AutoCompleteBox's SelectedItem property. Thanks for letting us know that this is important. In this post, I'm providing a fix for this new, and admittedly better, behavior.</p>  <p>The request started on the <a href="http://silverlight.net/forums/35.aspx">Silverlight.net forums</a> and then was opened up as a feature request on the <a href="http://www.codeplex.com/Silverlight/WorkItem/List.aspx">CodePlex issue tracker</a> for the toolkit. This is the ideal feedback mechanism since it is easy to track, visible, and the voting mechanism really helps us prioritize our team's work. We actually even synchronize our internal TFS bug database with the CodePlex work items, so it's pretty slick.</p>  <p>As released in November and December, the property was read-only, lending to occassionally annoying use of the control. Master/details displays, typical data-driven forms, and anywhere that you wanted to set this value in code or through a binding would end up running into an exception like this:</p>  <p><img alt="Sample exception message from before this design change." src="http://media.jeff.wilcox.name/blog/AutoComplete/NotSettable.png" /> </p>  <p>This change was checked into our TFS server yesterday, and will be made available on CodePlex and in the toolkit when we next release. For folks who would like to have this fix immediately, I am making available the changes and the updated <a href="http://media.jeff.wilcox.name/blog/AutoComplete/AutoCompleteBox.cs">AutoCompleteBox.cs</a> file (plus associated unit tests).</p>  <p>With the updated file, when the SelectedItem property is set, the Text will be updated as appropriate to match the item. The CLR setter is not public, and the dependency property can also be updated. Let the celebration commence!</p>  <h3>Control &amp; test source download</h3>  <p><strong>Download the updated source file:</strong></p>  <ul>   <li><a href="http://media.jeff.wilcox.name/blog/AutoComplete/AutoCompleteBox.cs">AutoCompleteBox.cs</a> with the DCR (design change request) implemented</li>    <li><a href="http://media.jeff.wilcox.name/blog/AutoComplete/AutoCompleteBoxTest.cs">AutoCompleteBoxTest.cs</a> (updated unit test class)</li> </ul>  <p><strong>Updating and building the Microsoft.Windows.Controls.dll file:</strong></p>  <ul>   <li>Download the source package for the December toolkit</li>    <li>Overwrite the AutoCompleteBox.cs with the updated source file</li>    <li>Rebuild the controls project by opening up the 'Visual Studio 2008 Command Prompt' window, navigating to the Source folder of the extracted download, and typing 'msbuild'</li> </ul>  <h3>Download the December 2008 release of the Silverlight Toolkit</h3>  <p><img src="http://media.jeff.wilcox.name/blog/view/Silverlight-Toolkit.png" /></p>  <p><em>Important: These downloads do <strong>not</strong> contain the fix described in this blog post. You'll need to manually overwrite the AutoCompleteBox.cs file and rebuild per the instructions.</em></p>  <ul>   <li><a href="http://www.codeplex.com/Release/ProjectReleases.aspx?ProjectName=Silverlight&amp;ReleaseId=19172">Binaries, samples and documentation</a> (10 MB) </li>    <li><a href="http://www.codeplex.com/Release/ProjectReleases.aspx?ProjectName=Silverlight&amp;ReleaseId=19172">Binaries, samples, documentation, unit tests and complete source code</a> (11 MB) </li>    <li><a href="http://silverlight.net/samples/sl2/toolkitcontrolsamples/run/default.html">Explore the updated, combined sample explorer</a> </li>    <li><a href="http://feeds.feedburner.com/SilverlightToolkitTeamMembersBlogFeeds">Subscribe to the syndicated feed of all team members</a> (RSS)</li> </ul>

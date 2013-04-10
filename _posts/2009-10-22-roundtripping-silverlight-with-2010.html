@@ -1,0 +1,27 @@
+---
+layout: post
+comments: true
+title: Round-tripping Silverlight 3 projects with Visual Studio 2008 and Visual Studio
+  2010
+excerpt: Here's a simple tool that I use to round-trip Silverlight solutions and projects
+  between Visual Studio 2008 and Visual Studio 2010 Beta. Use it at your own risk,
+  but enjoy!
+wordpress_id: 483
+wordpress_url: http://www.jeff.wilcox.name/2009/10/roundtripping-silverlight-with-2010/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+- title: infrastructure
+  slug: infrastructure
+  autoslug: infrastructure
+imported_link_categories: []
+tags: []
+---
+<p>Now that Visual Studio 2010 Beta 2 is out, it is a lot of fun to use the fully interactive design surface for Silverlight. However, it comes at a cost: you need to use the conversion wizard to bring your Visual Studio 2008 solutions and projects up to the expected format for the designer tools and new build environment.</p>  <p>If you deliver your source ultimately to a Visual Studio 2008-targeted source project, or have issue adopting a beta product until its release, this is a pain.</p>  <p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2009/10/ThereAndBackAgain.zip"><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VsConversion" border="0" alt="VsConversion" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/10/VsConversion.png" width="680" height="379" /></a> </p>  <p>I wrote a tool last month for round-trip converting Silverlight-specific solutions and .csproj files between the versions, and want to share it as-is, with no warranty, hoping someone finds it useful.</p>  <p>Here are two potential solutions for dealing with the conversion issue, actually the second builds from the first.</p>  <h3>Use Source Control</h3>  <p>If your project is not churning that often in added and removed files, source control is the easiest solution to this problem!</p>  <ul>   <li>Open your solution in Visual Studio 2010</li>    <li>Allow the conversion wizard to complete</li>    <li>When checking in, carefully revert the .csproj and .sln files (assuming no changes to their contents)</li> </ul>  <p>Easy enough. But not crisp enough!</p>  <h3>Use my hacky program</h3>  <p>Now assuming you are already using source control, then you can consider using my script/tool for performing the round-trip conversion. You <strong>still</strong> want to have everything in source control – you just never know.</p>  <h4>Before we start</h4>  <ul>   <li>This program will work on the <strong>current directory</strong> and <strong>all subdirectories</strong></li>    <li>It will <strong>modify read-only files</strong></li>    <li>It will consider <strong>all .csproj and .sln files</strong>, potentially destroying non-Silverlight project files – so use caution if the current directory or sub-directory contains other project types</li>    <li>This is <strong>C#-only</strong>, though a similar exercise for .vbproj files would not be that bad</li>    <li>This will <strong>delete</strong> .suo and .user files that may contain version-specific binary data, so you may lose your local settings (such as the current startup project you have set locally)</li>    <li>This ‘works on my machine’ and I am not responsible for data loss in any way</li>    <li>This code is not efficient nor elegant. Get over it! I did!</li> </ul>  <h4>Download the binary and source</h4>  <p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2009/10/ThereAndBackAgain.zip"><strong>ThereAndBackAgain.zip</strong></a> [21.8K, Zip]</p>  <p>I have included the source, Ms-PL licensed, because though awful, maybe someone can do something much better with it!</p>  <h4>Convert all C# projects and solutions to Visual Studio 2010</h4>  <p>Move into the root directory of your solution in a command prompt window, and provide the path to the ThereAndBackAgain.exe file. It will recurse the current directory.</p>  <blockquote>   <p>pushd c:\myEnlistment\myProject\Silverlight\</p>    <p>c:\tools\ThereAndBackAgain.exe <strong>2010</strong> &lt;enter&gt;</p> </blockquote>  <p>You’ll see a quick list of what is changed. You can run this on a directory tree that is already converted, and it should not be affected.</p>  <h4>Convert back to Visual Studio 2008</h4>  <p>Pretty similar:</p>  <blockquote>   <p>pushd c:\myEnlistment\myProject\Silverlight\</p>    <p>c:\tools\ThereAndBackAgain.exe <strong>2008</strong> &lt;enter&gt;</p> </blockquote>  <h4>Final note</h4>  <p>This works for me. Uh and so no promises beyond that. I <strong>literally just diff’d a new VS 08 and VS 2010 Silverlight project and wrote something to move between the two. </strong>Nothing fancy.</p>  <p><em>If you go this route, remember to convert back your projects and solutions using the tool before checking in! You don’t want to break the build, or a teammates’ development experience.</em></p>  <p>Hope this helps. Again, I wrote this script specifically to meet my needs, but it is FAR from production-ready. You are on your own, feel free to take and run with this.</p>

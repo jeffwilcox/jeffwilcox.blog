@@ -1,0 +1,30 @@
+---
+layout: post
+comments: true
+title: Renaming Xap to Zip is dead. Long live renaming Xap to Zip!
+wordpress_id: 150
+wordpress_url: http://www.jeff.wilcox.name/2008/11/01/long-live-renaming/
+imported_categories:
+- title: software-development
+  slug: dev
+  autoslug: software-development
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: vista
+  slug: vista
+  autoslug: vista
+- title: windows
+  slug: windows
+  autoslug: windows
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+imported_link_categories: []
+tags: []
+---
+<p>Teach Windows to treat Xap files as first class compressed folders with this simple registry entry. After applying, you'll be able to open .Xap files and view their contents, and get the same shell experience as Zips have:</p>  <p><img src="http://media.jeff.wilcox.name/blog/view/XapExtension.png" /> </p>  <p>If you've ever had to do the &quot;rename .Xap to .Zip&quot; routine while doing Silverlight development, then you'll enjoy this fix. The entry also sets the MIME type of .Xaps to &quot;application/x-silverlight-app&quot;, so it relates to my <a href="http://www.jeff.wilcox.name/2008/11/01/xap-mime-type/">earlier post about the MIME type</a>, too.</p>  <p>I've been using this on my Windows Vista and Windows Server 2008 workstation, but have not tried it on XP.</p>  
+
+<p><strong>XNA users:</strong> <a href="http://blog.j-maxx.net/default.aspx">Jeff Klawiter</a> pointed out in the comments that part of the XNA Framework uses .xap for its project file extension. So, beware. Sucks that there is overlap.</p>
+
+<p><strong>Disclaimer: Use this registry file at your own risk. I am not responsible in any way for the results. As developers like to say, &quot;it works great on my machine!&quot;</strong></p>  <p>Download and run this registry patch: <a href="http://media.jeff.wilcox.name/blog/view/silverlight/xap.reg">Xap.reg</a></p>  <p>Here's the contents of the registry patch:</p>  <blockquote>   <p>Windows Registry Editor Version 5.00 </p>    <p>[HKEY_CLASSES_ROOT\.xap]     <br />&quot;PerceivedType&quot;=&quot;compressed&quot;      <br />&quot;Content Type&quot;=&quot;application/x-silverlight-app&quot;      <br />@=&quot;CompressedFolder&quot; </p>    <p>[HKEY_CLASSES_ROOT\.xap\CompressedFolder] </p>    <p>[HKEY_CLASSES_ROOT\.xap\OpenWithProgids]     <br />&quot;CompressedFolder&quot;=&quot;&quot; </p>    <p>[HKEY_CLASSES_ROOT\.xap\PersistentHandler]     <br />@=&quot;{098f2470-bae0-11cd-b579-08002b30bfeb}&quot;</p> </blockquote>  <p>The experience before the patch:</p>  <p><img src="http://media.jeff.wilcox.name/blog/view/XapExtensionBefore.png" /> </p>  <p>And after:</p>  <p><img src="http://media.jeff.wilcox.name/blog/view/XapExtensionAfter.png" /> </p>  <p>Hope this helps!</p>

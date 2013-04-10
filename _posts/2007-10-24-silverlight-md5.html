@@ -1,0 +1,54 @@
+---
+layout: post
+comments: true
+title: Creating MD5 hash strings in Silverlight v1.1
+wordpress_id: 23
+wordpress_url: http://linux.jeff.wilcox.name/2007/10/24/silverlight-md5/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: software-development
+  slug: dev
+  autoslug: software-development
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+imported_link_categories:
+- title: msft-resources
+  slug: msft
+  autoslug: msft-resources
+tags:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: c#
+  slug: c
+  autoslug: c#
+- title: software-development
+  slug: software-development
+  autoslug: software-development
+- title: web-development
+  slug: web-development
+  autoslug: web-development
+---
+In the Silverlight v1.1 Alpha CTP bits, there's only the APIs and libraries that are necessary and useful for the rich web client. While working on implementing the <a href="http://flickr.com/services/">Flickr web services API</a> within a .NET-enabled Silverlight sample application, I found that the MD5 algorithm isn't available within the cryptography APIs. Like many REST-based web services, the simple Flickr API uses MD5 along with a form of "signing" with a known secret.
+
+
+
+A quick search on the web revealed a nice managed code implementation of MD5 that doesn't use any unsafe calls, so it was a cinch to get it running within my managed app. Thought I'd share the file here: <a href="http://www.jeff.wilcox.name/blog/code/Md5.cs.txt">Md5.cs</a>. The excellent MD5 implementation was created by the <a href="http://www.flowgroup.fr/en/kb/technical/md5.aspx">GL Conseil/Flow Group SAS</a>; they did this work to enable MD5 within the Compact Framework 2.0.
+
+
+
+Calling the function is very simple:
+
+<tt><span style="color: #008080">MD5CryptoServiceProvider</span>.GetMd5String(<span style="color: #800000">"This is what I want a hash of!"</span>);</tt>
+
+Hope this helps!
+
+
+
+<a href="http://www.jeff.wilcox.name/blog/code/Md5.cs.txt">Download "Md5.cs" as text</a>

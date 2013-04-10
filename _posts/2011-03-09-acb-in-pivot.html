@@ -1,0 +1,359 @@
+---
+layout: post
+comments: true
+title: Using AutoCompleteBox in a Windows Phone Panorama or Pivot item
+wordpress_id: 779
+wordpress_url: http://www.jeff.wilcox.name/?p=779
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+- title: windows-phone
+  slug: windows-phone
+  autoslug: windows-phone
+imported_link_categories: []
+tags: []
+---
+<p>With some quick re-templating action, you can use AutoCompleteBox from the toolkit in a Panorama or Pivot control page for Windows Phone. This is one of the key customer asks from folks developing WP7 apps that I hear often.</p>  <p>The good news is that this can be accomplished with simple re-templating of the AutoCompleteBox control, and a little visual trickery.</p>  <p>The bad news is that I’m not sure that we will be able to address the CodePlex work item to officially support this, <a href="http://silverlight.codeplex.com/workitem/7574">work item 7574</a> with 21 votes so far (a popular issue!), because of the technical limitations at play here: the control itself uses a child Popup in the template to display the results, showing them on top of your page and content. When used in a Panorama or Pivot, there are issues here where the Popup doesn’t properly align on the page, or work at all.</p>  <p>There are three steps to doing this:</p>  <ol>   <li>Making sure that you have a Visibility converter available in your app (most already have this) </li>    <li>Designing the visuals with grids to include a placeholder and a spanning content area on top of your pivot/panorama items’ content </li>    <li>Retemplating your AutoCompleteBox when used </li> </ol>  <p>For this example, I’m starting with the standard Windows Phone Pivot Application template so that you can follow along. This is best described as <strong>“hack quality</strong>” so proceed at your own risk. I want to unblock people that believe this is not possible, so here it is.</p>  <p>Also, with this workaround, the Visual Studio design surface is unable to continue working due to an issue resolving RelativeSource at runtime. You’ll want to comment out some of it while working on your design.</p>  <h2>Visual trickery, illustrated</h2>  <p>The trick to this re-template is to <strong>remove the popup</strong> from the template. Instead, we need to “fake” the popup experience by overlaying the results of the AutoCompleteBox (when searching) on top of the visuals in the PivotItem or PanoramaItem.</p>  <p>As always, I believe re-templating is a core Silverlight development technique. Though often a last resort before modifying the code of controls or building your own, it is a super important concept to master.</p>  <p>To do this, start with a standard Pivot control or Panorama item template and make these changes to the item that will contain your search box.</p>  <ul>   <li>The root element of the item must be a Grid, not a StackPanel </li>    <li>It must define at a minimum 2 rows: the first row has a hard-coded height of 72 that will represent the search/text box of the AutoCompleteBox, effectively a “placeholder” </li>    <li>The last visual needs to be another Grid, with Grid.Row set to 0, and the RowSpan to span the entire number of rows defined in the child of the pivot/panorama item. This is to fake the effect of a “popup” by allowing visuals to be on top. </li> </ul>  <p>I understand this concept can be a little confusing, which is yet another reason we can’t really just change the template for all AutoCompleteBox examples. I might add this template to the sample project in the future, however!</p>  <p>The reason the last item needs to be the “overlay” grid is that XAML at the bottom of an item has a higher z-order than the rest, acting similar to a popup.</p>  <p>So visually, we define first a basic grid in the item.</p>  <p>The XAML might look like this now – you can follow along in the default pivot app project to see what’s different.</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:58525722-4051-44a1-9c00-cd2aee05d868" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;controls:PivotItem Header="first"&gt;
+    &lt;Grid&gt;
+        &lt;Grid.RowDefinitions&gt;
+            &lt;RowDefinition Height="72"/&gt;
+            &lt;RowDefinition/&gt;
+        &lt;/Grid.RowDefinitions&gt;
+
+        &lt;!-- Row 0 is a 'placeholder' for the AutoCompleteBox control --&gt;
+
+        &lt;ListBox 
+            Grid.Row="1"
+            x:Name="FirstListBox" Margin="0,0,-12,0" ItemsSource="{Binding Items}"&gt;
+            &lt;ListBox.ItemTemplate&gt;
+                &lt;DataTemplate&gt;
+                    &lt;StackPanel Margin="0,0,0,17" Width="432"&gt;
+                        &lt;TextBlock Text="{Binding LineOne}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}"/&gt;
+                        &lt;TextBlock Text="{Binding LineTwo}" TextWrapping="Wrap" Margin="12,-6,12,0" Style="{StaticResource PhoneTextSubtleStyle}"/&gt;
+                    &lt;/StackPanel&gt;
+                &lt;/DataTemplate&gt;
+            &lt;/ListBox.ItemTemplate&gt;
+        &lt;/ListBox&gt;
+    &lt;/Grid&gt;
+&lt;/controls:PivotItem&gt;</pre></div>
+
+<p>This defines a placeholder (Row 0) and the content of the item (Row 1). Row 0 is where the text box visually should be overlaid. Visually, this is sort of what this is about enabling from a spacing perspective:</p>
+
+<p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2011/03/Grid1.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="Grid1" border="0" alt="Grid1" src="http://www.jeff.wilcox.name/wp-content/uploads/2011/03/Grid1_thumb.png" width="480" height="800" /></a></p>
+
+<p>Now, we add the “overlay” grid. For this purpose, I temporarily colored it Red to show that it overlays the earlier items:</p>
+
+<p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2011/03/Grid2.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="Grid2" border="0" alt="Grid2" src="http://www.jeff.wilcox.name/wp-content/uploads/2011/03/Grid2_thumb.png" width="480" height="800" /></a></p>
+
+<p>In the actual world, this is where you want to put in the overlay grid and eventually the AutoCompleteBox.</p>
+
+<p>So the updated code is similar to this:</p>
+
+<p>
+  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:894465c2-cc62-48e7-ad61-26b12e6bbdfc" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;controls:PivotItem Header="first"&gt;
+    &lt;Grid&gt;
+        &lt;Grid.RowDefinitions&gt;
+            &lt;RowDefinition Height="72"/&gt;
+            &lt;RowDefinition/&gt;
+        &lt;/Grid.RowDefinitions&gt;
+
+        &lt;!-- Row 0 is a 'placeholder' for the AutoCompleteBox control --&gt;
+
+        &lt;ListBox 
+            Grid.Row="1"
+            x:Name="FirstListBox" Margin="0,0,-12,0" ItemsSource="{Binding Items}"&gt;
+            &lt;ListBox.ItemTemplate&gt;
+                &lt;DataTemplate&gt;
+                    &lt;StackPanel Margin="0,0,0,17" Width="432"&gt;
+                        &lt;TextBlock Text="{Binding LineOne}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}"/&gt;
+                        &lt;TextBlock Text="{Binding LineTwo}" TextWrapping="Wrap" Margin="12,-6,12,0" Style="{StaticResource PhoneTextSubtleStyle}"/&gt;
+                    &lt;/StackPanel&gt;
+                &lt;/DataTemplate&gt;
+            &lt;/ListBox.ItemTemplate&gt;
+        &lt;/ListBox&gt;
+
+        &lt;!-- The AutoCompleteBox experience --&gt;
+        &lt;!-- Must be the last XAML in the Grid to ensure a top z-order --&gt;
+        &lt;!-- It must span the entire grid, starting with row 0. --&gt;
+      &lt;Grid Grid.Row="0" Grid.RowSpan="2"&gt;
+      &lt;/Grid&gt;
+    &lt;/Grid&gt;
+&lt;/controls:PivotItem&gt;
+</pre></div>
+</p>
+
+<p>Ok. We’re closer now that the basics are there. If you run the project, you’ll still see simply your content, with space at the top where the AutoCompleteBox (text box part) will go.</p>
+
+<h2>A required visibility converter</h2>
+
+<p>Since we replaced the pivot, we need to instead toggle the visibility of the list box for showing results only when the IsDropDownOpen dependency property is set to true. This is easy enough using a relative source binding (similar to a template binding) plus adding a Visibility converter to the project, and using it in the template.</p>
+
+<p>Here’s a super simple visibility converter to get started. Add it as a class file to your project.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:8c207532-f1f6-4f04-b90d-5021a9d40bc9" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">using System;
+using System.Windows;
+using System.Windows.Data;
+
+namespace Microsoft.Phone.Controls
+{
+    public class VisibilityConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            bool visible = true;
+
+            if (value is bool)
+            {
+                visible = (bool)value;
+            }
+            else if (value is int || value is short || value is long)
+            {
+                visible = 0 != (int)value;
+            }
+            else if (value is float || value is double)
+            {
+                visible = 0.0 != (double)value;
+            }
+            else if (value == null)
+            {
+                visible = false;
+            }
+
+            if ((string)parameter == "!")
+            {
+                visible = !visible;
+            }
+
+            return visible ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
+</pre></div>
+
+<p>And then to the page, add it as a resource, plus the XMLNS for “localControls” pointing to the Microsoft.Phone.Controls namespace. I use the key name <strong>Vis.</strong></p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:4976b4b9-80e4-4d98-ad67-726365b785cb" class="wlWriterEditableSmartContent"><pre class="xml" name="code">        &lt;!-- Make the visibility converter available --&gt;
+        &lt;Grid.Resources&gt;
+            &lt;localControls:VisibilityConverter x:Key="Vis"/&gt;
+        &lt;/Grid.Resources&gt;
+</pre></div>
+
+<p>Now we’ll use it in the template.</p>
+
+<h2>The new template</h2>
+
+<p>Now we want to re-template the AutoCompleteBox. You could define the template once in App.xaml, but for simplicity I just did this inline. The most important parts are:</p>
+
+<ul>
+  <li>Removing the Popup template part </li>
+
+  <li>Adding a Visibility relative source binding to show/hide the results at the appropriate time </li>
+
+  <li>The listbox and textbox in the template are moved into a grid-row structure visually </li>
+</ul>
+
+<p>This takes advantage of the idea that template parts in controls are usually “optional”, so without the Popup in there, it still functions just fine in the app.</p>
+
+<p>So this now adds to the overlay grid…</p>
+
+<ul>
+  <li>AutoCompleteBox instance</li>
+
+  <li>Sets the item template, filter parameters, etc., as an example</li>
+
+  <li>Sets the ControlTemplate</li>
+</ul>
+
+<p>Here is the ControlTemplate if you are just copying and pasting into your own app:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:5ecc4edf-d94a-450f-93ac-aa4b30491f9a" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;ControlTemplate TargetType="toolkit:AutoCompleteBox"&gt;
+    &lt;Grid&gt;
+        &lt;Grid.RowDefinitions&gt;
+            &lt;RowDefinition Height="Auto"/&gt;
+            &lt;RowDefinition/&gt;
+        &lt;/Grid.RowDefinitions&gt;
+        &lt;TextBox
+            x:Name="Text"
+            Background="{TemplateBinding Background}"
+            BorderBrush="{TemplateBinding BorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            FontFamily="{TemplateBinding FontFamily}"
+            FontSize="{TemplateBinding FontSize}"
+            FontStyle="{TemplateBinding FontStyle}"
+            FontWeight="{TemplateBinding FontWeight}"
+            Foreground="{TemplateBinding Foreground}"
+            InputScope="{TemplateBinding InputScope}"
+            Opacity="{TemplateBinding Opacity}"
+            Padding="{TemplateBinding Padding}"
+            Style="{TemplateBinding TextBoxStyle}"/&gt;
+        &lt;ListBox
+            Margin="12"
+            Visibility="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Vis}}"
+            Grid.Row="1"
+            x:Name="Selector"
+            Background="White"
+            FontFamily="{TemplateBinding FontFamily}"
+            FontSize="{TemplateBinding FontSize}"
+            FontStyle="{TemplateBinding FontStyle}"
+            FontWeight="{TemplateBinding FontWeight}"
+            Foreground="{TemplateBinding Foreground}"
+            IsTabStop="False"
+            ItemContainerStyle="{TemplateBinding ItemContainerStyle}"
+            ItemTemplate="{TemplateBinding ItemTemplate}"
+            Opacity="{TemplateBinding Opacity}"
+            BorderBrush="{StaticResource PhoneTextBoxEditBorderBrush}"
+            BorderThickness="{TemplateBinding BorderThickness}"
+            Padding="0,8"/&gt;
+    &lt;/Grid&gt;
+&lt;/ControlTemplate&gt;</pre></div>
+
+<p>The Visibility binding on the ListBox is important, as it is what keeps the ListBox from being displayed over your existing page content at runtime. It uses the resource we defined for the visibility converter, <strong>Vis</strong>. Relative source binding is used to make it very similar to a template binding with a converter.</p>
+
+<p>And so the final XAML for the PivotItem looks like this expanded:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:49cd3d2c-1b4e-44e6-aef9-b5f49d8099bc" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;controls:PivotItem Header="first"&gt;
+    &lt;Grid&gt;
+        &lt;Grid.RowDefinitions&gt;
+            &lt;RowDefinition Height="72"/&gt;
+            &lt;RowDefinition/&gt;
+        &lt;/Grid.RowDefinitions&gt;
+
+        &lt;!-- Row 0 is a 'placeholder' for the AutoCompleteBox control --&gt;
+
+        &lt;ListBox 
+            Grid.Row="1"
+            x:Name="FirstListBox" Margin="0,0,-12,0" ItemsSource="{Binding Items}"&gt;
+            &lt;ListBox.ItemTemplate&gt;
+                &lt;DataTemplate&gt;
+                    &lt;StackPanel Margin="0,0,0,17" Width="432"&gt;
+                        &lt;TextBlock Text="{Binding LineOne}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}"/&gt;
+                        &lt;TextBlock Text="{Binding LineTwo}" TextWrapping="Wrap" Margin="12,-6,12,0" Style="{StaticResource PhoneTextSubtleStyle}"/&gt;
+                    &lt;/StackPanel&gt;
+                &lt;/DataTemplate&gt;
+            &lt;/ListBox.ItemTemplate&gt;
+        &lt;/ListBox&gt;
+
+        &lt;!-- The AutoCompleteBox experience --&gt;
+        &lt;!-- Must be the last XAML in the Grid to ensure a top z-order --&gt;
+        &lt;!-- It must span the entire grid, starting with row 0. --&gt;
+        &lt;!-- Warning: the design surface does not like this template unfortunately --&gt;
+        &lt;!-- AutoCompleteBox must be vertically aligned with the placeholder --&gt;
+        &lt;Grid Grid.Row="0" Grid.RowSpan="2"&gt;
+            &lt;toolkit:AutoCompleteBox
+                ValueMemberBinding="{Binding LineOne}"
+                FilterMode="ContainsCaseSensitive"
+                x:Name="_autoCompleteBox"
+                ItemsSource="{Binding Items}"
+                VerticalAlignment="Top"&gt;
+                &lt;toolkit:AutoCompleteBox.ItemTemplate&gt;
+                    &lt;DataTemplate&gt;
+                        &lt;TextBlock Text="{Binding LineOne}" TextWrapping="Wrap" Style="{StaticResource PhoneTextExtraLargeStyle}"/&gt;
+                    &lt;/DataTemplate&gt;
+                &lt;/toolkit:AutoCompleteBox.ItemTemplate&gt;
+                &lt;toolkit:AutoCompleteBox.Template&gt;
+                    &lt;ControlTemplate TargetType="toolkit:AutoCompleteBox"&gt;
+                        &lt;Grid&gt;
+                            &lt;Grid.RowDefinitions&gt;
+                                &lt;RowDefinition Height="Auto"/&gt;
+                                &lt;RowDefinition/&gt;
+                            &lt;/Grid.RowDefinitions&gt;
+                            &lt;TextBox
+                                x:Name="Text"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                FontFamily="{TemplateBinding FontFamily}"
+                                FontSize="{TemplateBinding FontSize}"
+                                FontStyle="{TemplateBinding FontStyle}"
+                                FontWeight="{TemplateBinding FontWeight}"
+                                Foreground="{TemplateBinding Foreground}"
+                                InputScope="{TemplateBinding InputScope}"
+                                Opacity="{TemplateBinding Opacity}"
+                                Padding="{TemplateBinding Padding}"
+                                Style="{TemplateBinding TextBoxStyle}"/&gt;
+                            &lt;ListBox
+                                Margin="12"
+                                Visibility="{Binding Path=IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource Vis}}"
+                                Grid.Row="1"
+                                x:Name="Selector"
+                                Background="White"
+                                FontFamily="{TemplateBinding FontFamily}"
+                                FontSize="{TemplateBinding FontSize}"
+                                FontStyle="{TemplateBinding FontStyle}"
+                                FontWeight="{TemplateBinding FontWeight}"
+                                Foreground="{TemplateBinding Foreground}"
+                                IsTabStop="False"
+                                ItemContainerStyle="{TemplateBinding ItemContainerStyle}"
+                                ItemTemplate="{TemplateBinding ItemTemplate}"
+                                Opacity="{TemplateBinding Opacity}"
+                                BorderBrush="{StaticResource PhoneTextBoxEditBorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="0,8"/&gt;
+                        &lt;/Grid&gt;
+                    &lt;/ControlTemplate&gt;
+                &lt;/toolkit:AutoCompleteBox.Template&gt;
+            &lt;/toolkit:AutoCompleteBox&gt;
+        &lt;/Grid&gt;
+    &lt;/Grid&gt;
+&lt;/controls:PivotItem&gt;</pre></div>
+
+<p>So, taking a few of the coloring concepts from earlier, you see we end up with this idea at runtime when entering text (coloring added to show separation, it won’t look like that in your app)</p>
+
+<p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2011/03/Grid3.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="Grid3" border="0" alt="Grid3" src="http://www.jeff.wilcox.name/wp-content/uploads/2011/03/Grid3_thumb.png" width="480" height="800" /></a></p>
+
+<h2>Download the completed project</h2>
+
+<p>I’ve zipped up the sample including the template. Make sure you have the <a href="http://silverlight.codeplex.com/">Silverlight for Windows Phone Toolkit</a> installed as well, you might have to re-add that reference to the sample.</p>
+
+<p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2011/03/AutoCompletePivot.zip">[<strong>ZIP</strong>] 31 KB - <strong>AutoCompletePivot.zip</strong></a></p>
+
+<h2>Other notes</h2>
+
+<h3>Selecting an item may require a few touches by default</h3>
+
+<p>When you select an item in the AutoCompleteBox, it will fire SelectionChanged, etc., but you may find that the list shrinks (requiring another press), or that the software keyboard is still up. These need to be worked around today at the app level to match the experience you want to offer your users.</p>
+
+<ul>
+  <li>Consider hooking up to the selection event in the control, then calling Focus() on a visual element elsewhere to remove the software keyboard </li>
+
+  <li>Consider a code fix where if a single item is selected currently, to assume that was the final selection by the user and dismiss the selection system – requires a code workaround since not all app authors may want this. </li>
+</ul>
+
+<h3>Enables Landscape page use as well</h3>
+
+<p>This also enables using AutoCompleteBox on landscape pages, <em>although</em> it’s very difficult to control the software keyboard (SIP), so you may find that you can hardly see a single item while in landscape mode with the software keyboard up.</p>
+
+<p>You may notice that the native Windows Phone experience rarely offers auto completion in landscape, and as always, Panorama pages should not be Landscape.</p>
+
+<p><strong>IE NOTE</strong>
+
+  <br />The Internet Explorer browser has an auto complete box in Portrait mode only. In Landscape, it is hidden – and although I don’t have the official word, I believe it is because the software keyboard takes up most of the screen, leaving no space to select items.</p>
+
+<p>So I think the UX guidance is to NOT show auto completes in landscape, but you’re welcome to try. You could add special app logic similar to this to try and fix the problem, but it isn’t pretty:</p>
+
+<ul>
+  <li>Attach to the GotFocus and LostFocus events of the text box in the template (requires some visual tree logic code) </li>
+
+  <li>In your GotFocus handler, if the page is in one of the Landscape modes… you’ll want to open up additional visual space above your page content. </li>
+
+  <li>Temporarily collapse the page title and perhaps its header (very involved if it is a pivot control!) </li>
+
+  <li>When the focus is lost, you want to restore that content. The platform should handle “scrolling” around the viewport in this mode to maximize screen real estate. </li>
+</ul>
+
+<h3>Items source size warning</h3>
+
+<p>One thing to callout is that the implementation of AutoCompleteBox was originally designed for use on powerful desktops, so the key code path for filtering is designed to be run on the user interface thread. On the Windows Phone, with a single core and mobile ARM hardware, this can be a bottleneck for apps.</p>
+
+<p>Please consider keeping the number of items under 100 if possible, and if you need more, you may need to consider ways to use the “Populating” method to spin up your own filtering work on a background thread (not covered in this post).</p>
+
+<p>Hope this helps.</p>

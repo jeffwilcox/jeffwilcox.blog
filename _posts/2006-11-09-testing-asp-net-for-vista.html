@@ -1,0 +1,145 @@
+---
+layout: post
+comments: true
+title: ! 'Windows Vista RTM: Making it happen for ASP.NET'
+wordpress_id: 3
+wordpress_url: http://linux.jeff.wilcox.name/2006/11/09/testing-asp-net-for-vista/
+imported_categories:
+- title: vista
+  slug: vista
+  autoslug: vista
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+- title: windows
+  slug: windows
+  autoslug: windows
+- title: asp.net
+  slug: aspnet
+  autoslug: asp.net
+- title: web-servers
+  slug: webservers
+  autoslug: web-servers
+- title: testing
+  slug: testing
+  autoslug: testing
+imported_link_categories: []
+tags:
+- title: web-servers
+  slug: webservers
+  autoslug: web-servers
+- title: vista
+  slug: vista
+  autoslug: vista
+- title: windows-vista
+  slug: windows-vista
+  autoslug: windows-vista
+- title: iis
+  slug: iis
+  autoslug: iis
+- title: asp.net
+  slug: aspnet
+  autoslug: asp.net
+- title: testing
+  slug: testing
+  autoslug: testing
+---
+[RAW]
+
+
+
+With the release of Windows Vista, the next generation Microsoft Platform for web developers looking to explore better integration between their applications and the web server. We've logged many hours over the last year making sure that the ASP.NET and IIS 7.0 experience is a success story, and I wanted to open by introducing the new integrated mode and diving into some of what went on for the test team to bring the release to you.
+
+<h1>Integrated Mode: ASP.NET + IIS</h1>
+
+ASP.NET 2.0 shipped in October 2005 and was full of useful features, but on IIS 6 it still executed like a well-oiled Perl script would have a decade ago. For the most part, it sat on top of the web server, relying on an archaic native interface (ISAPI) to make it all happen. Simply enabling Windows authentication took two steps: One enabling it in the IIS manager, and the other configuring it your web.config file.
+
+
+
+With Vista, all this is in the past: Handler mappings, authentication … it's all a single story. One step to get a task done, a great new administrative interface to go with it. Being familiar with the work that's gone on to make managed code a first-class citizen with IIS, I intend to use this blog as a place to share that experience.
+
+
+
+I don't intend to duplicate the great resources already online, so as a starting point, if you're new to all this, please check out:
+
+<ul>
+
+	<li><a href="http://www.mvolo.com/">Mike Volodarsky's "server-side"</a> blog</li>
+
+	<li>IIS.Net community site run by Microsoft, specifically the IIS7 <a href="http://www.iis.net/default.aspx?tabid=7">technical resources overview</a></li>
+
+	<li>The <a href="http://forums.iis.net/">IIS discussion forums</a> or <a href="http://forums.asp.net/">ASP.NET forums</a>, the best place to get your questions answered</li>
+
+</ul>
+
+<h1>Testing: Automation updates, new tools, overall process</h1>
+
+Testing ASP.NET, IIS, and Windows Vista together was a lot of work. It consisted of automation improvements, using new product features, adding test coverage, fixing test cases, and analyzing hundreds of thousands of automation results. Here's a little bit of the behind-the-scenes work that happened from my perspective.
+
+
+
+We rely on automation so much on the ASP.NET test team that it was critical to get our tests running on the new OS as soon as possible. Being able to kick off tests to run overnight means that I can devote the day to everything else: Resolving and fixing bugs, learning about and providing feedback on the product, and working on other exciting projects. This wouldn't be possible without the large automation infrastructure we have in place. <a href="http://weblogs.asp.net/scottgu/archive/2004/10/28/249458.aspx">Scott Guthrie's testing post</a> a few years ago really provides a great look at what's involved in our testing.
+
+<h2>Integrated and classic application pool types</h2>
+
+As you can now place ASP.NET applications in either the IIS7 Integrated application pool or the Classic/ISAPI pool, we expanded the scope of our tests to run in both the integrated and classic modes. The default application pool type is now integrated; however, the classic mode is still around for compatibility, ASP.NET 1.1 SP1 applications, and other scenarios. If you're impacted by a breaking change in the integrated mode, you can always just flip the application into the classic pool.
+
+
+
+Expanding the possible contexts for all our tests to run in both modes meant more test results would be generated for each run, but the cost in additional time for execution is made up for by the presence of historical data and side-by-side results. Having results for the same underlying test, running into both pipeline modes, was really helpful for identifying bugs.
+
+
+
+They weren't all bugs either, some differences were as verifying the new <a href="http://blogs.iis.net/bills/archive/2006/10/19/Improving-Custom-Errors-for-IIS7-Server.aspx">IIS 7 error messages</a>.
+
+<h2>User account control</h2>
+
+The sweeping security improvements within Windows Vista made automation a little more difficult at first (that's a good thing). Instead of just modifying some registry values to open the necessary firewall ports, changing a configuration file, or running a set of batch files, we had the fun challenge of interacting with User Account Control (UAC). Even though ASP.NET is a server-side process, our automation system is full of tools that run within the context of an end user session. Elevation to administrative privileges is needed for reimaging machines, configuring the product, and running tests. It took a lot of hard work by many people within the company to get us to where we are today.
+
+<h2>New tools like AppCmd</h2>
+
+The Microsoft philosophy of testing your products using your products is pretty fun at times. A good example that I have is the ability to take a snapshot of the web server configuration files with IIS 7—I can't tell you how many times I use an older Windows 2003 machine and wish I could use this feature.
+
+
+
+The AppCmd tool, located at %windir%\system32\inetsrv\appcmd.exe, is a great command-line interface to the web server. When we initially install IIS on a Vista machine, the scripts make a backup of the important IIS configuration files by calling "appcmd add backup Initial". "Initial" is just the unique name for the backup. If you ever destroy the configuration files, you can simply issue an "appcmd restore backup Initial" command and you're back in business, without having to examine what you did incorrectly.
+
+
+
+<img border="0" width="506" src="http://www.jeff.wilcox.name/blog/view/iis/AppCmdBackup.jpg" alt="AppCmd.exe sample console window" height="253" style="width: 506px; height: 253px" title="AppCmd.exe sample console window" />
+
+<h2>Testing Process</h2>
+
+Finally, there was the actual testing experience that had to happen. Part of the process:
+
+<ul>
+
+	<li>Creating a new run with a set of tests and the contexts in which they execute</li>
+
+	<li>Cross your fingers, hoping that the machines install Vista, the product, and come back online</li>
+
+	<li>Waiting as thousands of tests execute and log their results</li>
+
+	<li>Spending days investigating fun new Vista changes, improvements, bugs, fixing tests, and fixing the product</li>
+
+	<li>Repeat!</li>
+
+</ul>
+
+We frequently performed "nightly" tests, which consist of the highest priority automation, along with a combination of Vista SKUs, product types, and languages. Test the SDK one week, and the full Visual Studio the following week; English, Arabic, Japanese, German; AMD64, x86, the list goes on!
+
+
+
+Before each significant Vista milestone, we signed off by performing a major full automation test pass on the product. This was a major undertaking: one such test pass lasted a month and really pinpointed the work that needed to be done to finalize ASP.NET on Vista. If you haven't already given the new IIS a try, run the IIS Manager after installing Vista and the web server, and try the "new" ASP.NET.
+
+<h1>In Closing</h1>
+
+I'm really proud of the quality of our product and hope that you find the new features and improvements really helpful in your work. Between the union of IIS + ASP.NET and the <a href="http://ajax.asp.net/">ASP.NET AJAX story</a>, there are some great reasons to use the Microsoft platform today. And you can <a href="http://www.iis.net/News/Item.aspx?i=1204">still use PHP too</a>!
+
+
+
+Please let me know if you found this useful.
+
+
+
+[/RAW]

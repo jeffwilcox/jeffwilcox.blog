@@ -1,0 +1,76 @@
+---
+layout: post
+comments: true
+title: Quickly resize the Silverlight plugin to zero pixels in size
+wordpress_id: 102
+wordpress_url: http://www.jeff.wilcox.name/2008/08/24/quickzeropixel/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: software-development
+  slug: dev
+  autoslug: software-development
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+imported_link_categories: []
+tags: []
+---
+<p>When I was a test developer on the team that built the HTML DOM bridge feature for Silverlight 2, I often found myself needing to create a tiny, quick application to reproduce an issue. That meant quickly creating projects that used the dynamic test page, and without modifying the TestPage.html.</p> <p>The goal was to resize or hide the Silverlight plugin and its hosting element. Here's what I've been using as a code snippet that drops the ZeroPixelPlugin in the System.Windows.Browser namespace.</p> <p>One fine function call (Page.xaml.cs):</p> <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:415a6404-ea1a-4da8-8e08-93d959b50dbb" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="c-sharp" name="code">    private void Page_Loaded(object sender, RoutedEventArgs e)
+    {
+        ZeroPixelPlugin.HideSilverlightPlugin();
+
+        // Throw a button up there on the page that doesn't do anything
+        HtmlElement button = HtmlPage.Document.CreateElement("button");
+        button.SetAttribute("value", "Hello world!");
+        HtmlPage.Document.Body.AppendChild(button);
+    }</pre></div>
+<p>And here's the utility, in Visual Basic:</p>
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:8eb984ae-17b8-4b9e-a114-3b61310f745b" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="vb" name="code">Imports System.Windows.Browser
+
+Namespace System.Windows.Browser
+    Public Class ZeroPixelPlugin
+        ''' &lt;summary&gt;
+        ''' Resizes the Silverlight plugin and its host element to be zero pixels 
+        ''' in width and height. Only really useful for HTML
+        ''' &lt;/summary&gt;
+        ''' &lt;remarks&gt;&lt;/remarks&gt;
+        Public Shared Sub HideSilverlightPlugin()
+            Dim plugin As HtmlElement = HtmlPage.Plugin
+            Dim host As HtmlElement = plugin.Parent
+            plugin.SetStyleAttribute("width", "0")
+            plugin.SetStyleAttribute("height", "0")
+            host.SetStyleAttribute("width", "0")
+            host.SetStyleAttribute("height", "0")
+        End Sub
+    End Class
+End Namespace</pre></div>
+<p>And in C#:</p>
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:68d0b8b8-a12f-43d2-bcdd-ddcddda1da79" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="c-sharp" name="code">// This code is useful for Html DOM bridge testing. It is placed in this 
+// namespace since it sort of assumes you're only using that feature and 
+// not the rich Silverlight presentation framework.
+
+namespace System.Windows.Browser
+{
+    public static class ZeroPixelPlugin
+    {
+        /// &lt;summary&gt;
+        /// Resizes the Silverlight plugin and its host element to be zero pixels 
+        /// in width and height. Only really useful for HTML
+        /// &lt;/summary&gt;
+        public static void HideSilverlightPlugin()
+        {
+            HtmlElement plugin = HtmlPage.Plugin;
+            HtmlElement host = plugin.Parent;
+            plugin.SetStyleAttribute("width", "0");
+            plugin.SetStyleAttribute("height", "0");
+            host.SetStyleAttribute("width", "0");
+            host.SetStyleAttribute("height", "0");
+        }
+    }
+}</pre></div>
+<p>Just thought it was somewhat interesting for anybody doing work outside of the rich Silverlight presentation framework.</p>

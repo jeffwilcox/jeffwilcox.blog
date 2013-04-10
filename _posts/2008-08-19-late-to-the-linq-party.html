@@ -1,0 +1,50 @@
+---
+layout: post
+comments: true
+title: LINQ really is hot stuff for .NET developers.
+wordpress_id: 95
+wordpress_url: http://www.jeff.wilcox.name/2008/08/19/late-to-the-linq-party/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: software-development
+  slug: dev
+  autoslug: software-development
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+- title: books
+  slug: books
+  autoslug: books
+imported_link_categories: []
+tags: []
+---
+<p><strong>8/20 7:28PM Correction:</strong> The example OrderBy code below is incorrect. <a href="http://www.jeff.wilcox.name/2008/08/20/linq-example-correction/">Updated and explained over here</a>.</p> <p>I'm late to the LINQ party. I thought I was good at keeping up with the latest trends and improving my skills. But I never embraced the importance of <em>using</em> LINQ versus <em>learning</em> about LINQ. I'm writing to say that I finally let its concepts marinate in my head, and it's good stuff.</p> <p>While making some improvements to .NET 2.0-era code, I went ahead and found some great places to use LINQ and lambda expressions to really simplify an implementation. I don't believe in blanket updating, but rather updating when it's clear, improves the maintainability, and you're looking at low-impact, low-churn changes. </p> <p>I'm about 10 years behind on this one I suppose, which makes sense: I still love watching <a href="http://www.imdb.com/title/tt0200276/">The West Wing</a>.</p> <p>Here was the previous implementation in C#:</p> <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:00c92db2-5bd5-486e-b35f-8e662754deba" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">static void SortTestClasses(List&lt;ITestClass&gt; classes)
+{
+    classes.Sort(delegate(ITestClass c1, ITestClass c2)
+        {
+            return Comparer&lt;string&gt;.Default.Compare(c1.Name, c2.Name);
+        });
+}</pre></div>
+<p>And now, with LINQ, the static method itself really is hardly useful - it's that simple:<br /><strong>Update: It's not really quite this simple, </strong><a href="http://www.jeff.wilcox.name/2008/08/20/linq-example-correction/"><strong>see here</strong></a><strong>.</strong></p>
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:6f19178b-8cc7-4119-badd-90edeb201d37" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">static void SortTestClasses(IList&lt;ITestClass&gt; classes)
+{
+    classes.OrderBy(a =&gt; a.Name);
+}</pre></div>
+<p><em>Plus the addition of a Using statement for System.Linq.</em></p>
+<p>This particular change was needed because I needed to update the signature of the method to take a generic IList, as opposed to a strongly typed generic List, which has a Sort method hanging off of it. But it sure does look better now.</p>
+<p><a href="http://www.amazon.com/gp/product/1590597893?ie=UTF8&amp;tag=jefwilsblo-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=1590597893"><img src="http://media.jeff.wilcox.name/blog/view/books/ProLinqBook.jpg" align="right"/></a>There are a lot of good online and offline resources out there. I picked up a nice book on this last year.</p>
+<ul>
+<li><a href="http://msdn.microsoft.com/en-us/vcsharp/aa336746.aspx">MSDN: 101 LINQ Samples</a> 
+</li><li><a href="http://msdn.microsoft.com/en-us/vcsharp/aa904594.aspx">MSDN: All about the LINQ project</a> 
+</li><li>Mircea Trofin's <a href="http://blogs.msdn.com/mirceat/archive/2008/03/13/linq-framework-design-guidelines.aspx">LINQ Framework Design Guidelines</a> 
+</li><li><a href="http://www.amazon.com/gp/product/1590597893?ie=UTF8&amp;tag=jefwilsblo-20&amp;linkCode=as2&amp;camp=1789&amp;creative=9325&amp;creativeASIN=1590597893">Pro LINQ</a> by Joseph C. Rattz Jr. 
+</li><li>Coming later this year: Brad Abrams and Krzysztof Cwalina are <a href="http://blogs.msdn.com/brada/archive/2008/08/16/framework-design-guidelines-2nd-edition-available-today-on-rough-cuts.aspx">finishing up the second edition of their awesome book on guidelines</a>, updating it for .NET 3.5. The <a href="http://www.amazon.com/Framework-Design-Guidelines-Conventions-Development/dp/0321246756/sr=1-1/qid=1171648192/ref=pd_bbs_sr_1/104-8428099-5383120?ie=UTF8&amp;s=books">first edition</a> really is a favorite of mine and often nearby, and it'll be nice to get their thoughts on where to draw the line during API and framework designing.</li></ul>
+<p>At work we've been having some discussions about 3.5 language features, and although I don't always agree with every single point, I will say that here are some of the things I've been doing and following as a result of this discussion:</p>
+<ul>
+<li>Updating private members with public properties to C# 3.0 automatic properties if you are already touching the file, and it's a minor change 
+</li><li>Not using var in regular, non-LINQ code ("let's not be too lazy") 
+</li><li>Trying to limit the exposure of extension methods to users of frameworks, especially to common types 
+</li><li>No longer using #region's to separate properties, methods, etc. - but rather only logical components or WPF goo when it makes sense</li></ul>
+<p>So to the one person who hasn't figured out LINQ is cool, maybe this will help get you started.</p>

@@ -1,0 +1,81 @@
+---
+layout: post
+comments: true
+title: NUnit &amp; the Silverlight unit test framework
+wordpress_id: 244
+wordpress_url: http://www.jeff.wilcox.name/2009/01/nunit-and-silverlight/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: software-development
+  slug: dev
+  autoslug: software-development
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: testing
+  slug: testing
+  autoslug: testing
+imported_link_categories: []
+tags: []
+---
+<p>Did you know that you can run <a href="http://www.nunit.org/index.php">NUnit</a> tests with the Silverlight unit test framework? In this short guide, I talk about updating NUnit to build for Silverlight, wiring up test projects, and a download with everything you need to get started.</p>  <p>This isn't a &quot;metadata redirection&quot; trick - but the actual NUnit assertions and metadata running inside the Silverlight unit test engine. This took about 15 minutes to implement from start to finish - shorter than the amount of time it'll take me to publish this post.</p>  <p>Though NUnit is great for legacy components and tests, I strongly recommend using the <strong>built-in Visual Studio metadata</strong> for most projects. The metadata is used by enough folks throughout Microsoft and the industry to be well-supported, tested, familiar, and not require the custom unit test provider hookup in your test projects.</p>  <p>That said, I do hear about legacy business objects and NUnit tests that devs would like to be able to verify and run in the browser + Silverlight environment. </p>  <p>You can read about NUnit <a href="http://www.nunit.org/index.php?p=attributes&amp;r=2.4.8">attributes</a> and <a href="http://www.nunit.org/index.php?p=assertions&amp;r=2.4.8">assertions</a> in the official documentation. So, here goes...</p>  <h3>Running sample &amp; validation tests that ship with NUnit</h3>  <p>Inside the traditional <a href="http://www.nunit.org/index.php?p=download">NUnit source download</a>, there's a sample called &quot;Money&quot; that tests a simple interface and types. Here's that &quot;Money&quot; project running on <strong>OS X/Safari</strong>, via the Silverlight unit test framework and NUnit:</p>  <p><a href="http://media.jeff.wilcox.name/blog/ut/NUnitMoney/TestPage.html"><img src="http://media.jeff.wilcox.name/blog/ut/NUnitMoneyTest.png" /></a>&#160; <br /><em>&quot;Money&quot; sample test project: Click on the image or <a href="http://media.jeff.wilcox.name/blog/ut/NUnitMoney/TestPage.html">here to run</a> the Silverlight test application on your machine. Tests will start in ~5 seconds.</em></p>  <p>If you have a set of legacy business objects and associated NUnit tests, you'll find it easy to run them within Silverlight now.</p>  <p>To further demonstrate the compatibility here, this is the &quot;NUnitTests&quot; test project that validates the core NUnit framework and its assertions, running inside Chrome:</p>  <p><a href="http://media.jeff.wilcox.name/blog/ut/NUnitTests/TestPage.html"><img src="http://media.jeff.wilcox.name/blog/ut/NUnitTests.png" /></a>     <br /><em>&quot;NUnitTests&quot; that validate the NUnit framework. Click on the image or <a href="http://media.jeff.wilcox.name/blog/ut/NUnitTests/TestPage.html">here to run</a> the tests.</em></p>  <h3>Silverlight unit test framework is easy to extend</h3>  <p>When designing the Silverlight unit test framework, it became clear that there were three or four distinct test engine components that could be combined into a single test system. Yet, they were distinct enough to allow alternative implementations and extensions to be built.</p>  <p><img src="http://media.jeff.wilcox.name/blog/ut/TestApplicationXap.png" /></p>  <p>The typical test application .XAP file ends up containing the general Silverlight unit testing engine (that performs test execution, and is very different from typical engines in that it runs on the UI thread and is synchronous), your actual tests marked with the appropriate metadata, and then the metadata and unit test assertions that you're using.</p>  <p>Inside the unit test engine, there's a base test harness class, and then the UnitTestHarness implementation that does most of the heavy lifting. A set of interfaces abstract out the reading and processing of unit test metadata. Interfaces aren't always a great answer, but the value added in this case.</p>  <p>The metadata/assertion implementation that you use (NUnit or VSTT, for example) takes care of throwing exceptions when assertions fail, that the framework then processes in a generic way.</p>  <p>The Silverlight unit framework ships with the same metadata used in the Visual Studio team system's unit test framework, making it easy to move between desktop and Silverlight application and test development. A &quot;VsttProvider&quot; sits between the Visual Studio metadata and the actual unit test engine, and ships in the Microsoft.Silverlight.Testing assembly.</p>  <p>OK. That's a mouthful, but it means that you can implement your own metadata provider to support running other unit tests. Since NUnit and VSTT are so similar, this was easy - but more intricate frameworks might need to modify or extend the actual unit test system to provide the right experience.</p>  <h3>Getting NUnitFramework to build</h3>  <p>NUnit is relatively old; it is from a different era of .NET development. NUnit utilizes the old .NET Hashtable and ArrayList types.</p>  <p>Also, the .NET framework base class libaries included in Silverlight are a subset, rely more on .NET 3.5 features, and exclude some of the older types.</p>  <p>To easily support building NUnit with the Silverlight subset of the framework, here's the list of changes I needed to make to the NUnitFramework project:</p>  <ul>   <li>Add simple implementations of Hashtable.cs and ArrayList.cs, utilizing modern generic collections under the hood </li>    <li>Inside ConstraintBuilder.cs, update the Stack type to be a generic Stack&lt;object&gt; </li>    <li>Added a shim/empty SerializableAttribute </li>    <li>Comment out constructors in IgnoreException.cs and AssertionException.cs that were designed for serialization (lines 33-35 and 35-37, respectively) </li>    <li><em>I removed the strong name assembly attributes from AssemblyInfo.cs, this isn't actually required.</em> </li>    <li>On line 92 of CollectionConstaints.cs, changed the DictionaryEntry typed temporary variable to be of type &quot;var&quot; (since the Hashtable implementation is actually exposing a generic KeyValuePair now) </li> </ul>  <p>So, I added a small &quot;CompatibilityShims&quot; Silverlight C# library project to the solution that included Hashtable, ArrayList, and SerializableAttribute.</p>  <h3>Wiring up test applications</h3>  <p>Unlike standard NUnit test projects, you will need to create an actual <strong>Silverlight application</strong> project for your tests. Once you create a new empty app, here's what you should do:</p>  <ul>   <li>Remove the Page.xaml and Page.xaml.cs files</li>    <li>Add a reference to Microsoft.Silverlight.Testing.dll</li>    <li>Add a reference to the built NUnitFramework and NUnitSilverlight libraries and/or projects from this download</li>    <li>Inside App.xaml.cs, add using statements for the Microsoft.Silverlight.Testing and Microsoft.Silverlight.Testing.UnitTesting.Metadata.NUnit namespaces</li>    <li>Update Application_Startup per the instructions below</li>    <li>Add your tests and, if needed, a reference to your assembly/app under test</li> </ul>  <p>Here's what the startup code should look like for the test application:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:52798c07-26cc-4e07-bf53-8874727ed8ec" class="wlWriterSmartContent"><pre class="c-sharp" name="code">        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            UnitTestSystem.RegisterUnitTestProvider(new NUnitProvider());
+            RootVisual = UnitTestSystem.CreateTestPage();
+        }</pre></div>
+
+<p>The code is similar to the regular Silverlight unit test startup code that you use for VSTT tests, except it first registers the NUnitProvider.</p>
+
+<p>You can build and run the Silverlight application like any other: just press F5 and the tests will run!</p>
+
+<h3>Using the Silverlight test framework's asynchronous and Silverlight testing features</h3>
+
+<p>Since the unit test engine is metadata-agnostic, it handles all the advanced asynchronous and Silverlight-specific test functions. Many of the core features specific to the Silverlight framework work with NUnit, therefore.</p>
+
+<p>You'll find that you can use:</p>
+
+<ul>
+  <li>[Bug(...)] attributes</li>
+
+  <li>[Tag(...)] attributes. The Category NUnit attribute isn't supported in this download, but you could easily modify the provider to expose Category data as Tags.</li>
+
+  <li>[Asynchronous], combined with deriving from SilverlightTest: support functional testing of user interface elements and controls.</li>
+</ul>
+
+<h3>Download the bits and samples</h3>
+
+<p>I'm offering this as a proof-of-concept, unsupported download. Inside you'll find everything that you need to explore the concept.</p>
+
+<ul>
+  <li><a href="http://media.jeff.wilcox.name/blog/ut/NUnit.Silverlight.zip"><strong>NUnit.Silverlight.zip</strong></a> [266 KB], contains:</li>
+
+  </ul><ul>
+    <li>Unit test framework binaries</li>
+
+    <li>CompatibilityShims</li>
+
+    <li>NUnitFramework</li>
+
+    <li>&quot;NUnitSilverlight&quot; NUnit test provider for the Silverlight unit test framework</li>
+
+    <li>Sample test applications: &quot;Money&quot;, &quot;NUnitTests&quot;</li>
+  </ul>
+
+
+<h3>Related resources</h3>
+
+<ul>
+  <li><a href="http://www.jeff.wilcox.name/2008/08/utbasics/">Visual Studio unit testing intro</a> </li>
+
+  <li><a href="http://www.jeff.wilcox.name/2008/11/test-framework-source/">Silverlight unit test framework source released</a> </li>
+
+  <li><a href="http://www.jeff.wilcox.name/2008/10/ut-docs/">Reference documentation for the Silverlight unit test framework</a> </li>
+
+  <li><a href="http://www.jeff.wilcox.name/2008/09/rc0-new-test-features/">New test framework features for RC0/RTW</a> </li>
+
+  <li><a href="http://www.jeff.wilcox.name/2008/03/silverlight2-unit-testing/">Unit testing with Silverlight 2</a> </li>
+</ul>
+
+<p>Hope this helps!</p>

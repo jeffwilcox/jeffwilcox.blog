@@ -1,0 +1,66 @@
+---
+layout: post
+comments: true
+title: ! 'AutoCompleteBox: The 5 things you need to know'
+wordpress_id: 139
+wordpress_url: http://www.jeff.wilcox.name/2008/10/30/fivethings-autocompletebox/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: software-development
+  slug: dev
+  autoslug: software-development
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+imported_link_categories: []
+tags: []
+---
+<p><img src="http://media.jeff.wilcox.name/blog/AutoComplete/1.png" />&#160; <br /><strong><a href="http://www.codeplex.com/Silverlight/Release/ProjectReleases.aspx?ReleaseId=18804">AutoCompleteBox</a> works great with collections. You don't have to connect it to a sophisticated web service.</strong></p>  <p>We named this control the AutoCompleteBox, <em>not</em> AutoComplete. Its different. It is a rich control that provides a set of suggestions, but not so much the old AJAX version that required you to wire the control up to a web service.</p>  <p>So, if you heard AutoComplete and got worried... don't. You can just bind it to simple data that you <em><strong>already have </strong></em>in your application.</p>  <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:03fe1c07-d788-4b3c-b561-4f3bb0792133" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="xml" name="code">&lt;controls:AutoCompleteBox x:Name="State" ItemSource="{StaticResource StateCollection}" /&gt;</pre></div>
+
+<p><img src="http://media.jeff.wilcox.name/blog/AutoComplete/2.png" />&#160; <br /><strong>Have fun, give it some style.</strong></p>
+
+<p>As a composite control, AutoCompleteBox has a TextBox and usually a ListBox. The TextBoxStyle, ItemContainerStyle, and <strong>ItemTemplate</strong> properties are key to styling. And we expose the complete set of standard control visual states, plus PopupOpened and PopupClosed.</p>
+
+<p>Changing the look of the text box part is easy:</p>
+
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:a9f5081b-6909-4e5a-b705-126a965c5e95" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="xml" name="code">&lt;controls:AutoCompleteBox x:Name="Patient"&gt;
+    &lt;controls:AutoCompleteBox.TextBoxStyle&gt;
+        &lt;Style TargetType="TextBox"&gt;
+            &lt;Setter Property="Background" Value="Red" /&gt;
+            &lt;Setter Property="FontSize" Value="24" /&gt;
+        &lt;/Style&gt;
+    &lt;/controls:AutoCompleteBox.TextBoxStyle&gt;
+&lt;/controls:AutoCompleteBox&gt;</pre></div>
+
+<p><img src="http://media.jeff.wilcox.name/blog/AutoComplete/3.png" />&#160; <br /><strong>You can use your own rich data objects.</strong></p>
+
+<p>If you shove a collection of Airport objects into the control, your business logic can work with the AutoCompleteBox's &quot;SelectedItem&quot; value. Talk about easy.</p>
+
+<p><img src="http://media.jeff.wilcox.name/blog/AutoComplete/jfk.png" /> </p>
+
+<p>
+  <br /><img src="http://media.jeff.wilcox.name/blog/AutoComplete/4.png" />&#160; <br /><strong>AutoComplete with a text list is so 1999.</strong></p>
+
+<p>We're opening the door for auto complete like you've never experienced it before. The drop down inside AutoCompleteBox ships with ListBox. But with a little effort building an adapter, you can easily throw in a media control, TreeView, DataGrid, you name it.</p>
+
+<p><img src="http://media.jeff.wilcox.name/blog/toolkit/SampleControl.png" /> </p>
+
+<p>And don't worry. We made sure to master the text list scenario, too. It just works.</p>
+
+<p><img src="http://media.jeff.wilcox.name/blog/AutoComplete/5.png" />&#160; <br /><strong>This is a preview control. Talk to us.</strong></p>
+
+<p>The Preview <a href="http://www.codeplex.com/Silverlight/Wiki/View.aspx?title=Quality%20Bands&amp;referringTitle=Home">quality band</a> covers controls that are useful, should meet most applications' needs, and is going to just keep getting better.</p>
+
+<p>That is a good thing: we really want to hear your feedback. Your feedback is going to make a difference in the direction and the core scenarios that AutoCompleteBox covers. What sucks? What's missing? What rocks?</p>
+
+<p>Check out the <a href="http://www.codeplex.com/Silverlight/">Silverlight Toolkit</a> today. 
+
+  <br />Experience the <a href="http://silverlight.net/samples/sl2/toolkitcontrolsamples/run/default.html">live toolkit sample</a> page.</p>

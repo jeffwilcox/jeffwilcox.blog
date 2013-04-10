@@ -1,0 +1,102 @@
+---
+layout: post
+comments: true
+title: Template parts and custom controls (quick tip)
+wordpress_id: 633
+wordpress_url: http://www.jeff.wilcox.name/2010/04/template-part-tips/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+imported_link_categories: []
+tags:
+- title: silverlight;-controls;-tips
+  slug: silverlight-controls-tips
+  autoslug: silverlight;-controls;-tips
+---
+<p>Here’s a few simple tips and recommendations when developing custom Silverlight controls, as it relates to template parts.</p>  <p><strong>What’s with all the control development tips?</strong></p>  <p>We’re looking at the best way to share a lot of the ‘black magic’ of control development with the community, and will have details on that another way – today so much of this information is hidden away in blog posts like this one.</p>  <p>Hopefully we’ll have a whitepaper at some point.</p>  <h3>What are template parts?</h3>  <p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TemplateBinding" border="0" alt="TemplateBinding" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/04/TemplateBinding.png" width="576" height="216" /> </p>  <p>Visualizing a control and it’s expected template: “MyControl” has a template part called Button, of type ButtonBase. And although it also may contain a text box, no events from the text box are used. Instead, just a template binding to the Text property.</p>  <p>This control has 1 template part: Button, not two. Don’t be tempted to have a text box template part!</p>  <h3>Do you need template parts or not?</h3>  <p>It’s important to minimize the number of template parts in a control to reduce complexity. Over-engineering controls leads to reduced code quality, expensive control maintenance, and increased testing cost.</p>  <p>If you can expose dependency properties and template bind into those properties from controls in the template, there is absolutely no reason to have parts present.</p>  <p>If you need to hook up to events of anything in the template, it’s likely that you will need to have a part for that sub control.</p>  <p>Choose wisely.</p>  <h3>Use constants for the names</h3>  <p>To prevent potential spelling errors or simple mistakes, it’s a good idea to not hard-code the template part name anywhere in your control.</p>  <p>Instead, add a constant string to the top of the file with the part name. You can then refer to it in the OnApplyTemplate method, the template part attribute, and anywhere else it is needed.</p>  <p>The constant can be protected if a subclass may want to reuse the name.</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:56a12f0a-8e04-429f-abdb-294f6ea8028a" class="wlWriterEditableSmartContent"><pre class="csharp" name="code">private const string PartButtonName = "Button";</pre></div>
+
+<h3>Store parts as private fields in your class</h3>
+
+<p>Template parts are not designed to always be inherited by any subclasses. Though the subclasses are welcome to use the same parts, they should not expect to just use the base classes: they need to use OnApplyTemplate to also grab instances of the parts.</p>
+
+<p>So do use <strong>private fields </strong>to store the parts in the OnApplyTemplate method:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1ca18128-2e4c-4831-903f-778ef6d4a6bd" class="wlWriterEditableSmartContent"><pre class="csharp" name="code">private ButtonBase _button;</pre></div>
+
+<h3>Detach any existing event handlers in OnApplyTemplate</h3>
+
+<p>Controls can be restyled and retemplated as a result. Make sure to detach any event handlers from previous template parts before adding new handlers.</p>
+
+<p>Here’s the typical pattern for that:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:097f53b0-9ab5-4d2e-a0fd-eab5b6785bac" class="wlWriterEditableSmartContent"><pre class="csharp" name="code">public override void OnApplyTemplate()
+{
+    base.OnApplyTemplate();
+    if (_button != null)
+    {
+        _button.Click -= OnButtonClick;
+    }
+
+    _button = GetTemplateChild(PartButtonName) as ButtonBase;
+
+    if (_button != null)
+    {
+        _button.Click += OnButtonClick;
+    }
+}</pre></div>
+
+<h3>Don’t assume template parts exist</h3>
+
+<p>Whenever using template parts in your code, you should not assume that they exist. Always check for null, and unless a significant reason exists for requiring their presence, never throw an error in this condition.</p>
+
+<p>Often code in the class relating to states and properties will execute long before the template is applied, yielding no template part instances early on.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:9a49b70a-8e0f-45d5-a1d7-3c6d32e5c1b5" class="wlWriterEditableSmartContent"><pre class="csharp" name="code">if (_button != null)
+{
+   // Do something with the button
+}</pre></div>
+
+<h3>Mark controls with template part attributes</h3>
+
+<p>Design surfaces like Expression Blend expect that controls are marked with the template part attributes. These are required to provide helpful tooling for editing templates.</p>
+
+<p>Make sure to use the constant template part name that you created a few tips ago:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:d7b145d3-c7c4-4565-bc51-e0f5703d48aa" class="wlWriterEditableSmartContent"><pre class="csharp" name="code">[TemplatePart(Name = PartButtonName, Type = typeof(ButtonBase))]
+public partial class MyControl : ContentControl
+{
+}</pre></div>
+
+<h3>Template parts don’t necessarily inherit from their base class</h3>
+
+<p>It’s possible to have different template parts at each level of a control’s hierarchy. It’s even possible that subclasses may not want to use a template of a base class.</p>
+
+<p>As a result, <strong>never</strong> provide template parts as public or protected properties on your controls. If subclasses want them, they can ask for them.</p>
+
+<p>This is another reason it’s important to quietly check template parts for null, they may not be defined in base classes.</p>
+
+<p>You should define template part attributes on every subclasses where expected. They do not inherit.</p>
+
+<p>Hope this helps.</p>
+
+<h5>Other tips</h5>
+
+<p>David Anson has been furiously writing tips as well as we all have hallway conversations on control development: Check out:</p>
+
+<ul>
+  <li><a href="http://blogs.msdn.com/delay/archive/2010/03/30/sometimes-you-just-gotta-do-the-best-you-can-tip-read-only-custom-dependencyproperties-don-t-exist-in-silverlight-but-can-be-closely-approximated.aspx">Read-only dependency properties in Silverlight</a></li>
+
+  <li><a href="http://blogs.msdn.com/delay/archive/2010/03/29/that-s-why-it-s-called-the-default-value-instead-of-default-values-tip-the-default-value-of-a-dependencyproperty-is-shared-by-all-instances-of-the-class-that-registers-it.aspx">Default values for dependency properties</a></li>
+
+  <li><a href="http://blogs.msdn.com/delay/archive/2010/03/26/when-you-have-two-good-options-go-with-the-easier-one-tip-set-dependencyproperty-default-values-in-a-class-s-default-style-if-it-s-more-convenient.aspx">Style default values if needed</a></li>
+
+  <li><a href="http://blogs.msdn.com/delay/archive/2010/03/25/the-platform-giveth-power-don-t-taketh-it-away-tip-do-not-assign-dependencyproperty-values-in-a-constructor-it-prevents-users-from-overriding-them.aspx">Don’t use the constructor to set defaults</a></li>
+
+  <li><a href="http://blogs.msdn.com/delay/archive/2010/03/24/freedom-isn-t-free-tip-when-creating-a-dependencyproperty-follow-the-handy-convention-of-wrapper-register-static-virtual.aspx">How to define dependency properties</a></li>
+
+  <li><a href="http://blogs.msdn.com/delay/archive/2010/03/23/do-one-thing-and-do-it-well-tip-the-clr-wrapper-for-a-dependencyproperty-should-do-its-job-and-nothing-more.aspx">When using dependency properties, the CLR setters and getters must be super simple</a></li>
+</ul>

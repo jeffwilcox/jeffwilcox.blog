@@ -1,0 +1,59 @@
+---
+layout: post
+comments: true
+title: Do you have any feedback on the AutoCompleteBox API?
+excerpt: As we ready the next release of the AutoCompleteBox control for Silverlight,
+  I'd love to get the community's input on API names, API experience, and any suggestions
+  before we "lock down" the control.
+wordpress_id: 402
+wordpress_url: http://www.jeff.wilcox.name/?p=402
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+imported_link_categories: []
+tags: []
+---
+<img alt="Silverlight" src="http://media.jeff.wilcox.name/blog/mix09/Silverlight.png" title="Silverlight" class="alignnone" align="right" width="210" height="105" vspace="4" hspace="4" />I'm working hard to make sure that the AutoCompleteBox control is refined, perfected, and ready to become an important part of Silverlight.
+
+Now that the control shipped in the <a href="http://silverlight.net/getstarted/silverlight3/default.aspx">Silverlight 3 Beta SDK</a>, we do have a little opportunity to make the right API changes before release, if they make sense.
+
+However, once the control ships in the "Mature" quality band, we've got to uphold the <a href="http://silverlight.codeplex.com/Wiki/View.aspx?title=Quality%20Bands">Silverlight Toolkit quality bands</a> that we've set out: and that means no breaking changes.
+
+<h3>Looking for your API experience and name feedback</h3>
+Do you have any strong feedback? How's this all fit in with the Framework Design Guidelines? Naming?
+
+You'll find the official documentation for the Silverlight AutoCompleteBox control at <a href="http://msdn.microsoft.com/en-us/library/system.windows.controls.autocompletebox(VS.96).aspx">http://msdn.microsoft.com/en-us/library/system.windows.controls.autocompletebox(VS.96).aspx</a> (documentation subject to change).
+
+<h3>Recent API changes</h3>
+
+<h4>ValueMemberBinding instead of explicit trio of Converter properties</h4>
+With the March 2009 release of the <a href="http://silverlight.codeplex.com/">Silverlight Toolkit</a>, we dropped the multiple Converter properties for the control, and went for the more powerful Binding experience by exposing the <a href="http://msdn.microsoft.com/en-us/library/system.windows.controls.autocompletebox.valuememberbinding(VS.96).aspx">ValueMemberBinding</a> property for handling object-to-text conversions.
+
+<h4>Search becomes Filter</h4>
+The AutoCompleteBox shipped in the first two Silverlight Toolkit releases with some mixed nomenclature, intermixing the use of "Filter" and "Search" to mean the same thing.
+
+Thanks to Cheryl's feedback (she's on the UE team), for the next release, these properties will be more consistent, using "Filter": so, imagine that the <a href="http://msdn.microsoft.com/en-us/library/system.windows.controls.autocompletesearchmode(VS.96).aspx">AutoCompleteSearchMode enum</a> will become AutoCompleteFilterMode.
+
+Name changes, vs. functionality changes, should have minimal impact on existing applications, styles, and declarative XAML. But we only get one more chance really to make these changes.
+
+<h3>Providing feedback</h3>
+In general, you should provide feedback through the
+<ul>
+<li><a href="http://silverlight.net/forums/35.aspx">Silverlight.net forums</a></li>
+<li><a href="http://silverlight.codeplex.com/WorkItem/List.aspx">CodePlex issue tracker for the Silverlight Toolkit</a>
+</li></ul>
+
+However, for this particular topic - API names - I think this blog post and the comment section will allow a quick conversation to happen, if you'd like to participate.
+
+And no big promises here: I'm only one person, and we'll still need to talk with our user education experts, program managers, test team, and make a call w.r.t. where to invest resources before shipping.
+
+<h3>Mature Quality Band</h3>
+The Silverlight Toolkit defines the <a href="http://silverlight.codeplex.com/Wiki/View.aspx?title=Quality%20Bands">Mature quality band</a> as follows:
+
+<blockquote>Mature components are ready for full release, meeting the highest levels of quality and stability. Future releases of mature components will maintain a high quality bar with no breaking changes except when such changes are necessary to make them more secure or guarantee future compatibility. Customers should be confident using mature components, knowing that when they upgrade from one version of the Silverlight Toolkit to a newer version it will be a quick and easy process. Due to the heavy focus on backward compatibility between versions, the bar for fixing bugs found in mature components is also considerably higher than any other Quality Band.</blockquote>
+
+I'd really, really like your feedback and suggestions here. Thanks!

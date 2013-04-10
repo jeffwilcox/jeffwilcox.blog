@@ -1,0 +1,89 @@
+---
+layout: post
+comments: true
+title: Building Silverlight 2 and Silverlight 3 Beta applications on the same machine
+excerpt: Although the Silverlight Tools don't have a multi-targeting story, you can
+  build Silverlight 2 and Silverlight 3 Beta applications on the same machine. Here's
+  information on how we do this within the Silverlight Toolkit team.
+wordpress_id: 344
+wordpress_url: http://www.jeff.wilcox.name/?p=344
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+- title: infrastructure
+  slug: infrastructure
+  autoslug: infrastructure
+imported_link_categories: []
+tags: []
+---
+The Silverlight Tools don't have multi-targeting support today, so if you want to continue building Silverlight 2 applications (for production sites), while experimenting and learning about the Silverlight 3 Beta, it isn't that easy.
+
+On the Silverlight Toolkit team, we leave it up to individual team members to decide what core development environment they want. By having the Silverlight 2 and Silverlight 3 SDKs checked into our source enlistment, our TFS build server can produce Silverlight 2 <i>and</i> Silverlight 3 binaries, and we can also msbuild the same bits on our machines, regardless of the Silverlight Tools, SDK, or runtime installed on our machines.
+
+I <a href="http://www.jeff.wilcox.name/2009/01/independent-silverlight-msbuild/">blogged about this back in late January</a> about "building Silverlight code on machines without the SDK installed," though really it was more about "building Silverlight code for multiple Silverlight versions."
+
+<h3>Select your primary development environment</h3>
+Decide whether you would like to do primarily Silverlight 2 or 3 development. Then, install the accompanying tools install, and Expression Blend version.
+
+It is time consuming to move between the two environments, but you can actually uninstall/reinstall the shipping runtime or developer runtime versions of Silverlight if you need to test an app in a specific configuration, without having to do a full reinstall of the <i>tools</i>.
+
+<h3>Preparing your source enlistment</h3>
+<p>On the Toolkit, we have a directory of external tools and engineering resources. One of these contains the Silverlight SDK’s assemblies, libraries, and build scripts, as shown in the video.</p>
+<ul>
+<li>Create a directory to store the MsBuild assets for Silverlight, and copy in the files from %programfiles%MSBuild\Microsoft\Silverlight\v2.0. </li>
+<li>Copy the “Reference Assemblies” directory from %programfiles%\Microsoft SDKs\Silverlight\v2.0\ into the tools directory. </li>
+<li>Copy the “Libraries” directory from %programfiles%\Microsoft SDKs\Silverlight\v2.0\ into the directory. </li>
+</ul>
+<p>You can then use relative paths in your projects or custom build targets to get things rolling.</p>
+
+<h3>How we use a custom &lt;Import /&gt; element in projects</h3>
+Our source code enlistment is broken up into a Silverlight 2 and a Silverlight 3 branch of nearly-identical trees of code. By using a centralized msbuild .targets file, we're able to leave it up to a single file in the branch to select which verison of Silverlight the application should build with.
+
+This actually even works when building in Visual Studio, so opening a project that uses this method, while using the Silverlight 3 Tools, but building a Silverlight 2 app, will build with the verison 2 SDK. Do note that the design-time experience won't work in this scenario.
+
+<h4>Silverlight.CSharp.targets</h4>
+All of our VB and C# source projects for Silverlight, within the source enlistment, reference a relative path, typically something like ..\..\Silverlight.CSharp.targets, instead of the standard Silverlight CSharp targets from the Silverlight MSBuild scripts.
+
+Inside this relative path, it defines the properties. For Silverlight 2:
+<pre name="code" class="xml">
+&lt;Project
+  ToolsVersion=&quot;3.5&quot;
+  DefaultTargets=&quot;Build&quot;
+  xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot;&gt;
+
+  &lt;PropertyGroup&gt;
+    &lt;!-- Define the ExternalTools property first --&gt;
+    &lt;SilverlightBuildResources&gt;$(ExternalTools)\Silverlight\v2.0\&lt;/SilverlightBuildResources&gt;
+    &lt;TargetFrameworkDirectory&gt;$(SilverlightBuildResources)Reference Assemblies\&lt;/TargetFrameworkDirectory&gt;
+    &lt;TargetFrameworkSDKDirectory&gt;$(SilverlightBuildResources)Libraries\Client\&lt;/TargetFrameworkSDKDirectory&gt;
+    &lt;SilverlightRuntimeVersion&gt;2.0.31005.0&lt;/SilverlightRuntimeVersion&gt;
+  &lt;/PropertyGroup&gt;
+  &lt;Import Project=&quot;$(SilverlightBuildResources)Microsoft.Silverlight.CSharp.targets&quot;/&gt;
+
+&lt;/Project&gt;
+</pre>
+
+And for Silverlight 3 Beta:
+<pre name="code" class="xml">
+&lt;Project
+  ToolsVersion=&quot;3.5&quot;
+  DefaultTargets=&quot;Build&quot;
+  xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot;&gt;
+
+  &lt;PropertyGroup&gt;
+    &lt;!-- Define the ExternalTools property first --&gt;
+    &lt;SilverlightBuildResources&gt;$(ExternalTools)\Silverlight\v3.0\&lt;/SilverlightBuildResources&gt;
+    
+    &lt;TargetFrameworkDirectory&gt;$(SilverlightBuildResources)Reference Assemblies\&lt;/TargetFrameworkDirectory&gt;
+    &lt;TargetFrameworkSDKDirectory&gt;$(SilverlightBuildResources)Libraries\Client\&lt;/TargetFrameworkSDKDirectory&gt;
+    &lt;SilverlightRuntimeVersion&gt;3.0.40217.0&lt;/SilverlightRuntimeVersion&gt;
+  &lt;/PropertyGroup&gt;
+  &lt;Import Project=&quot;$(SilverlightBuildResources)Microsoft.Silverlight.CSharp.targets&quot;/&gt;
+&lt;/Project&gt;
+</pre>
+
+Hope this helps and is useful to you and your development team.

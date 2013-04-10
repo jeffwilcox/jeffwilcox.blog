@@ -1,0 +1,87 @@
+---
+layout: post
+comments: true
+title: ! 'MPNS module for Node: A simple push notification helper for the cloud'
+wordpress_id: 876
+wordpress_url: http://www.jeff.wilcox.name/2011/12/node-mpns/
+imported_categories:
+- title: javascript
+  slug: javascript
+  autoslug: javascript
+- title: infrastructure
+  slug: infrastructure
+  autoslug: infrastructure
+- title: windows-phone
+  slug: windows-phone
+  autoslug: windows-phone
+- title: node.js
+  slug: node-js
+  autoslug: node.js
+imported_link_categories: []
+tags: []
+---
+<p>One of the fun projects I’ve been working on recently related to my app has been bringing online a cloud to handle sending push notifications processing. I’m using <a href="http://nodejs.org/">Node.js</a> for this and have a ton of people enjoying the beta push experience right now: toasts, live tiles, etc.</p>  <p>Tonight I pushed to GitHub ‘mpns’, a simple interface and helper to the Microsoft Push Notification Service (MPNS). It essentially takes the simple properties for your live tile update or toast, packages it in a simple XML payload, and then posts it to the subscription endpoint.</p>  <p>It isn’t a lot of code, but I sure hope it helps others who may be experimenting with other platforms while building a great push experience. If you’re using Azure, the Windows Phone team has already provided some awesome content here – <a href="http://windowsteamblog.com/windows_phone/b/wpdev/archive/2011/01/14/windows-push-notification-server-side-helper-library.aspx">Yochay has previously posted</a> about a <a href="http://create.msdn.com/en-us/education/catalog/article/pnhelp-wp7">Windows Push Notification Server Side Helper Library</a>.</p>  <blockquote>   <p>This module is on NPM as 'mpns' or you clone or submodule it from GitHub: <a href="https://github.com/jeffwilcox/mpns">https://github.com/jeffwilcox/mpns</a></p> </blockquote>  <h4>Here’s some simple usage information that I’ve also posted to GitHub.</h4>  <h3>Load in the module</h3>  <pre class="js" name="code">var mpns = require('mpns');</pre>
+
+<h3>Create a new notification</h3>
+
+<p>You can create a new notification object (either of type live tile or toast). Raw notifications are not yet supported.</p>
+
+<p>Property names for the notification object directly correlate to the names used in the MPNS XML payload as documented on MSDN. Properties can either be set directly on the object (such as toast.text1) or by passing the values in as options to the constructor.</p>
+
+<pre class="js" name="code">options =   { text1: 'Hello!'
+            , text2: 'Great to see you today.'
+            };
+
+var toast = new mpns.toast(options);</pre>
+
+<h3>Sending a notification</h3>
+
+<p>To send a notification simply call the <code>send</code> method on the object. The first parameter is the HTTP URI to the MPNS endpoint of the client you'd like to send the notification to. You may provide an optional callback function as well.</p>
+
+<pre class="js" name="code">toast.send('http://sn1.notify.live.net/throttledthirdparty/01.00/YOUR_ENDPOINT_HERE');</pre>
+
+<p>You can also use the other syntax. Let's send a live tile update!</p>
+
+<pre class="js" name="code">var toast = new mpns.liveTile();
+toast.title: 'My App';
+toast.backgroundUri: 'http://sample.com/image.png';
+toast.send('http://sn1.notify.live.net/throttledthirdparty/01.00/YOUR_ENDPOINT_HERE', function(err,res) {
+    if (err) console.dir(err);
+    else console.dir(res);
+});</pre>
+
+<h3>Results object information</h3>
+
+<p>A results object is passed back through the callback and has important information from MPNS.</p>
+
+<ul>
+  <li><code>deviceConnectionStatus</code>: The device status as reported by the service. </li>
+
+  <li><code>notificationStatus</code>: The status of your provided notification. </li>
+
+  <li><code>subscriptionStatus</code>: The status of the subscription URI. </li>
+</ul>
+
+<p>The object will also contain all the key fields for your toast or live tile update, plus the pushType. This makes it easy to store this information in a history log somewhere in the ether.</p>
+
+<h3>Handling Errors</h3>
+
+<p>It is very important as a consumer that you store appropriate actionable data about failed push notification attempts. As a result, the callback's first parameter (err) is set to the standard results object as well as a few additional fields depending on the returned status code from the server.</p>
+
+<p>Remember to take action on that information in order to be a good MPNS citizen. These values may be set in the error object and of interest to you:</p>
+
+<ul>
+  <li><code>minutesToDelay</code>: If this is present, it is the suggested minimum amount of time that you should wait until making another request to the same subscription URI. For HTTP 412s, for example, the minimum time is one hour and so the returned value defaults to 61. </li>
+
+  <li><code>shouldDeleteChannel</code>: If this is set to <code>true</code>, the channel is gone according to MPNS. Delete it from your channel/subscription database and never look back. </li>
+
+  <li><code>error</code>: If an error is captured while trying to make the HTTP request, this will be set to that error callback instance. </li>
+</ul>
+
+<h3>A note about Windows Phone 7.5</h3>
+
+<p>This module permits sending toasts and tiles specific to Mango. If you include the <code>param</code> field when sending a push to a 7.0 (first Windows Phone release) phone, unfortunately it may not be received, or will error out the subscription.</p>
+
+<p>Take care when registering your subscription channels with your cloud service to include the application platform version of the app (7.1 for Mango apps). To rock, maybe also grab the OS version and deployed app version. That information can be helpful when supporting customers.</p>
+
+<p>Hope this helps!</p>

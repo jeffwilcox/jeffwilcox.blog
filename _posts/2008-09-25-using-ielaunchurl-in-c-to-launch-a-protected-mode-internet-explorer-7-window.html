@@ -1,0 +1,133 @@
+---
+layout: post
+comments: true
+title: Using IELaunchURL in C# to launch a protected mode Internet Explorer 7 window
+wordpress_id: 121
+wordpress_url: http://www.jeff.wilcox.name/2008/09/25/using-ielaunchurl-in-c-to-launch-a-protected-mode-internet-explorer-7-window/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: software-development
+  slug: dev
+  autoslug: software-development
+- title: vista
+  slug: vista
+  autoslug: vista
+- title: testing
+  slug: testing
+  autoslug: testing
+- title: windows
+  slug: windows
+  autoslug: windows
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+imported_link_categories: []
+tags: []
+---
+<p>By popular demand, here's the C# equivalent of the C/C++ program I posted earlier today. As things work in the Windows native code world, the C# equivalent takes about 80 lines of code (vs 30). Might be the XML comments though.</p> <p>The main method to the program; if the URL is passed in as a parameter, it will be sent to IE.</p> <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:dcc98cba-b2a0-41bf-aa08-4916bf9d23bb" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">class Program
+{
+    static int Main(string[] args)
+    {
+        string url = args.Length &gt; 0 ? args[0] : null;
+        return ProtectedModeHelper.LaunchInternetExplorer(url);
+    }
+}</pre></div>
+<p><strong>Structures that need to be defined:</strong></p>
+<p><a href="http://msdn.microsoft.com/en-us/library/aa767955(vs.85).aspx">IELAUNCHURLINFO</a> (can be found in the Windows SDK iepmapi.h header file)<br /><a href="http://msdn.microsoft.com/en-us/library/ms684873(VS.85).aspx">PROCESS_INFORMATION</a> (used by CreateProcess, found on <a href="http://www.pinvoke.net/default.aspx/Structures/PROCESS_INFORMATION.html">PInvoke.net</a>)</p>
+<p><strong>Safe native methods:</strong></p>
+<p>ieframe.dll: <a href="http://msdn.microsoft.com/en-us/library/aa767962(VS.85).aspx">IELaunchURL</a></p>
+<p>Here's the helper class and native methods that I came up with. The return value of LaunchInternetExplorer is the PID, or 0. If the machine is not running Windows Vista, then you'll receive a NotSupportedException.</p>
+<p><strong>ProtectedModeHelper.cs</strong></p>
+<p>
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:483e2c80-0320-4c32-a361-359e7e2e87b3" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">using System;
+using System.Runtime.InteropServices;
+
+namespace YourNamespaceHere
+{
+    // Engineered from iepmapi.h in the Windows SDK
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct IELAUNCHURLINFO
+    {
+        public int cbSize;
+        public int dwCreationFlags;
+    }
+
+    // PInvoke.net
+    // http://www.pinvoke.net/default.aspx/Structures/PROCESS_INFORMATION.html 
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct PROCESS_INFORMATION
+    {
+        public IntPtr hProcess;
+        public IntPtr hThread;
+        public int dwProcessId;
+        public int dwThreadId;
+    }
+
+    /// &lt;summary&gt;
+    /// Native methods class.
+    /// &lt;/summary&gt;
+    internal static class SafeNativeMethods
+    {
+        /// &lt;summary&gt;
+        /// The Internet Explorer UI library.
+        /// &lt;/summary&gt;
+        private const string InternetExplorerUILibrary = "ieframe.dll";
+
+        /// &lt;summary&gt;
+        /// Launch a URL with Internet Explorer. Works with IE's protected 
+        /// mode.
+        /// &lt;/summary&gt;
+        /// &lt;param name="url"&gt;The URI to navigate to.&lt;/param&gt;
+        /// &lt;param name="pProcInfo"&gt;Process information struct by reference 
+        /// that will contain the opened process ID.&lt;/param&gt;
+        /// &lt;param name="lpInfo"&gt;The launch information struct.&lt;/param&gt;
+        /// &lt;returns&gt;Returns a value indicating whether the native call was 
+        /// successful.&lt;/returns&gt;
+        [DllImport(InternetExplorerUILibrary)]
+        internal static extern bool IELaunchURL(
+            [MarshalAs(UnmanagedType.LPWStr)] string url, 
+            ref PROCESS_INFORMATION pProcInfo, 
+            ref IELAUNCHURLINFO lpInfo);
+    }
+
+    /// &lt;summary&gt;
+    /// Launch a protected mode IE and provide the process ID.
+    /// &lt;/summary&gt;
+    public static class ProtectedModeHelper
+    {
+        /// &lt;summary&gt;
+        /// Launch Internet Explorer and return the PID. Requires Vista; an 
+        /// Exception will be thrown on platforms prior to it.
+        /// &lt;/summary&gt;
+        /// &lt;param name="url"&gt;The url to navigate to. Providing null will 
+        /// navigate the browser to the user's homepage.&lt;/param&gt;
+        /// &lt;returns&gt;Returns the IE process ID if successful, or 0.&lt;/returns&gt;
+        public static int LaunchInternetExplorer(string url)
+        {
+            if (Environment.OSVersion.Version.Major &gt;= 6)
+            {
+                PROCESS_INFORMATION pi = new PROCESS_INFORMATION();
+                IELAUNCHURLINFO li = new IELAUNCHURLINFO();
+                li.cbSize = Marshal.SizeOf(typeof(IELAUNCHURLINFO));
+                return SafeNativeMethods.IELaunchURL(url, ref pi, ref li) ?
+                    pi.dwProcessId : 0;
+            }
+            else
+            {
+                throw new NotSupportedException("Protected Mode requires Windows Vista or later.");
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Launch Internet Explorer and returns the PID.
+        /// &lt;/summary&gt;
+        /// &lt;returns&gt;Returns the IE process ID if successful, or 0.&lt;/returns&gt;
+        public static int LaunchInternetExplorer()
+        {
+            return LaunchInternetExplorer(null);
+        }
+    }
+}</pre></div></p>
+<p>Hope this helps!</p>

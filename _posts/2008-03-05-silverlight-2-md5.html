@@ -1,0 +1,63 @@
+---
+layout: post
+comments: true
+title: ! 'Silverlight 2: MD5 hash string provider implementation'
+wordpress_id: 39
+wordpress_url: http://www.jeff.wilcox.name/2008/03/05/silverlight-2-md5-hash-string-provider-implementation/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: mix
+  slug: mix
+  autoslug: mix
+imported_link_categories:
+- title: favorite-blogs
+  slug: great
+  autoslug: favorite-blogs
+tags: []
+---
+The cryptography services in Silverlight today only include the SH1 algorithm.  That's quite useful, but throughout the web there is still a significant use of the MD5 algorithm today.  This is a re-post of a managed code implementation of MD5 that has been working great for my Flickr API work.
+
+
+
+<strong>To use this component in your own Silverlight 2 Beta 1 project</strong>, you can grab the bits either way:
+
+Download <a href="http://media.jeff.wilcox.name/blog/mix08/Md5.cs.txt">Md5.cs</a>
+
+Download <a href="http://media.jeff.wilcox.name/blog/mix08/Silverlight.Md5.zip">JeffWilcox.Md5.dll</a> (zip, referenced component can be used by C# and VB Silverlight 2 beta 1 apps)
+
+
+
+The MD5 types are in the namespace JeffWilcox.Utilities.Silverlight, so that it doesn't clash with anything.  Feel free to rename the namespace to suit your project's needs.  The easiest way to use these bits is just to add a reference to the assembly to your project, the MD5 assembly will then be included in your finished app's .Xap file.
+
+
+
+While working on implementing the <a href="http://flickr.com/services/">Flickr web services API</a> within a .NET-enabled Silverlight sample application, I needed to use the MD5 algorithm that isn’t available within the cryptography APIs. Like many REST-based web services, the simple Flickr API uses MD5 along with a form of “signing” with a known secret.
+
+
+
+The excellent MD5 implementation was created by the <a href="http://www.flowgroup.fr/en/kb/technical/md5.aspx">GL Conseil/Flow Group SAS</a>; they did this work to enable MD5 within the Compact Framework 2.0.
+
+
+
+Calling the function is very simple.  In C#:
+
+
+
+<img src="http://media.jeff.wilcox.name/blog/mix08/MD5-CS.png" />
+
+
+
+And in VB:
+
+
+
+<img src="http://media.jeff.wilcox.name/blog/mix08/MD5-VB.png" /> 
+
+
+
+Hope this helps!

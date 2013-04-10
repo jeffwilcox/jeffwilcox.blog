@@ -1,0 +1,68 @@
+---
+layout: post
+comments: true
+title: Perform a full IIS 7 + ASP.NET install from the command prompt
+wordpress_id: 6
+wordpress_url: http://linux.jeff.wilcox.name/2007/01/29/aspnet-full-iis7-install/
+imported_categories:
+- title: vista
+  slug: vista
+  autoslug: vista
+- title: web-servers
+  slug: webservers
+  autoslug: web-servers
+- title: asp.net
+  slug: aspnet
+  autoslug: asp.net
+- title: windows
+  slug: windows
+  autoslug: windows
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+imported_link_categories: []
+tags:
+- title: asp.net
+  slug: aspnet
+  autoslug: asp.net
+- title: iis
+  slug: iis
+  autoslug: iis
+- title: windows-vista
+  slug: windows-vista
+  autoslug: windows-vista
+- title: vista
+  slug: vista
+  autoslug: vista
+---
+[RAW]
+
+<P>If you have a need to install the full version of IIS 7.0 (all features, options, and modules—including ASP.NET 2.0), you can do this from the command line using the new Package Manager tool as an alternative to the Add/Remove Windows Features interface.</P>
+
+
+
+<P>Simply execute the following from an elevated command prompt (it will also output a log file, that's an optional parameter only):</P>
+
+
+
+<P><TT>start /w %windir%\system32\pkgmgr.exe /l:logStep.etw /iu:IIS-WebServerRole;IIS-WebServer;IIS-CommonHttpFeatures;IIS-StaticContent;IIS-DefaultDocument;IIS-DirectoryBrowsing;IIS-HttpErrors;IIS-HttpRedirect;IIS-ApplicationDevelopment;IIS-ASPNET;IIS-NetFxExtensibility;IIS-ASP;IIS-CGI;IIS-ISAPIExtensions;IIS-ISAPIFilter;IIS-ServerSideIncludes;IIS-HealthAndDiagnostics;IIS-HttpLogging;IIS-LoggingLibraries;IIS-RequestMonitor;IIS-HttpTracing;IIS-CustomLogging;IIS-ODBCLogging;IIS-Security;IIS-BasicAuthentication;IIS-WindowsAuthentication;IIS-DigestAuthentication;IIS-ClientCertificateMappingAuthentication;IIS-IISCertificateMappingAuthentication;IIS-URLAuthorization;IIS-RequestFiltering;IIS-IPSecurity;IIS-Performance;IIS-HttpCompressionStatic;IIS-HttpCompressionDynamic;IIS-WebServerManagementTools;IIS-ManagementConsole;IIS-ManagementScriptingTools;IIS-ManagementService;IIS-IIS6ManagementCompatibility;IIS-Metabase;IIS-WMICompatibility;IIS-LegacyScripts;IIS-LegacySnapIn;IIS-FTPPublishingService;IIS-FTPServer;IIS-FTPManagement;WAS-WindowsActivationService;WAS-ProcessModel;WAS-NetFxEnvironment;WAS-ConfigurationAPI</TT></P>
+
+
+
+<P>This should work with Windows Vista Business, Enterprise, and Ultimate SKUs.&nbsp; On x64 machines, you’ll want to make sure to execute this from an elevated 64-bit command prompt.</P>
+
+
+
+<P>Background:<BR>A useful new feature of IIS 7 is its componentization; if you don’t need a particular feature of the server, such as CGI, simply exclude it.</P>
+
+
+
+<P>Often while performing testing or preparing a development workstation, using pkgmgr.exe can save a little time if you’re looking for all the features.&nbsp; You can also modify the parameters to leave off specific features.</P>
+
+
+
+<P>Update:<BR>Looks like there's finally a document on this at the IIS web site as well, so if you're using Home Premium or want to learn more about pkgmgr.exe, check out the article at <A href="http://www.iis.net/default.aspx?tabid=2&amp;subtabid=25&amp;i=958" mce_href="http://www.iis.net/default.aspx?tabid=2&amp;subtabid=25&amp;i=958">http://www.iis.net/default.aspx?tabid=2&amp;subtabid=25&amp;i=958</A>.</P>
+
+
+
+[/RAW]

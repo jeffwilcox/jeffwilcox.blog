@@ -1,0 +1,93 @@
+---
+layout: post
+comments: true
+title: ! 'Code display: Moving back from screen captures to text'
+wordpress_id: 55
+wordpress_url: http://www.jeff.wilcox.name/2008/05/21/blog-syntax/
+imported_categories:
+- title: general
+  slug: general
+  autoslug: general
+- title: web
+  slug: web
+  autoslug: web
+imported_link_categories: []
+tags: []
+---
+<p>Blog authors have always struggled (well, at least I have!) with the issue of pasting in code samples. In the past I&#8217;ve tried a few things, from using <a href="http://fluxcapacity.net/2007/07/22/one-solution-to-wordpress-code-snippet-formatting-problems/" target="_blank">Visual Studio to WordPress formatting tools</a> to Windows Live Writer plugins for code.&#160; I settled on using screen captures, with the intention of attaching the code projects as downloadable text files.</p>  <p>Today, I&#8217;m making an attempt to move back to raw &lt;pre /&gt; tags, populated with text, that should be formatted on the fly by modern web browsers.&#160; This is great for folks that visit my blog, but does deliver a less-than-attractive experience for newsreaders.</p>  <p>This is accomplished using:</p>  <ul>   <li><a href="http://windowslivewriter.spaces.live.com/" target="_blank">Windows Live Writer</a> </li>    <li>Coskun Sunali&#8217;s <a href="http://gallery.live.com/liveItemDetail.aspx?li=ce0ed754-9088-4bdf-974d-bb3f67726b62&amp;bt=9&amp;pl=8" target="_blank">Insert Tag Snippet</a> plugin for Writer </li>    <li>Alex Gorbatchev&#8217;s <a href="http://code.google.com/p/syntaxhighlighter/" target="_blank">syntaxhighlighter</a> </li> </ul>  <p>Scott Guthrie&#8217;s monster blog posts are amazing, and the look is consistent everywhere.&#160; This is because they&#8217;re full of Visual Studio + code screen captures.&#160; I&#8217;m sure the syntax highlighter screen caps set off the latest wave of .NET developer&#8217;s color customizing that&#8217;s on all the dev&#8217;s machines that I&#8217;ve seen.</p>  <p>Here&#8217;s what C# code used to look like on my blog:</p>  <p><img src="http://media.jeff.wilcox.name/blog/dom/js2.png" /> </p>  <p>On to samples of the new system:</p>  <h3>C#</h3>  <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:b521b14b-1cf4-4847-950d-87601d79bcb3" style="padding-right: 0px; display: inline; padding-left: 0px; float: none; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">    [TemplatePart(Name = HyperlinkButton.StateDisabledName, Type = typeof(Storyboard))]
+    public partial class HyperlinkButton : ButtonBase
+    {
+        #region NavigateUri
+        /// &lt;summary&gt;
+        /// Gets or sets a URI to navigate to when the link is clicked.
+        /// &lt;/summary&gt;
+        [TypeConverter(typeof(UriTypeConverter))]
+        public Uri NavigateUri
+        {
+            get { return GetValue(NavigateUriProperty) as Uri; }
+            set { SetValue(NavigateUriProperty, value); }
+        }</pre></div>
+
+<h3>Visual Basic</h3>
+
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:36af7b43-c757-4e9f-ad16-8a668e6384ec" style="padding-right: 0px; display: inline; padding-left: 0px; float: none; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="vb">Imports Microsoft.Silverlight.Testing
+Imports Microsoft.VisualStudio.TestTools.UnitTesting
+
+&lt;TestClass()&gt; _
+Public Class Class1
+
+    ' This is a super simple test
+    Public Sub SimpleTest()
+        Assert.IsTrue(True)
+    End Sub
+
+End Class</pre></div>
+
+<h3>JavaScript</h3>
+
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:2cab03b8-3029-4f01-8392-f0ed7051f7c7" style="padding-right: 0px; display: inline; padding-left: 0px; float: none; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="js">var cssNode = document.createElement('link');
+cssNode.type = 'text/css';
+cssNode.rel = 'stylesheet';
+cssNode.href = ss;
+cssNode.media = 'screen';
+
+// Append the new node
+head.appendChild(cssNode);</pre></div>
+
+<h3>XML</h3>
+
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:19c38a03-445d-4491-b382-c844a3e0caa4" style="padding-right: 0px; display: inline; padding-left: 0px; float: none; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;items&gt;
+  &lt;item type="photoset" id="395" owner="12037949754@N01"
+		primary="6521" secret="5a3cc65d72" server="2"
+		commentsold="1" commentsnew="1"
+		views="33" photos="7" more="0"&gt;
+    &lt;title&gt;A set of photos&lt;/title&gt;
+    &lt;activity&gt;
+      &lt;event type="comment"
+			user="12037949754@N01" username="Bees"
+			dateadded="1144086424"&gt;yay&lt;/event&gt;
+    &lt;/activity&gt;
+  &lt;/item&gt;
+&lt;/items&gt;</pre></div>
+
+<h3>XAML</h3>
+
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:484d377a-e11d-4caa-8183-edc50b8d09d1" style="padding-right: 0px; display: inline; padding-left: 0px; float: none; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="xml">&lt;ResourceDictionary 
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"&gt;
+
+    &lt;!-- Default style for System.Windows.Controls.Button --&gt;
+    &lt;Style TargetType="Button"&gt;
+        &lt;Setter Property="IsEnabled" Value="true" /&gt;
+        &lt;Setter Property="IsTabStop" Value="true" /&gt;
+        &lt;Setter Property="Background" Value="#FF003255" /&gt;
+        &lt;Setter Property="Foreground" Value="#FF313131" /&gt;
+        &lt;Setter Property="MinWidth" Value="5" /&gt;
+        &lt;Setter Property="MinHeight" Value="5" /&gt;
+        &lt;Setter Property="Margin" Value="0" /&gt;
+        &lt;Setter Property="HorizontalContentAlignment" Value="Center" /&gt;
+        &lt;Setter Property="VerticalContentAlignment" Value="Center" /&gt;
+        &lt;Setter Property="Cursor" Value="Arrow" /&gt;</pre></div>
+
+<p>I&#8217;ll probably do some customizing of the highlighting brushes in the future, or see about porting the library to C# + Silverlight 2.&#160; Let me know what you think about this change as I begin posting some new content: a step in the right direction?</p>

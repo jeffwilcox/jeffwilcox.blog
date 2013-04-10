@@ -1,0 +1,43 @@
+---
+layout: post
+comments: true
+title: Adding ToArgb() to the Silverlight Color class
+wordpress_id: 458
+wordpress_url: http://www.jeff.wilcox.name/2009/09/silverlight-toargb/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+imported_link_categories: []
+tags: []
+---
+<p>If you’re using existing imaging libraries with your Silverlight applications, they often represent a Color from the System.Drawing world in the full framework as an integer. An ARGB value is a 32-bit integer with the byte-ordering of AARRGGBB. Using some simple bit shifts and an extension method, you can have this functionality in Silverlight as well.</p>  <p>Just add the following class to your project. The extension class is internal, and defined in the same namespace as Color, so it’ll always be accessible:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:656e40aa-b88f-45b1-8d80-1e44d2ca07c9" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">// (c) Copyright Microsoft Corporation.
+// This source is subject to the Microsoft Public License (Ms-PL).
+// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+// All other rights reserved.
+
+namespace System.Windows.Media
+{
+    internal static class ColorExtensions
+    {
+        public static int ToArgb(this Color color)
+        {
+            int argb = color.A &lt;&lt; 24;
+            argb += color.R &lt;&lt; 16;
+            argb += color.G &lt;&lt; 8;
+            argb += color.B;
+
+            return argb;
+        }
+    }
+}</pre></div>
+
+<p>Hope this helps!</p>
+
+<p><em>(And yes, I tried to add this information to the MSDN documentation on ToArgb() using the Community Content feature, but apparently it didn’t like the input. Figuring the search engines will catalog this well enough.)</em></p>

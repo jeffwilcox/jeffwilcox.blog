@@ -1,0 +1,23 @@
+---
+layout: post
+comments: true
+title: Silverlight unit test project templates
+wordpress_id: 47
+wordpress_url: http://www.jeff.wilcox.name/2008/03/25/test-templates/
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: testing
+  slug: testing
+  autoslug: testing
+imported_link_categories:
+- title: favorite-blogs
+  slug: great
+  autoslug: favorite-blogs
+- title: presentation-platform
+  slug: net-bloggers
+  autoslug: presentation-platform
+tags: []
+---
+<p>In my <a href="http://www.jeff.wilcox.name/2008/03/07/silverlight-unit-testing/">introductory post</a> about the Silverlight unit testing work we’ve done, I also included some Visual Studio project and item templates that make it easier to add tests to your own apps and class libraries.&nbsp; Here’s that information in one place:</p> <h3>Test Project</h3> <p><a href="http://media.jeff.wilcox.name/blog/mix08/SilverlightTestProject.zip">SilverlightTestProject.zip</a> (8.8k)</p> <p>To install the template, save this file into your “%userprofile%\Documents\Visual Studio 2008\Templates\ProjectTemplates” directory</p> <p>This project template is used for adding tests to your existing Silverlight solution.&nbsp; To use the test project once added to your project, simply right-click on it, set it as the ‘StartUp project’ and begin debugging.</p> <h3>Test Class</h3> <p><a href="http://media.jeff.wilcox.name/blog/mix08/SilverlightTestClass.zip">SilverlightTestClass.zip</a> (8.0k)</p> <p>To install, save this into “%userprofile%\Documents\Visual Studio 2008\Templates\ItemTemplates” </p> <p>This is a simple test class template that includes the unit test metadata namespace, a sample test class, and a single inconclusive test method.</p> <h3>What hookup is performed by the test project</h3> <p>Test projects meet these conditions:</p> <ul> <li>Are Silverlight application types, not class libaries  </li><li>Reference the unit test framework assemblies built for Silverlight  </li><li>Are packed up into a .Xap that itself includes the unit test framework assemblies  </li><li>Do not contain Page.xaml or Page.xaml.cs files, instead the RootVisual is set to UnitTestSystem.CreateTestPage(this)  </li><li>Typically just dynamically generates a test page, although you can use the development web server or an IIS/Apache installation just fine as well </li></ul> <p>Hope this helps!</p>

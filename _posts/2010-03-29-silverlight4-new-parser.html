@@ -1,0 +1,130 @@
+---
+layout: post
+comments: true
+title: ! 'Silverlight 4: New parser implementation. New parser features.'
+excerpt: Buttons with direct content. Better error messages. Designers and developers
+  will like the new parser implementation in Silverlight 4.
+wordpress_id: 631
+wordpress_url: http://www.jeff.wilcox.name/2010/03/silverlight4-new-parser/
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+imported_link_categories: []
+tags:
+- title: silverlight;-parser
+  slug: silverlight-parser
+  autoslug: silverlight;-parser
+---
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="XamlNewFeatures" border="0" alt="XamlNewFeatures" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/03/XamlNewFeatures.png" width="685" height="28" /> </p>  <p><a href="http://www.flickr.com/photos/lara604/2369412952/"><img style="border-bottom: 0px; border-left: 0px; display: inline; margin-left: 0px; border-top: 0px; margin-right: 0px; border-right: 0px" title="Designers wear black turtlenecks. Photo by Lara604 - http://www.flickr.com/photos/lara604/2369412952/ (creative commons)" border="0" alt="Designers wear black turtlenecks. Photo by Lara604 - http://www.flickr.com/photos/lara604/2369412952/ (creative commons)" align="right" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/03/XamlLimitations.png" width="350" height="281" /></a> XAML is such an important thing for enabling modern user interfaces that it’s easy to forget how complex and integral the parser is to the Silverlight platform.</p>  <p>It’s the thing that lets us geek out in code when we need to, yet still talk to our designer friends who wear black turtlenecks, dream in Adobe Illustrator actions, and love Expression Blend.</p>  <p>Your designer friends are going to like Silverlight 4 more than Silverlight 3, thanks to new features like direct content.</p>  <p>Developers are going to like Silverlight 4 more, since there are new, better error messages both while using Visual Studio, and at runtime. This means fewer <a href="http://www.bing.com/search?q=Silverlight+AG_E_UNKNOWN">AG_E_UNKNOWN errors</a>.</p>  <h2>What’s new?</h2>  <p>In Silverlight 4, more than a year of development went into a modern, improved parser to offer new XAML features, fix some common requests and complaints, and develop a modern platform for future parser improvements to build upon.</p>  <p>A number of expert engineers at Microsoft came together to make this possible, and hopefully you’ll find the improvements worthwhile.</p>  <p>In no particular order, and not necessarily exhaustive, here’s a look at some of the changes (more comprehensive information in <a href="http://www.davidpoll.com/2010/03/15/new-in-the-silverlight-4-rc-xaml-features/">David Poll’s similar blog post</a>).</p>  <h3>Whitespace treatment</h3>  <p>XAML in Silverlight 4 is parsed as you’d expect for XML in general: newlines, for instance, don’t show up unless you add the xml:space=’preserve’ attribute first.</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:c9caf72d-2517-4c96-a327-fe3cc6edae67" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;StackPanel Orientation="Horizontal"&gt;
+    &lt;TextBlock&gt;
+       &lt;TextBlock.Text&gt;
+          This is the first line of the text block, 
+          and this is still the first line.
+       &lt;/TextBlock.Text&gt;
+    &lt;/TextBlock&gt;
+    &lt;TextBlock xml:space="preserve"&gt;
+       &lt;TextBlock.Text&gt;
+          This is the first line of the text block, 
+          and this is the second line.
+       &lt;/TextBlock.Text&gt;
+    &lt;/TextBlock&gt;
+&lt;/TextBlock&gt;</pre></div>
+
+<p><strong>Upgrade warning: </strong>This change is double-edged. When we moved the Silverlight Toolkit samples to use the new parser, we were bit by the source code that displays in the source viewer: it was all one line! The preservation line had to be added, since previously we depended on the parser just grabbing and using the newlines from the parser input for breaks in the text boxes.</p>
+
+<h3>Direct content</h3>
+
+<p>Buttons work better now. You couldn’t do this before:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:70aae754-352e-48b4-b8f6-387c0353b5c6" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;Button&gt;Ok&lt;/Button&gt;</pre></div>
+
+<h3>Error messages</h3>
+
+<p>Many, many bugs around error message handling have been fixed thanks to the new parser’s error service implementation. In most situations, errors are more descriptive, similar to their WPF counterparts, and will contain useful line and column number information.</p>
+
+<p>In Silverlight 3, many times XAML parsing problems resulted in errors being identified as being at line 0, column 0, and those days are mostly over.</p>
+
+<h3>Dictionaries done right</h3>
+
+<p>If a type or property implements IDictionary, you can now use x:Key to add entries into dictionaries. <em>Note</em> that we’re talking about the non-generic IDictionary interface.</p>
+
+<h3>ISupportInitialize</h3>
+
+<p>A feature WPF developers have enjoyed, begin and end initialization calls are made before and after properties are defined in XAML.</p>
+
+<h3>Template bindings require CLR getters and setters</h3>
+
+<p>Dependency properties must have defined CLR getters and settings to be used in template bindings, consistent with WPF.</p>
+
+<h3>XmlnsDefinitionAttribute</h3>
+
+<p>Especially when using the Silverlight Toolkit and other control libraries, you needed to define a new XMLNS definition in every page, for every assembly you wanted to use.</p>
+
+<p>xmlns:controlsToolkit=”…”, xmlns:navigation=”…”, etc.</p>
+
+<p>Now with <a href="http://msdn.microsoft.com/en-us/library/system.windows.markup.xmlnsdefinitionattribute.aspx">XmlnsDefinitionAttribute</a> (an assembly-level attribute) support, you often can get by with less. All the assemblies in a single product can share a namespace which you can then just define one time.</p>
+
+<h3>x:Uid support</h3>
+
+<p>Uids are better supported, paving the way for localization tools and other uses of <a href="http://msdn.microsoft.com/en-us/library/bb613571.aspx">x:Uid</a>.</p>
+
+<h3>Root default namespace restriction removed</h3>
+
+<p>Prior to Silverlight 4, the root XAML namespace had to be one of the supported standard namespaces. This restriction is removed. Note that you still need it if you want to reference set properties that come from the core Silverlight elements.</p>
+
+<h2>What about backward compatibility?</h2>
+
+<p>Compatibility with previous versions of Silverlight is one of the most important goals for the development and test teams working on Silverlight. As a result, there are a fair number of “quirks mode” checks throughout the codebase.</p>
+
+<p>Whenever a bug fix or new feature is implemented, a quirks mode check often needs to be inserted to maintain the previous codepaths for compatibility reasons.</p>
+
+<p>It’s a good technical challenge, and though “quirking” probably has a bad reputation from the Internet Explorer 5 &amp; 6 days, it really does work well in Silverlight.</p>
+
+<h3>Dual parser implementations</h3>
+
+<p>Beyond just quirks mode checks in the Silverlight runtime, we have decided to also include the Silverlight 3 parser inside of Silverlight 4 for compatibility reasons.</p>
+
+<p>At the start of the code path that parses XAML and eventually returns an object or tree, there’s an if/else check that keeps the parser versions completely separate:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:70b52b1a-1d05-448a-9f8c-170dc7bae926" class="wlWriterEditableSmartContent"><pre class="csharp" name="code">    if (CQuirksMode::ShouldUseSL3Parser(pCore))
+    {
+        // ... Old parser code path
+    }
+    else
+    {
+        // ... New, awesome parser code path
+    }</pre></div>
+
+<p>And the underlying quirks mode check whether the application’s major version is less than 4.</p>
+
+<h3>Which parser will be used?</h3>
+
+<p>The <strong>target application’s Silverlight runtime version</strong> is what determines which parser will be used at runtime. This value gets placed inside of the application manifest XAML file, in the application’s .Xap, at build time.</p>
+
+<p>If you examine a .Xap file (rename to .Zip, extract the contents), inside the root directory you will find a file named AppManifest.xaml.</p>
+
+<p>In the Deployment element there is an attribute called RuntimeVersion. This needs to start with 4.0 to use the new parser, such as:</p>
+
+<p>
+  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1afce63e-d1e9-4770-8ba5-d7d3c2649e41" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;Deployment 
+    xmlns="http://schemas.microsoft.com/client/2007/deployment" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    EntryPointAssembly="SilverBugger" 
+    EntryPointType="JeffWilcox.SilverBugger.App" 
+    RuntimeVersion="4.0.50303.0" /&gt;</pre></div>
+</p>
+
+<p><em>Note that I’ve removed the rest of the file contents for brevity.</em></p>
+
+<p>This means that control and component developers need to be aware of this for new controls: if you have a control whose default styles and templates expect the Silverlight 4 XAML parser to be used (if you’re using direct Button content, for example), then you need to make sure your customers only use those components with Silverlight 4 applications.</p>
+
+<h2>What about System.Xaml?</h2>
+
+<p>System.Xaml shipped with WPF 4, and is a modern managed XAML parser implementation. We had signifcant knowledge and code sharing on the team to make sure that the implementations were similar, common, and yet they are different.</p>
+
+<p>The parser in Silverlight is a complex implementation because it often has to bridge the native/managed code gap: so much of the core Silverlight runtime is implemented in native code, so properties and other information need to be shared between the two.</p>
+
+<p>Though this is not a technical discussion of the implementation, I will note that there is a crisp interface shared by both a XamlNativeRuntime and XamlManagedRuntime, and it’s pretty impressive.</p>
+
+<p><em>Let me know how your experiences are with the new Silverlight 4 parser.</em></p>

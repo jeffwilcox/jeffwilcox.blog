@@ -1,0 +1,58 @@
+---
+layout: post
+comments: true
+title: What's new with the Silverlight AutoCompleteBox
+excerpt: The AutoCompleteBox control received some data binding improvements and can
+  now be found in the Silverlight 3 Beta SDK.
+wordpress_id: 350
+wordpress_url: http://www.jeff.wilcox.name/?p=350
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+imported_link_categories: []
+tags: []
+---
+<img alt="Silverlight" src="http://media.jeff.wilcox.name/blog/mix09/Silverlight.png" title="Silverlight" class="alignnone" align="right" width="210" height="105" vspace="4" hspace="4" />If you downloaded and installed the excellent <a href="http://silverlight.codeplex.com/">Silverlight Toolkit March 2009</a> release, you probably noticed that there were some cosmetic assembly name and namespace changes. You might also be wondering, "where is the AutoCompleteBox?"
+
+Here's some information on the <a href="http://silverlight.codeplex.com/Wiki/View.aspx?title=Silverlight%20Toolkit%20March%202009%20change%20list">changes in the latest March 2009 release</a> of the control, including the binding improvements we made to the API surface area. The control is currently in the "Stable" quality band, as defined by the Silverlight Toolkit, and is tracking towards a "Mature" release in the coming months given the open issues, test efforts and coverage, and general feedback.
+
+These changes are available in both the Silverlight 2 and Silverlight 3 builds of the control.
+
+<h3>Design time experience</h3>
+You'll find the AutoCompleteBox automatically in Visual Studio's Toolbox and Expression Blend 3's Asset Library.
+
+<h3>Binding improvements</h3>
+<h4>SelectedItem can be two-way bound</h4>
+The SelectedItem property is now settable. Previously it was a read-only dependency property, not exactly helping with data binding scenarios.
+
+<h4>Converter trio replaced with a great ValueMemberBinding property</h4>
+The somewhat confusing requirement for either overriding the ToString method on bound objects, or using the entire "Converter story" (an IValueConverter and trio of properties) is gone, replaced by a ValueMemberBinding property.
+
+Any existing value converters will work by specifying the binding with that converter set inside it.
+
+This enables a clean XAML-only method of setting the binding to use to select the text value for a data object.
+
+For instance, a business object with properties "Name", "City", and "State", could set the XAML value to {Binding Name}, without having to write any converter.
+
+<h3>Where the AutoCompleteBox is now</h3>
+The control lives in the Silverlight Toolkit still for Silverlight 2 development, and has been moved into the Silverlight 3 SDK. The move into the SDK is a great win for developers, as the SDK is available to many developers. The AutoCompleteBox for Silverlight 3 also benefits from the extension caching story in the platform, as an official SDK control. I do still strongly recommend that you download, use, and embrace the Silverlight Toolkit, because there's new hotness like <a href="http://blogs.msdn.com/delay/archive/2009/03/19/silverlight-charting-is-faster-and-better-than-ever-silverlight-toolkit-march-09-release-now-available.aspx">an area series for charting</a>, <a href="http://www.sitechno.com/Blog/SilverlightToolkitMarch2009Released.aspx">an accordion control</a>, and <a href="http://www.jeff.wilcox.name/2009/03/silverlight-toolkit-installer/">an installer</a> that make it really, really to use.
+
+<h4>Silverlight 2</h4>
+Assembly: System.Windows.Controls.Input.Toolkit
+Shipping in: <a href="http://silverlight.codeplex.com/">Silverlight Toolkit</a>
+Namespace: System.Windows.Controls
+Former location: Microsoft.Windows.Controls (namespace and assembly)
+
+<h4>Silverlight 3 Beta</h4>
+Assembly: System.Windows.Controls.Input
+Shipping in: Silverlight 3 Beta SDK
+Namespace: System.Windows.Controls
+
+<h3>What next?</h3>
+We have a number of open issues for the control, thanks to CodePlex and the internal Microsoft bug database, that are being triaged and addressed. The next official AutoCompleteBox release will be with the next Silverlight 3 SDK release.
+
+Hope you enjoy the new improvements to binding in this control.

@@ -1,0 +1,59 @@
+---
+layout: post
+comments: true
+title: Vista's "Restore Previous Versions" feature is a lifesaver
+wordpress_id: 9
+wordpress_url: http://linux.jeff.wilcox.name/2007/03/31/vista-file-restore/
+imported_categories:
+- title: vista
+  slug: vista
+  autoslug: vista
+- title: windows
+  slug: windows
+  autoslug: windows
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+imported_link_categories:
+- title: msft-.net-bloggers
+  slug: ndp
+  autoslug: msft-.net-bloggers
+tags:
+- title: windows-vista
+  slug: windows-vista
+  autoslug: windows-vista
+- title: vista
+  slug: vista
+  autoslug: vista
+---
+[RAW]
+
+<P>Last week a lot of my hard work was saved by Windows Vista and its updated System Restore capabilities.&nbsp; There are a lot of features hiding in Vista that not everyone is aware of, and this is one of those that is a real lifesaver but hidden away with that right mouse click.</P>
+
+
+
+<P>While cleaning up an enlistment to some code, I accidentally permanently deleted a very large tree that included some important code changes, representing a few hours of work over two days on refactoring.&nbsp; “Oops.”&nbsp; At this point, my first instinct was to run to one of those great undeleted tools such as <A class="" href="http://www.handyrecovery.com/" mce_href="http://www.handyrecovery.com/">HandyRecovery</A>… Until Windows actually recovers and overwrites the data on the drive, your deleted data is really still sitting there waiting to be reused.</P>
+
+
+
+<P>However, I then remember that Volume Shadow Copy Service (or some form of it) had been meshed together with System Restore, and should be running on the machine.&nbsp; Thankfully it was, and it is really pretty easy to use—you can restore to a previous version, or simply save the previous version elsewhere.</P>
+
+
+
+<P><IMG title="Vista - sample Restore Previous Versions dialog" style="WIDTH: 377px; HEIGHT: 503px" height=503 alt="Vista - sample Restore Previous Versions dialog" src="http://www.jeff.wilcox.name/blog/view/windows/restore_previous_versions_Doc.jpg" width=377 border=0 mce_src="http://www.jeff.wilcox.name/blog/view/windows/restore_previous_versions_Doc.jpg"></P>
+
+
+
+<P>To use the tool, simply right-click on a file that you would like to&nbsp;examine previous versions of, and select 'Restore previous versions'.&nbsp; If you've deleted an entire directory or directory tree like I have,&nbsp;right click on the parent directory&nbsp;and start from there.&nbsp;</P>
+
+
+
+<P>Everything was right where I’d remembered it, no data lost, and a big feeling of relief (and thanks to the Windows client guys).</P>
+
+
+
+<P>Technical details: <A href="http://channel9.msdn.com/ShowPost.aspx?PostID=286303">http://channel9.msdn.com/ShowPost.aspx?PostID=286303</A>&nbsp;(Channel 9 video)<BR>Marketing speak: <A href="http://www.microsoft.com/windows/products/windowsvista/features/details/shadowcopy.mspx">http://www.microsoft.com/windows/products/windowsvista/features/details/shadowcopy.mspx</A>&nbsp;</P>
+
+
+
+[/RAW]

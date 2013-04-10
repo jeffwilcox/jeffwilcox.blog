@@ -1,0 +1,71 @@
+---
+layout: post
+comments: true
+title: Silverlight 3 unit test framework binaries available
+wordpress_id: 433
+wordpress_url: http://www.jeff.wilcox.name/?p=433
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: testing
+  slug: testing
+  autoslug: testing
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+imported_link_categories: []
+tags: []
+---
+<p>Two weeks ago, I posted the July 2009 release of the <a href="http://code.msdn.microsoft.com/silverlightut">Silverlight Unit Test Framework</a> online for folks looking for updated bits. Of course, the real gem is the Silverlight 3 version. Now that <a href="http://www.silverlight.net/">Silverlight 3</a> has shipped, you should definitely look at moving forward to this great new version.</p>
+
+<h3>Download the binaries</h3>
+
+<p>I’ve updated the MSDN code site for the product with the Silverlight 3-specific binaries, for anyone that is interested.</p>
+
+<p>103K, Zip: <a href="http://code.msdn.microsoft.com/Project/Download/FileDownload.aspx?ProjectName=silverlightut&amp;DownloadId=6603">Direct link</a><br /><a href="http://code.msdn.microsoft.com/silverlightut">MSDN Code Gallery web site for the framework</a></p>
+
+<h3>Find the binaries in the Silverlight Toolkit</h3>
+
+<p>If you’re using the <a href="http://silverlight.codeplex.com/">Silverlight Toolkit</a> July 2009 release for Silverlight 3, you’ve already got the Silverlight unit test framework binaries on your machine. They’re located in the source code package (Source code.zip).</p>
+
+<p>Here’s how to track them down…</p>
+
+<h4>When installing the Silverlight Toolkit</h4>
+<p>Make sure that you keep the "Source Code" feature of the Silverlight Toolkit checked. That will place the zip package on your system with the source, plus the unit test framework binaries.<br />
+<img alt="" src="http://media.jeff.wilcox.name/blog/view/InstallToolkit1.png" class="alignnone" width="685" height="444" />
+</p>
+
+<h4>Locate the source code for the toolkit</h4>
+<p>Go ahead and find the zip package after installation, and extract it to your system somewhere.<br />
+<img alt="" src="http://media.jeff.wilcox.name/blog/view/InstallToolkit2.png" class="alignnone" width="685" height="149" />
+</p>
+
+<h4>Jump into the Binaries folder of the extracted package</h4>
+<p><img alt="" src="http://media.jeff.wilcox.name/blog/view/InstallToolkit3.png" class="alignnone" width="658" height="160" /></p>
+
+<h4>Use the Silverlight unit test framework</h4>
+
+<p>And now you’re good to go. You’ll find the binaries in that folder, and you should add references to both Microsoft.Silverlight.Testing and then the unit test metadata assembly, Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll</p>
+
+<h3>What’s new in the July 2009 bits of the Silverlight Unit Test Framework?</h3>
+
+<ul>
+  <li>Support for the [Timeout(...)] attribute on test methods. </li>
+
+  <li>Improvements to the Test Service interface. The service now has an asynchronous reporting phase that allows for more robust automation options (details coming soon). </li>
+
+  <li>Minor interface changes </li>
+
+  <li>Minor bug fixes</li>
+</ul>
+
+<h3>No fundamental differences between the Silverlight 2 and 3 versions</h3>
+
+<p>There are no fundamental differences between the versions, and the Silverlight 2 version of the framework works fine with Silverlight 3 application development. But it makes sense to use the appropriate version.</p>
+
+<p>Looking forward, we may move the unit test framework right into the <a href="http://silverlight.codeplex.com/">Silverlight Toolkit</a>, for ease of use.</p>
+<p>Hope this helps!</p>

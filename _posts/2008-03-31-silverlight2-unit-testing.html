@@ -1,0 +1,346 @@
+---
+layout: post
+comments: true
+title: Unit Testing with Silverlight 2
+wordpress_id: 48
+wordpress_url: http://www.jeff.wilcox.name/2008/03/31/silverlight2-unit-testing/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: testing
+  slug: testing
+  autoslug: testing
+- title: mix
+  slug: mix
+  autoslug: mix
+imported_link_categories: []
+tags:
+- title: testing
+  slug: testing
+  autoslug: testing
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: popular
+  slug: popular
+  autoslug: popular
+- title: unit-testing
+  slug: unit-testing
+  autoslug: unit-testing
+- title: silverlight-2
+  slug: silverlight-2
+  autoslug: silverlight-2
+---
+<em>9/15/08 Update:</em> The Microsoft unit test framework now has its <a href="http://code.msdn.microsoft.com/silverlightut/">own MSDN Code Gallery site</a>, where you'll find the latest framework releases and other information. <a href="http://code.msdn.microsoft.com/silverlightut/"><strong><span style="color: #669966;">http://code.msdn.microsoft.com/silverlightut/</span></strong></a>
+
+<em>1/6/09 Update:</em> Updated templates are available that should be used for the final Silverlight 2 release. Please see the MSDN Code Gallery site and/or <a href="http://www.jeff.wilcox.name/2008/10/final-ut-templates/ ">this post from October '08</a>.
+
+Test-driven development is something that every developer can appreciate once they’ve tried it, and something that I’ve worked hard to enable for Silverlight with the release of the controls source.  <a href="http://weblogs.asp.net/scottgu/">Scott Guthrie</a> previously posted about the Silverlight 2 Beta 1 release, with a <a href="http://weblogs.asp.net/scottgu/archive/2008/02/22/first-look-at-silverlight-2.aspx">First Look at Silverlight 2</a> post followed by the <a href="http://weblogs.asp.net/scottgu/archive/2008/02/28/first-look-at-using-expression-blend-with-silverlight-2.aspx">First Look at Using Expression Blend with Silverlight 2</a>.  If we could take the same application from the Blend post &amp; create a set of unit tests for the components in the app, it would pay dividends once we start adding new features or working with other developers on the project.
+
+If you’d like to hear more about any part of the framework, let me know in the comments and I’ll come back with that information.  Previous posts that may be helpful if you don’t have time to complete this tutorial today: a <a href="http://www.jeff.wilcox.name/2008/03/20/vid-silverlight-control-ut/">video walkthrough of the control unit tests</a>, and a quick introduction to the unit testing bits with <a href="http://www.jeff.wilcox.name/2008/03/07/silverlight-unit-testing/">download locations and installation instructions</a>.
+<h3><span style="text-decoration: underline;">Test support for Silverlight</span></h3>
+At <a href="http://sessions.visitmix.com/">MIX</a> we released source code to the controls, unit tests, and we including a unit test framework that runs in the web browser using Silverlight on the Mac and PC.  The Microsoft.Silverlight.Testing framework is simple, easy-to-use, and will give developers yet another way to increase their productivity and application quality.
+
+In today's post we’ll take our working chat interface from Scott’s last tutorial, improve its testability, and add some simple tests.  At the end we’ll have a set of cross-platform, cross-browser tests that can run everywhere:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut1.png" alt="" />
+
+The framework will be familiar to anyone who's used the desktop unit testing tools inside Visual Studio Team Test (and also now available with Visual Studio 2008 Professional): the same <a href="http://msdn2.microsoft.com/en-us/library/microsoft.visualstudio.testtools.unittesting.assert.aspx">types</a> and <a href="http://msdn2.microsoft.com/en-us/library/microsoft.visualstudio.testtools.unittesting.aspx">attributes</a> are available for unit testing now in Silverlight.
+
+Having unit tests is extremely useful because the more test scenarios you create, the more confidence you'll have when adding features and fixing bugs, especially if you're working with a team of developers.  Since the test projects are packaged like any other Silverlight application, there's no special installation process to run the tests.  <em>On the Silverlight controls team we've built thousands of these tests!</em>
+
+A PDF of this tutorial is also available for <a href="http://media.jeff.wilcox.name/blog/ut/UnitTestingSilverlight2.pdf">download here</a>.
+<h2><strong><span style="text-decoration: underline;">Getting started with unit test projects</span></strong></h2>
+At the end of ScottGu’s last post, we were in Visual Studio, having just hooked up the UI data binding and wiring up the SendButton's Click method. 
+
+There are now two choices we have for adding a ‘test project’ to the solution.  Option 1 will explain how the testing hooks up to run in the browser.  Option 2 (<a href="#option2">skip ahead</a>) is what you’d probably <em>actually</em> want to do.
+<h2><strong>Option 1: Adding a new project and manually hooking up the test framework</strong></h2>
+<h3><span style="text-decoration: underline;">Add a New Silverlight Application to use as a test project</span></h3>
+We'll create a new test project by selecting the File-&gt;Add-&gt;Project menu item within Visual Studio 2008.  Inside the New Project dialog, drill down into the Silverlight project types and select "Silverlight Application":
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut2.png" alt="" />
+
+<em>Note: Make sure not to accidentally select the "Test" project types, since that's for the desktop framework and not Silverlight.  Silverlight unit test projects are <span style="text-decoration: underline;">not</span> integrated with Visual Studio, so the integrated test features will not work-Silverlight unit tests run in the web browser host.</em>
+
+We'll name the project "Test", although if your solution has many discrete components, you may want to pick a better identifier.  When we click the "OK" button, Visual Studio will ask us to choose the type of application project.  To keep it simple, let's just use the option to automatically generate an HTML test page:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut3.png" alt="" />
+
+After clicking "OK", we'll then have 2 projects within the ChatClient solution.  You can switch between the startup projects by right-clicking on either the ChatClient or Test project and choosing "Set StartUp Project".  Next up, adding the unit test assemblies.
+<h3><span style="text-decoration: underline;">Adding references to the unit test framework</span></h3>
+The unit test framework is being provided as a download separate from the SDK, as part of the <a href="http://www.microsoft.com/downloads/details.aspx?FamilyId=EA93DD89-3AF2-4ACB-9CF4-BFE01B3F02D4&amp;displaylang=en">control source code package</a> that you can <a href="http://www.microsoft.com/downloads/details.aspx?FamilyId=EA93DD89-3AF2-4ACB-9CF4-BFE01B3F02D4&amp;displaylang=en">download here</a>.
+
+If we place the test framework assemblies in a directory within the solution, we can then add them as references to the test project by going to the Project-&gt;Add Reference menu item and then clicking on the "Browse" tab and finding that folder:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut4.png" alt="" />
+
+Select all three of the files and click "OK".
+<h3><span style="text-decoration: underline;">Wiring up the test framework</span></h3>
+We now need to make some quick changes to the default project to wire up the test framework:
+<ul>
+	<li>Removing Page.xaml and the Page.xaml.cs code-behind file</li>
+	<li>Updating App.xaml's code-behind file to create a unit test page</li>
+</ul>
+First, highlight the Page.xaml file within the Test project.  Go to the Edit-&gt;Delete menu item and when prompted to confirm the operation, select "OK".
+
+Your Visual Studio solution should now look like this:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut5.png" alt="" />
+
+Next, we need to replace the RootVisual with a call to create the test page.  The test page handles preparing the framework, starting up the unit test engine, and then running through test classes found and reporting results on the web page.
+
+To wire up the framework,
+<ul>
+	<li>Add a reference to the namespace Microsoft.Silverlight.Testing</li>
+	<li>Replace the RootVisual with a call to UnitTestSystem.CreateTestPage.  The parameter to the method enables the framework's test engine to reflect on your test assembly.</li>
+</ul>
+Here's the updated App.xaml.cs:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut6.png" alt="" />
+
+Now we’re ready to start adding tests.
+<h2><strong><a name="option2">Option 2</a>: Adding a new test project using prebuilt templates</strong></h2>
+It’s much easier to use Visual Studio project templates to do all the work above.  Previously posted about <a href="http://www.jeff.wilcox.name/2008/03/25/test-templates/">here</a>.
+<h3><span style="text-decoration: underline;">Download the templates</span></h3>
+<ul>
+	<li><a href="http://media.jeff.wilcox.name/blog/mix08/SilverlightTestProject.zip">SilverlightTestProject.zip</a> (project template, adds a test project Silverlight application to the solution)
+Copy this into your “%userprofile%\Documents\Visual Studio 2008\Templates\ProjectTemplates”</li>
+	<li><a href="http://media.jeff.wilcox.name/blog/mix08/SilverlightTestClass.zip">SilverlightTestClass.zip</a> (item template, adds a test class to your Silverlight test project)
+Copy this into your “%userprofile%\Documents\Visual Studio 2008\Templates\ItemTemplates”</li>
+</ul>
+<h3><span style="text-decoration: underline;">Add a test project to your solution</span></h3>
+To create a new Silverlight test project, with your Silverlight application or class library open:
+<ul>
+	<li>Right-click on the solution</li>
+	<li>Select the Add-&gt;New Project menu item</li>
+	<li>Click on the root "Visual C#" project type node</li>
+	<li>Under "My Templates", select "Silverlight Test Project", and give your test project a name</li>
+</ul>
+<img src="http://media.jeff.wilcox.name/blog/mix08/NewProjectWithTemplate2.png" alt="" />
+
+There's a default test.cs file that you can use as a starting point, or to add additional test classes to your test project in the future, you can:
+<ul>
+	<li>Right-click on the test project</li>
+	<li>Select the Add-&gt;New Item menu option</li>
+	<li>Click on the root "Visual C#" category</li>
+	<li>Select "Silverlight Test Class" and provide a name for your new class</li>
+</ul>
+<img src="http://media.jeff.wilcox.name/blog/mix08/AddNewItemTemplate.png" alt="" />
+<h2><span style="text-decoration: underline;"><strong>Adding the first test</strong></span></h2>
+All that's left for us to do now is start adding unit tests.  To verify that everything's hooked up and we can start testing, let's add a no-op test that will always pass.
+
+Even if you haven't used the Visual Studio unit test framework before, it's really easy to pick up since the attributes are self describing:
+<ul>
+	<li>The metadata and assertion types can be found within the <a href="http://msdn2.microsoft.com/en-us/library/microsoft.visualstudio.testtools.unittesting.aspx">Microsoft.VisualStudio.TestTools.UnitTesting</a> namespace</li>
+	<li>Tests are made up of test classes and test methods</li>
+</ul>
+Add a new class to the test project by going to the Project-&gt;Add Class menu item, provide the name "SampleTest.cs" and click "OK".  Here's a simple test file:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut9.png" alt="" />
+
+Although we're building a C# test project today, here's what the same test would look like in Visual Basic:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut10.png" alt="" />
+<h3><span style="text-decoration: underline;">Run the unit tests</span></h3>
+To run the test project, make sure that it is set as the StartUp project by going to the Project-&gt;Set as StartUp Project menu item.  Then, simply press F5 to start debugging (and your web browser).
+
+Since this is a test without any Silverlight controls or interface, nothing is displayed on the plugin's surface.  Only the test log, created by the HTML DOM bridge feature in Silverlight 2, is displayed.  The log shows the test classes and methods that run, any failures, and a clear indication of the number of tests that ran:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut11.png" alt="" />
+<h2><strong><span style="text-decoration: underline;">API Unit Tests</span></strong></h2>
+Now that we know how to prepare a test project, add test classes, and run the tests, we can add some useful tests.  A well-designed application might follow a Model-View pattern that decouples the UI.  Not only does this make development easier, but using this common pattern will make our application easier to test.
+
+Thankfully our chat client that we built previously did make use of data binding to abstract away the underlying application state from the user interface.
+<h3><span style="text-decoration: underline;">Testing our application code</span></h3>
+The first test we created didn't actually exercise any of our application's components and always passed.  Let's go ahead and delete the SampleTest.cs file by highlighting it, right-clicking and choosing the "Delete" menu option, and then confirming the deletion.
+
+To get started we'll need to add a reference to the app project so that the types are available to the test code.  Select the 'Test' project in Visual Studio, navigate to the Project-&gt;Add Reference menu item, and then click the Projects tab.  Select the ChatClient and click the "OK" button:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut12.png" alt="" />
+<h3><span style="text-decoration: underline;">Testing our ChatSession class</span></h3>
+For our first "real" test, let's create a new test class titled "ChatSessionTest.cs" within the test project.  ChatSession is an interesting type because it implements the INotifyPropertyChanged interface and contains an ObservableCollection.  Here's a snippet of these declarations from the code:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut13.png" alt="" />
+
+Since the ChatSession doesn't need to know anything about the types that are subscribing to changes notices through the MessageHistory collection, it enforces the Model-View separation and means that we can add a unit test that verifies that the ObservableCollection is properly firing events.
+
+Go ahead and add a new unit test: create a new class inside the Test project named ChatSessionTest.  We'll then decorate the ChatSessionTest.cs file by importing the unit test metadata namespace, and also the namespace for the chat application:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut14.png" alt="" />
+
+<strong><span style="text-decoration: underline;">Performing Negative Testing</span></strong>
+
+You can use the ExpectedExceptionAttribute to indicate to the unit test runtime that an Exception should be thrown, and that the test is considered to pass if the type is equal to the type provided in metadata.  This is handy to add unit tests to verify your assumptions and how your components react to unexpected data.
+
+Let's go ahead and use this to add a test called "NullInstance" whose purpose is to try reading a property from a null instance of ChatSession, and verify that the NullReferenceException is thrown by the CLR:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut15.png" alt="" />
+
+If we go ahead and run the tests now by pressing F5, we'll be greeted by the bright green "success" indicator in the log.
+
+<strong><span style="text-decoration: underline;">Testing the designer data</span></strong>
+
+While we were working with Expression Blend before, there was a set of sample data that helped the design-time experience by showing a preview with some fake data. 
+
+Since the method which adds this fake data to a ChatSession instance is a private method, and we want designers to have a consistent experience while working in their design tools, it only makes sense that we should probably add some test coverage here.  In order to verify this data, we'll need to make the chat client a little easier to test first – this is one of those sticky test issues that is less than ideal, especially since Silverlight client code is ‘transparent,’ and so private reflection isn’t available.
+
+To do our testing, we have to use the <a href="http://msdn2.microsoft.com/en-us/library/system.runtime.compilerservices.internalsvisibletoattribute.aspx">InternalsVisibleTo</a> attribute to allow our test assembly to view internal types and methods of the ChatClient assembly.  Within the ChatClient project, open the "Properties" folder and select the AssemblyInfo.cs file.  If the file doesn't exist, simply add a new code file.  At a minimum, make sure to add the InternalsVisibleTo declaration.   The parameter to the attribute is the name of your test assembly-only that assembly will be able to access the internal members of ChatClient.
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut16.png" alt="" />
+
+Then, open up the ChatSession.cs file and add the keyword "internal" to the method called PopulateDummyData.  This will change the method from being private to internal:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut17.png" alt="" />
+
+Now, jump back to our ChatSessionTest and add a test method that creates a new chat session instance, populates the designer data by calling the internal PopulateWithDummyData method (which is now accessible to our test code), and then performs some validation:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut18.png" alt="" />
+
+Inside this test, we've used some new functionality: the Description attribute acts like a comment that can help with analyzing any test failures in the future, and we're also using the CollectionAssert verification routines.
+
+<strong><span style="text-decoration: underline;">Testing the CollectionChanged event</span></strong>
+
+For good measure, let's add one more test: let's make sure that the ObservableCollection is actually observing:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut19.png" alt="" />
+
+We have a lot going on here, but it's easy to break down:
+<ul>
+	<li>a new ChatSession instance is created</li>
+	<li>a local boolean is created to track whether our event listener has been called successfully</li>
+	<li>assertions have been added in for robustness. </li>
+	<li>the SendMessage method on the ChatSession instance is called, which should immediately fire the CollectionChanged event and call the delegate that we wired up to the change event.</li>
+</ul>
+To make sure all the tests are passing before continuing, build the project and press <strong>F5</strong> to run the tests:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut20.png" alt="" />
+
+Surprisingly, we have a unit test failure! The log now has a summary of the failures (this is useful if running thousands of tests), and the failing method has some exception information.
+
+Some quick analysis will show us that inside ChatSession.cs's ConnectWithRemoteUser method, we're assuming that the PropertyChanged event handler is not null:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut21.png" alt="" />
+
+The fix is to encase the event handler calls with a check for null:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut22.png" alt="" />
+
+After marking the fix, a quick <strong>F5</strong> run of the tests will confirm our fix:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut24.png" alt="" />
+
+Now we have some good API tests that are well suited for testing Silverlight class library projects, including validating data structures and business objects.  Having a large suite of such tests will give us a lot more confidence when we add the complexity of the user interface into the equation.
+<h2><strong><span style="text-decoration: underline;">Simple UI Tests</span></strong></h2>
+Beyond API tests, you can also build tests that simulate user activity by calling methods that glue together your interface with your application logic.  You can examine the visual tree, modify control properties, and perform a number of useful tests with your application code. 
+
+Although we aren't looking to simulate mouse events or key presses, we can still validate a large set of the functionality in our chat app by programming against the Page type defined in ChatClient.
+<h3><span style="text-decoration: underline;">Moving our resources into Page.xaml</span></h3>
+Since we defined a number of application resources inside the App.xaml file for the chat client, these key resources that define the history view and send button won't be available to our test application (they're separate <em>apps</em>).
+
+To demonstrate testing our ChatClient’s Page, which makes up the bulk of our ‘app’, we'll need to move the resources from App.xaml to Page.xaml inside the chat client project.  This is actually extremely easy to do using Expression Blend (or manually, using the XAML text editor in Visual Studio and some cut-and-paste).
+
+We should open up Expression Blend 2.5 March 2008 Preview again and open our ChatClient solution.  Inside, we can double-click on Page.xaml to open that view again. The first thing you'll notice is that the test project is also now available inside Expression Blend:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut25.png" alt="" />
+
+If we wanted to run the tests right now, we could right-click on the test project, set is as the Startup Project, and then if we went to the Project-&gt;Test Solution menu item (or pressed <strong>F5</strong>), all of our unit tests would run without us having to be in Visual Studio, a good time saver.
+
+To move the two application resources from the application level to the page level, we need to click on the Resources tab in the upper right corner of Blend.  Then, expand both the App.xaml and Page.xaml elements so that we can see all of the available resources:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut26.png" alt="" />
+
+Now we just have to select each resource individually and drag them into the Page.xaml area.
+
+The resources should now look like this:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut27.png" alt="" />
+
+Go ahead and exit Blend now, saving your changes to App.xaml and Page.xaml.
+<h3><span style="text-decoration: underline;">Creating a test class to test our UI</span></h3>
+The last thing to do now is create a few tests to actually exercise our application as our end users will.  Since the Silverlight test project is actually just another Silverlight application, we don't have the ability to simulate user-initiated actions (no fancy UI automation here), such as mouse clicks and key presses.  What we can do, however, is test: that the code that wires up our button events works, that the visual tree is updated, and that the data source is reflecting the expected set of data.
+
+The first thing we need to do is create a new test class.  With Visual Studio open and the test project highlighted, select the Project-&gt;Add Class menu item, give the new class the name "ClientTest.cs", and then press "OK".
+
+<strong><span style="text-decoration: underline;">Understanding the SilverlightTest base class</span></strong>
+
+If you're authoring Silverlight-specific tests and would like the ability to write much more advanced tests, you can inherit from the base class SilverlightTest, which is in the Microsoft.Silverlight.Testing namespace.
+
+The base class provides support for interacting with the root visual and HTML DOM bridge.  Additionally, the base class defines a number of helper methods that can be used in conjunction with the [Asynchronous] attribute to create tests that run beyond the scope of the test method, until the TestComplete method is called.  Such tests are beyond the scope of what I'd like to present in this tutorial, but you could use these methods to verify network requests, background worker events, and other interesting scenarios.
+
+In a future blog post I’ll jump into some of the advanced functionality, including the ‘Asynchronous’ test concept, so subscribe to my blog if you haven’t already!
+
+To prepare to use this base class with our ClientTest, we need to:
+<ul>
+	<li>Add a using statement for Microsoft.Silverlight.Testing</li>
+	<li>Add a using statement for Microsoft.VisualStudio.TestTools.UnitTesting</li>
+	<li>Add a using statement for ChatClient</li>
+	<li>Inherit from the SilverlightTest base class and mark our class as a test</li>
+</ul>
+<strong><span style="text-decoration: underline;">Add our first interface test</span></strong>
+
+Our test class should also be customized for testing our application page, so we need to add a private member variable to save our current instance of the ChatClient's Page type. 
+
+To make testing many scenarios easy, we'll create a TestInitialize method that will be called before each TestMethod.  Inside the initialization routine, we'll use some of the functionality that the SilverlightTest base class exposes to interact with the TestSurface.  This is a special type created specifically for this kind of testing: if you access the TestSurface in a test, the contents of the TestSurface (which is a Grid) will be cleared before the next test method runs.  This saves you from having to write code to cleanup temporary visuals used in tests. 
+
+We'll use TestSurface to add a new instance of our Page before each test. Let's have a look at our initial work on ClientTest:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut28.png" alt="" />
+
+And so next we can add a test method to verify that the object has a width greater than zero:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut29.png" alt="" />
+
+If you instead wanted to test a fixed width, and validate that the actual width is applied after the layout is updated, then you could use a test like this:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut30.png" alt="" />
+
+For now let's just keep the DisplayDefaultSize test.  If we go ahead and run the tests right now, we'll see the chat application popup for a very brief second before being removed from the TestSurface.
+
+<strong><span style="text-decoration: underline;">Add an interface test that simulates sending messages using the TextBox:</span></strong>
+
+The most interesting thing that we can test is that when a user enters text into the TextBox and then clicks the button, that the message is reflected in the data source and is displayed correctly.  To do this, we need to:
+<ul>
+	<li>Set the MessageBox's Text value to represent the user's chat string</li>
+	<li>Simulate the Button's Click event by calling our underlying SendButton_Click method inside Page.xaml.cs</li>
+	<li>Send some messages</li>
+	<li>Verify the data source</li>
+</ul>
+Optionally, you could also spend time to jump into the visual tree and verify the various control values.
+
+This is pretty straightforward.  To call the SendButton_Click method we need to make it an internal method, so go back into Page.xaml.cs for the chat application and make that change:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut31.png" alt="" />
+
+Next, back inside our ClientTest.cs file, let's add a helper method called SendMessage that works with the text box and calls the SendButton_Click method.  Then we can write a quick string of calls to SendMessage and then verify the result in the data source:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut32.png" alt="" />
+
+That's it!  We now have an end-to-end test that sends messages within the app.  To perform some final testing, we could either press F5 to debug and run the test project, or navigate to the test project's page with another browser such as Firefox or Safari.  On my machine the test page for the test project is located in "C:\Silverlight2\ChatClient\Test\ClientBin\TestPage.html".
+
+The good and bad news is that if we run these tests, they happen extremely fast.  You can efficiently easily run thousands of tests using this simple in-browser test experience.  Here's what it would look like if we froze the screen right when the SendManyMessages test ran on my Mac Pro:
+
+<img src="http://media.jeff.wilcox.name/blog/ut/1/ut1.png" alt="" />
+
+There's a lot of useful functionality in the unit test framework, including the same metadata and assertions as the desktop's.  I'll be including more information about this framework on my blog.
+<h2><strong><span style="text-decoration: underline;">Summary</span></strong></h2>
+By creating and running unit tests inside the web browser, you've now learned another way to build solid, usable, testable applications using Silverlight 2 Beta 1.  Having this unit test capability available to the community is important, and I hope that you'll see great use for this while developing your applications.  The Microsoft.Silverlight.Testing framework is simple, easy-to-use and will give developers yet another way to increase their productivity and application quality.
+
+Since simple unit tests are source-compatible with the desktop unit test framework in Visual Studio, it will be easy to move existing desktop developers onto Silverlight application work.  Kudos to the Visual Studio Team Test team who created a rock-solid unit test foundation, having the same capability here for Silverlight is key: I’ve been able to move many of my class libraries to Silverlight and keep the same exact unit test source that was written for the unit test framework in VS.
+
+If you haven't had experience with this great unit test framework before, you'll be able to take that metadata knowledge back to your desktop developers as well.
+
+<em>Hope all of you that are test-driven development fans find this a good start to bringing that to your Silverlight work,
+Jeff Wilcox</em>
+<h3><span style="text-decoration: underline;">p.s. Feedback</span></h3>
+I’m definitely interested to know if you’re able to make use of this framework, so please use this post to discuss the framework at length!
+
+A few things to call out that are known issues or differences: data-driven tests aren’t available in Silverlight, there’s no direct Visual Studio intergration (the “Create Unit Tests” feature shouldn’t be used), negative testing with ExpectedExceptionAttribute needs a fix at the framework level, and without private reflection in the Silverlight product for apps, the ability to get to private types like you can in the full desktop unit test framework isn’t there today.
+
+I’ve already received some great feedback and as a result of that, am going to look into what we can do to polish the framework further.  We’ll also look into what it would take to release the source code of the framework itself, since that’d be much more helpful to folks building this into their existing test infrastructure – Reflector only gets you so far.
+
+<strong><span style="text-decoration: underline;">PDF Available</span></strong>
+Download a <a href="http://media.jeff.wilcox.name/blog/ut/UnitTestingSilverlight2.pdf">PDF</a> of this tutorial <a href="http://media.jeff.wilcox.name/blog/ut/UnitTestingSilverlight2.pdf">here</a>

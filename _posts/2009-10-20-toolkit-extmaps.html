@@ -1,0 +1,85 @@
+---
+layout: post
+comments: true
+title: Application Library Caching support for the Silverlight Toolkit
+excerpt: Here are the application library cache files needed to reduce the size of
+  your Silverlight 3 application's size when using the Silverlight Toolkit.
+wordpress_id: 478
+wordpress_url: http://www.jeff.wilcox.name/2009/10/toolkit-extmaps/
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+imported_link_categories: []
+tags: []
+---
+<p>We previously received user feedback that we should ship the Application Library Caching manifest files along with the <a href="http://silverlight.codeplex.com/">Silverlight Toolkit</a>, to help reduce the size of .Xap files and cache the important libraries for future use in applications.</p>  <p>This advanced feature in Silverlight 3 allows libraries that your app depends on to be delivered outside the primary .Xap for your app, allowing the browser to cache the extensions for future use. This will speed up the startup experience for your frequent users if you update the app but don’t have changes to those libraries – it can save you bandwidth costs when hosting on a CDN, too!</p>  <p>We haven’t able to get the files included in the setup experience yet, so I wanted to share with the community the .extmap.xml files to use the feature before we release it in a future Silverlight Toolkit release.</p>  <p>Yes, the next release will have this feature built-in, so this is a stop-gap. Great details on how the feature works <a href="http://timheuer.com/blog/archive/2009/07/13/silverlight-3-cached-assembly-feature.aspx">here</a>.</p>  <h3>What a library cache file looks like</h3>  <p>The XML file is quite basic: it lists the assembly name, assembly version, public key token, and then the path information. Here’s the <strong>System.Windows.Controls.Toolkit.extmap.xml</strong> file:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:b172cd01-de3c-46a5-b4eb-ea5ec30b65af" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;?xml version="1.0"?&gt;
+&lt;manifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+          xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+  &lt;assembly&gt;
+    &lt;name&gt;System.Windows.Controls.Toolkit&lt;/name&gt;
+    &lt;version&gt;2.0.5.0&lt;/version&gt;
+    &lt;publickeytoken&gt;31bf3856ad364e35&lt;/publickeytoken&gt;
+    &lt;relpath&gt;System.Windows.Controls.Toolkit.dll&lt;/relpath&gt;
+    &lt;extension downloadUri="System.Windows.Controls.Toolkit.zip" /&gt;
+  &lt;/assembly&gt;
+&lt;/manifest&gt;</pre></div>
+
+<h3>Downloading and install the files</h3>
+
+<p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2009/10/ToolkitApplicationLibraryCacheFiles.zip">Download</a> a ZIP (4 KB) of the extmaps for the toolkit <a href="http://www.jeff.wilcox.name/wp-content/uploads/2009/10/ToolkitApplicationLibraryCacheFiles.zip">here</a>. These files work with both the July 2009 and October 2009 releases of the toolkit, though I’d recommend using the latest available official release!</p>
+
+<p>After downloading, extract the files. For the best experience, copy the files side-by-side with the <a href="http://silverlight.codeplex.com/">Silverlight Toolkit</a> binaries. We added a link to the Binaries folder in the October release of the toolkit to make it quick to get there, too:</p>
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="ToolkitBinaries" border="0" alt="ToolkitBinaries" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/10/ToolkitBinaries.png" width="431" height="548" /> </p>
+
+<p>On my 64-bit machine, the folder is ‘C:\Program Files (x86)\Microsoft SDKs\Silverlight\v3.0\Toolkit\Oct09\Bin’</p>
+
+<p>You’ll be asked to elevate when you copy in the extracted .extmap.xml files, as the program location is system-wide. Allow the operation by clicking ‘Continue’:</p>
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="DeniedForCopying" border="0" alt="DeniedForCopying" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/10/DeniedForCopying.png" width="528" height="310" /> </p>
+
+<p>Now you’re ready to go – the Silverlight build tasks will detect the presence of these small XML files and use that information to zip up the dependent libraries for your app.</p>
+
+<h3>How this can help</h3>
+
+<p>Now, I have this amazing Silverlight 3 app that uses the <a href="http://silverlight.codeplex.com/wikipage?title=Silverlight%20Toolkit%20Overview%20Part%202&amp;referringTitle=Home">charting components from the Silverlight Toolkit</a>:</p>
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="SampleChartingApp" border="0" alt="SampleChartingApp" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/10/SampleChartingApp.png" width="680" height="604" /> </p>
+
+<p>When I build the app, I see that the original .Xap file is <strong>345 KB</strong>. This is a debug build of the app, btw.</p>
+
+<p>It includes the toolkit’s charting components, the primary toolkit assembly, plus the control library from the Silverlight SDK.</p>
+
+<p>It is all of great value, but does add up in bytes – and the bytes for those libraries don’t change very often, making them a great target for this caching.</p>
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="OriginalSize" border="0" alt="OriginalSize" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/10/OriginalSize.png" width="680" height="475" /> </p>
+
+<h3>Turning on the feature for your Silverlight Application project</h3>
+
+<p>You need to opt-in to the application library caching feature.</p>
+
+<p>Right-click on your Silverlight application project in Visual Studio (applies the same in Visual Studio 2008 and Visual Studio 2010 Beta 2) and select ‘Properties’</p>
+
+<p>Navigate to the Silverlight tab and check the ‘Reduce XAP size by using application library caching’ box:</p>
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="SilverlightBuildOptions" border="0" alt="SilverlightBuildOptions" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/10/SilverlightBuildOptions.png" width="630" height="288" /> </p>
+
+<p>Save the changes and then build your project. Now, we see that there are 3 new .Zip files, and the original .Xap. The .Xap is only <strong>41 KB</strong>, plus the first time someone uses your application from the server, their browser will also go ahead and download the 3 .Zip files equaling the rest of the original app’s size.</p>
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="UpdatedSize" border="0" alt="UpdatedSize" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/10/UpdatedSize.png" width="680" height="475" /> </p>
+
+<p><strong>NOTE:</strong> The reason this is opt-in is that it’s more involved for publishing, since you need to remember that not only do you need the .Xap file for your app, you also need to store the .Zip file(s) of the libraries alongside as well.</p>
+
+<h3>This will be a feature in a future release of the Silverlight Toolkit</h3>
+
+<p>We shipped the October 2009 release of the Silverlight Toolkit on Monday, focusing primarily on delivering the necessary design features for enabling a great Visual Studio 2010 Beta 2 story.</p>
+
+<p>We’ve also been working diligently on longer-lead items for the <em>next</em> release of the Silverlight Toolkit, such as integrating the generation of these .extmap.xml files into our build process. Next, we’ll add them to the setup and with the next release, you won’t need this blog post to take advantage of the feature.</p>
+
+<p>If you’d like to learn more about the feature, <a href="http://timheuer.com/blog/archive/2009/07/13/silverlight-3-cached-assembly-feature.aspx">Tim Heuer</a> really covered this well earlier this year in <a href="http://timheuer.com/blog/archive/2009/07/13/silverlight-3-cached-assembly-feature.aspx">this post</a>.</p>
+
+<p><em>Hope this helps.</em> Special thanks to user ‘TimmyG’ on CodePlex who <a href="http://silverlight.codeplex.com/WorkItem/View.aspx?WorkItemId=3518">initially reminded</a> us of this!</p>

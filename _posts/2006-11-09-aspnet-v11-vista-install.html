@@ -1,0 +1,114 @@
+---
+layout: post
+comments: true
+title: ! 'Quick guide: Installing ASP.NET v1.1 on Windows Vista'
+wordpress_id: 4
+wordpress_url: http://linux.jeff.wilcox.name/2006/11/09/aspnet-v11-vista-install/
+imported_categories:
+- title: vista
+  slug: vista
+  autoslug: vista
+- title: web-servers
+  slug: webservers
+  autoslug: web-servers
+- title: asp.net
+  slug: aspnet
+  autoslug: asp.net
+- title: windows
+  slug: windows
+  autoslug: windows
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+imported_link_categories: []
+tags:
+- title: asp.net
+  slug: aspnet
+  autoslug: asp.net
+- title: iis
+  slug: iis
+  autoslug: iis
+- title: windows-vista
+  slug: windows-vista
+  autoslug: windows-vista
+- title: vista
+  slug: vista
+  autoslug: vista
+---
+[RAW]
+
+<P>Vista ships with .NET Framework 2.0 in the box, but ASP.NET v1.1 is still fully supported if you need it-and here's how. </P>
+
+
+
+<P>If you're trying to diagnose this problem, the error message you will receive without allowing v1.1 is a 404.2 – Not Found; the description is "the page you are requesting cannot be served because of the ISAPI and CGI Restriction list settings on the Web server."</P>
+
+
+
+<P><IMG title="Error message when v1.1 is not enabled" style="WIDTH: 540px; HEIGHT: 405px" height=405 alt="Error message when v1.1 is not enabled" src="http://www.jeff.wilcox.name/blog/view/iis/v11_enable_error.jpg" width=540 border=0 mce_src="http://www.jeff.wilcox.name/blog/view/iis/v11_enable_error.jpg"></P>
+
+
+
+<H2>Install .NET Framework v1.1 &amp; v1.1 SP1 </H2>
+
+<P>Prerequisite: You have installed IIS on the machine already (Control Panel – Add/Remove Windows Features) </P>
+
+
+
+<UL>
+
+<LI>Download and Install <A href="http://www.microsoft.com/downloads/details.aspx?familyid=262D25E3-F589-4842-8157-034D1E7CF3A3&amp;displaylang=en" mce_href="http://www.microsoft.com/downloads/details.aspx?familyid=262D25E3-F589-4842-8157-034D1E7CF3A3&amp;displaylang=en">.NET Framework v1.1</A> </LI>
+
+
+
+<LI>Download and install <A href="http://www.microsoft.com/downloads/details.aspx?FamilyID=A8F5654F-088E-40B2-BBDB-A83353618B38&amp;displaylang=en" mce_href="http://www.microsoft.com/downloads/details.aspx?FamilyID=A8F5654F-088E-40B2-BBDB-A83353618B38&amp;displaylang=en">v1.1 Service Pack 1</A> </LI>
+
+</UL>
+
+
+
+<H2>Enable ASP.NET v1.1 in InetMgr </H2>
+
+<P>Run "InetMgr" (even though the Run menu's not in the Start Menu by default, you can still reach it by pressing [ <STRONG>Windows key</STRONG> ] + [ <STRONG>R </STRONG>]) </P>
+
+
+
+<P>Click on your computer name in the tree, not the web site. This should be the top-most tree element. Double-click on "ISAPI and CGI Restrictions," this is an icon in the center of the screen within the IIS group. </P>
+
+
+
+<P><IMG title="v1.1 Enable Restrictions" style="WIDTH: 540px; HEIGHT: 405px" height=405 alt="v1.1 Enable Restrictions" src="http://www.jeff.wilcox.name/blog/view/iis/v11_enable_restrictions.jpg" width=540 border=0 mce_src="http://www.jeff.wilcox.name/blog/view/iis/v11_enable_restrictions.jpg"></P>
+
+
+
+<P>Right-click on the ASP.NET list item entry and "Allow" it. You do not need to reset the web server. </P>
+
+
+
+<P><IMG title="Right click and Allow" style="WIDTH: 540px; HEIGHT: 405px" height=405 alt="Right click and Allow" src="http://www.jeff.wilcox.name/blog/view/iis/v11_enable_allow.jpg" width=540 border=0 mce_src="http://www.jeff.wilcox.name/blog/view/iis/v11_enable_allow.jpg"></P>
+
+
+
+<P><STRONG>You can also do this from an elevated command prompt using AppCmd.exe: </STRONG></P>
+
+
+
+<P><TT>%windir%\system32\inetsrv\appcmd set config -section:isapiCgiRestriction /+.[path='%windir%\Microsoft.NET\Framework\v1.1.4322\aspnet_isapi.dll',allowed='true']</TT></P>
+
+
+
+<H2>Creating v1.1 Applications </H2>
+
+<P>Another obvious note, within the IIS Manager, you need to specify the application pool of choice when adding a new application. There is no concept of a v1.1 "integrated" mode, so your choices with v1.1 installed are: Integrated Pipeline 2.0, Classic/ISAPI 2.0, and Classic/ISAPI 1.1. </P>
+
+
+
+<P><IMG title="Creating an ASP.NET v1.1 Application in InetMgr 7" style="WIDTH: 540px; HEIGHT: 405px" height=405 alt="Creating an ASP.NET v1.1 Application in InetMgr 7" src="http://www.jeff.wilcox.name/blog/view/iis/v11_enable_add_app.jpg" width=540 border=0 mce_src="http://www.jeff.wilcox.name/blog/view/iis/v11_enable_add_app.jpg"></P>
+
+
+
+<P>Simply select the v1.1 application pool and you're good to go!</P>
+
+
+
+[/RAW]

@@ -1,0 +1,73 @@
+---
+layout: post
+comments: true
+title: A quick and easy extension to HyperlinkButton for Windows Phone 7
+excerpt: A quick and easy HyperlinkButton-derived control for Windows Phone that lets
+  you set the Tag to an e-mail or web address and get the associated task goo for
+  free.
+wordpress_id: 739
+wordpress_url: http://www.jeff.wilcox.name/2010/11/phonehyperlinkbutton/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: windows-phone
+  slug: windows-phone
+  autoslug: windows-phone
+- title: control-development
+  slug: control-development
+  autoslug: control-development
+imported_link_categories: []
+tags: []
+---
+<p>While doing some application building, I naively assumed that I could just put a web address in the NavigateUri field of the HyperlinkButton control (Windows Phone 7) and have it just magically work.</p>  <p><strong><font color="#ff0000">UPDATED 12/3/2010: </font></strong>I’ve made improvements that you will find here: <a title="http://www.jeff.wilcox.name/2010/12/updated-phone-hyperlink-button/" href="http://www.jeff.wilcox.name/2010/12/updated-phone-hyperlink-button/">http://www.jeff.wilcox.name/2010/12/updated-phone-hyperlink-button/</a>&#160;</p>  <p>Turns out you need to actually handle the Click event yourself and setup the proper task for that, unless you’re doing local within-the-app navigation.</p>  <p>I wrote a super simple PhoneHyperlinkButton control that derives from HyperlinkButton. No custom template or style, so just drop the file into any project and you’re off and running.</p>  <p>Set the “Tag” property of your instance to be the URI or e-mail address you’d like the message to go to: if it starts with mailto:, then it’ll use the EmailComposeTask. Otherwise, the web browser task.</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:74b46341-d5c2-4642-906e-feed833d31b7" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">// (c) Copyright Microsoft Corporation.
+// This source is subject to the Microsoft Public License (Ms-PL).
+// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+// All other rights reserved.
+
+using System.Diagnostics;
+using System.Windows.Controls;
+using Microsoft.Phone.Tasks;
+
+namespace Microsoft.Phone.Controls.Unofficial
+{
+    /// &lt;summary&gt;
+    /// An extended HyperlinkButton control that uses the Tag property to
+    /// handle web browser or e-mail compose task intended use on the phone.
+    /// &lt;/summary&gt;
+    public class PhoneHyperlinkButton : HyperlinkButton
+    {
+        protected override void OnClick()
+        {
+            base.OnClick();
+
+            Debug.Assert(Tag is string, "You need to set the Tag property!");
+            string tag = (string)Tag;
+
+            int i = tag.IndexOf("mailto:");
+            if (i &gt;= 0)
+            {
+                tag = tag.Substring(i + 7);
+                EmailComposeTask ect = new EmailComposeTask
+                {
+                    To = tag,
+                };
+                ect.Show();
+            }
+            else
+            {
+                // Assume the web.
+                WebBrowserTask wbt = new WebBrowserTask
+                {
+                    URL = (string)Tag,
+                };
+                wbt.Show();
+            }
+        }
+    }
+}</pre></div>
+
+<p>Hope this helps. Oh, and remember that once the task completes, your app will likely be tombstoned.</p>

@@ -1,0 +1,537 @@
+---
+layout: post
+comments: true
+title: TiltContentControl for Windows Phone
+excerpt: Here's a content control that has an implementation of the "tilt" interactive
+  effect on the Windows Phone.
+wordpress_id: 688
+wordpress_url: http://www.jeff.wilcox.name/2010/08/tiltcontentcontrol/
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: windows-phone
+  slug: windows-phone
+  autoslug: windows-phone
+imported_link_categories: []
+tags: []
+---
+<p>An enjoyable feature found in Windows Phone is a neat interactive effect that our designers have dubbed “tilt”. Tilt gives a little motion to standard controls during manipulations (when they’re being touched).</p>  <p><em>9/16/2010 Update: This post is no longer the best reference for this effect as this version does not include global camera tilt.     <br />Alternative recommended resources: <a href="http://msdn.microsoft.com/en-us/library/ff941094(VS.92).aspx">MSDN documentation on Tilt</a>, and <a href="http://blogs.msdn.com/b/ptorr/archive/2010/08/11/updated-tilt-effect.aspx">Peter Torr’s implementation (via attached behaviors)</a></em></p>  <p>Although the operating system’s menus and core applications use this effect in many places, applications built for the platform by default don’t pick up any tilt effects. It’s a pretty complex problem to try and make assumptions about which controls and interface elements users would like to have a tilt added to.</p>  <p>We decided for now not to include the tilt effect for Silverlight apps on the phone, which is why you don’t see the tilt in the beta of the phone developer tools.</p>  <p>It’s a subtle effect, but you do see it when you use a device. It lets you know something’s responsive. So, if you click on the N in New Orleans in a list box like the one I have in a sample below:</p>  <p><img style="border-right-width: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px" class="wlDisabledImage" title="TiltExample" border="0" alt="TiltExample" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/08/TiltExample.png" width="685" height="228" />     <br /><em>Tilt in effect: the New Orleans entry has been touched and has tilted in reaction to the manipulation. When the manipulation is done, it will move back to its standard position.</em></p>  <h3>Introducing Luke’s TiltContentControl</h3>  <p>So one of our excellent devs on the Silverlight mobile team, Luke Longley, went ahead and coded up this control we’re calling <a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/08/TiltContentControl.cs_.txt">TiltContentControl</a>. I’m sharing this control on his behalf today as we wanted to get this out for people to experiment with.</p>  <p>This lets you wrap any element that you’d like to have receive a tilt-like experience. You can also add it to data templates or re-template controls like Button to make it easy to apply throughout your app in a standard way.</p>  <h4>ContentControl vs Attached Property</h4>  <p>Since this control derives from ContentControl, it is designed to wrap a single control that should have the effect. It can also be placed inside of custom templates and styles to make it easy to apply, instead of having to manually wrap all controls you’d like to tilt enable with the control.</p>  <p>Another approach other than using a wrapping content control is to use an attached property. <a href="http://blogs.msdn.com/b/ptorr/archive/2010/03/23/tilt-effect-for-windows-phone-controls.aspx">Peter Torr</a> from the Windows Phone application platform team created <a href="http://blogs.msdn.com/b/ptorr/archive/2010/03/23/tilt-effect-for-windows-phone-controls.aspx">an implementation of tilt</a> that does just that.</p>  <p>Both these implementations are slightly different, so check them both out – they’re interesting lessons in the platform. This content control responds to manipulation deltas, so you’ll get a very similar effect to that of the rest of the phone controls while your finger is still on the screen.</p>  <h3>Adding the control to your project</h3>  <p>As a simple derived content control, you can add TiltContentControl to your project just by dropping this single C# file into your project.</p>  <p><strong><a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/08/TiltContentControl.cs_.txt">TiltContentControl.cs</a></strong> (code also duplicated below)</p>  <h3>How to use the control within your project</h3>  <p>So here’s how to use it in-place:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:99a63dc8-207f-4bac-92be-b0daa404e41b" class="wlWriterSmartContent">   <pre class="xml" name="code">&lt;unofficial:TiltContentControl 
+    VerticalAlignment=&quot;Center&quot; 
+    HorizontalAlignment=&quot;Center&quot;&gt;
+    &lt;Button Content=&quot;Hello&quot; 
+        Padding=&quot;40,0,40,0&quot;/&gt;
+&lt;/unofficial:TiltContentControl&gt;</pre>
+</div>
+
+<p>Here’s how to re-template something to use it – in this case I’m retemplating Button. You could put this style one time in your project, in App.xaml or a resource dictionary, then easily use it wherever without having to actually wrap the individual control instances.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:eaf31afa-efc7-4cc8-ac4c-75023e72bec9" class="wlWriterSmartContent">
+  <pre class="xml" name="code">&lt;!-- Re-templated button --&gt;
+&lt;!--
+This scenario re-templates button to contain the 
+tilt behavior and it can be used with any button 
+by applying the styled key TiltButton.
+--&gt;
+&lt;Style x:Key=&quot;TiltButton&quot; TargetType=&quot;ButtonBase&quot;&gt;
+    &lt;Setter Property=&quot;Background&quot; Value=&quot;Transparent&quot;/&gt;
+    &lt;Setter Property=&quot;BorderBrush&quot; Value=&quot;{StaticResource PhoneForegroundBrush}&quot;/&gt;
+    &lt;Setter Property=&quot;Foreground&quot; Value=&quot;{StaticResource PhoneForegroundBrush}&quot;/&gt;
+    &lt;Setter Property=&quot;BorderThickness&quot; Value=&quot;{StaticResource PhoneBorderThickness}&quot;/&gt;
+    &lt;Setter Property=&quot;FontFamily&quot; Value=&quot;{StaticResource PhoneFontFamilySemiBold}&quot;/&gt;
+    &lt;Setter Property=&quot;FontSize&quot; Value=&quot;{StaticResource PhoneFontSizeMediumLarge}&quot;/&gt;
+    &lt;Setter Property=&quot;Padding&quot; Value=&quot;10,3,10,5&quot;/&gt;
+
+    &lt;Setter Property=&quot;Template&quot;&gt;
+        &lt;Setter.Value&gt;
+            &lt;ControlTemplate TargetType=&quot;ButtonBase&quot;&gt;
+                &lt;unofficial:TiltContentControl&gt;
+                    &lt;VisualStateManager.VisualStateGroups&gt;
+                        &lt;VisualStateGroup x:Name=&quot;CommonStates&quot;&gt;
+                            &lt;VisualState x:Name=&quot;Normal&quot;/&gt;
+                            &lt;VisualState x:Name=&quot;MouseOver&quot;/&gt;
+                            &lt;VisualState x:Name=&quot;Pressed&quot;&gt;
+                                &lt;Storyboard&gt;
+                                    &lt;ObjectAnimationUsingKeyFrames Storyboard.TargetName=&quot;ContentContainer&quot; Storyboard.TargetProperty=&quot;Foreground&quot;&gt;
+                                        &lt;DiscreteObjectKeyFrame KeyTime=&quot;0&quot; Value=&quot;{StaticResource PhoneBackgroundBrush}&quot; /&gt;
+                                    &lt;/ObjectAnimationUsingKeyFrames&gt;
+                                    &lt;ObjectAnimationUsingKeyFrames Storyboard.TargetName=&quot;ButtonBackground&quot; Storyboard.TargetProperty=&quot;Background&quot;&gt;
+                                        &lt;DiscreteObjectKeyFrame KeyTime=&quot;0&quot; Value=&quot;{StaticResource PhoneForegroundBrush}&quot; /&gt;
+                                    &lt;/ObjectAnimationUsingKeyFrames&gt;
+                                    &lt;ObjectAnimationUsingKeyFrames Storyboard.TargetName=&quot;ButtonBackground&quot; Storyboard.TargetProperty=&quot;BorderBrush&quot;&gt;
+                                        &lt;DiscreteObjectKeyFrame KeyTime=&quot;0&quot; Value=&quot;{StaticResource PhoneForegroundBrush}&quot; /&gt;
+                                    &lt;/ObjectAnimationUsingKeyFrames&gt;
+                                &lt;/Storyboard&gt;
+                            &lt;/VisualState&gt;
+                            &lt;VisualState x:Name=&quot;Disabled&quot;&gt;
+                                &lt;Storyboard&gt;
+                                    &lt;ObjectAnimationUsingKeyFrames Storyboard.TargetName=&quot;ContentContainer&quot; Storyboard.TargetProperty=&quot;Foreground&quot;&gt;
+                                        &lt;DiscreteObjectKeyFrame KeyTime=&quot;0&quot; Value=&quot;{StaticResource PhoneDisabledBrush}&quot; /&gt;
+                                    &lt;/ObjectAnimationUsingKeyFrames&gt;
+                                    &lt;ObjectAnimationUsingKeyFrames Storyboard.TargetName=&quot;ButtonBackground&quot; Storyboard.TargetProperty=&quot;BorderBrush&quot;&gt;
+                                        &lt;DiscreteObjectKeyFrame KeyTime=&quot;0&quot; Value=&quot;{StaticResource PhoneDisabledBrush}&quot; /&gt;
+                                    &lt;/ObjectAnimationUsingKeyFrames&gt;
+                                    &lt;ObjectAnimationUsingKeyFrames Storyboard.TargetName=&quot;ButtonBackground&quot; Storyboard.TargetProperty=&quot;Background&quot;&gt;
+                                        &lt;DiscreteObjectKeyFrame KeyTime=&quot;0&quot; Value=&quot;Transparent&quot; /&gt;
+                                    &lt;/ObjectAnimationUsingKeyFrames&gt;
+                                &lt;/Storyboard&gt;
+                            &lt;/VisualState&gt;
+                        &lt;/VisualStateGroup&gt;
+                    &lt;/VisualStateManager.VisualStateGroups&gt;
+
+                    &lt;Grid Background=&quot;Transparent&quot;&gt;
+                        &lt;Border x:Name=&quot;ButtonBackground&quot; BorderBrush=&quot;{TemplateBinding BorderBrush}&quot; BorderThickness=&quot;{TemplateBinding BorderThickness}&quot; CornerRadius=&quot;0&quot; Background=&quot;{TemplateBinding Background}&quot; Margin=&quot;{StaticResource PhoneTouchTargetOverhang}&quot; &gt;
+                            &lt;ContentControl x:Name=&quot;ContentContainer&quot; Foreground=&quot;{TemplateBinding Foreground}&quot; HorizontalContentAlignment=&quot;{TemplateBinding HorizontalContentAlignment}&quot; VerticalContentAlignment=&quot;{TemplateBinding VerticalContentAlignment}&quot; Padding=&quot;{TemplateBinding Padding}&quot; Content=&quot;{TemplateBinding Content}&quot; ContentTemplate=&quot;{TemplateBinding ContentTemplate}&quot;/&gt;
+                        &lt;/Border&gt;
+                    &lt;/Grid&gt;
+                &lt;/unofficial:TiltContentControl&gt;
+            &lt;/ControlTemplate&gt;
+        &lt;/Setter.Value&gt;
+    &lt;/Setter&gt;
+&lt;/Style&gt;</pre>
+</div>
+
+<p>So to have a Button use it, just set the style to the static resource:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:4f3caaab-e1e9-44aa-bece-912f70f91ddd" class="wlWriterSmartContent">
+  <pre class="xml" name="code">&lt;Button Style=&quot;{StaticResource TiltButton}&quot;
+    Content=&quot;A styled button&quot; /&gt;</pre>
+</div>
+
+<p>The XML namespace I’m using (this should go at the top of any pages or resource dictionaries you place the tilt content control in):</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:87f59730-290b-4029-9c66-6950f5a9357c" class="wlWriterSmartContent">
+  <pre class="xml" name="code">xmlns:unofficial=&quot;clr-namespace:Microsoft.Phone.Controls.Unofficial&quot;</pre>
+</div>
+
+<p>Now in the sample image above, I show a ListBox with items that all have the tilt effect enabled. Here’s how you can do the same by adding the control within a data template and setting that to the ItemTemplate of your list box. I also have ended up using ItemContainerStyle to make the entire width of the item tilt-enabled:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:cc131e41-14ae-4fc1-9faf-e1e36c0166ef" class="wlWriterSmartContent">
+  <pre class="xml" name="code">&lt;ListBox x:Name=&quot;ListBox1&quot; Grid.Row=&quot;1&quot;&gt;
+    &lt;ListBox.ItemContainerStyle&gt;
+        &lt;Style TargetType=&quot;ListBoxItem&quot;&gt;
+            &lt;Setter 
+                Property=&quot;HorizontalContentAlignment&quot; 
+                Value=&quot;Stretch&quot;/&gt;
+        &lt;/Style&gt;
+    &lt;/ListBox.ItemContainerStyle&gt;
+    &lt;ListBox.ItemTemplate&gt;
+        &lt;DataTemplate&gt;
+            &lt;unofficial:TiltContentControl
+                Background=&quot;Transparent&quot;
+                HorizontalAlignment=&quot;Stretch&quot;
+                HorizontalContentAlignment=&quot;Stretch&quot;
+                FontSize=&quot;{StaticResource PhoneFontSizeExtraLarge}&quot;&gt;
+                &lt;Grid HorizontalAlignment=&quot;Stretch&quot;
+                        IsHitTestVisible=&quot;True&quot;
+                        Background=&quot;Transparent&quot;&gt;
+                    &lt;ContentControl
+                        HorizontalAlignment=&quot;Stretch&quot;
+                        HorizontalContentAlignment=&quot;Left&quot;
+                        Content=&quot;{Binding}&quot;/&gt;
+                &lt;/Grid&gt;
+            &lt;/unofficial:TiltContentControl&gt;
+        &lt;/DataTemplate&gt;
+    &lt;/ListBox.ItemTemplate&gt;
+&lt;/ListBox&gt;</pre>
+</div>
+
+<p>I’m sure there are other ways to do this, too. Which type of solution is really up to you.</p>
+
+<h3>Creating and using a custom easing function</h3>
+
+<p>The easing function defined for the tilt up operation is not a standard one found in Silverlight. As a result, the choice is either to implement a custom easing function in C#, or to find a similar one in the platform.</p>
+
+<p>Here’s what the UX people say:</p>
+
+<p><img style="border-right-width: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px" class="wlDisabledImage" title="CustomEasingFunction" border="0" alt="CustomEasingFunction" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/08/CustomEasingFunction.png" width="685" height="109" /></p>
+
+<p>Silverlight’s easing functions take in a normalized time value from 0 to 1. This means that if the double animation is really one second-long duration, then at half a second (500ms) the normalized time value will be 0.5, and at one second, 1.0. But never outside the range of [0, 1].</p>
+
+<p>To implement a custom easing function, you just create a new class that derives from <a href="http://msdn.microsoft.com/en-us/library/system.windows.media.animation.easingfunctionbase(VS.95).aspx">EasingFunctionBase</a> from the System.Windows.Media.Animation namespace. The tilt control has this as a nested private class, since we aren’t exposing it for use elsewhere.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:b40b1e6f-23a8-4539-ae2d-2cefd366b8ba" class="wlWriterSmartContent">
+  <pre class="c-sharp" name="code">/// &lt;summary&gt;
+/// An easing function of ln(t+1)/ln(2).
+/// &lt;/summary&gt;
+private class LogarithmicEase : EasingFunctionBase
+{
+    /// &lt;summary&gt;
+    /// Constant value of ln(2) used in the easing function.
+    /// &lt;/summary&gt;
+    private const double NaturalLog2 = 0.693147181;
+
+    /// &lt;summary&gt;
+    /// Overrides the EaseInCore method to provide the logic portion of
+    /// an ease in.
+    /// &lt;/summary&gt;
+    /// &lt;param name=&quot;normalizedTime&quot;&gt;Normalized time (progress) of the
+    /// animation, which is a value from 0 through 1.&lt;/param&gt;
+    /// &lt;returns&gt;A double that represents the transformed progress.&lt;/returns&gt;
+    protected override double EaseInCore(double normalizedTime)
+    {
+        return Math.Log(normalizedTime + 1) / NaturalLog2;
+    }
+}</pre>
+</div>
+
+<p>We’ve only overwritten the EaseIn method here. Pretty simple, you don’t need to be a mathematician!</p>
+
+<p>In code, you can just use an instance of the LogarithmicEase type now for any animation’s EasingFunction value. You’ll see this implementation has a single static readonly instance of it that’s reused every time.</p>
+
+<h3>Quick perf lesson #1: Avoid custom easing functions as they have a negative performance implication</h3>
+
+<p>Custom easing functions are called per frame on the user interface thread. This is a much more expensive operation than a standard easing function which is implemented in native code by Silverlight, and able to run in the compositor thread (previously known as the render thread or independent animations thread).</p>
+
+<p>The callback into C# is time that the user interface thread could have spent handling operating system events, handling input, letting property change notifications propagate, or the layout system to perform a full measure-arrange pass.</p>
+
+<p>We’ve decided to use a custom easing function because the platform’s designers have explicitly designated this as the tilt-up animation’s ease.</p>
+
+<h3>Quick perf lesson #2: Store a single static instance of property paths when creating animations in code</h3>
+
+<p>If you look through the code, you’ll see that the storyboard and double animations are created in code. To minimize the additional number of new object allocations, the code has 3 static readonly properties for the paths.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:207f864a-1089-4b1c-9a37-d4ae97f99a9c" class="wlWriterSmartContent">
+  <pre class="c-sharp" name="code">/// &lt;summary&gt;
+/// Single instance of the Rotation X property.
+/// &lt;/summary&gt;
+private static readonly PropertyPath RotationXProperty = new PropertyPath(PlaneProjection.RotationXProperty);
+
+/// &lt;summary&gt;
+/// Single instance of the Rotation Y property.
+/// &lt;/summary&gt;
+private static readonly PropertyPath RotationYProperty = new PropertyPath(PlaneProjection.RotationYProperty);
+
+/// &lt;summary&gt;
+/// Single instance of the Global Offset Z property.
+/// &lt;/summary&gt;
+private static readonly PropertyPath GlobalOffsetZProperty = new PropertyPath(PlaneProjection.GlobalOffsetZProperty);</pre>
+</div>
+
+<p>This decreases the number of objects that have to be allocated, which decreases the cost of garbage collection. It’s probably a minimal improvement, but it’s something to think about.</p>
+
+<h3>Does this tilt exactly match the OS?</h3>
+
+<p>No, the effect doesn’t completely match.</p>
+
+<p>The phone has an additional feature, a “global camera,” that I’m told takes into account the element’s position on screen. The global camera effect is why buttons near the bottom of the screen have an exaggerated tilt effect.</p>
+
+<p>You won’t get that specific effect from this Silverlight implementation today. So this Silverlight implementation is more simple, but in my mind still achieves the goal of offering the tilt effect on elements.</p>
+
+<p>We’ll see how people like it and maybe we’ll find a way to match the platform even closer in the future.</p>
+
+<h3>Workaround note for beta tools developers</h3>
+
+<p>There was a bug in the beta release of the platform where objects within a perspective transform that used bitmap caching would not necessarily react to the changing perspective. We’ve since fixed this internally.</p>
+
+<p>To enable this file to be relevant to developers today (using beta tools) as well as in the future, I’ve coded in a workaround for beta tools users.</p>
+
+<p><strong>If you are using Beta tools,</strong> you should uncomment the #define statement near the top of the file (line 13 I think).</p>
+
+<p><strong>If you’re using post-beta tools,</strong> you can hopefully just use the file as-is.</p>
+
+<h3>Full implementation of <a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/08/TiltContentControl.cs_.txt">TiltContentControl.cs</a></h3>
+
+<p>Here’s the full implementation, you can just drop this into your phone project:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:e6bba0f0-3d40-437b-ae15-90864b39e5c5" class="wlWriterSmartContent">
+  <pre class="c-sharp" name="code">// (c) Copyright Microsoft Corporation.
+// This source is subject to the Microsoft Public License (Ms-PL).
+// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+// All other rights reserved.
+
+// ---
+// Important Workaround Note for developers using the BETA:
+// There is a workaround in code that removes any CacheMode from the content of
+// the control. It works around a platform bug that is slated to be fixed for
+// release.
+//
+// If you are using the beta tools, remove the comment below:
+// #define WORKAROUND_BITMAP_CACHE_BUG
+// ---
+
+using System;
+using System.Diagnostics;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
+
+namespace Microsoft.Phone.Controls.Unofficial
+{
+    /// &lt;summary&gt;
+    /// A content control designed to wrap anything in Silverlight with a user
+    /// experience concept called 'tilt', applying a transformation during 
+    /// manipulation by a user.
+    /// &lt;/summary&gt;
+    public class TiltContentControl : ContentControl
+    {
+        #region Constants
+        /// &lt;summary&gt;
+        /// Maximum angle for the tilt effect, defined in Radians.
+        /// &lt;/summary&gt;
+        private const double MaxAngle = 0.3;
+        
+        /// &lt;summary&gt;
+        /// The maximum depression for the tilt effect, given in pixel units.
+        /// &lt;/summary&gt;
+        private const double MaxDepression = 25;
+
+        /// &lt;summary&gt;
+        /// The number of seconds for a tilt revert to take.
+        /// &lt;/summary&gt;
+        private static readonly Duration TiltUpAnimationDuration = new Duration(TimeSpan.FromSeconds(.5));
+
+        /// &lt;summary&gt;
+        /// A single logarithmic ease instance.
+        /// &lt;/summary&gt;
+        private static readonly IEasingFunction LogEase = new LogarithmicEase();
+
+        #endregion
+
+        #region Static property instances
+        /// &lt;summary&gt;
+        /// Single instance of the Rotation X property.
+        /// &lt;/summary&gt;
+        private static readonly PropertyPath RotationXProperty = new PropertyPath(PlaneProjection.RotationXProperty);
+
+        /// &lt;summary&gt;
+        /// Single instance of the Rotation Y property.
+        /// &lt;/summary&gt;
+        private static readonly PropertyPath RotationYProperty = new PropertyPath(PlaneProjection.RotationYProperty);
+
+        /// &lt;summary&gt;
+        /// Single instance of the Global Offset Z property.
+        /// &lt;/summary&gt;
+        private static readonly PropertyPath GlobalOffsetZProperty = new PropertyPath(PlaneProjection.GlobalOffsetZProperty);
+        #endregion
+
+        /// &lt;summary&gt;
+        /// The content element instance.
+        /// &lt;/summary&gt;
+        private ContentPresenter _presenter;
+
+        /// &lt;summary&gt;
+        /// The original width of the control.
+        /// &lt;/summary&gt;
+        private double _width;
+
+        /// &lt;summary&gt;
+        /// The original height of the control.
+        /// &lt;/summary&gt;
+        private double _height;
+
+        /// &lt;summary&gt;
+        /// The storyboard used for the tilt up effect.
+        /// &lt;/summary&gt;
+        private Storyboard _tiltUpStoryboard;
+
+        /// &lt;summary&gt;
+        /// The plane projection used to show the tilt effect.
+        /// &lt;/summary&gt;
+        private PlaneProjection _planeProjection;
+
+        /// &lt;summary&gt;
+        /// Overrides the method called when apply template is called. We assume
+        /// that the implementation root is the content presenter.
+        /// &lt;/summary&gt;
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            _presenter = GetImplementationRoot(this) as ContentPresenter;
+        }
+
+        /// &lt;summary&gt;
+        /// Overrides the maniupulation started event.
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;e&quot;&gt;The manipulation event arguments.&lt;/param&gt;
+        protected override void OnManipulationStarted(ManipulationStartedEventArgs e)
+        {
+            base.OnManipulationStarted(e);
+
+            if (_presenter != null)
+            {
+#if WORKAROUND_BITMAP_CACHE_BUG
+                // WORKAROUND NOTE:
+                // This is a workaround for a platform bug related to cache mode
+                // that should be fixed before final release of the platform.
+                UIElement elementContent = _contentElement.Content as UIElement;
+                if (elementContent != null &amp;&amp; elementContent.CacheMode != null)
+                {
+                    elementContent.CacheMode = null;
+                }
+#endif
+                _planeProjection = new PlaneProjection();
+                _presenter.Projection = _planeProjection;
+
+                _tiltUpStoryboard = new Storyboard();
+                _tiltUpStoryboard.Completed += TiltUpCompleted;
+
+                DoubleAnimation tiltUpRotateXAnimation = new DoubleAnimation();
+                Storyboard.SetTarget(tiltUpRotateXAnimation, _planeProjection);
+                Storyboard.SetTargetProperty(tiltUpRotateXAnimation, RotationXProperty);
+                tiltUpRotateXAnimation.To = 0;
+                tiltUpRotateXAnimation.EasingFunction = LogEase;
+                tiltUpRotateXAnimation.Duration = TiltUpAnimationDuration;
+
+                DoubleAnimation tiltUpRotateYAnimation = new DoubleAnimation();
+                Storyboard.SetTarget(tiltUpRotateYAnimation, _planeProjection);
+                Storyboard.SetTargetProperty(tiltUpRotateYAnimation, RotationYProperty);
+                tiltUpRotateYAnimation.To = 0;
+                tiltUpRotateYAnimation.EasingFunction = LogEase;
+                tiltUpRotateYAnimation.Duration = TiltUpAnimationDuration;
+
+                DoubleAnimation tiltUpOffsetZAnimation = new DoubleAnimation();
+                Storyboard.SetTarget(tiltUpOffsetZAnimation, _planeProjection);
+                Storyboard.SetTargetProperty(tiltUpOffsetZAnimation, GlobalOffsetZProperty);
+                tiltUpOffsetZAnimation.To = 0;
+                tiltUpOffsetZAnimation.EasingFunction = LogEase;
+                tiltUpOffsetZAnimation.Duration = TiltUpAnimationDuration;
+
+                _tiltUpStoryboard.Children.Add(tiltUpRotateXAnimation);
+                _tiltUpStoryboard.Children.Add(tiltUpRotateYAnimation);
+                _tiltUpStoryboard.Children.Add(tiltUpOffsetZAnimation);
+            }
+            if (_planeProjection != null)
+            {
+                _width = ActualWidth;
+                _height = ActualHeight;
+                if (_tiltUpStoryboard != null)
+                {
+                    _tiltUpStoryboard.Stop();
+                }
+                DepressAndTilt(e.ManipulationOrigin, e.ManipulationContainer);
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Handles the manipulation delta event.
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;e&quot;&gt;The manipulation event arguments.&lt;/param&gt;
+        protected override void OnManipulationDelta(ManipulationDeltaEventArgs e)
+        {
+            base.OnManipulationDelta(e);
+            // Depress and tilt regardless of whether the event was handled.
+            if (_planeProjection != null)
+            {
+                DepressAndTilt(e.ManipulationOrigin, e.ManipulationContainer);
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Handles the manipulation completed event.
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;e&quot;&gt;The manipulation event arguments.&lt;/param&gt;
+        protected override void OnManipulationCompleted(ManipulationCompletedEventArgs e)
+        {
+            base.OnManipulationCompleted(e);
+            if (_planeProjection != null)
+            {
+                if (_tiltUpStoryboard != null)
+                {
+                    _tiltUpStoryboard.Begin();
+                }
+                else
+                {
+                    _planeProjection.RotationY = 0;
+                    _planeProjection.RotationX = 0;
+                    _planeProjection.GlobalOffsetZ = 0;
+                }
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Updates the depression and tilt based on position of the 
+        /// manipulation relative to the original origin from input.
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;manipulationOrigin&quot;&gt;The origin of manipulation.&lt;/param&gt;
+        /// &lt;param name=&quot;manipulationContainer&quot;&gt;The container instance.&lt;/param&gt;
+        private void DepressAndTilt(Point manipulationOrigin, UIElement manipulationContainer)
+        {
+            GeneralTransform transform = manipulationContainer.TransformToVisual(this);
+            Point transformedOrigin = transform.Transform(manipulationOrigin);
+            Point normalizedPoint = new Point(
+                Math.Min(Math.Max(transformedOrigin.X / _width, 0), 1),
+                Math.Min(Math.Max(transformedOrigin.Y / _height, 0), 1));
+            double xMagnitude = Math.Abs(normalizedPoint.X - 0.5);
+            double yMagnitude = Math.Abs(normalizedPoint.Y - 0.5);
+            double xDirection = -Math.Sign(normalizedPoint.X - 0.5);
+            double yDirection = Math.Sign(normalizedPoint.Y - 0.5);
+            double angleMagnitude = xMagnitude + yMagnitude;
+            double xAngleContribution = xMagnitude + yMagnitude &gt; 0 ? xMagnitude / (xMagnitude + yMagnitude) : 0;
+            double angle = angleMagnitude * MaxAngle * 180 / Math.PI;
+            double depression = (1 - angleMagnitude) * MaxDepression;
+            // RotationX and RotationY are the angles of rotations about the x- 
+            // or y-axis. To achieve a rotation in the x- or y-direction, the
+            // two must be swapped. So a rotation to the left about the y-axis 
+            // is a rotation to the left in the x-direction, and a rotation up 
+            // about the x-axis is a rotation up in the y-direction.
+            _planeProjection.RotationY = angle * xAngleContribution * xDirection;
+            _planeProjection.RotationX = angle * (1 - xAngleContribution) * yDirection;
+            _planeProjection.GlobalOffsetZ = -depression;
+        }
+
+        /// &lt;summary&gt;
+        /// Handles the tilt up completed event.
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;sender&quot;&gt;The source object.&lt;/param&gt;
+        /// &lt;param name=&quot;e&quot;&gt;The event arguments.&lt;/param&gt;
+        private void TiltUpCompleted(object sender, EventArgs e)
+        {
+            if (_tiltUpStoryboard != null)
+            {
+                _tiltUpStoryboard.Stop();
+            }
+            _tiltUpStoryboard = null;
+            _planeProjection = null;
+            _presenter.Projection = null;
+        }
+
+        /// &lt;summary&gt;
+        /// An easing function of ln(t+1)/ln(2).
+        /// &lt;/summary&gt;
+        private class LogarithmicEase : EasingFunctionBase
+        {
+            /// &lt;summary&gt;
+            /// Constant value of ln(2) used in the easing function.
+            /// &lt;/summary&gt;
+            private const double NaturalLog2 = 0.693147181;
+
+            /// &lt;summary&gt;
+            /// Overrides the EaseInCore method to provide the logic portion of
+            /// an ease in.
+            /// &lt;/summary&gt;
+            /// &lt;param name=&quot;normalizedTime&quot;&gt;Normalized time (progress) of the
+            /// animation, which is a value from 0 through 1.&lt;/param&gt;
+            /// &lt;returns&gt;A double that represents the transformed progress.&lt;/returns&gt;
+            protected override double EaseInCore(double normalizedTime)
+            {
+                return Math.Log(normalizedTime + 1) / NaturalLog2;
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Gets the implementation root of the Control.
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;dependencyObject&quot;&gt;The DependencyObject.&lt;/param&gt;
+        /// &lt;remarks&gt;
+        /// Implements Silverlight's corresponding internal property on Control.
+        /// &lt;/remarks&gt;
+        /// &lt;returns&gt;Returns the implementation root or null.&lt;/returns&gt;
+        public static FrameworkElement GetImplementationRoot(DependencyObject dependencyObject)
+        {
+            Debug.Assert(dependencyObject != null, &quot;DependencyObject should not be null.&quot;);
+            return (1 == VisualTreeHelper.GetChildrenCount(dependencyObject)) ?
+                VisualTreeHelper.GetChild(dependencyObject, 0) as FrameworkElement :
+                null;
+        }
+    }
+}</pre>
+</div>
+
+<h3>Namespace: Microsoft.Phone.Controls.Unofficial</h3>
+
+<p>One change since the ProgressBar template I blogged about: I’m using the namespace Microsoft.Phone.Controls.Unofficial now. Unsupported sounded harsh; obviously these types of controls will be improved upon over time and they’re out in the public, so either on StackOverflow.com or Twitter or whatever there will be some place for people to talk about what’s good and bad with these controls.</p>
+
+<p>Hope this helps.</p>

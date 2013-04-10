@@ -1,0 +1,23 @@
+---
+layout: post
+comments: true
+title: ! 'Silverlight 2: Updated HtmlExtensions.cs utility class'
+wordpress_id: 40
+wordpress_url: http://www.jeff.wilcox.name/2008/03/05/silverlight2-htmlextensions/
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: mix
+  slug: mix
+  autoslug: mix
+imported_link_categories:
+- title: favorite-blogs
+  slug: great
+  autoslug: favorite-blogs
+- title: presentation-platform
+  slug: net-bloggers
+  autoslug: presentation-platform
+tags: []
+---
+<p>I've gone ahead and updated the HtmlExtensions class that I <a href="http://www.jeff.wilcox.name/2007/09/30/managed-html-extensions/">previously</a> blogged.&nbsp; The class is now updated to reflect the new HTML DOM bridge APIs in Silverlight 2.&nbsp; To be honest, I'd recommend dropping this class as a lot of its functionality (JavaScript eval, alert, and retrieving the &lt;body /&gt; element) are now available within Silverlight 2 Beta 1, which rocks!</p><strong>To use this component in your own Silverlight 2 Beta 1 project</strong>, you can grab the bits either way:<br />Download <a href="http://media.jeff.wilcox.name/blog/mix08/HtmlExtensions.cs.txt">HtmlExtensions.cs</a><br />Download <a href="http://media.jeff.wilcox.name/blog/mix08/HtmlExtensions.zip ">HtmlExtensions.dll</a> (zip, referenced component can be used by C# and VB Silverlight 2 beta 1 apps) <p>New HTML DOM bridge APIs that relate to this, and can be used directly from the Window instance of HtmlPage: Eval, Alert, and on HtmlPage, Body:</p> <p><img src="http://media.jeff.wilcox.name/blog/mix08/NewHtmlMethods.png"/> </p> <p>I'm also now offering a small assembly version of this class for any Visual Basic developers to use in their application targeting Silverlight 2.</p> <p>Hope this helps!</p>

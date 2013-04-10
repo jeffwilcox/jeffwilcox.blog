@@ -1,0 +1,91 @@
+---
+layout: post
+comments: true
+title: A small but important UX improvement for ScrollViewer on the Windows Phone
+wordpress_id: 744
+wordpress_url: http://www.jeff.wilcox.name/2010/12/betterscrollviewer/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: windows-phone
+  slug: windows-phone
+  autoslug: windows-phone
+- title: control-development
+  slug: control-development
+  autoslug: control-development
+imported_link_categories: []
+tags: []
+---
+<p>Here’s a quick UX improvement to the scroll viewer that adds a visual indicator for the user showing them briefly the scroll bars.</p>  <p>Interestingly, the actual phone operating system does have this concept of a hint, so I think it’s a smart addition any developer should consider while polishing their app before submission to the marketplace.</p>  <p>If you aren’t sure what the goal is here, go to the “settings” for the Windows Phone either in the emulator, on the real phone, or hey even the iPhone’s scroll bars all do this, so you have options.</p>  <h3>The user experience problem with the ScrollViewer for WP7</h3>  <p>There is no visual cue to the existence of the scroll bars in Silverlight applications for Windows Phone by default. I don’t know why this wasn’t done for the official control styles in the platform, but being so easy to fix, I think folks should pick this up.</p>  <p>Now that I’m finally doing some fun app coding on the weekends, I intend to share more small tidbits like this and I hope you all appreciate this sort of fit and finish attention.</p>  <p>I have also been downloading and experiencing many of the apps on the Windows Phone Marketplace, with varied success. I’ve had more than one occasion where I was briefly confused, not knowing there was more information just a pan away, since the scroll viewer is effectively invisible until you touch the surface.</p>  <h3>Triggers to the rescue</h3>  <p>Triggers were something WPF developers will remember; back in the day, before we had the magical and designable visual states system. Now if you’re saying “but dude Silverlight doesn’t support triggers,” you’re mostly right. There is, however, support for the Loaded event. So in XAML you can define a storyboard that will run when the control’s loaded event fires, super easy.</p>  <p>Exactly what we want! I want to animate that same opacity from 1 to 0 to match the normal state at startup.</p>  <h3>The BetterScrollViewer Template</h3>  <p>This is a control template, not a style. So remember to set the Template property to the static resource for it to work.</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1af282e3-c034-4a98-a13d-109139a98b23" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;ControlTemplate TargetType="ScrollViewer" x:Key="BetterScrollViewer"&gt;
+    &lt;Grid Margin="{TemplateBinding Padding}" Background="{TemplateBinding Background}"&gt;
+        &lt;Grid.Triggers&gt;
+            &lt;EventTrigger RoutedEvent="Grid.Loaded"&gt;
+                &lt;BeginStoryboard&gt;
+                    &lt;Storyboard&gt;
+                        &lt;DoubleAnimation Duration="00:00:01.5" From="1" To="0" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="VerticalScrollBar"/&gt;
+                        &lt;DoubleAnimation Duration="00:00:01.5" From="1" To="0" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="HorizontalScrollBar"/&gt;
+                    &lt;/Storyboard&gt;
+                &lt;/BeginStoryboard&gt;
+            &lt;/EventTrigger&gt;
+        &lt;/Grid.Triggers&gt;
+        &lt;VisualStateManager.VisualStateGroups&gt;
+            &lt;VisualStateGroup x:Name="ScrollStates"&gt;
+                &lt;VisualStateGroup.Transitions&gt;
+                    &lt;VisualTransition GeneratedDuration="00:00:00.5"/&gt;
+                &lt;/VisualStateGroup.Transitions&gt;
+                &lt;VisualState x:Name="Scrolling"&gt;
+                    &lt;Storyboard&gt;
+                        &lt;DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="VerticalScrollBar"/&gt;
+                        &lt;DoubleAnimation Duration="0" To="1" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="HorizontalScrollBar"/&gt;
+                    &lt;/Storyboard&gt;
+                &lt;/VisualState&gt;
+                &lt;VisualState x:Name="NotScrolling"/&gt;
+            &lt;/VisualStateGroup&gt;
+        &lt;/VisualStateManager.VisualStateGroups&gt;
+        &lt;ScrollContentPresenter x:Name="ScrollContentPresenter" ContentTemplate="{TemplateBinding ContentTemplate}" Content="{TemplateBinding Content}"/&gt;
+        &lt;ScrollBar x:Name="VerticalScrollBar" HorizontalAlignment="Right" Height="Auto" IsHitTestVisible="False" IsTabStop="False" Maximum="{TemplateBinding ScrollableHeight}" Minimum="0" Opacity="0" Orientation="Vertical" Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" Value="{TemplateBinding VerticalOffset}" ViewportSize="{TemplateBinding ViewportHeight}" VerticalAlignment="Stretch" Width="5"/&gt;
+        &lt;ScrollBar x:Name="HorizontalScrollBar" HorizontalAlignment="Stretch" Height="5" IsHitTestVisible="False" IsTabStop="False" Maximum="{TemplateBinding ScrollableWidth}" Minimum="0" Opacity="0" Orientation="Horizontal" Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" Value="{TemplateBinding HorizontalOffset}" ViewportSize="{TemplateBinding ViewportWidth}" VerticalAlignment="Bottom" Width="Auto"/&gt;
+    &lt;/Grid&gt;
+&lt;/ControlTemplate&gt;</pre></div>
+
+<h3>Using the template</h3>
+
+<p>I place this template in my App.xaml then just set the template every time I use a scroll viewer.</p>
+
+<p>
+  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:43ea7a63-08dc-4ee3-a1f5-b1a6c5210ff4" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;ScrollViewer
+    Template="{StaticResource BetterScrollViewer}"&gt;
+&lt;/ScrollViewer&gt;</pre></div>
+</p>
+
+<p>Now if you want this in ListBox, you need to (unfortunately, it’s a pain) re-template ListBox. So any ListBox needs to set the template to something like BetterListBox. This template is exactly the same as the standard one except of course the static resource set in there.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:7ea784f9-2e94-4dd5-924f-56932561e582" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;ControlTemplate TargetType="ListBox" x:Key="BetterListBox"&gt;
+	&lt;ScrollViewer x:Name="ScrollViewer" 
+	Template="{StaticResource BetterScrollViewer}"
+	BorderBrush="{TemplateBinding BorderBrush}" 
+	BorderThickness="{TemplateBinding BorderThickness}" 
+	Background="{TemplateBinding Background}" 
+	Foreground="{TemplateBinding Foreground}" 
+	Padding="{TemplateBinding Padding}"&gt;
+		&lt;ItemsPresenter/&gt;
+	&lt;/ScrollViewer&gt;
+&lt;/ControlTemplate&gt;</pre></div>
+
+<p>And to use this with just regular scroll bars, well, you’re on your own, but can use the same trigger mechanism to add it easily I bet.</p>
+
+<h3>Notes + I removed the border!</h3>
+
+<p>This scroll viewer template I modified also reduces the visual count by 1. I didn’t like the idea of having the scroll viewer wrapped in a border and supporting those properties, since I don’t use them. If you want to use those properties though you’ll want to build your own template from the standard to keep those template bindings in place.</p>
+
+<p>If you’re using one of the controls like panorama or pivot, that may do some pre-loading offscreen of items, it is likely that the Loaded event will fire and trigger this animation when the user&#160; cannot actually see it.</p>
+
+<p>So don’t expect this behavior to help in those scenarios. To really polish those you’ll need to jump into code.</p>
+
+<p>And I picked the time of 1.5 seconds for that initial scroll appearance. If I find out from any UX folks I will try and learn what the official value is that’s used on the phone, but in the meantime, 1.5 looks about right to me.</p>
+
+<p>Hope this helps.</p>

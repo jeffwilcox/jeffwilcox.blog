@@ -1,0 +1,48 @@
+---
+layout: post
+comments: true
+title: ! 'A prototype tool for designers and developers: converting XAML to ISM themes
+  and back again'
+wordpress_id: 300
+wordpress_url: http://www.jeff.wilcox.name/?p=300
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+- title: infrastructure
+  slug: infrastructure
+  autoslug: infrastructure
+imported_link_categories: []
+tags: []
+---
+The <a href="http://silverlight.codeplex.com/">Silverlight Toolkit</a> contains implicit style management features that let you create a nice theme – buttons, checkboxes, you name it – and have it automatically applied to an application. Nearly half a year ago, I worked with <a href="http://blogs.msdn.com/mehdis/">Mehdi</a> to create a rather simple, but functional, tool prototype for working with Xaml theme files and ISM-consumable implicit style definitions. 
+
+Great stuff for designers, this prototype tool enables designers to use Blend day-to-day for getting immediate feedback and excellent tooling support, while being able to round-trip themes, from Blend to ISM to Blend again.
+
+This tool is not guaranteed to be lossless. Use it at your own risk. It will take a XAML file that Blend appreciates (details on <a href="http://blogs.msdn.com/mehdis/archive/2008/11/18/creating-new-ism-compatible-themes.aspx">Mehdi's blog</a>):
+
+<ul>
+	<li>No x:Key attributes</li>
+	<li>References to other styles by key name become fully qualified resource lookups: from ScrollViewerStyle to System.Windows.Controls.ScrollViewer</li>
+	<li>There are some assumption about naming</li>
+	<li>Adding explicit references to other styles</li>
+</ul>
+
+... and convert it into an ISM theme.
+
+Today I’m finally blogging a prototype version of the app, a work-in-progress, hoping that maybe others will have the time to make better use of it than I have. I have grand visions for the tool: add a file system watcher, monitor file saves in Blend, and then immediately msbuilding updated ISM theme assembly files. Updating sample apps behind the scenes. Real-time theme previews. None of those grand features are in the download. Give it time.
+
+<a href="http://media.jeff.wilcox.name/blog/view/ToolkitTheme.zip">Download a VS'08 console project with the source (Ms-PL)</a>
+<a href="http://blogs.msdn.com/mehdis/archive/2008/11/18/creating-new-ism-compatible-themes.aspx">Read Mehdi's guide on ISM styles</a>
+
+To run, use either:
+ToolkitTheme.exe App.xaml /t:ism MyIsmTheme.xaml
+ToolkitTheme.exe MyIsmTheme.xaml /t:blend App.xaml
+
+Since this is a proof-of-concept prototype, I'm only releasing source for now, assuming you're a developer at heart - no designer binaries. Let me know if you have any feedback on the tool!

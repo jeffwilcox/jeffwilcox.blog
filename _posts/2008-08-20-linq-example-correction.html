@@ -1,0 +1,82 @@
+---
+layout: post
+comments: true
+title: ! 'LINQ follow-up: a little more work was needed'
+wordpress_id: 99
+wordpress_url: http://www.jeff.wilcox.name/2008/08/20/linq-example-correction/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: software-development
+  slug: dev
+  autoslug: software-development
+imported_link_categories: []
+tags: []
+---
+<p>Oops! The code example I had in my <a href="http://www.jeff.wilcox.name/2008/08/19/late-to-the-linq-party/">LINQ posting yesterday</a> was inaccurate and didn't actually do anything! That code was from a changeset I was preparing on my machine and it had to go through the gauntlet that is an ironclad code review by Ted Glaza. He made a good catch here, and it's a mistake I'm not likely to make again.</p> <p>I suppose the mistake was easy enough to make: the sequence that OrderBy returns provides the sorted data, since LINQ's extension methods don't alter the source. My method was a no-op since the "classes" list was never updated.</p> <p>The incorrect code I had to perform a sorting:</p> <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:b9d2e365-669f-4d69-a38d-356814d691fb" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">static void SortTestClasses(IList&lt;ITestClass&gt; classes)
+{
+    classes.OrderBy(a =&gt; a.Name);
+}</pre></div>
+<p>That line pretty much did nothing but some extra work, leaving the input list "classes" untouched. Here's what I should have been doing:</p>
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:2b481b03-b2b2-4948-be3b-2bbfe5adaf3d" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">List&lt;ITestClass&gt; sorted = classes.OrderBy(a =&gt; a.Name).ToList();
+classes.Clear();
+foreach (var item in sorted)
+{
+    classes.Add(item);
+}</pre></div>
+<p>Luckily, I am using extension methods in my project already, and have one that performs an operation similar to System.Collections.Generic.List::AddRange, but permits this operation on generic list interfaces as well. Here's that extension method:</p>
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:52aad045-850c-4f86-9b75-1a03e87db42a" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">/// &lt;summary&gt;
+/// An AddRange implementation for the generic IList interface.
+/// &lt;/summary&gt;
+/// &lt;typeparam name="TListType"&gt;The list type.&lt;/typeparam&gt;
+/// &lt;param name="list"&gt;The list object.&lt;/param&gt;
+/// &lt;param name="collection"&gt;The collection to copy into the list.&lt;/param&gt;
+public static void AddRange&lt;TListType&gt;(this IList&lt;TListType&gt; list, IEnumerable&lt;TListType&gt; collection)
+{
+    if (list == null || collection == null)
+    {
+        return;
+    }
+
+    foreach (TListType value in collection)
+    {
+        list.Add(value);
+    }
+}</pre></div>
+<p>With that, the code sample is then a little simpler:</p>
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:89cd1a91-9822-4fd6-a5c2-40b0930c831a" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">List&lt;ITestClass&gt; sorted = classes.OrderBy(a =&gt; a.Name).ToList();
+classes.Clear();
+classes.AddRange(sorted);</pre></div>
+<p>Now to make the code into a single useful line, I created another extension method called "Replace". The method creates a temporary list with the sequence's list (that will become the sorted data), clears the original list, and then adds the collection into the list. Thank goodness for your average mom and pop having 8GB of memory... I'm going for the clean-looking, BCL-intense solution, as opposed to pretending that I'm doing assembly programming on my TI-86...</p>
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:5b20bf65-ec66-4690-860d-8127279fa065" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">/// &lt;summary&gt;
+/// Replace a list's contents with the items in the IEnumerable.
+/// &lt;/summary&gt;
+/// &lt;typeparam name="TListType"&gt;The list type.&lt;/typeparam&gt;
+/// &lt;param name="list"&gt;The list object.&lt;/param&gt;
+/// &lt;param name="sequence"&gt;The sequence to copy into the list.&lt;/param&gt;
+public static void Replace&lt;TListType&gt;(this IList&lt;TListType&gt; list, IEnumerable&lt;TListType&gt; sequence)
+{
+    if (list == null)
+    {
+        return;
+    }
+    if (sequence == null)
+    {
+        throw new ArgumentNullException("sequence");
+    }
+
+    List&lt;TListType&gt; copy = sequence.ToList();
+    list.Clear();
+    list.AddRange(copy);
+}</pre></div>
+<p>And then the updated OrderBy statement. Here's what my final version <strong>should</strong> have been yesterday:</p>
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1ad07570-5cba-4486-9a65-07f96753c357" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">/// &lt;summary&gt;
+/// Sorts the test classes alphabetically by name.
+/// &lt;/summary&gt;
+/// &lt;param name="classes"&gt;A list of test class metadata objects.&lt;/param&gt;
+public static void SortTestClasses(IList&lt;ITestClass&gt; classes)
+{
+    classes.Replace(classes.OrderBy(a =&gt; a.Name));
+}</pre></div>
+<p>Well, sorry if I mislead anyone yesterday. And thanks Ted!</p>

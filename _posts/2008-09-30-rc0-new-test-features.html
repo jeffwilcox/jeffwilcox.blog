@@ -1,0 +1,77 @@
+---
+layout: post
+comments: true
+title: ! 'Silverlight Unit Test Framework: New features &amp; download for RC0'
+wordpress_id: 127
+wordpress_url: http://www.jeff.wilcox.name/2008/09/30/rc0-new-test-features/
+imported_categories:
+- title: software-development
+  slug: dev
+  autoslug: software-development
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: testing
+  slug: testing
+  autoslug: testing
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+imported_link_categories: []
+tags: []
+---
+<p>Enhanced interactive results, more log providers, dynamic test methods and attributes, tag expressions: there's a whole lot of fun new test-dev-geek candy in the latest Silverlight Unit Test Framework download on the MSDN Code Gallery (<a href="http://code.msdn.microsoft.com/silverlightut/">download now available</a>; <a href="http://www.jeff.wilcox.name/2008/09/29/unit-testing-rc0-changes/">breaking changes here</a>).</p>  <p>Here's a quick look at a few of the top new features in the bits today:</p>  <p><strong>Enhanced interactive results experience:</strong> The built-in test log that appears in the web browser has been improved. It now displays a progress bar, numeric test method progress, and average execution duration at the completion of a test run.</p>  <p><img alt="Progress bar. Total test method count." src="http://media.jeff.wilcox.name/blog/rc0/new_progress_bar.png" /></p>  <p>All test methods in the test run have a details expander that shows time and duration statistics, exception method details, the ability to retry/re-run a single test method, and also copy result information to the clipboard. </p>  <p>That's right: you can re-run a single test (passing or failing) without having to restart the debugger, the browser, or do anything other than click the &quot;Retry this test&quot; link - then watch as the result appears again, at the bottom of the test log.</p>  <p>There is a simple log provider that lets you copy all failure results into the clipboard for e-mailing or pasting in bug reports. By clicking the &quot;Copy result details&quot; link, we'll pop up an alert message box. Just press Ctrl + C (Windows) or select the text and press Command + C (OS X) to grab the details to then open a bug in TFS, e-mail a co-worker to nag them to fix a feature, or whatever.</p>  <p><img alt="CLick on any test to expand details. Retry or re-run any test with a single click." src="http://media.jeff.wilcox.name/blog/rc0/new_expander_details.png" /> </p>  <p><strong>TagExpressions</strong>: Easily select and run sets of tests, organize test classes and methods, and add descriptive metadata to speed up validation time. Originally implemented by expert dev Ted Glaza for the ASP.NET AJAX Toolkit, it was the perfect addition to move beyond the 'Exclusive' attribute. More about the expression language will be posted someday soon.</p>  <p>A built-in user interface for working with tags is not yet in today's drop of bits, but it can be set using parameters or modifying the UnitTestSettings object in the meantime:</p>  <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:086a1ca9-73c1-47c7-bb5e-657a21566c00" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="c-sharp" name="code">/// &lt;summary&gt;
+/// The Application_Startup method inside the test project's 
+/// App.xaml.cs file.
+/// &lt;/summary&gt;
+private void Application_Startup(object sender, StartupEventArgs e)
+{
+    // A tag expression that selects all tests that are NOT 
+    // part of the group tagged with "SlowTests"
+    string tagExpression = "!SlowTests";
+
+    UnitTestSettings settings = UnitTestSystem.CreateDefaultSettings();
+    settings.TagExpression = tagExpression;
+    this.RootVisual = UnitTestSystem.CreateTestPage(settings);
+}</pre></div>
+
+<p>What are they? Well, for the most part that's for another post, another day. But tags are attached to methods and classes when the TagAttribute is used (found in the Microsoft.Silverlight.Testing) namespace.</p>
+
+<p>They are also automatically generated at runtime for class names, method names, and full names (namespace + name).</p>
+
+<p><strong>Visual Studio Team Test log provider output (TRX)</strong>: A built-in, bare-bones log provider built with XLinq. When configured it can output *.trx results that can be opened in the Visual Studio 2008 interface. This is output-only, and not an integration story.</p>
+
+<p><img alt="Output results in a format that Visual Studio can open for viewing." src="http://media.jeff.wilcox.name/blog/rc0/new_trx.png" /> </p>
+
+<p><strong>Test Service Provider implementation:</strong> A super easy, lightweight implementation of a set of provider interfaces for extending the capabilities of the test harness. Paired with the right environment you can get information about the environment, report results to an external test runner or continuous integration system, and more. The provider framework is simple and extensible, you can add your own providers as you see fit in your test projects and common libraries.</p>
+
+<p><strong>Dynamic test methods:</strong> For advanced scenarios and simple test generation, you can implement your own ITestClass that also implements the IProvideDynamicTestMethods interface, located in the Microsoft.Silverlight.Testing.UnitTesting.Harness namespace. The interface defines the contract for a single IEnumerable&lt;ITestMethod&gt; method named &quot;GetDynamicTestMethods.&quot;</p>
+
+<p><strong>Dynamic test method attributes:</strong> It is now possible to provide attributes dynamically (as if they were attached to the real ITestMethod type, if any). The ITestMethod interface has been expanded to include a GetDynamicAttributes() method that returns IEnumerable&lt;Attribute&gt;.</p>
+
+<p><strong>Custom BugAttribute:</strong> The Bug attribute defined in the Microsoft.Silverlight.Testing namespace is similar to the Visual Studio known issue metadata, but it is a custom extension that alters the results of the test run.</p>
+
+<p><img alt="Bug attribute: An Exception was thrown but was an expected, temporary failure." src="http://media.jeff.wilcox.name/blog/rc0/new_known_issue.png" /> </p>
+
+<p>The attribute flips the test result, accounting for expected &amp; known bugs. This makes continuous integration testing super easy without the need for extensive analysis. A &quot;Fixed&quot; bool property can be used to keep the metadata once the issue is corrected in a future build.</p>
+
+<h3>Upcoming posts</h3>
+
+<p>With the test framework download now available, over the next few weeks I'll make sure to fill out the story:</p>
+
+<ul>
+  <li>Updated test templates for RC0 </li>
+
+  <li>Other cool new features for testers </li>
+
+  <li>Step-by-step guide for new test developers </li>
+
+  <li>Understanding tag expressions </li>
+
+  <li>Writing your own simple log provider </li>
+
+  <li>Digging into the psuedo-asynchronous testing story built into the framework </li>
+</ul>
+
+<p><em>Hope these new features are useful to you, let me know! 
+    <br />- Jeff</em></p>

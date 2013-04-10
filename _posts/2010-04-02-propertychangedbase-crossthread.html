@@ -1,0 +1,295 @@
+---
+layout: post
+comments: true
+title: Property change notifications for multithreaded Silverlight applications
+excerpt: Jeff Wilcox introduces a base class for dealing with INotifyPropertyChanged
+  classes that is safe to use from background threads in Silverlight and Windows Phone.
+wordpress_id: 640
+wordpress_url: http://www.jeff.wilcox.name/2010/04/propertychangedbase-crossthread/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+imported_link_categories: []
+tags:
+- title: silverlight;data-binding;threading
+  slug: silverlightdata-bindingthreading
+  autoslug: silverlight;data-binding;threading
+---
+<p>As I’ve been developing more complex Silverlight business applications, I’ve been increasingly relying on <a href="http://msdn.microsoft.com/en-us/library/system.componentmodel.backgroundworker(VS.95).aspx">BackgroundWorker</a> to offload complex calculations and operations to the background thread.</p>  <p>Something I didn’t have to worry about in the typical user interface thread-only implementation of my app was which thread change notifications fire on.</p>  <p>Here’s a typical scenario:</p>  <ol>   <li>You have a CLR property on a data/model object in your app. In a background thread, the property is updated.</li>    <li>As all data and model objects should be, the type implements <a href="http://msdn.microsoft.com/en-us/library/system.componentmodel.inotifypropertychanged(VS.95).aspx">INotifyPropertyChanged</a> (the data binding system relies on this to know when to update bindings).</li>    <li>The property changed event is fired, and listeners react to the change, including the data binding system.</li>    <li>The data binding system throws an invalid cross thread exception, since all UI operations, including handing off the binding changes, need to happen on the UI thread (but it’s happening on a background thread)</li> </ol>  <p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/04/BackgroundThreadWithoutDispatcher.png"><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="BackgroundThreadWithoutDispatcher" border="0" alt="BackgroundThreadWithoutDispatcher" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/04/BackgroundThreadWithoutDispatcher_thumb.png" width="685" height="160" /></a> </p>  <p>So what you really need to do is funnel those change notifications back to always happen on the user interface thread – that’s what makes the most sense given the data binding requirement.</p>  <p>By using a dispatcher, which can accept a BeginInvoke for that other thread, it will all just work and binding will move along happily:</p>  <p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/04/BackgroundThreadWithDispatcher.png"><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="BackgroundThreadWithDispatcher" border="0" alt="BackgroundThreadWithDispatcher" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/04/BackgroundThreadWithDispatcher_thumb.png" width="685" height="160" /></a> </p>  <p>This scenario is ripe for a few helper classes that I’m open to receiving feedback on. Hope you agree with my approach of using a ‘smart dispatcher’.</p>  <h2>One Dispatcher to rule them all</h2>  <p>The only thing you need to fire an Action on the primary UI thread is a reference to a <a href="http://msdn.microsoft.com/en-us/library/system.windows.threading.dispatcher(VS.95).aspx">Dispatcher</a> instance. Unfortunately this isn’t something you can request from a background thread – you need to have the instance already stored away in most cases.</p>  <p>As a result, I’ve a static helper class and in it, I try and make sure that there is an instance stored before any of my data binding or model code is used.</p>  <p>Though I could have used <a href="http://msdn.microsoft.com/en-us/library/system.threading.synchronizationcontext.aspx">SynchronizationContext</a> instead, Dispatcher is a little easier to use, and better suited to WPF and Silverlight apps.</p>  <p>In my App.xaml.cs, I add a line that calls Initialize on my class. This is to make sure that there is <em>always</em> an available dispatcher for other threads to get access to:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:80de451c-9a3a-4b80-aa15-24fd2bf7890d" class="wlWriterEditableSmartContent"><pre class="csharp" name="code">public App()
+{
+    this.Startup += this.Application_Startup;
+    this.Exit += this.Application_Exit;
+    this.UnhandledException += this.Application_UnhandledException;
+
+    SmartDispatcher.Initialize(Deployment.Current.Dispatcher);
+
+    InitializeComponent();
+}</pre></div>
+
+<p>If you didn’t want to have to add this code to initialization, my implementation of a dispatcher helper class falls back to trying to grab the dispatcher from the root visual – but this won’t work in all scenarios, so I prefer the above. One more thing to remember however.</p>
+
+<h2>Being smart about using the dispatcher</h2>
+
+<p>It’s easy enough to replace all event firings for property changes to go through the dispatcher. However, this will reduce performance some; instead of the call being made immediately, it’s made at a later time.</p>
+
+<p>There is a hidden method called <a href="http://msdn.microsoft.com/en-us/library/system.windows.threading.dispatcher.checkaccess(v=VS.95).aspx">CheckAccess</a> on Dispatcher that returns true if you are on the same thread that the Dispatcher was first created in. By checking with it before making a call, we can make a better perf choice:</p>
+
+<ul>
+  <li>If CheckAccess is true and we’re on the UI thread, just go ahead and directly invoke the Action. </li>
+
+  <li>Else, BeginInvoke with the Dispatcher that will take care of getting it done on the UI thread later. </li>
+</ul>
+
+<p>I’ve also done some optimization to try and ensure that the design-time experience at least stays consistent. In general you shouldn’t have background operations ever occurring in a design-time scenario.</p>
+
+<p>The static helper class I’ve created is called <strong>SmartDispatcher</strong> and simplifies all of this logic.</p>
+
+<p>So here’s my smart dispatcher implementation:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:5f822523-5e30-4745-9db5-23a523f087b5" class="wlWriterEditableSmartContent"><pre class="csharp" name="code">// (c) Copyright Microsoft Corporation.
+// This source is subject to the Microsoft Public License (Ms-PL).
+// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+// All other rights reserved.
+
+using System.ComponentModel;
+
+namespace System.Windows.Threading
+{
+    /// &lt;summary&gt;
+    /// A smart dispatcher system for routing actions to the user interface
+    /// thread.
+    /// &lt;/summary&gt;
+    public static class SmartDispatcher
+    {
+        /// &lt;summary&gt;
+        /// A single Dispatcher instance to marshall actions to the user
+        /// interface thread.
+        /// &lt;/summary&gt;
+        private static Dispatcher _instance;
+
+        /// &lt;summary&gt;
+        /// Backing field for a value indicating whether this is a design-time
+        /// environment.
+        /// &lt;/summary&gt;
+        private static bool? _designer;
+        
+        /// &lt;summary&gt;
+        /// Requires an instance and attempts to find a Dispatcher if one has
+        /// not yet been set.
+        /// &lt;/summary&gt;
+        private static void RequireInstance()
+        {
+            if (_designer == null)
+            {
+                _designer = DesignerProperties.IsInDesignTool;
+            }
+
+            // Design-time is more of a no-op, won't be able to resolve the
+            // dispatcher if it isn't already set in these situations.
+            if (_designer == true)
+            {
+                return;
+            }
+
+            // Attempt to use the RootVisual of the plugin to retrieve a
+            // dispatcher instance. This call will only succeed if the current
+            // thread is the UI thread.
+            try
+            {
+                _instance = Application.Current.RootVisual.Dispatcher;
+            }
+            catch (Exception e)
+            {
+                throw new InvalidOperationException("The first time SmartDispatcher is used must be from a user interface thread. Consider having the application call Initialize, with or without an instance.", e);
+            }
+
+            if (_instance == null)
+            {
+                throw new InvalidOperationException("Unable to find a suitable Dispatcher instance.");
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Initializes the SmartDispatcher system, attempting to use the
+        /// RootVisual of the plugin to retrieve a Dispatcher instance.
+        /// &lt;/summary&gt;
+        public static void Initialize()
+        {
+            if (_instance == null)
+            {
+                RequireInstance();
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Initializes the SmartDispatcher system with the dispatcher
+        /// instance.
+        /// &lt;/summary&gt;
+        /// &lt;param name="dispatcher"&gt;The dispatcher instance.&lt;/param&gt;
+        public static void Initialize(Dispatcher dispatcher)
+        {
+            if (dispatcher == null)
+            {
+                throw new ArgumentNullException("dispatcher");
+            }
+
+            _instance = dispatcher;
+
+            if (_designer == null)
+            {
+                _designer = DesignerProperties.IsInDesignTool;
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// 
+        /// &lt;/summary&gt;
+        /// &lt;returns&gt;&lt;/returns&gt;
+        public static bool CheckAccess()
+        {
+            if (_instance == null)
+            {
+                RequireInstance();
+            }
+
+            return _instance.CheckAccess();
+        }
+
+        /// &lt;summary&gt;
+        /// Executes the specified delegate asynchronously on the user interface
+        /// thread. If the current thread is the user interface thread, the
+        /// dispatcher if not used and the operation happens immediately.
+        /// &lt;/summary&gt;
+        /// &lt;param name="a"&gt;A delegate to a method that takes no arguments and 
+        /// does not return a value, which is either pushed onto the Dispatcher 
+        /// event queue or immediately run, depending on the current thread.&lt;/param&gt;
+        public static void BeginInvoke(Action a)
+        {
+            if (_instance == null)
+            {
+                RequireInstance();
+            }
+
+            // If the current thread is the user interface thread, skip the
+            // dispatcher and directly invoke the Action.
+            if (_instance.CheckAccess() || _designer == true)
+            {
+                a();
+            }
+            else
+            {
+                _instance.BeginInvoke(a);
+            }
+        }
+    }
+}</pre></div>
+
+<h2>A property change base class</h2>
+
+<p>Next up, instead of having to manually wire up the INotifyPropertyChanged interface in all my data classes, I prefer to derive from a common base class, PropertyChangedBase, that has logic in it to use my smart dispatcher.</p>
+
+<p>This base class:</p>
+
+<ul>
+  <li>Has a protected NotifyPropertyChanged method that does all the real work</li>
+
+  <li>Statically stores created event arguments to improve performance over time (only one PropertyChangedEventArgs instance is required per property name in the application’s lifetime)</li>
+
+  <li>Uses SmartDispatcher to use a dispatcher only if not running on the user interface thread, otherwise directly invokes the property change handler.</li>
+</ul>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:081eec95-108d-4637-bc82-a9dc32c0de06" class="wlWriterEditableSmartContent"><pre class="csharp" name="code">// (c) Copyright Microsoft Corporation.
+// This source is subject to the Microsoft Public License (Ms-PL).
+// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+// All other rights reserved.
+
+using System;
+using System.Collections.Generic;
+using System.Windows.Threading;
+
+namespace System.ComponentModel
+{
+    /// &lt;summary&gt;
+    /// A base class for data objects that implement the property changed 
+    /// interface, offering data binding and change notifications.
+    /// &lt;/summary&gt;
+    public class PropertyChangedBase : INotifyPropertyChanged
+    {
+        /// &lt;summary&gt;
+        /// A static set of argument instances, one per property name.
+        /// &lt;/summary&gt;
+        private static Dictionary&lt;string, PropertyChangedEventArgs&gt; _argumentInstances = new Dictionary&lt;string, PropertyChangedEventArgs&gt;();
+
+        /// &lt;summary&gt;
+        /// The property changed event.
+        /// &lt;/summary&gt;
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// &lt;summary&gt;
+        /// Notify any listeners that the property value has changed.
+        /// &lt;/summary&gt;
+        /// &lt;param name="propertyName"&gt;The property name.&lt;/param&gt;
+        protected void NotifyPropertyChanged(string propertyName)
+        {
+            if (string.IsNullOrEmpty(propertyName))
+            {
+                throw new ArgumentException("PropertyName cannot be empty or null.");
+            }
+
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
+            {
+                PropertyChangedEventArgs args;
+                if (!_argumentInstances.TryGetValue(propertyName, out args))
+                {
+                    args = new PropertyChangedEventArgs(propertyName);
+                    _argumentInstances[propertyName] = args;
+                }
+
+                // Fire the change event. The smart dispatcher will directly
+                // invoke the handler if this change happened on the UI thread,
+                // otherwise it is sent to the proper dispatcher.
+                SmartDispatcher.BeginInvoke(delegate
+                {
+                    handler(this, args); 
+                });
+            }
+        }
+    }
+}</pre></div>
+
+<h2>Putting it all together</h2>
+
+<p>To use this in your own application, you take your model/data classes and derive from PropertyChangedBase. Then, in CLR setters, always call NotifyPropertyChanged:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:dc14a951-f0ec-424e-a0a3-da3b76cbeada" class="wlWriterEditableSmartContent"><pre class="csharp" name="code">public class SampleData : PropertyChangedBase
+{
+    private string _someText;
+    public string SomeText
+    {
+        get { return _someText; }
+        set
+        {
+            _someText = value;
+            NotifyPropertyChanged("SomeText");
+        }
+    }
+}</pre></div>
+
+<h2>Grab the code</h2>
+
+<p>I’ve decided to place these classes inside their appropriate system namespaces: System.Windows.Threading for the smart dispatcher, and System.ComponentModel for the PropertyChangedBase. Hope that isn’t too offensive.</p>
+
+<p>Here are the files for download as well:</p>
+
+<ul>
+  <li><a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/04/PropertyChangedBase.cs_.txt">PropertyChangedBase.cs</a></li>
+
+  <li><a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/04/SmartDispatcher.cs_.txt">SmartDispatcher.cs</a></li>
+</ul>
+
+<p>Hope this helps. Let me know what you think.</p>

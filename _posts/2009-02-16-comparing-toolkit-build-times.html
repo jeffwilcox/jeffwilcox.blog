@@ -1,0 +1,48 @@
+---
+layout: post
+comments: true
+title: Unscientific SSD build time comparison
+wordpress_id: 278
+wordpress_url: http://www.jeff.wilcox.name/2009/02/comparing-toolkit-build-times/
+imported_categories:
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+- title: infrastructure
+  slug: infrastructure
+  autoslug: infrastructure
+- title: technology
+  slug: technology
+  autoslug: technology
+imported_link_categories: []
+tags: []
+---
+<p>A few days ago I mentioned that I’ve been <a href="http://www.jeff.wilcox.name/2009/02/thanks-to-ssd/">using an SSD drive in my desktop workstation</a> at home, with pretty great success. The <a href="http://www.amazon.com/gp/product/B001F4YIYY?ie=UTF8&tag=jwilcoxblog-20&linkCode=as2&camp=1789&creative=390957&creativeASIN=B001F4YIYY">Intel X25-M</a> is where it is at – give it another half year for the prices to become reasonable and I bet you’ll see more folks adopting it.</p>
+
+<p>Eric Hexter was wondering if I could figure out any build time differences, and so what I did was download the Silverlight Toolkit source code from <a href="http://www.codeplex.com/Silverlight/">http://www.codeplex.com/Silverlight/</a> and build on a few different systems.</p>
+
+<p>This isn’t scientific, but the machines were all similar enough (Core 2 Duo or Quad Core; building on a single core only, not a parallelized build) that I feel OK at least sharing the numbers I received in a single build attempt.</p>
+
+<table border="0" cellspacing="0" cellpadding="2" width="670"><tbody>
+    <tr>
+      <td valign="top" width="167">&#160;</td>
+
+      <td valign="top" width="167">7200rpm</td>
+
+      <td valign="top" width="167">10000rpm Raptor</td>
+
+      <td valign="top" width="167">Intel X25-M SSD</td>
+    </tr>
+
+    <tr>
+      <td valign="top" width="167">Clean Toolkit build</td>
+
+      <td valign="top" width="167">3:23.11</td>
+
+      <td valign="top" width="167">2:41.22</td>
+
+      <td valign="top" width="167">1:44.97</td>
+    </tr>
+  </tbody></table>
+
+<p>Not conclusively awesome; a lot of the build time is actually spent performing code analysis, and so your own build might be more or less disk read dependent.</p>

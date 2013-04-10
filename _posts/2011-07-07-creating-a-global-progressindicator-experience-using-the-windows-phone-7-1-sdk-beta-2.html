@@ -1,0 +1,188 @@
+---
+layout: post
+comments: true
+title: Creating a global ProgressIndicator experience using the Windows Phone 7.1
+  SDK Beta 2
+wordpress_id: 834
+wordpress_url: http://www.jeff.wilcox.name/2011/07/creating-a-global-progressindicator-experience-using-the-windows-phone-7-1-sdk-beta-2/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: windows-phone
+  slug: windows-phone
+  autoslug: windows-phone
+imported_link_categories: []
+tags: []
+---
+<p>One of the nice new features in the 7.1 release of Windows Phone for developers is ProgressIndicator support right within the app platform, removing the need in many situations for the Silverlight-based PerformanceProgressBar control that I created some time ago.</p>  <p>(The PerformanceProgressBar was a decent performance improvement over the stock ProgressBar in the first release of the OS, but offloading the control to the OS improves performance even more. As many people pointed out, the rich visualization wasn’t free.)</p>  <p>So my initial thought was that I could use the new ProgressIndicator control and have a single instance to use throughout my app. Not so fast! Unfortunately (in my mind) the ProgressIndicator property is a SystemTray property and it’s set on every single page instance.</p>  <p>In my applications, I prefer to wire all key events (data downloads, long-running tasks, etc.) to a single, centralized ‘global loading’ control, removing the need to have more than a single progress bar instance in the app.</p>  <p>So in this post quickly we’ll:</p>  <ul>   <li>See how to hook up the GlobalLoading when your app starts up</li>    <li>Note that the navigation framework’s events are used to auto-hookup the same shared progress indicator instance to every page</li>    <li>See how to use the IsLoading setter to turn on and off the loading experience</li> </ul>  <h3>My old &amp; new strategies</h3>  <p>In my 7.0 apps, I would re-template the root phone application frame and have the single indeterminate progress bar in there, so it’s always available.</p>  <p>In 7.1, my goal is to be able to re-purpose my existing global loading system. I want to create a single instance of the new ProgressIndicator type, and then automatically have it set to every single page’s appropriate system tray property automatically. This will eliminate any manual hook-up required, so it will just always be present and work.</p>  <h3>Initializing the global loading system at startup</h3>  <p>In order to always have the progress indicator visible, I need to make sure it’s always set when a page navigation happens, sharing that single instance. Let’s use the Navigated event of the PhoneApplicationFrame that is created in App.xaml.cs.</p>  <ul>   <li>Open up your 7.1 app’s App.xaml.cs </li>    <li>Expand the “Phone application initialization” region in the editor </li>    <li>At line ~120 (in a new project), where the RootFrame is set, add the initialize call. </li> </ul>  <pre class="c-sharp" name="code">GlobalLoading.Instance.Initialize(RootFrame);</pre>
+
+<h3>Hooking up to the Navigated event</h3>
+
+<p>Now, you’ll see that inside the global loading system implementation below, I’m using the Navigated event to set the ProgressIndicator property with every complete navigation:</p>
+
+<pre class="c-sharp" name="code">private void OnRootFrameNavigated(object sender, NavigationEventArgs e)
+{
+    // Use in Mango to share a single progress indicator instance.
+    var ee = e.Content;
+    var pp = ee as PhoneApplicationPage;
+    if (pp != null)
+    {
+        pp.SetValue(SystemTray.ProgressIndicatorProperty, _mangoIndicator);
+    }
+}</pre>
+
+<p>Nothing for you to do other than include the GlobalLoading.cs file in your project.</p>
+
+<h3>Using the global loading system</h3>
+
+<p>Now, in my app, I have two ways of providing data to this global loader, one of which is pretty automatic:</p>
+
+<ul>
+  <li>AgFx: I hook up to the DataManager’s property change event, looking for changes in its own central IsLoading property</li>
+
+  <li>You can set GlobalLoading.Instance.IsLoading to <em>true</em> or <em>false</em></li>
+</ul>
+
+<p>Note that setting IsLoading to true <em>increments</em> an internal counter, and setting to false decrements; the idea is that you match operations to results: if you start a web browser navigation and set IsLoaded to True, make sure that when the navigation is complete or canceled, you set it to False.</p>
+
+<p>However, if multiple requests are happening at once, the loading indication will not stop until all requests have completed.</p>
+
+<p>Now, one of the downfalls of using simple integer arithmetic here is that you could potentially forget to increment or decrement, leaving the indicator always going, and likely keeping your app from making it through the marketplace ingestion requirements.</p>
+
+<p>A better solution might be to request and use “tokens” or some sort of instance that could either timeout or be used to debug your app’s logic; it would also allow you to use the new progress indicator’s text property to provide information about loading operations (“Currently loading 2 things…”, “Refreshing your places list”), which is more interesting.</p>
+
+<p>The cool <a href="http://hiddenpineapple.com/rowi/">Rowi</a> app does this.</p>
+
+<h3>Data binding or not</h3>
+
+<p>In my 7.0 implementation, I actually directly data bind a central PerformanceProgressBar’s IsLoading property to the GlobalLoading.Instance.ActualIsLoading property; in 7.1, I decided for simplicity to instead just directly set the progress indicator’s values, but I maybe could have data bound to the indicator. Let me know if you try that and have any issues!</p>
+
+<p>Here’s the source to GlobalLoading.cs. I’ve commented out the AgFx parts in case you’re not using that system.</p>
+
+<h3>GlobalLoading.cs</h3>
+
+<pre class="c-sharp" name="code">using System.ComponentModel;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Navigation;
+// using AgFx;
+using Microsoft.Phone.Controls;
+using Microsoft.Phone.Shell;
+
+namespace JeffWilcox.FourthAndMayor
+{
+    public class GlobalLoading : INotifyPropertyChanged
+    {
+        private ProgressIndicator _mangoIndicator;
+
+        private GlobalLoading()
+        {
+        }
+
+        public void Initialize(PhoneApplicationFrame frame)
+        {
+            // If using AgFx:
+            // DataManager.Current.PropertyChanged += OnDataManagerPropertyChanged;
+
+            _mangoIndicator = new ProgressIndicator();
+
+            frame.Navigated += OnRootFrameNavigated;
+        }
+
+        private void OnRootFrameNavigated(object sender, NavigationEventArgs e)
+        {
+            // Use in Mango to share a single progress indicator instance.
+            var ee = e.Content;
+            var pp = ee as PhoneApplicationPage;
+            if (pp != null)
+            {
+                pp.SetValue(SystemTray.ProgressIndicatorProperty, _mangoIndicator);
+            }
+        }
+
+        private void OnDataManagerPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (&quot;IsLoading&quot; == e.PropertyName)
+            {
+                // if AgFx: IsDataManagerLoading = DataManager.Current.IsLoading;
+                NotifyValueChanged();
+            }
+        }
+
+        private static GlobalLoading _in;
+        public static GlobalLoading Instance
+        {
+            get
+            {
+                if (_in == null)
+                {
+                    _in = new GlobalLoading();
+                }
+
+                return _in;
+            }
+        }
+
+        public bool IsDataManagerLoading { get; set; }
+
+        public bool ActualIsLoading
+        {
+            get
+            {
+                return IsLoading || IsDataManagerLoading;
+            }
+        }
+
+        private int _loadingCount;
+
+        public bool IsLoading
+        {
+            get
+            {
+                return _loadingCount &gt; 0;
+            }
+            set
+            {
+                bool loading = IsLoading;
+                if (value)
+                {
+                    ++_loadingCount;
+                }
+                else
+                {
+                    --_loadingCount;
+                }
+
+                NotifyValueChanged();
+            }
+        }
+
+        private void NotifyValueChanged()
+        {
+            if (_mangoIndicator != null)
+            {
+                _mangoIndicator.IsIndeterminate = _loadingCount &gt; 0 || IsDataManagerLoading;
+
+                // for now, just make sure it's always visible.
+                if (_mangoIndicator.IsVisible == false)
+                {
+                    _mangoIndicator.IsVisible = true;
+                }
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void RaisePropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+}</pre>
+
+<p>Hope this helps!</p>

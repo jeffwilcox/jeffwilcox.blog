@@ -1,0 +1,128 @@
+---
+layout: post
+comments: true
+title: Storing text in the clipboard using Silverlight 2
+wordpress_id: 56
+wordpress_url: http://www.jeff.wilcox.name/2008/05/21/clipboard-access/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+- title: javascript
+  slug: javascript
+  autoslug: javascript
+imported_link_categories: []
+tags: []
+---
+<p>To provide users the ability to copy permalinks or store other useful information in the clipboard, there aren&#8217;t many options for web developers today.&#160; There&#8217;s no APIs inside JavaScript to access the clipboard.&#160; Here&#8217;s a solution that will at least enable this from your Silverlight 2 app for most of your users.</p>  <h3>Internet Explorer-only Clipboard Access</h3>  <p>IE provides limited <a href="http://msdn.microsoft.com/en-us/library/ms536744(VS.85).aspx" target="_blank">clipboard support</a> in script. Using the interoperability features in Silverlight this data can be accessed.&#160; The user will be prompted to approve the clipboard access using this method.</p>  <p>Open <a href="http://media.jeff.wilcox.name/blog/sampleApps/beta1/ieClipboard/TestPage.html" target="_blank">IE Clipboard demo</a> (133k)     <br /><font color="#808080">Requires Silverlight 2 Beta 1</font></p>  <p></p>  <p>Here&#8217;s the static clipboard method I created to attempt to write to the clipboard.&#160; If the user denies the request, or the clipboard API is not available, an alert informs the user.&#160; A successful write to the clipboard does not result in any visual confirmation.</p>  <p><strong>Clipboard.cs</strong>:</p>  <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:db0442fc-7e67-4a2a-ae1f-9a75afa95f1f" style="padding-right: 0px; display: inline; padding-left: 0px; float: none; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">using System;
+using System.Windows.Browser;
+
+namespace ClipboardDemo
+{
+    public static class Clipboard
+    {
+        const string HostNoClipboard = "The clipboard isn't available in the current host.";
+        const string ClipboardFailure = "The text couldn't be copied into the clipboard.";
+
+        /// &lt;summary&gt;
+        /// Write to the clipboard (Internet Explorer-only)
+        /// &lt;/summary&gt;
+        public static void SetText(string text)
+        {
+            // document.window.clipboardData.setData(format, data);            
+            var clipboardData = (ScriptObject)HtmlPage.Window.GetProperty("clipboardData");
+            if (clipboardData != null) {
+                bool success = (bool)clipboardData.Invoke("setData", "text", text);
+                if (!success) {
+                    HtmlPage.Window.Alert(ClipboardFailure);
+                }
+            }
+            else {
+                HtmlPage.Window.Alert(HostNoClipboard);
+            }
+        }
+
+    }
+}</pre></div>
+
+<p>In the button event handler in my demo app, I simply call the static method to write to the clipboard:</p>
+
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:9aa0a396-6168-46aa-8356-bdaa97508207" style="padding-right: 0px; display: inline; padding-left: 0px; float: none; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">        private void Go_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(ClipboardText.Text);
+        }</pre></div>
+
+<h3>Cross-browser, cross-platform solution</h3>
+
+<p>Now, this one&#8217;s a little interesting: since Flash does have clipboard access, you can actually use it from the web browser (JavaScript) or even Silverlight 2 (HTML DOM bridge) to enable a cross-browser, cross-platform clipboard copy function.&#160; It&#8217;s a hack, but does get the job done.</p>
+
+<p>I think there&#8217;s enough space in the world&#8217;s hard drives for both Flash and Silverlight on every computer!</p>
+
+<p>Open <a href="http://media.jeff.wilcox.name/blog/sampleApps/beta1/allClipboard/TestPage.html" target="_blank">Cross-browser, Cross-platform Clipboard demo</a> (133k) 
+
+  <br /><font color="#808080">Requires Silverlight 2 Beta 1</font></p>
+
+<p>To do this, I&#8217;ll be using the Flash component that ships with the <a href="http://code.google.com/p/syntaxhighlighter/" target="_blank">syntaxhighlighter</a> tool created by Alex Gorbatchev.&#160; By simply adding a new Flash embed to the page and referencing his clipboard.swf Flash movie file, the Flash API will then attempt to write the proper data into the clipboard.</p>
+
+<p>The implementation I&#8217;ve done here isn&#8217;t super robust: if the user doesn&#8217;t have Flash, there&#8217;s no error message for instance.&#160; If the user&#8217;s browser is Internet Explorer, or implements the clipboardData API, then the Flash workaround will not be used.</p>
+
+<p>Here&#8217;s the expanded Clipboard.cs.&#160; Do note, I&#8217;m hard-coding the clipboard.swf location, so make sure you&#8217;re using a valid path on your server.</p>
+
+<p><strong>Clipboard.swf:</strong></p>
+
+<p>Make sure to download this file (here <a href="http://code.google.com/p/syntaxhighlighter/" target="_blank">syntaxhighlighter</a>) and store it in the same directory as your application.</p>
+
+<p><strong>Clipboard.cs</strong>:</p>
+
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:72e1618b-d3bc-4ac1-afde-0a4cd084352a" style="padding-right: 0px; display: inline; padding-left: 0px; float: none; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">using System;
+using System.Windows.Browser;
+
+namespace ClipboardDemo
+{
+    public static class Clipboard
+    {
+        const string HostNoClipboard = "The clipboard isn't available in the current host.";
+        const string ClipboardFailure = "The text couldn't be copied into the clipboard.";
+        const string BeforeFlashCopy = "The text will now attempt to be copied...";
+        const string FlashMimeType = "application/x-shockwave-flash";
+
+        // HARD-CODED!
+        const string ClipboardFlashMovie = "clipboard.swf";
+
+        /// &lt;summary&gt;
+        /// Write to the clipboard (IE and/or Flash)
+        /// &lt;/summary&gt;
+        public static void SetText(string text)
+        {
+            // document.window.clipboardData.setData(format, data);            
+            var clipboardData = (ScriptObject)HtmlPage.Window.GetProperty("clipboardData");
+            if (clipboardData != null) {
+                bool success = (bool)clipboardData.Invoke("setData", "text", text);
+                if (!success) {
+                    HtmlPage.Window.Alert(ClipboardFailure);
+                }
+            }
+            else {
+                HtmlPage.Window.Alert(BeforeFlashCopy);
+
+                // Append a Flash embed element with the data encoded
+                string safeText = HttpUtility.UrlEncode(text);
+                var elem = HtmlPage.Document.CreateElement("div");
+                HtmlPage.Document.Body.AppendChild(elem);
+                elem.SetProperty("innerHTML", "&lt;embed src=\"" + 
+                    ClipboardFlashMovie + "\" " +
+                    "FlashVars=\"clipboard=" + safeText + "\" width=\"0\" " +
+                    "height=\"0\" type=\"" + FlashMimeType + "\"&gt;&lt;/embed&gt;");
+            }
+        }
+
+    }
+}</pre></div>
+
+<p>Hope this helps!</p>

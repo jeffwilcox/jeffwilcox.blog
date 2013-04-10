@@ -1,0 +1,27 @@
+---
+layout: post
+comments: true
+title: ! 'Successful .Xap deployment with your CDN: Set the application/x-silverlight-app
+  MIME type'
+wordpress_id: 149
+wordpress_url: http://www.jeff.wilcox.name/2008/11/01/xap-mime-type/
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: web-servers
+  slug: webservers
+  autoslug: web-servers
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+- title: web
+  slug: web
+  autoslug: web
+imported_link_categories: []
+tags: []
+---
+<p>If you host XAP files on a CDN or other host (such as Amazon S3), you need to have the server configured with the new Silverlight MIME type. You can find out specifics in the <a href="http://msdn.microsoft.com/en-us/library/cc645049(VS.95).aspx">breaking changes</a> reference.</p> <p>When you do not need to configure the MIME type:</p> <ul> <li>If your .Xap files and web pages are on the same domain and do not need to be embedded elsewhere  </li><li>If you use a service like Silverlight Streaming and just embed &lt;iframe /&gt; tags in your web site</li></ul> <p>But, if you want to share or enable embedding for others, you need to add the "application/x-silverlight-app" MIME type for your .Xap files.</p> <p>This will allow:</p> <ul> <li>You to host your application binaries with a CDN  </li><li>Others to embed your applications in their pages and sites  </li><li>Bloggers to embed Silverlight &lt;object /&gt; tags right in their content and let syndication services and news readers embed the content</li></ul> <p>Equally important, if you don't want others to directly link to and reference your .Xap from their domains, then make sure to not send this mime type.</p> <p><strong>Apache</strong><br />For global configuration, in your central mime.types file, add:</p> <blockquote> <p># Enable Silverlight support for our apps to be embedded anywhere<br />application/x-silverlight-app&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; xap</p></blockquote> <p>Then restart Apache:</p> <blockquote> <p>$ sudo ./apachectl restart</p></blockquote> <p>If you're just configuring at the directory level, edit or add the .htaccess file in the directory you want to serve anywhere, and add the line:</p> <blockquote> <p>AddType application/x-silverlight-app xap</p></blockquote> <p><strong>IIS 6 &amp; 7<br /></strong>Here's a nice <a href="http://learn.iis.net/page.aspx/262/silverlight/">step-by-step guide to adding the MIME</a> type on Windows web servers.</p> <p><strong>Amazon S3<br /></strong>Maybe not a true CDN, I do use Amazon's Simple Storage Service (S3) for most of my Silverlight application hosting.</p> <p>Amazon S3 records the MIME type that your S3 client sends with each file upload. This means that you <u>must</u> configure your system with the appropriate "application/x-silverlight-app" MIME type <strong>when you upload</strong>, or when clients download your .Xap, they will get an unknown MIME type and be greeted with blank space where you'd expect your app to be working.</p> <p><strong>Your CDN</strong><br />I do not know the current <a href="http://www.limelightnetworks.com/">Limelight</a> or <a href="http://www.akamai.com/">Akamai</a> stories, sorry! Feel free to post a comment if you know.</p> <h3>Use Fiddler to check</h3> <p>I'd highly recommend that you download and use <a href="http://www.fiddler2.com/Fiddler2/version.asp">Fiddler2</a> on your Windows system. Using it, you can make sure and see what the content type is when it comes back in an HTTP response.</p>

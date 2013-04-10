@@ -1,0 +1,37 @@
+---
+layout: post
+comments: true
+title: Is it worthwhile to keep AutoCompleteBox's DropDownOpening and Closing events?
+excerpt: We're considering simplifying the AutoCompleteBox API be removing a few rarely
+  used events, and would love to get some feedback from scenarios this might impact.
+wordpress_id: 407
+wordpress_url: http://www.jeff.wilcox.name/?p=407
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+imported_link_categories: []
+tags: []
+---
+Recently we've been going through another round of bug fixes and improvements to controls in the <a href="http://silverlight.codeplex.com/">Silverlight Toolkit</a> and SDK, and I'm looking to trim AutoCompleteBox where it differs a lot from the platform.
+
+I've been gathering some feedback, and in an effort to be transparent about the process, I'd like to take this opportunity to ask the tubes. I've definitely met some customers at MIX and other events that are using controls like AutoCompleteBox for scenarios I've never dreamed of.
+
+<b>Would you miss these two events?</b> If so, what scenarios or kinds of experiences are you building using the events today?
+
+There's a cancelable pattern implemented in the control for the drop down experience: <b>DropDownOpening</b> offers an event argument that can cancel the drop down open; if it isn't canceled, DropDownOpened fires (like a standard ComboBox).
+
+The same holds true for <b>DropDownClosing</b> offering a cancelation, followed by DropDownClosed.
+
+Although it felt nice to add these as extensibility points, standard WPF and Silverlight controls like ComboBox just don't offer these additional events, and I can't come up with any great scenarios for keeping them around.
+
+If I had to spend 2 developer days fixing bugs and issues with the cancelation, or 2 days adding better features and fixing the real issues affecting everyone, I'd drop the cancelable events right away.
+
+BTW, DropDownOpened and DropDownClosed are definitely staying - it's the Opening and Closing that are on the table.
+
+Anyway, I'd love any scenario feedback. If there's some important scenario that this enables, then not only do I want to hear about it, but I'd like to work to get test coverage added for your scenarios, so that we keep these events fine-tuned and operating in a good way.
+
+Thanks for any input!

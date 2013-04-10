@@ -1,0 +1,237 @@
+---
+layout: post
+comments: true
+title: ! 'MyPhotoApp: Sample project from my Windows Phone development series at &Oslash;redev'
+wordpress_id: 725
+wordpress_url: http://www.jeff.wilcox.name/2010/11/demo-myphotoapp/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: windows-phone
+  slug: windows-phone
+  autoslug: windows-phone
+- title: conferences
+  slug: conferences
+  autoslug: conferences
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+imported_link_categories: []
+tags:
+- title: demos
+  slug: demos
+  autoslug: demos
+- title: samples
+  slug: samples
+  autoslug: samples
+- title: mvvm
+  slug: mvvm
+  autoslug: mvvm
+- title: pivot
+  slug: pivot
+  autoslug: pivot
+- title: oredev
+  slug: oredev
+  autoslug: oredev
+- title: windows-phone
+  slug: windows-phone
+  autoslug: windows-phone
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: apps
+  slug: apps
+  autoslug: apps
+---
+<p>Last week I gave a multi-part series on Windows Phone development at the <a href="http://www.oredev.org/2010">Øredev conference</a> in Malmö, Sweden. Here is the sample app that was built throughout the talk. It’s a simple app that lets you pick a photoset from Flickr for a given user, then browse the photos in a nice slideshow format (swipe&#160; to move between the photos). It’s all setup with sweet data binding and goodness.</p>  <p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/11/MyPhotoApp.zip">Download the zip</a> and make sure that you have the <a href="http://create.msdn.com/">Windows Phone Development Tools</a> and also the <a href="http://silverlight.codeplex.com/">Silverlight for Windows Phone Toolkit</a>.</p>  <p>This app has a number of things inside it:</p>  <ul>   <li>Simple view models</li>    <li>Simple Flickr web service layer</li>    <li>Integration of the service into the view model</li>    <li>Navigation service passing parameters to pages</li>    <li>Makes use of the <a href="http://json.codeplex.com/">JSON</a> library on CodePlex</li>    <li>Makes use of the Silverlight Toolkit for page transitions and the list picker control</li>    <li>Various examples of templating and styling</li>    <li>The Pivot control for the phone is used as a photo slide show with built-in flick and pan manipulations by not using the header or title properties, and binding the actual items to the photos to be shown</li>    <li>PerformanceProgressBar</li> </ul>  <p>Things you need to do to get this working:</p>  <ul>   <li>You may need to add the references to the <a href="http://json.codeplex.com/">JSON library</a> as well as the toolkit before it will build for you.</li>    <li>You need a Flickr API key, <a href="http://www.flickr.com/services/apps/create/apply/">get one here</a>.</li>    <li>You need to put your API key inside the FlickrService.cs file on line 23.</li>    <li>Unless you want to browse all my photosets, you’ll want to put your own Flickr user ID string inside of MainPageViewModel.cs line 74.</li> </ul>  <p>The talks in the series will be uploaded in the coming weeks I’ve been told, but they are not yet available.</p>  <h2>Pivot as a slide show component for photos</h2>  <p>Since pivot has the nice manipulations support built into it, it was super simple to use as a slide show-style photo viewer. Here’s the XAML I used for the slide show page:</p>  <p>   <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:4e3632a9-9910-4c5c-80fd-455485423650" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;controls:Pivot
+    ItemsSource="{Binding Photos}"&gt;
+    &lt;controls:Pivot.HeaderTemplate&gt;
+        &lt;DataTemplate&gt;
+            &lt;Grid Height="1" Width="1"/&gt;
+        &lt;/DataTemplate&gt;
+    &lt;/controls:Pivot.HeaderTemplate&gt;
+    &lt;controls:Pivot.ItemTemplate&gt;
+        &lt;DataTemplate&gt;
+            &lt;Image Source="{Binding ImageUrl}"
+                    /&gt;
+        &lt;/DataTemplate&gt;
+    &lt;/controls:Pivot.ItemTemplate&gt;
+    &lt;controls:Pivot.ItemContainerStyle&gt;
+        &lt;Style TargetType="controls:PivotItem"&gt;
+            &lt;Setter Property="Margin" Value="0"/&gt;
+            &lt;Setter Property="Padding" Value="0"/&gt;
+        &lt;/Style&gt;
+    &lt;/controls:Pivot.ItemContainerStyle&gt;
+&lt;/controls:Pivot&gt;</pre></div>
+</p>
+
+<p>Walking through the elements, here is what they do.</p>
+
+<h3>ItemsSource binding</h3>
+
+<p>The view model for the slide show page includes a property that exposes the photo objects. This binds the pivot to that list. This means that without any of the other elements and templates being set, the pivot control will show the type name (Photo) instead of the actual photos.</p>
+
+<p>Here’s the slide show view model file btw:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:fd4331ad-ca66-49f3-843a-ffd56e1de05c" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">public class SlideshowViewModel : ViewModel
+{
+    private readonly IFlickrService _flickr;
+    private bool _isLoading;
+    private IEnumerable&lt;Photo&gt; _photos;
+
+    public SlideshowViewModel()
+        : this(new FlickrService())
+    {
+    }
+
+    public SlideshowViewModel(IFlickrService flickrService)
+    {
+        _flickr = flickrService;
+    }
+
+    public bool IsLoading
+    {
+        get { return _isLoading; }
+        private set
+        {
+            _isLoading = value;
+            RaisePropertyChanged("IsLoading");
+        }
+    }
+
+    public IEnumerable&lt;Photo&gt; Photos
+    {
+        get { return _photos; }
+        set
+        {
+            _photos = value;
+            RaisePropertyChanged("Photos");
+        }
+    }
+
+    public void LoadPhotos(string photosetId)
+    {
+        IsLoading = true;
+        _flickr.LoadPhotoset(photosetId, photos =&gt; Dispatch(() =&gt;
+            {
+                if (photos != null)
+                {
+                    Photos = photos;
+                }
+                IsLoading = false;
+            }));
+    }
+}</pre></div>
+
+<h3>HeaderTemplate data template</h3>
+
+<p>This is a little bit of a Pivot control hack. You actually can set the header to x:Null, but then when you run this under the debugger, you may get a first-chance exception. The pivot control catches and continues, but it’s annoying as a developer.</p>
+
+<p>This workaround, a 1x1 grid, enables a “screen capture” to be taken of the header, avoiding the exception when it isn’t of size:</p>
+
+<p>
+  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:31221d9d-7cf4-4cb7-885f-2839df85da02" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;controls:Pivot.HeaderTemplate&gt;
+    &lt;DataTemplate&gt;
+        &lt;Grid Height="1" Width="1"/&gt;
+    &lt;/DataTemplate&gt;
+&lt;/controls:Pivot.HeaderTemplate&gt;</pre></div>
+</p>
+
+<p>This is all because for this slide show page, we don’t even want to show any headers, we aren’t using that visual part of the pivot ux – we’re just using the slick built-in manipulations logic and animations plus data binding.</p>
+
+<h3>ItemTemplate data template</h3>
+
+<p>This is what translates the data object (Photo) into an actual image that can be loaded.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:ada8f8f9-4a63-4fce-9168-957f065bd307" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;controls:Pivot.ItemTemplate&gt;
+    &lt;DataTemplate&gt;
+        &lt;Image Source="{Binding ImageUrl}"
+                /&gt;
+    &lt;/DataTemplate&gt;
+&lt;/controls:Pivot.ItemTemplate&gt;</pre></div>
+
+<p>The binding to ImageUrl is for the property on the Photo data object. Sorry it was a string instead of a Uri, cheap and easy on my side I suppose.</p>
+
+<p>
+  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:b0ad5a43-253a-44f7-8085-79cd22a7296e" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">namespace MyPhotoApp.Flickr
+{
+    public class Photo
+    {
+        public string Id { get; set; }
+        public string Title { get; set; }
+        public string ImageUrl { get; set; }
+    }
+}
+</pre></div>
+</p>
+
+<p>So this way the image will automatically load. A nice improvement I should have made was write some better code to make sure the images are ready to go and maybe even fade in as they’re downloaded, but for a two-minute slide show, this was all pretty easy.</p>
+
+<h3>ItemContainerStyle for PivotItems</h3>
+
+<p>By default, the user experience guidelines for the pivot control and pivot items are nicely set in the default styles and templates. You’ll note without using the item container style that there is spacing between the edge of the photos and the edge of the phone’s screen.</p>
+
+<p>This is the 12 pixel margin on the left and right of the pivot items; when using the standard phone styles for things like buttons and textblocks, which include another 12px margin, this means there should be 24px on the left and right of the actual visual things inside the pivot. Things align nicely in that situation.</p>
+
+<p>But this is a photo viewer, so we actually want to show as much of the photos as possible – so this container style says “for each new item we are creating, let’s just set the margin and padding properties to 0!”.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:3010caac-244d-49bd-9501-20d2479d30bd" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;controls:Pivot.ItemContainerStyle&gt;
+    &lt;Style TargetType="controls:PivotItem"&gt;
+        &lt;Setter Property="Margin" Value="0"/&gt;
+        &lt;Setter Property="Padding" Value="0"/&gt;
+    &lt;/Style&gt;
+&lt;/controls:Pivot.ItemContainerStyle&gt;</pre></div>
+
+<h2>Navigation service usage</h2>
+
+<p>Inside this app, the navigation service is used to go to the slideshow page. Since the slideshow page has its nice view model data bound into the DataContext, I need to use the navigation service to get the photoset ID into the page. By using the URI inside the nav service instead of using a global variable or app-level call or property set, this means that the tombstoning for the app just works.</p>
+
+<p>If you press the Start key while in a photoset, then hit back, you’ll come back to that photoset instead of the homepage for the app.</p>
+
+<p>Now being a sample/demo app, I didn’t fully implement the right tombstoning behavior: I also should have actually stored the pivot selected index and restored that, so they would be on the same photo, etc. I also don’t using isolated storage in this app for simplicity sake, but that must be done for a real production app of course.</p>
+
+<p>I also don’t properly do null/empty string checks in the calls, so if no photosets are returned and you try navigating, you’ll get a null ref exception. It’s demo code!</p>
+
+<h3>Moving to the sub-page</h3>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:bff2b55a-702b-4780-8075-74eb3c8981fa" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">private void OnButtonClick(object sender, RoutedEventArgs e)
+{
+    NavigationService.Navigate(new Uri(
+        string.Format(
+        "/Views/SlideshowPage.xaml?id={0}",
+        ((Photoset)SetList.SelectedItem).Id),
+        UriKind.Relative));
+}</pre></div>
+
+<h3>Getting the photoset from the URI in the slideshow page</h3>
+
+<p>In the page’s OnNavigatedTo event handler, I read the property from the query string if I can. I only load photos if I find a photoset ID. This does have the trouble that you’ll see a blank bit of nothing if there are no photos returned.</p>
+
+<p>Also if you look at the implementation, you’ll note that the loading automatically happens in the view model – so I don’t have to have the code in the slideshow file worry at all about whether to show the loading indicator or not. That’s all declaratively setup in XAML. Nice.</p>
+
+<p>
+  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:959455a6-6054-43c1-bd52-7195040c4e1b" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">protected override void OnNavigatedTo(NavigationEventArgs e)
+{
+    base.OnNavigatedTo(e);
+
+    var context = DataContext as SlideshowViewModel;
+    if (context != null)
+    {
+        string id;
+        if (NavigationContext.QueryString.TryGetValue("id", out id))
+        {
+            context.LoadPhotos(id);
+        }
+    }
+}
+</pre></div>
+</p>
+
+<p>And since all IDs in Flickr are to be treated as UTF8 strings, I don’t have to parse or convert the string value from the query string into an integer or anything like that.</p>
+
+<h4>General memory note</h4>
+
+<p>Note that you’ll want to watch your <a href="http://blogs.msdn.com/b/ptorr/archive/2010/10/30/that-memory-thing-i-promised-you.aspx">memory consumption</a> if you go this route.</p>
+
+<p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/11/MyPhotoApp.zip">MyPhotoApp.zip download</a>. Hope this helps.</p>

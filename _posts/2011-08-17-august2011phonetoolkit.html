@@ -1,0 +1,111 @@
+---
+layout: post
+comments: true
+title: Exploring the August 2011 Silverlight for Windows Phone Toolkit for &lsquo;Mango&rsquo;
+wordpress_id: 846
+wordpress_url: http://www.jeff.wilcox.name/2011/08/august2011phonetoolkit/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+- title: windows-phone
+  slug: windows-phone
+  autoslug: windows-phone
+- title: control-development
+  slug: control-development
+  autoslug: control-development
+imported_link_categories: []
+tags: []
+---
+<p>We’ve now shipped the August 2011 release of the Silverlight for Windows Phone Toolkit, a key ingredient in preparing a great ‘Mango’ app. There are new controls, many bug fixes, great new localization features, and more in this pack of components.</p>  <hr />  <blockquote>   <p><b>You can download the new release straight from the CodePlex site at <a href="http://silverlight.codeplex.com/">http://silverlight.codeplex.com/</a></b> - it requires the latest ‘Mango’ developer tools as well.</p>    <p>The release is also available on NuGet as the <a href="http://nuget.org/List/Packages/SilverlightToolkitWP">SilverlightToolkitWP</a> package</p> </blockquote>  <hr />  <h3><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: right; border-top: 0px; border-right: 0px; padding-top: 0px" title="SampleProject" border="0" alt="SampleProject" align="right" src="http://www.jeff.wilcox.name/wp-content/uploads/2011/08/SampleProject.png" width="236" height="450" />Check out the sample app</h3>  <p>One of the best ways to learn about the controls is to use the sample app on your Windows Phone. We haven’t published it to the marketplace yet, so in the meantime, just deploy this .XAP to your developer-unlocked Windows Phone (or the Windows Phone Emulator). It should work with the <a href="http://create.msdn.com/en-US/">latest Windows Phone ‘Mango’ developer tools</a>.</p>  <p>We’ve posted the sample <a href="http://silverlight.codeplex.com/releases/view/71550">XAP here</a>.</p>  <p>The app includes a nice list of the controls, touch one to go into a sub-page. The full open source code to the sample is on the CodePlex site at <a href="http://silverlight.codeplex.com/">http://silverlight.codeplex.com/</a></p>  <h3>What’s in the new release?</h3>  <p><strong>LongListSelector</strong> has been rebuilt and redesigned to take advantage of the new smooth scrolling and off-thread touch input support in ‘Mango’. This is a buttery-smooth control for showing lists, including grouping and jump list support.</p>  <p><strong>MultiselectList</strong> control enables multiple selection for easily working with lists of data, similar to the Mail app’s capability.</p>  <p><strong>LockablePivot</strong> adds a special mode to the Pivot control where only the current item is shown (often used with multiple selection).</p>  <p><strong>ExpanderView</strong> is a primitive items control that can be used for expanding and collapsing items (like the threaded views in the Mail app).</p>  <p><strong>HubTile</strong> lets you add beautiful, informative, animated tiles to your application, similar to the new People groups in ‘Mango’.</p>  <p><strong>ContextMenu</strong> control has been reworked: performance improvements and visual consistency fixes.</p>  <p><strong>ListPicker</strong> now supports multiple selection.</p>  <p><strong>RecurringDaysPicker</strong> lets your users select a day of the week.</p>  <p><strong>Date &amp; Time Converters </strong>localized to 22 languages. The converters let developers easily display date and time in the user interface in one of the many styles found throughout the phone’s UI, from a short date like ‘7/19’ to relative times like ‘about a month ago’.</p>  <p><strong>Page Transitions</strong> have improved performance for a more responsive feel.</p>  <p><strong>PhoneTextBox</strong> is an early look at an enhanced text box with action icon support, watermarking, etc.</p>  <p><strong>All error messages and interface elements</strong> have been localized to all of the supported languages, making for a great experience for users around the world.</p>  <h3>Other great components</h3>  <p>If you’re new to the Silverlight for Windows Phone Toolkit, you’re in for a treat as an app developer: the simple developer library also contains these great components designed specifically for the Windows Phone:</p>  <p><strong>AutoCompleteBox</strong> is a text box control that allows for simple auto-completion based on a filter.</p>  <p><strong>DatePicker</strong> lets a user select a date, similar to that found in the Alarms app on the Windows Phone.</p>  <p><strong>PerformanceProgressBar</strong> can be used to show indeterminate progress inside an app (though you should also consider the new <a href="http://msdn.microsoft.com/en-us/library/microsoft.phone.shell.progressindicator(v=VS.92).aspx">ProgressIndicator</a> support in ‘Mango’, too).</p>  <p><strong>TiltEffect</strong> attached property that gives buttons, list items, and other components that nice ‘tilt’ touch experience.</p>  <p><strong>TimePicker</strong> for choosing a time.</p>  <p><strong>WrapPanel</strong> is a non-virtualized wrapping panel often used for displaying photo thumbnails.</p>  <p>Helper code for <strong>Gestures</strong> (touch input manipulations).</p>  <h3>Are there plans for a 7.0 toolkit refresh?</h3>  <p>Yes. We don’t have it prepared yet, but we have integrated many of these new features into the 7.0 Windows Phone branch that we have, and eventually (no timeline yet) we’ll get that out to developers.</p>  <h3>Using the localized Date and Time Converters</h3>  <p>The date/time converters help simplify displaying date information. We’ve done all the hard work of preparing relative date logic, localizing strings and information, and making sure it’s all good code, so you can just use these in your app.</p>  <p>To get started, you add the converters as resources, either app-wide (in your App.xaml), or in a specific page.</p>  <p>Here’s all of the new converters:</p>  <pre class="xml" name="code">&lt;phone:PhoneApplicationPage.Resources&gt;
+    &lt;toolkit:RelativeTimeConverter x:Key=&quot;RelativeTimeConverter&quot;/&gt;
+    &lt;toolkit:ThreadDateTimeConverter x:Key=&quot;ThreadDateTimeConverter&quot;/&gt;
+    &lt;toolkit:ListViewDateTimeConverter x:Key=&quot;ListViewDateTimeConverter&quot;/&gt;
+    &lt;toolkit:FullViewDateTimeConverter x:Key=&quot;FullViewDateTimeConverter&quot;/&gt;
+    &lt;toolkit:HourlyDateTimeConverter x:Key=&quot;HourlyDateTimeConverter&quot;/&gt;
+    &lt;toolkit:DailyDateTimeConverter x:Key=&quot;DailyDateTimeConverter&quot;/&gt;
+&lt;/phone:PhoneApplicationPage.Resources&gt;</pre>
+
+<p>You can use the sample app to experiment with the various views, but they mimic many of the views found throughout the Windows Phone for showing this information.</p>
+
+<p>Now, to show the formatted and localized time or date, just use the converter in binding syntax, like this:</p>
+
+<pre class="xml" name="code">&lt;TextBlock Text=&quot;{Binding DateAndTime, Converter={StaticResource RelativeTimeConverter}}&quot;
+            FontSize=&quot;{StaticResource PhoneFontSizeMediumLarge}&quot;
+            Foreground=&quot;{StaticResource PhoneForegroundBrush}&quot;/&gt;</pre>
+
+<p>Here’s German (on the left) and French (right) with the nice RelativeTimeConverter in use:</p>
+
+<p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2011/08/DateTimeConverters.png"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="DateTimeConverters" border="0" alt="DateTimeConverters" src="http://www.jeff.wilcox.name/wp-content/uploads/2011/08/DateTimeConverters_thumb.png" width="680" height="567" /></a></p>
+
+<h3>The new HubTile control</h3>
+
+<p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2011/08/HubTileSample.png"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: right; border-top: 0px; border-right: 0px; padding-top: 0px" title="HubTileSample" border="0" alt="HubTileSample" align="right" src="http://www.jeff.wilcox.name/wp-content/uploads/2011/08/HubTileSample_thumb.png" width="300" height="575" /></a>The HubTile control lets you add your own tiles to your app, just like the People hub in ‘Mango’ does for groups of people. It looks sharp. Similar to how the phone does it, there’s a central coordination system so that tiles animate in a defined but random way; you can also freeze/unfreeze the tiles to improve performance in pivot scenarios, etc.</p>
+
+<p>The control is simple to use, here’s some of the code from the sample project:</p>
+
+<pre class="xml" name="code">&lt;toolkit:HubTile 
+    Margin=&quot;12,12,0,0&quot;
+    Source=&quot;/Images/Pretzel.jpg&quot;
+    Title=&quot;Pretzel&quot;
+    Notification=&quot;w/fixings&quot;
+    DisplayNotification=&quot;True&quot;
+    GroupTag=&quot;Food&quot;/&gt;</pre>
+
+<p>The tiles can be arranged to offer links to sub pages easily, etc. These look really slick at runtime.</p>
+
+<h3>Using the Page Transitions</h3>
+
+<p>The page transitions are a nice, easy way to improve the visual experience of your app, and now they are much more responsive, immediately reacting to new navigations.</p>
+
+<p>It’s a two-step process to use the transitions in your project once you’ve included the toolkit.</p>
+
+<p>First, open App.xaml.cs, open up the region at the bottom of the file with the phone initialization work, and replace the standard phone frame with our TransitionFrame (about line 108 in the standard project):</p>
+
+<pre class="c-sharp" name="code">RootFrame = new TransitionFrame();</pre>
+
+<p>Next, on every page, you can define the transitions you would like for in and out navigations; often we see developers creating a style in App.xaml and just applying that to pages.</p>
+
+<pre class="xml" name="code">&lt;toolkit:TransitionService.NavigationInTransition&gt;
+    &lt;toolkit:NavigationInTransition&gt;
+        &lt;toolkit:NavigationInTransition.Backward&gt;
+            &lt;toolkit:TurnstileTransition Mode=&quot;BackwardIn&quot;/&gt;
+        &lt;/toolkit:NavigationInTransition.Backward&gt;
+        &lt;toolkit:NavigationInTransition.Forward&gt;
+            &lt;toolkit:TurnstileTransition Mode=&quot;ForwardIn&quot;/&gt;
+        &lt;/toolkit:NavigationInTransition.Forward&gt;
+    &lt;/toolkit:NavigationInTransition&gt;
+&lt;/toolkit:TransitionService.NavigationInTransition&gt;
+&lt;toolkit:TransitionService.NavigationOutTransition&gt;
+    &lt;toolkit:NavigationOutTransition&gt;
+        &lt;toolkit:NavigationOutTransition.Backward&gt;
+            &lt;toolkit:TurnstileTransition Mode=&quot;BackwardOut&quot;/&gt;
+        &lt;/toolkit:NavigationOutTransition.Backward&gt;
+        &lt;toolkit:NavigationOutTransition.Forward&gt;
+            &lt;toolkit:TurnstileTransition Mode=&quot;ForwardOut&quot;/&gt;
+        &lt;/toolkit:NavigationOutTransition.Forward&gt;
+    &lt;/toolkit:NavigationOutTransition&gt;
+&lt;/toolkit:TransitionService.NavigationOutTransition&gt;</pre>
+
+<h3>Other resources</h3>
+
+<p>From one of the earlier releases, you can find out about ListPicker, LongListSelector, TransitionFrame, AutoCompleteBox, etc. in <a href="http://blogs.msdn.com/b/delay/archive/2010/11/02/mo-controls-mo-controls-mo-controls-announcing-the-second-release-of-the-silverlight-for-windows-phone-toolkit.aspx">David Anson’s blog post on these components</a>.</p>
+
+<h3>Special thanks</h3>
+
+<p>The toolkit is made possible by a number of people throughout Microsoft who are passionate about great user experiences and the Windows Phone – too many people to list here but definitely Dave, Dustin, Aaron, Phillip, Richard, Tom, Peter, and more! But with this release, we’ve also had the pleasure of working with a number of great students from around the world who interned this summer at Microsoft.</p>
+
+<p>With their permission, I wanted to share their names here to thank them for their contributions – and this way you know who to bug on Twitter or online when you’re filing bugs!</p>
+
+<ul>
+  <li>Badr Zrari (Software Engineering, Polytechnic Montreal) worked on the new buttery-smooth LongListSelector (now based on ListBox) </li>
+
+  <li><a href="https://twitter.com/#!/joseharriaga">José H. Arriaga</a> (Computer and Robotics Engineering, Monterrey Institute of Technology and Higher Education) worked on the HubTile, date and time converters, multiselect list, expander item </li>
+
+  <li><a href="http://andrewmunsell.com/">Andrew Munsell</a> worked on PhoneTextBox </li>
+</ul>
+
+<p>Hope you enjoy the new release.</p>

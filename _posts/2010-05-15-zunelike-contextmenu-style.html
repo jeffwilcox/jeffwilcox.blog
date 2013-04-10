@@ -1,0 +1,262 @@
+---
+layout: post
+comments: true
+title: Using Silverlight 4 features to create a Zune-like context menu
+excerpt: A customized Silverlight 4 ContextMenu control that resembles the crisp,
+  simple look of the Zune software's context menu.
+wordpress_id: 654
+wordpress_url: http://www.jeff.wilcox.name/2010/05/zunelike-contextmenu-style/
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+- title: design
+  slug: design
+  autoslug: design
+imported_link_categories: []
+tags: []
+---
+<p>Trying to create a modern, clean and crisp user interface is a challenge – and it’s something that Zune has done rather well in both their software and hardware experiences.</p>  <p>I took a few minutes to experiment with new Silverlight 4 features, including the new <a href="http://silverlight.codeplex.com/">Silverlight Toolkit</a> (April 2010 release) that includes a context menu control, to re-style/re-template the menu to look similar to a few other menus.</p>  <p>Here’s a quick look at some common context menu visuals – clearly there is some room for artistry in creating a consistent experience with your app.</p>  <p><img style="border-right-width: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px" title="ContextMenus" border="0" alt="ContextMenus" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/05/ContextMenus.png" width="680" height="330" /> </p>  <p>The center context menu, with the Windows look, is what the default Silverlight Toolkit context menu looks most similar to.</p>  <h3>New features used</h3>  <ul>   <li>Right-click input event, added to the platform in Silverlight 4</li>    <li>Context menu control from the Silverlight Toolkit</li>    <li>Implicit styles support</li>    <li>Local fonts</li> </ul>  <h3>Consider checking out ‘Cosmopolitan’, too</h3>  <p>There’s a theme that resembles the modern “codename Metro” design style, similar to that of the Zune user interface, that is available for Silverlight 4. <a href="http://timheuer.com/blog/archive/2010/05/03/new-silverlight-4-themes-available-for-download.aspx">More information is available on Tim’s blog</a>.</p>  <h3>What a context menu looks like in XAML</h3>  <p>You need an xmlns for the input assembly in the Silverlight Toolkit. Then you setup the ContextMenuService, a ContextMenu instance, plus multiple MenuItem and Separator instances.</p>  <p>A MenuItem can optionally have an icon, though I believe the trend these days is moving away from the icon-heavy menu and toolbar world into a clean &amp; crisp text-only experience… so I prefer a styled context menu that doesn’t optimize for icons.</p>  <p>The XMLNS for the context menu assembly is:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:9c30beb8-bc99-4dd4-9b26-528b0155f629" class="wlWriterEditableSmartContent"><pre class="xml" name="code">xmlns:controlsInputToolkit="clr-namespace:System.Windows.Controls;assembly=System.Windows.Controls.Input.Toolkit"</pre></div>
+
+<p>You can directly wire up to the Click event, or use Commands. Here’s a sample context menu within a data template:</p>
+
+<p>
+  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:f1699113-aaec-4a27-8290-b5a8687024a8" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;ListBox.ItemTemplate&gt;
+    &lt;DataTemplate&gt;
+        &lt;ContentPresenter Content="{Binding}"&gt;
+            &lt;controlsInputToolkit:ContextMenuService.ContextMenu&gt;
+                &lt;controlsInputToolkit:ContextMenu&gt;
+                    &lt;controlsInputToolkit:MenuItem Header="Play" Click="OnMenuItemClick"/&gt;
+                    
+                    &lt;controlsInputToolkit:Separator/&gt;
+                    
+                    &lt;controlsInputToolkit:MenuItem Header="Download" Click="OnMenuItemClick"/&gt;
+                    &lt;controlsInputToolkit:MenuItem Header="Buy" Click="OnMenuItemClick"/&gt;
+                    &lt;controlsInputToolkit:MenuItem Header="Add to cart" Click="OnMenuItemClick"/&gt;
+                    
+                    &lt;controlsInputToolkit:Separator/&gt;
+                    
+                    &lt;controlsInputToolkit:MenuItem Header="Add to playlist" Click="OnMenuItemClick"/&gt;
+                    &lt;controlsInputToolkit:MenuItem Header="Add to burn list" Click="OnMenuItemClick"/&gt;
+                    &lt;controlsInputToolkit:MenuItem Header="Add to now playing" Click="OnMenuItemClick"/&gt;
+                    &lt;controlsInputToolkit:MenuItem Header="Mark as favorite" Click="OnMenuItemClick"/&gt;
+                    
+                    &lt;controlsInputToolkit:Separator/&gt;
+                    
+                    &lt;controlsInputToolkit:MenuItem Header="Send" Click="OnMenuItemClick"/&gt;
+                    
+                &lt;/controlsInputToolkit:ContextMenu&gt;
+            &lt;/controlsInputToolkit:ContextMenuService.ContextMenu&gt;
+        &lt;/ContentPresenter&gt;
+    &lt;/DataTemplate&gt;
+&lt;/ListBox.ItemTemplate&gt;</pre></div>
+</p>
+
+<p>And here’s what it looks like:</p>
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="DefaultContextMenu" border="0" alt="DefaultContextMenu" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/05/DefaultContextMenu.png" width="188" height="242" /> </p>
+
+<p>To use the ContextMenu, make sure your project includes references to <em>both</em> the toolkit’s System.Windows.Controls.Input.Toolkit.dll as well as the SDK’s System.Windows.Controls.dll.</p>
+
+<p>Now I’d like to make this look more Zune-like.</p>
+
+<h3>Using implicit styles</h3>
+
+<p>So there are multiple ways to have a style (predefined look, settings and template) on your object:</p>
+
+<ol>
+  <li>Default style key – the default template and style that the creator of the control had in mind. No work required.</li>
+
+  <li>Implicit styles defined in Resources – in Silverlight 4, a Style defined by a user, but without an x:Key property, will automatically apply to all scoped controls of that type.</li>
+
+  <li>Static resource styles defined in Resources – the standard experience up until now, having a Style with an x:Key, then setting the Style=”{StaticResource MyKeyName}” on any and all controls that want to use that style.</li>
+
+  <li>Setting properties directly on an object.</li>
+</ol>
+
+<p>So here is a standard, simple style for a Button, with the key:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:dc290aa0-a366-4943-89ce-8a6771e556a1" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;UserControl.Resources&gt;
+    &lt;Style TargetType="Button" x:Key="MyButtonStyle"&gt;
+        &lt;Setter Property="Background" Value="Blue"/&gt;
+    &lt;/Style&gt;
+&lt;/UserControl.Resources&gt;</pre></div>
+
+<p>Here’s how you reference it:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1c329b9f-9e83-41e4-9883-2927dfdb6c1e" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;Button Style="{StaticResource MyButtonStyle}" Content="OK"/&gt;</pre></div>
+
+<p>And now let’s make that into an implicit style for Silverlight 4. Just remove the x:Key:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:86e3e09e-40ad-4ef7-a8cb-6ad12d9df35a" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;UserControl.Resources&gt;
+    &lt;Style TargetType="Button"&gt;
+        &lt;Setter Property="Background" Value="Blue"/&gt;
+    &lt;/Style&gt;
+&lt;/UserControl.Resources&gt;</pre></div>
+
+<p>And here’s how you reference that style – you don’t – it’s implicit:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:87648dd1-5f46-4050-af9d-07bf7335c0a9" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;Button Content="OK"/&gt;</pre></div>
+
+<p><em>Small caveat, fyi:</em> there is a bug with implicit styles not necessarily being applied within data templates. To work around this, I had to move to explicit styles (adding an x:Key to the style, then setting the Style property in the DataTemplate’s XAML to the static resource’s key).</p>
+
+<h3>Local fonts</h3>
+
+<p>I also used a feature of Silverlight 4 that lets me pick up and use local fonts on the machine. I’m using the ‘Segoe UI’ font, a key part of the Windows 7 user experience and visual identity.</p>
+
+<p>However I also define fallback fonts, just like you would in HTML:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:a62b7fd6-6547-4165-9612-f4a9141b6a58" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;Setter Property="FontFamily" Value="Segoe UI, Tahoma, Arial"/&gt;</pre></div>
+
+<h3>My Zune-like context menu</h3>
+
+<p>Here are the templates I ended up creating using Expression Blend.</p>
+
+<p>To achieve the fade-in effect, I faked a little and used a Loaded event trigger, so the first time any particular context menu is shown, it will quickly fade – but subsequent presentations of the same instance will not fade, for a faster, more performant feel.</p>
+
+<h4>ContextMenu Style</h4>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:d0a111a7-b70d-4f8b-b81a-abad98ad685e" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;Style TargetType="controlsInputToolkit:ContextMenu" x:Key="ZuneLikeContextMenu"&gt;
+    &lt;Setter Property="Background" Value="#FFFFFFFF"/&gt;
+    &lt;Setter Property="BorderThickness" Value="0,1,0,1"/&gt;
+    &lt;Setter Property="BorderBrush" Value="#0D000000"/&gt;
+    &lt;Setter Property="Padding" Value="0,4,0,4"/&gt;
+    &lt;Setter Property="Template"&gt;
+        &lt;Setter.Value&gt;
+            &lt;ControlTemplate TargetType="controlsInputToolkit:ContextMenu"&gt;
+                &lt;Border
+                    x:Name="Menu"
+                    Opacity="0"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    Background="{TemplateBinding Background}"
+                    CornerRadius="0"&gt;
+                    &lt;Border.Effect&gt;
+                        &lt;DropShadowEffect
+                            ShadowDepth="0" Opacity="0.6" BlurRadius="22"/&gt;
+                    &lt;/Border.Effect&gt;
+                    &lt;Border.Triggers&gt;
+                        &lt;EventTrigger RoutedEvent="Rectangle.Loaded"&gt;
+                            &lt;BeginStoryboard&gt;
+                                &lt;Storyboard&gt;
+                                    &lt;DoubleAnimation 
+                                        Duration="0:0:0.2" 
+                                        To="1" 
+                                        Storyboard.TargetProperty="Opacity"
+                                        Storyboard.TargetName="Menu"/&gt;
+                                &lt;/Storyboard&gt;
+                            &lt;/BeginStoryboard&gt;
+                        &lt;/EventTrigger&gt;
+                    &lt;/Border.Triggers&gt;
+                    &lt;Grid&gt;
+                        &lt;ItemsPresenter Margin="{TemplateBinding Padding}"/&gt;
+                    &lt;/Grid&gt;
+                &lt;/Border&gt;
+            &lt;/ControlTemplate&gt;
+        &lt;/Setter.Value&gt;
+    &lt;/Setter&gt;
+&lt;/Style&gt;</pre></div>
+
+<h4>Separator Style</h4>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:010d1470-b3e8-4932-8394-67b1a78e20ce" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;Style TargetType="controlsInputToolkit:Separator" x:Key="ZuneLikeSeparator"&gt;
+    &lt;Setter Property="Background" Value="LightGray"/&gt;
+    &lt;Setter Property="IsTabStop" Value="False"/&gt;
+    &lt;Setter Property="Margin" Value="6,2,6,2"/&gt;
+    &lt;Setter Property="Template"&gt;
+        &lt;Setter.Value&gt;
+            &lt;ControlTemplate TargetType="controlsInputToolkit:Separator"&gt;
+                &lt;Border
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    Background="{TemplateBinding Background}"
+                    Height="1"/&gt;
+            &lt;/ControlTemplate&gt;
+        &lt;/Setter.Value&gt;
+    &lt;/Setter&gt;
+&lt;/Style&gt;</pre></div>
+
+<h4>MenuItem Style</h4>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:d0da5a04-eff4-4c6b-b93e-b68154f08dad" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;Style TargetType="controlsInputToolkit:MenuItem" x:Key="ZuneLikeMenuItem"&gt;
+    &lt;Setter Property="Background" Value="Transparent"/&gt;
+    &lt;Setter Property="FontSize" Value="14"/&gt;
+    &lt;Setter Property="FontFamily" Value="Segoe UI, Tahoma, Arial"/&gt;
+    &lt;Setter Property="BorderBrush" Value="Transparent"/&gt;
+    &lt;Setter Property="BorderThickness" Value="0"/&gt;
+    &lt;Setter Property="Padding" Value="8,2,10,2"/&gt;
+    &lt;Setter Property="Template"&gt;
+        &lt;Setter.Value&gt;
+            &lt;ControlTemplate TargetType="controlsInputToolkit:MenuItem"&gt;
+                &lt;Grid&gt;
+                    &lt;VisualStateManager.VisualStateGroups&gt;
+                        &lt;VisualStateGroup x:Name="CommonStates"&gt;
+                            &lt;VisualState x:Name="Normal"/&gt;
+                            &lt;VisualState x:Name="Disabled"&gt;
+                                &lt;Storyboard&gt;
+                                    &lt;DoubleAnimation Duration="0" Storyboard.TargetName="Presenter" Storyboard.TargetProperty="Opacity" To="0.5"/&gt;
+                                &lt;/Storyboard&gt;
+                            &lt;/VisualState&gt;
+                        &lt;/VisualStateGroup&gt;
+                        &lt;VisualStateGroup x:Name="FocusStates"&gt;
+                            &lt;VisualState x:Name="Unfocused"/&gt;
+                            &lt;VisualState x:Name="Focused"&gt;
+                                &lt;Storyboard&gt;
+                                    &lt;DoubleAnimation Duration="0" Storyboard.TargetName="Bg" Storyboard.TargetProperty="Opacity" To="1"/&gt;
+                                    &lt;DoubleAnimation Duration="0" Storyboard.TargetName="IconPresenter" Storyboard.TargetProperty="Opacity" To="1"/&gt;
+                                    &lt;DoubleAnimation Duration="0" Storyboard.TargetName="Presenter" Storyboard.TargetProperty="Opacity" To="1"/&gt;
+                                &lt;/Storyboard&gt;
+                            &lt;/VisualState&gt;
+                        &lt;/VisualStateGroup&gt;
+                    &lt;/VisualStateManager.VisualStateGroups&gt;
+                    &lt;Rectangle
+                        RadiusX="0"
+                        RadiusY="0"
+                        Fill="{TemplateBinding Background}"
+                        Stroke="{TemplateBinding BorderBrush}"
+                        StrokeThickness="{TemplateBinding BorderThickness}"/&gt;
+                    &lt;Rectangle
+                        x:Name="Bg"
+                        RadiusX="0"
+                        RadiusY="0"
+                        StrokeThickness="0"
+                        Opacity="0"
+                        Fill="#11000000"/&gt;
+                    &lt;Grid Margin="{TemplateBinding Padding}"&gt;
+                        &lt;Grid.ColumnDefinitions&gt;
+                            &lt;ColumnDefinition
+                                Width="Auto"/&gt;
+                            &lt;ColumnDefinition Width="2"/&gt;
+                            &lt;ColumnDefinition Width="*"/&gt;
+                            &lt;ColumnDefinition Width="17"/&gt;
+                        &lt;/Grid.ColumnDefinitions&gt;
+                        &lt;ContentPresenter
+                            x:Name="IconPresenter"
+                            Content="{TemplateBinding Icon}"
+                            Margin="1"
+                            Opacity=".7"
+                            VerticalAlignment="Center"/&gt;
+                        &lt;ContentPresenter
+                            x:Name="Presenter"
+                            MinWidth="120"
+                            Opacity=".7"
+                            Content="{TemplateBinding Header}"
+                            ContentTemplate="{TemplateBinding HeaderTemplate}"
+                            Grid.Column="2"/&gt;
+                    &lt;/Grid&gt;
+                &lt;/Grid&gt;
+            &lt;/ControlTemplate&gt;
+        &lt;/Setter.Value&gt;
+    &lt;/Setter&gt;
+&lt;/Style&gt;</pre></div>
+
+<p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/05/ZuneLikeContextMenuImplicitStyles.xaml_.txt"><strong>ZuneLikeContextMenuImplicitStyles.xaml.txt</strong></a><strong>:</strong> XAML. Download all three in one file. The file contains both implicit styles plus defined style names.</p>
+
+<p>Here’s a comparison, a screenshot of the Zune menu on the left, and my Silverlight 4 context menu on the right:</p>
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="FinalContextMenus" border="0" alt="FinalContextMenus" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/05/FinalContextMenus.png" width="400" height="240" /> </p>
+
+<p>Hope this helps you create some nice modern-looking Silverlight apps!</p>

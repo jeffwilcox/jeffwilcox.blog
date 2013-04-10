@@ -1,0 +1,23 @@
+---
+layout: post
+comments: true
+title: Silverlight Unit Test Framework will be updated for the Release Candidate tomorrow
+wordpress_id: 122
+wordpress_url: http://www.jeff.wilcox.name/2008/09/25/silverlight-unit-test-framework-will-be-updated-for-the-release-candidate-tomorrow/
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: testing
+  slug: testing
+  autoslug: testing
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+imported_link_categories: []
+tags: []
+---
+<p>Developers rejoice, ScottGu announced the wide availability to developers everywhere of the <a href="http://weblogs.asp.net/scottgu/archive/2008/09/25/silverlight-2-release-candidate-now-available.aspx">Silverlight 2 Release Candidate</a> tonight.</p>  <p>There were some changes since the Beta 2 release of Silverlight that require updated unit testing bits. I'll be releasing an updated drop of the <a href="http://code.msdn.microsoft.com/silverlightut/">Silverlight Unit Test Framework</a> by the <strong>end of the week</strong>.</p>  <p>It's more clear with this release that Silverlight 2 is providing all the basic controls you need, one of the new inclusions since Beta 2 are these new controls:</p>  <ul>   <li>ComboBox </li>    <li>ProgressBar</li>    <li>PasswordBox</li> </ul>  <p>The new visual styles are also very crisp and good looking. I've been pretty happy with the new release so far!</p>  <p><strong>Unit testing framework changes from Beta 1/Beta 2 to the Silverlight Release Candidate</strong></p>  <p>The effort required to update your apps from Beta 2 to the release candidate will vary. I've had some applications just require a rebuild, while others have taken some large style and template updates. Either way, I think the developer availability of the release candidate signals the importance of updating apps. <a href="http://download.microsoft.com/download/6/F/E/6FE1F43D-9D0C-4346-AD08-602DF9BCB3CF/BreakingChangesBetweenBeta2andRelease.doc">Breaking changes document here</a>.</p>  <p>For updating your dev unit tests, we've only introduced very minimal breaking changes from the original release of the Silverlight Unit Test Framework. At a high level, a simple recompile should work, combined with these changes:</p>  <ul>   <li>The Silverlight.TestSurface property on the optional SilverlightTest base class has been renamed and made more accessible, it now is simply a &quot;TestPanel&quot; property that hangs directly off of the SilverlightTest class.</li>    <li>The Microsoft.Silverlight.Testing.dll and Microsoft.Silverlight.Testing.Framework.dll assemblies have been combined into a single assembly.</li> </ul>  <p>Otherwise, the changes were improvements to the interface, a more discoverable and simplified API and extensibility story, bug fixes, and overall a nice polished product. Most folks inside of Microsoft have been able to make these changes in just a few minutes.</p>  <p>Stay tuned for the release!</p>  <p><strong>More controls are coming...</strong></p>  <p>In case you haven't seen <a href="http://blogs.msdn.com/sburke/">Shawn Burke</a>'s blog recently, you may be missing part of an awesome story that's developing. Last week Shawn revealed that there are <a href="http://blogs.msdn.com/sburke/archive/2008/09/17/control-freak.aspx">more controls under development</a> in his &quot;Control Freak&quot; posting.</p>  <p>According to his post, there's a planned release at PDC of a preview of some controls, including:</p>  <ul>   <li>DockPanel</li>    <li>WrapPanel</li>    <li>ViewBox</li>    <li>Label</li>    <li>HeaderedContentControl</li>    <li>Expander</li>    <li>TreeView</li>    <li>NumericUpDown</li>    <li>AutoComplete</li>    <li>Accordian</li> </ul>  <p>I haven't widely circulated it, but this probably would also be a good time for me to say &quot;oh yeah, by the way... I've been reporting to Shawn for a while now!&quot;</p>  <p>Awesome things are happening.</p>

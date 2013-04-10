@@ -1,0 +1,163 @@
+---
+layout: post
+comments: true
+title: Silverlight v1.1 authoring and debugging tips for Visual Studio 2005
+wordpress_id: 13
+wordpress_url: http://linux.jeff.wilcox.name/2007/06/19/silverlight-debugging-2005/
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+imported_link_categories: []
+tags:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+---
+[RAW]
+
+<P>As the Silverlight tools story is still young (Visual Studio 2008 really is looking amazing though), I thought I’d share a few solutions I’ve come across while working on Silverlight.</P>
+
+
+
+<P>If you’re <A class="" href="http://blogs.sqlxml.org/bryantlikes/archive/2007/05/02/silverlight-hello-world-in-c-from-vs-2005.aspx" mce_href="http://blogs.sqlxml.org/bryantlikes/archive/2007/05/02/silverlight-hello-world-in-c-from-vs-2005.aspx">using Visual Studio 2005 for Silverlight application development</A> (also <A class="" href="http://silverlight.net/forums/t/370.aspx" mce_href="http://silverlight.net/forums/t/370.aspx">here</A>), these tips are for you!</P>
+
+
+
+<H2>Build straight into IIS folders</H2>
+
+<P>Depending on your personal preference for web development, you may find it handy to simply have your Silverlight class libraries build directly into your <TT>%systemdrive%\inetpub\wwwroot\<EM>projectDirectory</EM>\</TT> folder.</P>
+
+
+
+<P>If you’re also deploying ASP.NET pages, you’ll want to convert the directory into a virtual directory application also.</P>
+
+
+
+<OL>
+
+<LI>Open your project’s Properties [Project | very bottom menu item]</LI>
+
+
+
+<LI>Click on the Build tab</LI>
+
+
+
+<LI>Within the Output group, modify the Output path to point at your virtual directory</LI>
+
+
+
+<LI>In the Debug tab, optionally also update the browser URL and/or command line arguments to point at your local web server &amp; the virtual directory</LI>
+
+</OL>
+
+
+
+<H2>Setup project configurations for Firefox and IE</H2>
+
+<P>Managed debugging works with both Firefox &amp; Internet Explorer, and often you can track down bugs and unknown behavior by intercepting all managed exceptions from within Visual Studio.&nbsp; Instead of having to attach to the Firefox.exe process with each execution, you can just add a new configuration to start it with a press of F5.</P>
+
+
+
+<P><IMG title="Debug tab open, Project Configuration, Visual Studio 2005" style="WIDTH: 540px; HEIGHT: 378px" height=378 alt="Debug tab open, Project Configuration, Visual Studio 2005" src="http://media.jeff.wilcox.name/blog/view/silverlight/vs05-debug-config-sl.jpg" width=540 border=0 mce_src="http://media.jeff.wilcox.name/blog/view/silverlight/vs05-debug-config-sl.jpg"></P>
+
+
+
+<P mce_keep="true">In Visual Studio 2005, you can easily add new project configurations &amp; set the debugging parameters to save time:</P>
+
+
+
+<OL>
+
+<LI>
+
+<DIV mce_keep="true">With the ‘Debug’ configuration selected, I’d recommend these settings for typical IE Silverlight development in VS’05:</DIV></LI>
+
+
+
+<UL>
+
+<LI>
+
+<DIV mce_keep="true">Debug Start Action: Start external program “<TT>d:\program files\Internet Explorer\iexplore.exe</TT>” (adjust to point at your %systemdrive%, and if on an x64 machine, point to your 32-bit Internet Explorer installation)</DIV></LI>
+
+
+
+<LI>
+
+<DIV mce_keep="true">Start Options: Command line arguments should be the URL to your local web server and the virtual directory you deploy to</DIV></LI>
+
+
+
+<LI>
+
+<DIV mce_keep="true">Make sure that ‘Enable unmanaged code debugging’ is -not- checked</DIV></LI>
+
+</UL>
+
+
+
+<LI>
+
+<DIV mce_keep="true">Use the solution Configuration Manager to add/edit project configurations.&nbsp; Edit the ‘Debug’ configuration to use a name such as ‘WebDebugIE’<BR><BR><IMG title="Configuration dropdown in Visual Studio" style="WIDTH: 200px; HEIGHT: 102px" height=102 alt="Configuration dropdown in Visual Studio" src="http://media.jeff.wilcox.name/blog/view/silverlight/vs05-project-configurations-sl.jpg" width=200 border=0 mce_src="http://media.jeff.wilcox.name/blog/view/silverlight/vs05-project-configurations-sl.jpg"><BR></DIV></LI>
+
+
+
+<LI>
+
+<DIV mce_keep="true">Create a new configuration, based on WebDebugIE, and name it WebDebugFirefox.&nbsp; With the new configuration selected, set the external program start path to your Firefox installation, such as “<TT>d:\program files\mozilla firefox\firefox.exe</TT>”</DIV></LI>
+
+</OL>
+
+
+
+<P mce_keep="true">Just select the configuration you’d like to execute your application with and debug away!</P>
+
+
+
+<P mce_keep="true">Once you’ve created one of these projects, you can use the “Export Template” wizard within the File menu to save this as a new template too. </P>
+
+
+
+<H2>Debug symbols and your web server</H2>
+
+<P>A friendly reminder that your web server should be serving PDBs in order to get anything useful out of your debugging experience.&nbsp; You should probably enable serving .pdb, .xaml, and .dll files from any directories where you’re wanting to place your applications created for Silverlight.</P>
+
+
+
+<P><STRONG>On IIS</STRONG>:&nbsp; Add appropriate MIME types in inetmgr.&nbsp; You can use application/x-msdownload, application/xaml+xml, application/octet-steam, as long as it’s a servable type it should be good to go.</P>
+
+
+
+<P><STRONG>On Apache</STRONG>: I’m able to have xaml, pdb, and dll all served out of the box running Apache 2.2.2 on Linux, without any configuration changes or new directives.</P>
+
+
+
+<H2>Don’t use Scriptable objects right out of the gate</H2>
+
+<P>I’ve seen some people utilize the WebApplication.CreateScriptableObject method in their loaded event, and then on their JavaScript page assuming that immediately after calling CreateSilverlight() you can access Control1.content.YourScriptableObject.YourScriptableProperty. </P>
+
+
+
+<P>This isn’t the case, please make sure to check whether Control1 &amp;&amp; Control1.content are null, or use the onLoad event of the Silverlight createObjectEx method in Silverlight.js.&nbsp;</P>
+
+
+
+<P><BR><EM>Hope this helps everyone out there playing around with the Silverlight MIX CTP bits!</EM></P>
+
+
+
+[/RAW]

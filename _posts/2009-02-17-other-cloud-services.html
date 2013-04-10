@@ -1,0 +1,31 @@
+---
+layout: post
+comments: true
+title: CloudFront. Cloud Files. Others?
+wordpress_id: 282
+wordpress_url: http://www.jeff.wilcox.name/?p=282
+imported_categories:
+- title: infrastructure
+  slug: infrastructure
+  autoslug: infrastructure
+- title: technology
+  slug: technology
+  autoslug: technology
+imported_link_categories: []
+tags: []
+---
+In the interest of offloading my dedicated web server, and experimenting with the latest in distributed computing and storage, I find myself switching between different web file storage technologies quite often.
+
+The availability of distributed content delivery network (CDN)-like services for files to developers has only just started to begin. <a href="http://aws.amazon.com/s3/">S3</a> was a first step; <a href="http://streaming.live.com/">Silverlight Streaming</a> provided some interesting concepts.
+
+I am wondering now if anyone else is experimenting with two very recent areas pushing this space:
+
+<strong><a href="http://www.mosso.com/index.jsp">Mosso</a></strong>: "The Rackspace Cloud" - offers distribution on Limelight. $0.22/GB for the first few terabytes.
+
+<strong><a href="http://aws.amazon.com/cloudfront/">CloudFront</a></strong> by Amazon: varies by edge location, starts at $0.17/GB for most locations.
+
+I've been able to host Silverlight content and applications just great with these, and the costs are so very  affordable.
+
+CloudFront connects directly to your S3 storage. S3 is in use in so many places now that I can write a simple Silverlight application, use S3 for all of its data needs, and make the application independent of its host application server. In fact, it can be entirely served and hosted through S3.
+
+Are there other services I should be aware of? I figure that Limelight and Akamai directly only deal with large customers, and do not cater to a development audience.

@@ -1,0 +1,184 @@
+---
+layout: post
+comments: true
+title: A Silverlight HighlightingTextBlock implemented in Visual Basic
+excerpt: Here's a Visual Basic implementation of HighlightingTextBlock for Silverlight
+  3.
+wordpress_id: 447
+wordpress_url: http://www.jeff.wilcox.name/2009/08/vb-highlighting-textblock/
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+- title: visual-basic
+  slug: vb
+  autoslug: visual-basic
+imported_link_categories: []
+tags: []
+---
+<p>Using the same steps and control template XAML from my earlier post today about the HighlightingTextBlock control for Silverlight, you can create a Visual Basic implementation of the control alternatively.</p>  <p>Here’s the VB.NET implementation of the control:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:cc9da320-4da9-4d6c-a3cf-eb1828c6c628" class="wlWriterEditableSmartContent"><pre class="vb" name="code">Imports System.Windows.Controls.Primitives
+
+Public Class HighlightingTextBlock
+    Inherits Control
+
+    ' Contants
+    ' --------
+    Private Const TextBlockName As String = "Text"
+
+    ' Private fields
+    ' --------------
+    Private Inlines As List(Of Inline)
+    Private TextBlock As TextBlock
+
+    ' Dependency properties
+    ' ---------------------
+
+    '
+    ' HighlightBrush
+    '
+    Public Shared ReadOnly HighlightBrushProperty As DependencyProperty = DependencyProperty.Register("HighlightBrush", GetType(Brush), GetType(HighlightingTextBlock), New PropertyMetadata(Nothing, New PropertyChangedCallback(AddressOf HighlightingTextBlock.OnHighlightBrushPropertyChanged)))
+
+    Public Property HighlightBrush() As Brush
+        Get
+            Return TryCast(MyBase.GetValue(HighlightingTextBlock.HighlightBrushProperty), Brush)
+        End Get
+        Set(ByVal value As Brush)
+            MyBase.SetValue(HighlightingTextBlock.HighlightBrushProperty, value)
+        End Set
+    End Property
+
+    Private Shared Sub OnHighlightBrushPropertyChanged(ByVal d As DependencyObject, ByVal e As DependencyPropertyChangedEventArgs)
+        TryCast(d, HighlightingTextBlock).ApplyHighlighting()
+    End Sub
+
+    '
+    ' HighlightFontWeight
+    '
+    Public Shared ReadOnly HighlightFontWeightProperty As DependencyProperty = DependencyProperty.Register("HighlightFontWeight", GetType(FontWeight), GetType(HighlightingTextBlock), New PropertyMetadata(FontWeights.Normal, New PropertyChangedCallback(AddressOf HighlightingTextBlock.OnHighlightFontWeightPropertyChanged)))
+
+    Public Property HighlightFontWeight() As FontWeight
+        Get
+            Return DirectCast(MyBase.GetValue(HighlightingTextBlock.HighlightFontWeightProperty), FontWeight)
+        End Get
+        Set(ByVal value As FontWeight)
+            MyBase.SetValue(HighlightingTextBlock.HighlightFontWeightProperty, value)
+        End Set
+    End Property
+
+    Private Shared Sub OnHighlightFontWeightPropertyChanged(ByVal d As DependencyObject, ByVal e As DependencyPropertyChangedEventArgs)
+        Dim source As HighlightingTextBlock = TryCast(d, HighlightingTextBlock)
+        Dim value As FontWeight = DirectCast(e.NewValue, FontWeight)
+    End Sub
+
+    '
+    ' HighlightText
+    '
+    Public Shared ReadOnly HighlightTextProperty As DependencyProperty = DependencyProperty.Register("HighlightText", GetType(String), GetType(HighlightingTextBlock), New PropertyMetadata(New PropertyChangedCallback(AddressOf HighlightingTextBlock.OnHighlightTextPropertyChanged)))
+
+    Public Property HighlightText() As String
+        Get
+            Return TryCast(MyBase.GetValue(HighlightingTextBlock.HighlightTextProperty), String)
+        End Get
+        Set(ByVal value As String)
+            MyBase.SetValue(HighlightingTextBlock.HighlightTextProperty, value)
+        End Set
+    End Property
+
+    Private Shared Sub OnHighlightTextPropertyChanged(ByVal d As DependencyObject, ByVal e As DependencyPropertyChangedEventArgs)
+        TryCast(d, HighlightingTextBlock).ApplyHighlighting()
+    End Sub
+
+    '
+    ' Text
+    '
+    Public Shared ReadOnly TextProperty As DependencyProperty = DependencyProperty.Register("Text", GetType(String), GetType(HighlightingTextBlock), New PropertyMetadata(New PropertyChangedCallback(AddressOf HighlightingTextBlock.OnTextPropertyChanged)))
+
+    Public Property [Text]() As String
+        Get
+            Return TryCast(MyBase.GetValue(HighlightingTextBlock.TextProperty), String)
+        End Get
+        Set(ByVal value As String)
+            MyBase.SetValue(HighlightingTextBlock.TextProperty, value)
+        End Set
+    End Property
+
+    Private Shared Sub OnTextPropertyChanged(ByVal d As DependencyObject, ByVal e As DependencyPropertyChangedEventArgs)
+        Dim source As HighlightingTextBlock = TryCast(d, HighlightingTextBlock)
+        If (Not source.TextBlock Is Nothing) Then
+            Do While (source.TextBlock.Inlines.Count &gt; 0)
+                source.TextBlock.Inlines.RemoveAt(0)
+            Loop
+            Dim value As String = TryCast(e.NewValue, String)
+            source.Inlines = New List(Of Inline)
+            If (Not [value] Is Nothing) Then
+                Dim i As Integer
+                For i = 0 To [value].Length - 1
+                    Dim [run] As New Run
+                    [run].Text = value.Chars(i).ToString
+                    Dim inline As Inline = run
+                    source.TextBlock.Inlines.Add(inline)
+                    source.Inlines.Add(inline)
+                Next i
+                source.ApplyHighlighting()
+            End If
+        End If
+    End Sub
+
+    ' Initializes a new instance of the HighlightingTextBlock control
+    Public Sub New()
+        Me.DefaultStyleKey = GetType(HighlightingTextBlock)
+    End Sub
+
+    ' Enforce the template
+    Private Sub OnLoaded(ByVal sender As Object, ByVal e As RoutedEventArgs)
+        Me.OnApplyTemplate()
+    End Sub
+
+    ' Grab the template parts
+    Public Overrides Sub OnApplyTemplate()
+        MyBase.OnApplyTemplate()
+        Me.TextBlock = TryCast(MyBase.GetTemplateChild(TextBlockName), TextBlock)
+        Dim text As String = Me.Text
+        Me.Text = Nothing
+        Me.Text = [text]
+    End Sub
+
+    ' Update highlighting using a simple walking algorithm
+    Private Sub ApplyHighlighting()
+        If (Not Me.Inlines Is Nothing) Then
+            Dim text As String = IIf(Me.Text &lt;&gt; Nothing, Me.Text, String.Empty)
+            Dim highlight As String = IIf(Me.HighlightText &lt;&gt; Nothing, Me.HighlightText, String.Empty)
+            Dim compare As StringComparison = StringComparison.OrdinalIgnoreCase
+            Dim cur As Integer = 0
+            Do While (cur &lt; [text].Length)
+                Dim i As Integer = IIf((highlight.Length = 0), -1, [text].IndexOf(highlight, cur, [compare]))
+                i = IIf((i &lt; 0), [text].Length, i)
+                Do While ((cur &lt; i) AndAlso (cur &lt; [text].Length))
+                    Me.Inlines.Item(cur).Foreground = MyBase.Foreground
+                    Me.Inlines.Item(cur).FontWeight = MyBase.FontWeight
+                    cur += 1
+                Loop
+                Dim start As Integer = cur
+                Do While ((cur &lt; (start + highlight.Length)) AndAlso (cur &lt; [text].Length))
+                    Me.Inlines.Item(cur).Foreground = Me.HighlightBrush
+                    Me.Inlines.Item(cur).FontWeight = Me.HighlightFontWeight
+                    cur += 1
+                Loop
+            Loop
+        End If
+    End Sub
+
+End Class</pre></div>
+
+<h3>Related posts</h3>
+
+<ul>
+  <li><a href="http://www.jeff.wilcox.name/2009/08/sl3-highlighting-text-block/">Creating a highlighting text block for Silverlight 3, revisited</a></li>
+
+  <li><a href="http://www.jeff.wilcox.name/2008/11/highlighting-autocompletebox/">Building a highlighting AutoCompleteBox</a></li>
+
+  <li><a href="http://www.jeff.wilcox.name/2009/03/sl3-highlighting-autocompletebox/">Silverlight 3 element name binding improvements</a></li>
+</ul>

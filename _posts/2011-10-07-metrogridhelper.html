@@ -1,0 +1,250 @@
+---
+layout: post
+comments: true
+title: ! 'MetroGridHelper: A helpful debugging assistant for designers and developers
+  alike'
+excerpt: A helpful feature for developers and designers to overlay a metro-friendly
+  grid on top of your Windows Phone application.
+wordpress_id: 863
+wordpress_url: http://www.jeff.wilcox.name/2011/10/metrogridhelper/
+imported_categories:
+- title: windows-phone
+  slug: windows-phone
+  autoslug: windows-phone
+- title: design
+  slug: design
+  autoslug: design
+imported_link_categories: []
+tags: []
+---
+<p>You’ve heard me preach it before: fix those margins, align, and try and make your apps as beautiful and inspiring as you can (see also: <a href="http://www.jeff.wilcox.name/2011/03/metro-design-guide-v1/">my designer tips for developers</a>).</p>  <p>On Thursday, I stopped by the Windows Phone Design Team’s beautiful studio space here on campus. It’s a really creative space, packed with fun people, chill music, and a genuine desire to see even better, more beautiful apps in the marketplace.</p>  <p>While sitting with two of the UX designers, <a href="http://twitter.com/#!/corrinab">Corrina</a> and <a href="http://twitter.com/#!/arturot">Arturo</a>, and talking about some of these design principles, I just happened to be introduced to a nifty, albeit simple, gridline/grid that the team’s been using for some time while working on the Windows Phone. It’s just a set of red squares, 25x25 pixels, offset 12 pixels from one another, and all contained within a page padding of 24px. (Again: the magical Metro number is 12-based on those edges)</p>  <p>The design typically will use a Photoshop layer containing these squares, or maybe some XAML inserted on top of a page in an app, to work on alignment, visualizing the grid, etc., and making tweaks.</p>  <p>I got to thinking: it would be nice if this could be just like the <a href="http://msdn.microsoft.com/en-us/library/gg588380(v=vs.92).aspx">performance counters</a> that we have for the Windows Phone: at debug time, you could opt into overlaying this grid on top of the frame of the entire app, being omnipresent. I coded up a quick implementation during that meeting and here it is!</p>  <p>To use the counter, simply open up the <strong>App.xaml.cs</strong> file (where the other performance counters are) and add this in. I’d recommend just enabling it when you want to do a quick design pass. You can use this then both with apps on your phone as well as the emulator; it’s helpful in the emulator since you can then screenshot the UI and share that with your friends and family who can critique you on your pixel placement.</p>  <pre class="csharp" name="code">// Show graphics profiling information while debugging.
+if (System.Diagnostics.Debugger.IsAttached)
+{
+    // Display the current frame rate counters.
+    Application.Current.Host.Settings.EnableFrameRateCounter = true;
+
+    // Display the metro grid helper.
+    MetroGridHelper.IsVisible = true;</pre>
+
+<p>Here’s what it looks like at runtime in a very simple app:</p>
+
+<p><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="PhoneMetro" border="0" alt="PhoneMetro" src="http://www.jeff.wilcox.name/wp-content/uploads/2011/10/PhoneMetro.png" width="480" height="800" /></p>
+
+<p>In this example, I have one of the classic Windows Phone design “bugs”: one of the TextBlocks has just been inserted, without using the appropriate standard phone style. As a result, it has a Margin value of “0” instead of being 12 pixels offset from the left. It’s more clear now with the squares, since you can see the misalignment easily.</p>
+
+<p>I’ve also added simple static properties for <strong>Opacity</strong> and <strong>Color</strong> if you’d rather not use the Red default color and ~0.15 opacity on the squares. The IsVisible property can be flipped off at runtime, but beware that the grid is still present in the visual tree once you add it – so there will be a performance hit (don’t ship an app that uses the grid in release builds).</p>
+
+<h3>Get the source</h3>
+
+<p>I’ve published the source file on NuGet – that’s a really easy way to get the file into your project, and if I make any fixes or add features in the future, it’ll be easy for you to get those changes:</p>
+
+<ul>
+  <li>Make sure you have NuGet installed (<a href="http://www.nuget.org/">http://www.nuget.org/</a>) </li>
+
+  <li>Install the package using the console or package manager. It is called <a href="http://nuget.org/List/Packages/MetroGridHelper"><strong>MetroGridHelper</strong></a>
+
+    <br /><font style="background-color: #ffff00" size="2" face="Consolas"><strong>PM&gt; Install-Package MetroGridHelper</strong></font></li>
+</ul>
+
+<p>Or you can drop this source code into a new file of your project, MetroGridHelper.cs:</p>
+
+<pre class="csharp" name="code">// (c) Copyright Microsoft Corporation.
+// This source is subject to the Microsoft Public License (Ms-PL).
+// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+// All other rights reserved.
+
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Shapes;
+
+namespace System.Windows
+{
+    /// &lt;summary&gt;
+    /// A utility class that overlays a designer-friendly grid on top of the 
+    /// application frame, for use similar to the performance counters in
+    /// App.xaml.cs. The color and opacity are configurable. The grid contains 
+    /// a number of squares that are 24x24, offset with 12px gutters, and all
+    /// 24px away from the edge of the device.
+    /// &lt;/summary&gt;
+    public static class MetroGridHelper
+    {
+        private static bool _visible;
+        private static double _opacity = 0.15;
+        private static Color _color = Colors.Red;
+        private static List&lt;Rectangle&gt; _squares;
+        private static Grid _grid;
+
+        /// &lt;summary&gt;
+        /// Gets or sets a value indicating whether the designer grid is 
+        /// visible on top of the application's frame.
+        /// &lt;/summary&gt;
+        public static bool IsVisible
+        {
+            get
+            {
+                return _visible;
+            }
+            set
+            {
+                _visible = value;
+                UpdateGrid();
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Gets or sets the color to use for the grid's squares.
+        /// &lt;/summary&gt;
+        public static Color Color
+        {
+            get { return _color; }
+            set
+            {
+                _color = value;
+                UpdateGrid();
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Gets or sets a value indicating the opacity for the grid's squares.
+        /// &lt;/summary&gt;
+        public static double Opacity
+        {
+            get { return _opacity; }
+            set
+            {
+                _opacity = value;
+                UpdateGrid();
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Updates the grid (if it already has been created) or initializes it
+        /// otherwise.
+        /// &lt;/summary&gt;
+        private static void UpdateGrid()
+        {
+            if (_squares != null)
+            {
+                var brush = new SolidColorBrush(_color);
+                foreach (var square in _squares)
+                {
+                    square.Fill = brush;
+                }
+                if (_grid != null)
+                {
+                    _grid.Visibility = _visible ? Visibility.Visible : Visibility.Collapsed;
+                    _grid.Opacity = _opacity;
+                }
+            }
+            else
+            {
+                BuildGrid();
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Builds the grid.
+        /// &lt;/summary&gt;
+        private static void BuildGrid()
+        {
+            _squares = new List&lt;Rectangle&gt;();
+
+            var frame = Application.Current.RootVisual as Frame;
+            if (frame == null || VisualTreeHelper.GetChildrenCount(frame) == 0)
+            {
+                Deployment.Current.Dispatcher.BeginInvoke(BuildGrid);
+                return;
+            }
+
+            var child = VisualTreeHelper.GetChild(frame, 0);
+            var childAsBorder = child as Border;
+            var childAsGrid = child as Grid;
+            if (childAsBorder != null)
+            {
+                // Not a pretty way to control the root visual, but I did not
+                // want to implement using a popup.
+                var content = childAsBorder.Child;
+                if (content == null)
+                {
+                    Deployment.Current.Dispatcher.BeginInvoke(BuildGrid);
+                    return;
+                }
+                childAsBorder.Child = null;
+                Deployment.Current.Dispatcher.BeginInvoke(() =&gt;
+                {
+                    Grid newGrid = new Grid();
+                    childAsBorder.Child = newGrid;
+                    newGrid.Children.Add(content);
+                    PrepareGrid(frame, newGrid);
+                });
+            }
+            else if (childAsGrid != null)
+            {
+                PrepareGrid(frame, childAsGrid);
+            }
+            else
+            {
+                Debug.WriteLine(&quot;Dear developer:&quot;);
+                Debug.WriteLine(&quot;Unfortunately the design overlay feature requires that the root frame visual&quot;);
+                Debug.WriteLine(&quot;be a Border or a Grid. So the overlay grid just isn't going to happen.&quot;);
+                return;
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Does the actual work of preparing the grid once the parent frame is
+        /// in the visual tree and we have a Grid instance to work with for
+        /// placing the chilren.
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;frame&quot;&gt;The phone application frame.&lt;/param&gt;
+        /// &lt;param name=&quot;parent&quot;&gt;The parent grid to insert the sub-grid into.&lt;/param&gt;
+        private static void PrepareGrid(Frame frame, Grid parent)
+        {
+            var brush = new SolidColorBrush(_color);
+
+            _grid = new Grid();
+            _grid.IsHitTestVisible = false;
+
+            // To support both orientations, unfortunately more visuals need to
+            // be used. An alternate implementation would be to react to the
+            // orientation change event and re-draw/remove squares.
+            double width = frame.ActualWidth;
+            double height = frame.ActualHeight;
+            double max = Math.Max(width, height);
+
+            for (int x = 24; x &lt; /*width*/ max; x += 37)
+            {
+                for (int y = 24; y &lt; /*height*/ max; y += 37)
+                {
+                    var rect = new Rectangle
+                    {
+                        Width = 25,
+                        Height = 25,
+                        VerticalAlignment = System.Windows.VerticalAlignment.Top,
+                        HorizontalAlignment = System.Windows.HorizontalAlignment.Left,
+                        Margin = new Thickness(x, y, 0, 0),
+                        IsHitTestVisible = false,
+                        Fill = brush,
+                    };
+                    _grid.Children.Add(rect);
+                    _squares.Add(rect);
+                }
+            }
+
+            _grid.Visibility = _visible ? Visibility.Visible : Visibility.Collapsed;
+            _grid.Opacity = _opacity;
+
+            // For performance reasons a single surface should ideally be used
+            // for the grid.
+            _grid.CacheMode = new BitmapCache();
+
+            // Places the grid into the visual tree. It is never removed once
+            // being added.
+            parent.Children.Add(_grid);
+        }
+    }
+}</pre>
+
+<p>Hope this helps.</p>

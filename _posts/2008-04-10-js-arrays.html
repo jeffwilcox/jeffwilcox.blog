@@ -1,0 +1,23 @@
+---
+layout: post
+comments: true
+title: Accessing JavaScript arrays using the HTML DOM interop
+wordpress_id: 53
+wordpress_url: http://www.jeff.wilcox.name/2008/04/10/js-arrays/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+- title: javascript
+  slug: javascript
+  autoslug: javascript
+imported_link_categories: []
+tags: []
+---
+<p>The documentation on the HTML DOM interoperability feature is definitely a little sparse today, but with the Beta 1 release of Silverlight 2, the APIs are very useful for getting a lot done.&nbsp; Since we went for parity with JavaScript, it’s a super rich way to interact with existing AJAX controls and the web browser.</p> <p>A very common request I hear is “how in the world do I access elements in a JavaScript array in managed code” ?</p> <p>Since a JavaScript array is just a JavaScript object, and the array indices are just numbered properties, that means GetProperty is your answer.</p> <h3>Create a JavaScript array</h3> <p>Use the Eval method on the window to create a new array in JavaScript.&nbsp; The ScriptObject reference allows you to interact with it:</p> <p>C# <br /><img src="http://media.jeff.wilcox.name/blog/dom/js1.png"/>&nbsp;</p> <p>VB <br /><img src="http://media.jeff.wilcox.name/blog/dom/js1vb.png"/> </p> <h3>Get a JavaScript array’s length</h3> <p>C# <br /><img src="http://media.jeff.wilcox.name/blog/dom/js2.png"/> </p> <p>VB <br />&nbsp;<img src="http://media.jeff.wilcox.name/blog/dom/js2vb.png"/> </p> <h3>Return a single element</h3> <p>Individual elements are stored as numbered properties, just use GetProperty with the index of interest to retrieve an element:</p> <p>C# <br /><img src="http://media.jeff.wilcox.name/blog/dom/js3.png"/> </p> <p>VB <br /><img src="http://media.jeff.wilcox.name/blog/dom/js3vb.png"/> </p> <p>A key developer in the Silverlight project for bringing this code is <a href="http://www.wilcob.com/">Wilco Bauwer</a>, his first post on the <a href="http://www.wilcob.com/wilco/News/silverlight-interoperability.aspx">HTML DOM interop</a> is <a href="http://www.wilcob.com/wilco/News/silverlight-interoperability.aspx">here</a>.&nbsp; </p> <p>Hope this helps!</p>

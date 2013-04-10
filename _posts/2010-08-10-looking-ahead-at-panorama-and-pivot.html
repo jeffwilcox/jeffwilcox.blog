@@ -1,0 +1,277 @@
+---
+layout: post
+comments: true
+title: Panorama and Pivot controls for Windows Phone developers
+excerpt: Here's a preview of what to expect with the Panorama and Pivot controls that
+  will be built into the Windows Phone Developer Tools.
+wordpress_id: 689
+wordpress_url: http://www.jeff.wilcox.name/2010/08/looking-ahead-at-panorama-and-pivot/
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: windows-phone
+  slug: windows-phone
+  autoslug: windows-phone
+imported_link_categories: []
+tags: []
+---
+<p>Apps in Windows Phone 7 make it easy to explore and experience information thanks to two similar navigation controls: panorama and pivot controls. We’ve made it easy for developers to build applications with these experiences by putting these Silverlight controls and associated tooling in the next release of the free developer tools (didn’t make the beta).</p>  <p>The controls are simple &amp; easy to use, but I’ve seen enough rumbling on forums to know that developers are anxious to learn more about their capabilities.</p>  <p><em>9/16/2010 Update: These controls are now in the official Windows Phone developer tools (<a href="http://www.jeff.wilcox.name/2010/09/phone-tools-toolkit-and-more-released/">quick post by me</a>, but you really want to <a href="http://go.microsoft.com/fwlink/?LinkId=185584">download here</a>).</em></p>  <p>In this post I’m going to introduce these controls and how they appear from a simple API &amp; XAML perspective.</p>  <p><img src="http://s3.amazonaws.com:80/media.jeff.wilcox.name/blog/PanoramaMusicExperience.png" />     <br /><em>Panorama control inside of the Visual Studio design surface for the Windows Phone 7.</em></p>  <h2>Learning about the native experience</h2>  <p>Since phones are just beginning to trickle out, if you’d like to see what the built-in applications look like, there’s some multimedia up at <a href="http://www.WindowsPhone7.com/">WindowsPhone7.com</a>.</p>  <p>A <strong>panorama</strong> powers the <a href="http://www.windowsphone7.com/multimedia/media5">people</a>, <a href="http://www.windowsphone7.com/multimedia/media3">music + videos</a>, parts of <a href="http://www.windowsphone7.com/multimedia/media19">Office</a>, and more. Many of these have a large background and can be explored by panning and flicking between items. When you’re at one item, you will be able to see a little bit of the next item as well – a hint that there’s more to be explored. When you reach the far side of the panorama, you can keep going to wrap around to the beginning again, saving time.</p>  <p>A <strong>pivot control </strong>powers the <a href="http://www.windowsphone7.com/multimedia/media18">e-mail and calendar</a> pages, operating systems, etc. The top of the pivot control shows the headers for all the different items, and you can swipe and pan between the pages. Just like panorama, the control wraps infinitely – so when you reach the final item, instead of having to flick all the way back to the first item, you can just flick once more.</p>  <h2>Key Features</h2>  <p>Both of the controls are lightweight enough to have great performance, while visually engaging and responsive to touch. Some features:</p>  <ul>   <li>Simple XAML and application programming interfaces </li>    <li>Standard items controls that feels natural to developers, individual items are built from PanoramaItem and PivotItem content controls </li>    <li>Complete data binding support, content template properties and item container styles </li>    <li>Automatic support for light and dark phone themes </li>    <li>Built-in touch navigation: flicks move quickly, while panning past a threshold and releasing the touch will snap to the next item </li>    <li>Beautiful easing animations for sliding during navigation </li>    <li>Extensibility offered through events, visual states, and the ability to re-template </li>    <li>Great tooling comes standard, including app and page templates </li> </ul>  <p>So let’s take a look at the two controls!</p>  <h2>Panorama</h2>  <p><img src="http://media.jeff.wilcox.name/blog/Panorama685.png" />     <br /><em>A visual depiction of the actual contents of the panorama control stretching beyond the physical size of the screen.</em></p>  <p>From the <a href="http://go.microsoft.com/?linkid=9713252">UI design and interaction guide for Windows Phone 7</a>, the UX folks say:</p>  <blockquote>   <p>Unlike standard applications that are designed to fit within the confines of the phone screen, these applications offer a unique way to view controls, data, and services by using a long horizontal canvas that extends beyond the confines of the screen.</p>    <p>…</p>    <p>Elements of a panoramic application serve as the starting point for more detailed experiences.</p>    <p>…</p>    <p>The background image is the lowest layer and is meant to give the panorama its rich magazine-like feel. Usually a full-bleed image, the background is potentially the most visual part of the application.</p> </blockquote>  <p>As all things in design go, what is not on the screen is as important as what is there: the control has a lot of empty space that helps keep the eye focused on the rich experience and data.</p>  <h3>Panorama XAML</h3>  <p>The Panorama control is placed on pages of your application and accepts a title and a background. Panorama sections are defined by PanoramaItem controls, and each has a header. The Title and Header are easiest to use when you’re just inserting text, but they also have associated HeaderTemplate and TitleTemplate dependency properties for data binding scenarios.</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:e1baf744-5ace-40d3-bdb9-b882b9287b25" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;controls:Panorama
+        Title="my panorama"&gt;
+        &lt;controls:Panorama.Background&gt;
+            &lt;ImageBrush ImageSource="MyWidescreenBackground.jpg"/&gt;
+        &lt;/controls:Panorama.Background&gt;
+
+        &lt;controls:PanoramaItem
+            Header="first item"&gt;
+
+            &lt;StackPanel&gt;
+                &lt;TextBlock
+                    Text="This is a simple sample ..."
+                    Style="{StaticResource PhoneTextLargeStyle}"
+                    TextWrapping="Wrap"/&gt;
+            &lt;/StackPanel&gt;
+
+      &lt;/controls:PanoramaItem&gt;
+
+      &lt;!-- insert other panorama items here in a real app --&gt;
+&lt;/controls:Panorama&gt;</pre></div>
+
+<h4>About wide horizontal sections</h4>
+
+<p>The panorama allows for special sections that are wider than the screen. Built-in phone hubs often use this for sets of thumbnails, albums, and other displays. If this is the appropriate effect you want for a section, make sure that the PanoramaItem declares that intent by setting the orientation to horizontal. Here’s what the minimized XAML looks like:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:7a6b1486-bd7b-4b6e-b12c-64dbb4a8599b" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;controls:PanoramaItem Orientation="Horizontal"&gt;
+    &lt;!-- insert thumbnails and other goods here --&gt;
+&lt;/controls:PanoramaItem&gt;</pre></div>
+
+<h3>Panorama APIs</h3>
+
+<p>The key application programming interface for the Panorama builds on top of <a href="http://msdn.microsoft.com/en-us/library/system.windows.controls.itemscontrol(VS.95).aspx">ItemsControl</a>: so you get the standard items control properties (Items, ItemsSource, etc.), but also additional properties for setting the header, title, and reacting to the currently selected items by the user.</p>
+
+<h4>Microsoft.Phone.Controls.Panorama</h4>
+
+<h5>Dependency Properties</h5>
+
+<ul>
+  <li>DefaultItem 
+    <br />
+
+    <br /><em>Sets the default item that moves into display. Allows your application to store the user’s most recently used panorama item to return to it later, just like the native operating system’s built-in hubs.</em> </li>
+
+  <li>HeaderTemplate </li>
+
+  <li>SelectedIndex </li>
+
+  <li>SelectedItem </li>
+
+  <li>Title </li>
+
+  <li>TitleTemplate </li>
+</ul>
+
+<h5>Events</h5>
+
+<ul>
+  <li>SelectionChanged 
+    <br />
+
+    <br /><em>Allows the developer to hook up to selection changes (navigations from one panorama item to another).</em> </li>
+</ul>
+
+<h4>Microsoft.Phone.Controls.PanoramaItem</h4>
+
+<h5>Dependency Properties</h5>
+
+<ul>
+  <li>Header </li>
+
+  <li>HeaderTemplate </li>
+
+  <li>Orientation 
+    <br />
+
+    <br /><em>Setting the orientation to Horizontal will allow the item to be of a larger size than the control so that the user can pan and navigate within it. By default, this property is Vertical, which means that panning or flicking should instead bring you to the next panorama section.</em> </li>
+</ul>
+
+<h2>Pivot control</h2>
+
+<p>The pivot control is a lot like the a tab control, but designed specifically for the phone and touch interaction. The entire pivot control (often the size of the screen and the root element on a page) can be panned, flicked, and manipulated – it’s not just about those headers (though those can be touched to navigate, too).</p>
+
+<p><img src="http://media.jeff.wilcox.name/blog/pivot377.png" /></p>
+
+<p><em>A simple pivot sample application running in the emulator. Notice that the phone’s theme in the emulator has been set to the light theme, and the control just works without the developer having to do anything.</em></p>
+
+<p>From the <a href="http://go.microsoft.com/?linkid=9713252">design guidelines document</a>:</p>
+
+<blockquote>
+  <p>A pivot control provides a quick way to manage views or pages within the application. This control can be used for filtering large datasets, viewing multiple data sets, or switching application views. The control places individual views horizontally next to each other, and manages the left and right navigation. Flicking or panning horizontally on the page cycles the pivot functionality.</p>
+</blockquote>
+
+<h3>Pivot XAML</h3>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:0ffe79fa-8296-4b2b-a6a0-0692b80e2952" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;controls:Pivot Title="MY APPLICATION"&gt;
+
+    &lt;controls:PivotItem
+        Header="welcome"&gt;
+
+        &lt;StackPanel
+            Margin="20"&gt;
+            &lt;TextBlock
+                TextWrapping="Wrap"
+                Text=" This is a simple sample ..."
+                Style="{StaticResource PhoneTextLargeStyle}"&gt;
+            &lt;/TextBlock&gt;
+        &lt;/StackPanel&gt;
+
+    &lt;/controls:PivotItem&gt;
+
+    &lt;!-- other pivot items --&gt;
+&lt;/controls:Pivot&gt;</pre></div>
+
+<h3>Pivot APIs</h3>
+
+<h4>Microsoft.Phone.Controls.Pivot</h4>
+
+<h5>Dependency Properties</h5>
+
+<ul>
+  <li>HeaderTemplate 
+    <br />
+
+    <br /><em>A single data template that can be used for all headers in data binding scenarios.</em> </li>
+
+  <li>SelectedIndex </li>
+
+  <li>SelectedItem </li>
+
+  <li>Title </li>
+
+  <li>TitleTemplate </li>
+</ul>
+
+<h5>Events</h5>
+
+<ul>
+  <li>LoadedPivotItem </li>
+
+  <li>LoadingPivotItem </li>
+
+  <li>SelectionChanged </li>
+
+  <li>UnloadedPivotItem </li>
+
+  <li>UnloadingPivotItem </li>
+</ul>
+
+<h4>Microsoft.Phone.Controls.PivotItem</h4>
+
+<p>Pivot item is a simple content control and does not have any other special properties.</p>
+
+<h2>Visual Studio &amp; Expression Blend Tooling</h2>
+
+<p>The tools are fully integrated with the design tools: if you click on an item in XAML, that item will become the one active in the design surface. There’s also an easy way to add additional items, well-defined control property editing, and so this all makes it really easy to get started building immersive apps.</p>
+
+<h3>Start with a complete application template</h3>
+
+<p>You can start off with an app powered by a panorama or pivot control: File &gt; New Project has built-in templates for these apps.</p>
+
+<p><img src="http://media.jeff.wilcox.name/blog/CreateNewApp.png" /></p>
+
+<h3>Add New Pages</h3>
+
+<p>When you want to add a new Windows Phone page to your app, you can also add one that’s all ready to go with either a panoramic experience or pivot control, too. Just go to the Project menu and select Add New Item:</p>
+
+<p><img src="http://media.jeff.wilcox.name/blog/AddNewItemPage.png" /></p>
+
+<p>This makes it really easy to build out applications as quick as you can click.</p>
+
+<h3>Blend Assets</h3>
+
+<p>If you need to add either control to an existing app, in Blend you’ll find them in the Assets window, so they’re right where you’d expect to find them when you need ‘em.</p>
+
+<p><img src="http://media.jeff.wilcox.name/blog/BlendAssets.png" /></p>
+
+<h3>Easy property editing</h3>
+
+<p>Key properties are easily accessible in the property editor. In this screen capture, you can see how easy it is to change an item to Horizontal mode, or to change the Header property:</p>
+
+<p><img src="http://media.jeff.wilcox.name/blog/BlendCommonProperties.png" /></p>
+
+<h3>Right-click, add new panorama item or pivot item</h3>
+
+<p>Integrated into the design surface you can also add extra items to the controls by right-clicking.</p>
+
+<p>&#160;<img src="http://media.jeff.wilcox.name/blog/VsAddPanoramaItem.png" /></p>
+
+<p><em>Visual Studio design surface</em></p>
+
+<p>&#160;<img src="http://media.jeff.wilcox.name/blog/BlendAddNewItem.png" /></p>
+
+<p><em>Expression Blend</em></p>
+
+<h2>Other notes</h2>
+
+<p>The controls can be found in the Microsoft.Phone.Controls namespace of the Microsoft.Phone.Controls.dll assembly, installed with the official Windows Phone Developer Tools.</p>
+
+<p>As we get closer to launch, I’m sure we will have a good list of caveats and suggestions for the controls. Here are a few things that I had in mind that I wanted to share ahead of time, in case you are designing your application experiences and pages today.</p>
+
+<h3>Exposing scrolling data</h3>
+
+<p>If you look at applications on the phone such as Mail, you’ll often see that the Pivot control is used to filter and sort data. So when you move to the “unread” pivot item, you have unread mail items; flicking your finger again, you’ll get to “flagged”, listing the messages that you have flagged.</p>
+
+<p>You could easily have hundreds of items in a single pivot item.</p>
+
+<p>If you want to enable scrolling, you must either use a scrolling control like <strong>ListBox</strong>, or add a <strong>ScrollViewer </strong>to the pivot or panorama item. Scrolling is not enabled by default. This helps ensure that items are always sized to the parent container like you’d expect in the Silverlight-powered layout system.</p>
+
+<p>Here’s how to add a scroll viewer or list box to a pivot item. Note that you’ll only want to offer a vertical scrolling experience, since horizontal manipulations (pan or flick) are part of the navigation experience with these two controls.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:68cf1bcb-e9bc-4658-a5d7-766bcd429ac2" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;controls:Pivot Grid.Row="0"
+                x:Name="Pivot1"
+                Title="INBOX"&gt;
+    &lt;controls:PivotItem
+        Header="all"&gt;
+        &lt;ListBox 
+            ItemTemplate="{StaticResource MyMailDataTemplate}"
+            ItemsSource="{Binding Items}"&gt;
+        &lt;/ListBox&gt;
+    &lt;/controls:PivotItem&gt;
+
+    &lt;controls:PivotItem
+        Header="unread"&gt;
+        &lt;ScrollViewer
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled"&gt;
+            &lt;!-- Some large vertical list here --&gt;
+        &lt;/ScrollViewer&gt;
+    &lt;/controls:PivotItem&gt;
+&lt;/controls:Pivot&gt;</pre></div>
+
+<p>The example uses data binding to the data context, as well as custom-defined data templates from the application’s resources, so don’t just paste it into your app… but you get the idea I hope.</p>
+
+<h3>Items control API</h3>
+
+<p>These controls do both derive from ItemsControl, but they do have subtle differences.</p>
+
+<h4>Both controls</h4>
+
+<ul>
+  <li>Items can be added in XAML </li>
+
+  <li>Items can be added in code, Items.Add(new PivotItem(…)) or Items.Add(new PanoramaItem(…)) </li>
+
+  <li>ItemsSource can be used for data binding </li>
+
+  <li>Do not support alternative types of items: Pivot controls must use PivotItem, Panorama must have PanoramaItem </li>
+</ul>
+
+<h4>Differences</h4>
+
+<ul>
+  <li>Panorama exposes a DefaultItem property </li>
+
+  <li>SelectedIndex and SelectedItem are settable in Pivot but not in Panorama </li>
+</ul>
+
+<h4>Migration</h4>
+
+<p>There are a number of alternative implementations of these controls out there, so for release, we’ll be working to blog guidance on migrating from one of those other experiences to these controls if you would like to. Note that the <a href="http://phone.codeplex.com/">http://phone.codeplex.com/</a> controls *are not official* and you should probably consider using these instead now that the tools are public.</p>

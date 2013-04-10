@@ -1,0 +1,163 @@
+---
+layout: post
+comments: true
+title: Asynchronous test support - Silverlight unit test framework and the UI thread
+excerpt: A discussion about the asynchronous, on-the-UI thread test features and methods
+  found in the Silverlight unit test framework, along with some history.
+wordpress_id: 291
+wordpress_url: http://www.jeff.wilcox.name/2009/03/asynchronous-testing/
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: testing
+  slug: testing
+  autoslug: testing
+imported_link_categories: []
+tags: []
+---
+<p>The Silverlight unit test framework has built-in functionality for some unique situations that pop up when you are testing key applications and components on the Silverlight platform. In fact, the entire framework has been built around the idea of performing a majority of the unit testing on the <strong>user interface thread</strong>, right inside the browser, as a Silverlight application itself.</p>
+
+<p>This is a discussion, and a great whiteboard exercise, that I’ve had with many folks. I figure, it is finally time for me to at least blog a little bit about it. For the history behind this decision, see the bottom of this post.</p>
+
+<p>As usual, you’ll find the unit test framework binaries and sample tests in the <a href="http://www.codeplex.com/Silverlight/">Silverlight Toolkit</a> download. Other posts by me on this topic can be <a href="http://www.jeff.wilcox.name/topics/dev/testing/">found here</a>.</p>
+
+<p>If you use the asynchronous work item functionality in the test framework, do realize that your tests will no longer be subset compatible with the full desktop Visual Studio unit test framework.</p>
+
+<h3>What’s happening during a unit test run</h3>
+
+<p>The unit tests that run in the browser need to leave time for the browser, the native Silverlight plugin, the .NET CLR, and other components to do work between calls. This means that much of the execution is driven forward using dispatchers.</p>
+
+<p>If you compare a typical test run on Silverlight to one in a desktop unit test framework, and compare how they run over time, you get this:</p>
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="Comparing Silverlight and desktop unit test framework execution" border="0" alt="Comparing Silverlight and desktop unit test framework execution" src="http://media.jeff.wilcox.name/blog/view/ComparingExecution.png" width="685" height="631" /> </p>
+
+<p>So, you get this interesting stack:</p>
+
+<ul>
+  <li>Browser is rendering, calls into</li>
+
+  <li>Native Silverlight plugin</li>
+
+  <li>.NET runtime</li>
+
+  <li>Silverlight test application</li>
+
+  <li>Silverlight unit test harness, test assembly, class, and method management types</li>
+
+  <li><em>Your test method</em></li>
+</ul>
+
+<p>If you want to test the DOM being updated by a test, for instance, in the real browser (not mocked), you have to effectively let the call stack unwind enough for the browser to update the DOM… then let the test framework eventually jump back into action to process the remainder of the test.</p>
+
+<h3>What happens when an [Asynchronous] test executes</h3>
+
+<p>The AsynchronousAttribute from the Microsoft.Silverlight.Testing namespace, and in the assembly of the same name, tells the test framework:</p>
+
+<blockquote>
+  <p>Hello! I’m going to do some stuff now. And when this method returns, well, I’m going to continue doing work. So don’t report any results yet… </p>
+
+  <p>… In fact, wait for me to send you a ‘test complete’ message – or throw an unhandled exception – to make a call, OK?</p>
+</blockquote>
+
+<p>This means that the entire methods executes, and then any queued up work items are run <em>afterwards</em>, each in due time. Here’s a way to compare a standard (single invoke) test to an asynchronous test:</p>
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="Comparing asynchronous test runs" border="0" alt="Comparing asynchronous test runs" src="http://media.jeff.wilcox.name/blog/view/ComparingAsyncTestRun.png" width="685" height="421" /> </p>
+
+<p>Asynchronous in this test framework’s context means that additional work is queued up – NOT that it happens immediately on a separate thread.</p>
+
+<p>You use “Enqueue” methods to add work items to the list of things to do before the method should be considered a success. And the final thing you should do (in a successful test case) is call the TestComplete method on the base class. The EnqueueTestComplete can do this for you, if you like.</p>
+
+<p>The work items built into the test framework are for calling some actions (EnqueueCallback), a conditional predicate enqueue (EnqueueConditional), and a dirty and evil-to-use EnqueueDelay method that will sleep a minimum amount of time before allowing other work items to run.</p>
+
+<p>So, here’s a look at what happens when some regular tests run:</p>
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="Simple set of test methods" border="0" alt="Simple set of test methods" src="http://media.jeff.wilcox.name/blog/view/WorkItemExample1.png" width="685" height="344" /> </p>
+
+<p>And then a more complex run, with a test that includes some enqueued work that needs to execute – extending the test method to run beyond the lifetime of the actual initial test method that is executed:</p>
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="Simple tests and a test with enqueued work items" border="0" alt="Simple tests and a test with enqueued work items" src="http://media.jeff.wilcox.name/blog/view/WorkItemExample2.png" width="685" height="506" /></p>
+
+<h3>Using the enhanced test base classes</h3>
+
+<p>All of the enqueue methods in the Silverlight unit test framework are <em>non-standard</em>, <em>unique</em>, and a little crazy. I say this because I don’t see Microsoft’s larger Visual Studio test team ever adopting this in a unit test framework – it is contrary to most execution principals for a test framework.</p>
+
+<p>So if you use these enhanced base classes, you won’t necessarily be able to cross-compile them on the desktop unit test framework, and make use of them elsewhere. You’ve been warned!</p>
+
+<p>A “work item” as the test framework uses them is a simple type (see reflector) that is evaluated for its completion state, and invoked. Once the work is complete, the work item will be removed from the test dispatcher, and execution will move on to the next work item in due time. A work item could be composite, in that its children are called and completed before the item itself reports a complete state.</p>
+
+<p>If your test inherits from WorkItemTest (or PresentationTest, or SilverlightTest), you’ll be able to call from your tests:</p>
+
+<h4>TestComplete()</h4>
+
+<p>Instructs the framework that your test method is finished, and to move onto the next result. This can be added to event callbacks, delegates, etc. You should not do any more work or your test after calling this.</p>
+
+<h4>EnqueueTestComplete</h4>
+
+<p>Enqueues an action to call TestComplete. This is the most-used way of calling TestComplete when a set of work is done, and would typically be the last Enqueue* method call.</p>
+
+<h4>EnqueueCallback</h4>
+
+<p>Enqueues an Action (delegate, simple lambda, etc.). The work item effectively calls the Action, then moves on. Alternatively, this enqueue method also takes an array of Actions, allowing you to chain many Action calls together in order.</p>
+
+<h4>EnqueueConditional</h4>
+
+<p>Takes a Func&lt;bool&gt; conditional statement / predicate. Each time the work item is evaluated, the function is called. When it returns True, the work item is complete and execution will continue. After each invoke of the predicate, the test framework will unwind the stack, allowing other work to happen, before coming back to try the condition again.</p>
+
+<h4>EnqueueDelay</h4>
+
+<p>This method will enqueue a work item that takes either a TimeSpan object or an integer representing the number of milliseconds at minimum to delay before continuing. This is not an exact timer, but rather, a way to ensure that at least a minimum amount of time continues. It is more like a DoEvents call than it is like a Sleep call, since it will not block the UI thread.</p>
+
+<p>We’re also looking to add support for the Timeout attribute in the future, so tests don’t run forever.</p>
+
+<p>Of course, you can browse the complete source code to the test framework within the CodePlex source code for the <a href="http://www.codeplex.com/Silverlight/">Silverlight Toolkit</a>.</p>
+
+<p>Typically, you’ll see a Silverlight test that prepares an object or control, adds it to the test surface, hooks up to the Loaded event for the control, then uses a set of enqueued conditionals and callbacks to validate a series of events or properties, finally calling TestComplete.</p>
+
+<h3>Alternative Silverlight test frameworks</h3>
+
+<p>Today are alternative frameworks available for those of you that would rather not test inside a browser. Many of us have already worked hard using this framework to test the platform itself, so the reward is that you can try something different in your test methods if you want to.</p>
+
+<p>Some people on the web have made improvements or changes to the primary framework, others have come up with new and exciting takes on this all, including removing the runtime and Core CLR from the picture through extensive mocking:</p>
+
+<ul>
+  <li><a href="http://blog.typemock.com/2009/02/silverunit-true-unit-testing-for.html">SilverUnit</a> is one such solution, and it’s written in VB.NET, too! Requires a TypeMock license.</li>
+
+  <li>Einar Ingebrigtsen’s <a href="http://www.ingebrigtsen.info/post/2009/01/12/Silverlight-Unit-Test-Runner-for-Resharper-January-2009-Update.aspx">Silverlight Unit Test Runner for Resharper</a></li>
+
+  <li><a href="http://code.google.com/p/silverlight-selenium/">Silverlight-Selenium</a> – adds support for Silverlight communication through the HTML interoperability feature of Silverlight 2</li>
+
+  <li>David Anson often runs his chart control tests on the desktop framework by using some clever mocking. I’ll ping him for details sometime.</li>
+
+  <li>I previously blogged how to use the same Silverlight unit test framework for running <a href="http://www.jeff.wilcox.name/2009/01/nunit-and-silverlight/">NUnit tests in the browser</a></li>
+</ul>
+
+<p>And, when it comes to mocking, there’s the SilverUnit listed above, plus:</p>
+
+<ul>
+  <li><a href="http://ayende.com/projects/rhino-mocks/downloads.aspx">Rhino Mocks 3.5 for Silverlight</a></li>
+
+  <li><a href="http://code.google.com/p/moq/source/browse/#svn/build">Moq</a> – source available</li>
+</ul>
+
+<p>Let me know if I’ve left anything off the list, I’d like to link to other testing solutions as they come online. This is a space where I think the .NET community at large really is amazing.</p>
+
+<p>Recently covering testing and Silverlight was <a href="http://timheuer.com/blog/archive/2009/02/26/silverlight-testing-frameworks.aspx">Tim Heuer</a>, and also <a href="http://silverlight.net/blogs/justinangel/archive/2009/02/25/silverlight-unit-testing-rhinomocks-unity-and-resharper.aspx">Justin Angel</a>. Check those posts out. </p>
+
+<h3>History behind the thread decision</h3>
+
+<p>When I started on this journey a few years ago, developing a robust, solid testing platform for Silverlight, the first internal release was actually using background threads &amp; even running in a separate host (not the browser). It was effectively a Core CLR testing platform that re-used the metadata from the Visual Studio unit test framework. Soon enough, it became clear that we needed to track down differences in the platform, beyond just letting our code run. There was a cause/effect to many operations, and we were primarily looking at control development and how to enable easy testing for both the development and the test teams in the company, when doing Silverlight work.</p>
+
+<p>The VSTT metadata was still key, regardless of the execution environment, since so many people are familiar with it.</p>
+
+<p>By redesigning the test product to instead be a Silverlight application itself, and run tests on the UI thread, we could improve the actual quality of our code by validating the platform along the way. We’re still finding positive side effects from this, and the only real cost has been the additional execution time compared to full CLR test solutions.</p>
+
+<p>So, we settled on the UI thread for a majority of the testing. Yes, the exact opposite of what almost all other unit testing frameworks do. You would probably be really surprised to hear how many very interesting, and important, bugs we’ve found over the years of using this framework. Silverlight runtime changes, occasional regressions, parser issues, and a lot of key things that have actually improved the quality of Silverlight and the Silverlight control model in general.</p>
+
+<p>Whether this exhaustive, in-the-browser execution may be good for your project may require some thought given your goals, since the tests are slower to run than alternatives. But if you’re doing anything wild (testing staged or live web services, wanting to test in all the browsers your customers use), etc., then you’ll find the Silverlight unit test framework to be real helpful. As a result, it also works on all those fun browsers that Silverlight works on – IE, Firefox, Firefox, and yeah, I even use it with Chrome. Works on Mac and PC, and I’m sure, someday soon, Moonlight.</p>
+
+<p>What we have here is so much more than a “unit test framework,” and in my mind, this is actually a good base for some functional tests, plugging in additional reporting services, and much more involved that just running a few quick assertions on simple types behind the scenes. I know I’m ok with that, at least.</p>
+
+<p>With the rich presentation platform’s emphasis on cross-platform, lightweight components, there’s a need to step away from a typical mocking solution. If you’ve ever wanted to perform verification of default templates, you probably understand the problem: the test needs a little time for the template to be applied after initialization, and you’ll be interested in how Silverlight actually processes that template.</p>
+
+<p>In a nutshell, that’s where the [Asynchronous] attribute came from that the test execution logic handles to enable these test scenarios. Happy testing!</p>

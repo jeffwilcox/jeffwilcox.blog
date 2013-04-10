@@ -1,0 +1,96 @@
+---
+layout: post
+comments: true
+title: ! 'Fluxify: A client-side photo resize and upload tool for Silverlight v1.1'
+wordpress_id: 18
+wordpress_url: http://linux.jeff.wilcox.name/2007/09/21/fluxify/
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+imported_link_categories:
+- title: msft-resources
+  slug: msft
+  autoslug: msft-resources
+tags:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+---
+[RAW]
+
+<P>There’s a ton of potential for the Silverlight platform out there, and some smart guys out there from <A class="" href="http://fluxcapacity.net/2007/09/21/fluxify-a-simpler-way-to-resize-and-email-your-photos/" mce_href="http://fluxcapacity.net/2007/09/21/fluxify-a-simpler-way-to-resize-and-email-your-photos/">FluxCapacity.net</A> have been working on an excellent client-side photo resizing application that targets Silverlight v1.1.&nbsp; This was totally a pet project that I’d been thinking of producing, but I got stuck when it came to the need to implement a managed JPEG codec to perform the client-side resizing since the Silverlight CTPs don’t expose any of this functionality.</P>
+
+
+
+<P><STRONG>You need to immediately check out “<A class="" title=Fluxify href="http://fluxtools.net/" mce_href="http://fluxtools.net/">Fluxify</A>”</STRONG></P>
+
+
+
+<P><IMG title=Fluxify style="WIDTH: 540px; HEIGHT: 679px" height=679 alt=Fluxify src="http://media.jeff.wilcox.name/blog/view/silverlight/fluxify/fluxify-ui.jpg" width=540 border=0 mce_src="http://media.jeff.wilcox.name/blog/view/silverlight/fluxify/fluxify-ui.jpg"></P>
+
+
+
+<P>This is a core capability that many sites need to have, and have been either implementing with custom third-party ActiveX and Java controls, Flash in some cases, or simply recommending to users that they use a desktop application to resize their images by restricting the permitted photo upload size.&nbsp; </P>
+
+
+
+<P>Is anyone else tired of the custom ActiveX control that Facebook uses?&nbsp; Why spend on extra bandwidth or burden your server farm with having to use CPU cycles to resize images when you could use the client’s machine!? </P>
+
+
+
+<P><IMG title="Facebook's proprietary ActiveX control for resizing and uploading photos" style="WIDTH: 540px; HEIGHT: 52px" height=52 alt="Facebook's proprietary ActiveX control for resizing and uploading photos" src="http://media.jeff.wilcox.name/blog/view/silverlight/fluxify/facebook-control.jpg" width=540 border=0 mce_src="http://media.jeff.wilcox.name/blog/view/silverlight/fluxify/facebook-control.jpg"></P>
+
+
+
+<P>The user experience in Fluxify is pretty good: when you click to select the photos that you would like to upload using the FileOpenDialog for instance, the underlying user interface is greyed out to keep the experience focused on selecting files:</P>
+
+
+
+<P><IMG title="Selecting photos user experience" style="WIDTH: 540px; HEIGHT: 374px" height=374 alt="Selecting photos user experience" src="http://media.jeff.wilcox.name/blog/view/silverlight/fluxify/selecting-photos.jpg" width=540 border=0 mce_src="http://media.jeff.wilcox.name/blog/view/silverlight/fluxify/selecting-photos.jpg"></P>
+
+
+
+<P>The authors of the sample have a <A class="" href="http://fluxcapacity.net/2007/09/21/fluxify-a-simpler-way-to-resize-and-email-your-photos/" mce_href="http://fluxcapacity.net/2007/09/21/fluxify-a-simpler-way-to-resize-and-email-your-photos/">blog post announcing</A> Fluxify as a proof-of-concept, the <A class="" href="http://fluxtools.net/" mce_href="http://fluxtools.net/">actual application up</A> for people to try out resizing &amp; sending their photos via e-mail to others, and a page that goes into some of the <A class="" href="http://fluxtools.net/emailphotos/about.html" mce_href="http://fluxtools.net/emailphotos/about.html">technical details of their implementation</A>&nbsp;(or a least what makes it special, unique, and what they had to overcome).&nbsp; Some highlights from that:</P>
+
+
+
+<UL>
+
+<LI>They've created a purely 'safe' managed code JPEG library in transparent user code</LI>
+
+
+
+<LI>EXIF tags are preserved through the resize.&nbsp; A pet peeve that I have with most image resizing tools is that they don’t do this, and I love knowing the camera model and even GPS location of photos that’s often in the EXIF data</LI>
+
+
+
+<LI>Asynchronous send: if you have a lot of photos, it can resize/send/etc. in the background</LI>
+
+
+
+<LI>They’re using the OpenFileDialog, a feature of the managed Silverlight framework with which I’m quite familiar.&nbsp; The ability to select multiple photos is a major improvement over the HTML &lt;input type="upload" ... /&gt; form element</LI>
+
+</UL>
+
+
+
+<P>And from the sound of it, we can expect to eventually see more technical details and some source from the developers in the future.&nbsp; </P>
+
+
+
+<P>I think the real creative genius here is the innovation on top of the CTP platform; I can't even imagine having to implement the JPEG codec in JavaScript.&nbsp; <A class="" title=Picnik href="http://www.picnik.com/" mce_href="http://www.picnik.com/">Picnik</A> was made with Flash/Flex, a very mature platform-so it's good to know that perhaps someday we may technically see a Picnik based on .NET.</P>
+
+
+
+<P>Hope everybody else out there thinks this is as awesome as I do!</P>
+
+
+
+[/RAW]

@@ -1,0 +1,197 @@
+---
+layout: post
+comments: true
+title: ! 'ScreenShots.cs: How to capture screenshots of your app on your device'
+wordpress_id: 866
+wordpress_url: http://www.jeff.wilcox.name/2011/10/screenshots-cs-how-to-capture-screenshots-of-your-app-on-your-device/
+imported_categories:
+- title: windows-phone
+  slug: windows-phone
+  autoslug: windows-phone
+- title: design
+  slug: design
+  autoslug: design
+imported_link_categories: []
+tags: []
+---
+<p>One thing that’s surprisingly hard to do on the Windows Phone is take screenshots of your application when it is running. Here’s a really simple solution that I coded up while working with some customers – you just give it an interval of time and it’ll take screenshots every few seconds, storing the resulting image as a JPEG in isolated storage.</p>  <p>This is useful for apps that need to be running on a real device, or if you need to capture transitions or difficult-to-reproduce actions.</p>  <h3>Using ScreenShots.cs</h3>  <p>Drop the code into your project, or use NuGet. Then, open up App.xaml.cs (where the performance counters and other debug viz tools are) and add this code to enable the screenshots:</p>  <pre class="csharp" name="code">ScreenShots.BeginTakingPictures();</pre>
+
+<p>Of course you could also add it just to a specific page.</p>
+
+<p>The default interval for captures is every 2 seconds, but you can optionally provide a value for that, too. For example, to take two pictures a second,</p>
+
+<pre class="csharp" name="code">ScreenShots.BeginTakingPictures(0.5);</pre>
+
+<p>Reminder: don’t ship with this as you’ll fill your phone’s storage with captures! I’d recommend commenting out the code most of the time. You could also add screen shot capability in a hidden debug screen in your app, etc.</p>
+
+<h3>Getting the screenshots from isolated storage</h3>
+
+<p>To actually get the screenshots, you can use the “isolated storage tool&quot; that is hidden away in the new 7.1 SDK. From a command prompt, just run ISETool.exe:</p>
+
+<blockquote>
+  <p>pushd C:\Program Files (x86)\Microsoft SDKs\Windows Phone\v7.1\Tools\IsolatedStorageExplorerTool</p>
+
+  <p>ISETool ts de &lt;GUID&gt;</p>
+</blockquote>
+
+<p>You can also provide a location to store the assets. I believe it uses the current directory otherwise.</p>
+
+<p>You can get your app ID from the WMAppManifest.xml file that’s in your project’s Properties folder.</p>
+
+<p>Another option is to use <a href="http://www.nachmore.com/2011/windows-phone-power-tools-1-1/">Oren’s nice Windows Phone Power Tools</a> (<a href="http://wptools.codeplex.com/">CodePlex link</a>) to super easily do this (I highly recommend this):</p>
+
+<p><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="CaptureTool" border="0" alt="CaptureTool" src="http://www.jeff.wilcox.name/wp-content/uploads/2011/10/CaptureTool.jpg" width="535" height="378" /></p>
+
+<h3>Get ScreenShot.cs</h3>
+
+<p>I’ve published to NuGet this source file:</p>
+
+<ul>
+  <li>Make sure you have NuGet (<a href="http://www.nuget.org/">http://www.nuget.org/</a>) </li>
+
+  <li>Grab <a href="http://nuget.org/List/Packages/ScreenShots.cs">ScreenShots.cs</a> (Install-Package ScreenShots.cs)</li>
+</ul>
+
+<p>Or here’s the source:</p>
+
+<pre class="csharp" name="code">//
+// Copyright (c) 2010-2011 Jeff Wilcox
+//
+// Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+using System;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.IO.IsolatedStorage;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Threading;
+
+namespace System.Windows
+{
+    /// &lt;summary&gt;
+    /// Offers the ability to store images every two seconds into the isolated
+    /// storage that can then be retrieved using the isolated storage tool in
+    /// the 7.1 SDK.
+    /// &lt;/summary&gt;
+    public class ScreenShots
+    {
+        private ScreenShots()
+        {
+            _isf = IsolatedStorageFile.GetUserStoreForApplication();
+
+            try
+            {
+                _isf.CreateDirectory(&quot;screenshots&quot;);
+            }
+            catch
+            {
+                // OK the directory already exists.
+            }
+        }
+
+        private DispatcherTimer _dt;
+        private double _interval;
+        private IsolatedStorageFile _isf;
+        private static ScreenShots _instance;
+
+        public static void BeginTakingPictures(double interval = 2.0)
+        {
+            if (_instance == null)
+            {
+                _instance = new ScreenShots();
+                _instance.Start(interval);
+            }
+            else if (_instance._dt != null)
+            {
+                _instance._dt.Start();
+            }
+        }
+
+        public static void Stop()
+        {
+            if (_instance != null &amp;&amp; _instance._dt != null)
+            {
+                _instance._dt.Stop();
+            }
+        }
+
+        private void Start(double interval)
+        {
+            _interval = interval;
+
+            if (_dt == null)
+            {
+                _dt = new DispatcherTimer();
+                _dt.Interval = TimeSpan.FromSeconds(_interval);
+                _dt.Tick += OnTick;
+                _dt.Start();
+            }
+        }
+
+        private void OnTick(object sender, EventArgs e)
+        {
+            var ui = Application.Current.RootVisual;
+            try
+            {
+                if (ui != null)
+                {
+                    FrameworkElement fe = ui as FrameworkElement;
+                    if (fe != null)
+                    {
+                        var width = fe.ActualWidth;
+                        var height = fe.ActualHeight;
+
+                        WriteableBitmap wb = new WriteableBitmap(ui, 
+                            new TranslateTransform());
+                        wb.Render(ui, new TranslateTransform());
+                        byte[] bb = EncodeToJpeg(wb);
+
+                        string filename = &quot;screenshots\\&quot; 
+                            + DateTime.Now.Ticks
+                            .ToString(CultureInfo.InvariantCulture) 
+                            + &quot;.jpg&quot;;
+                        using (var st = _isf.CreateFile(filename))
+                        {
+                            st.Write(bb, 0, bb.Length);
+                        }
+
+                        Debug.WriteLine(&quot;Saved screenshot to &quot; + filename);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        public byte[] EncodeToJpeg(WriteableBitmap wb)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                wb.SaveJpeg(
+                    stream, 
+                    wb.PixelWidth, 
+                    wb.PixelHeight, 
+                    0, 
+                    85);
+                return stream.ToArray();
+            }
+        }
+    }
+}</pre>
+
+<p>Hope this helps.</p>

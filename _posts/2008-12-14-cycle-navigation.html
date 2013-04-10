@@ -1,0 +1,331 @@
+---
+layout: post
+comments: true
+title: AutoCompleteBox without cycling navigation
+wordpress_id: 196
+wordpress_url: http://www.jeff.wilcox.name/2008/12/14/cycle-navigation/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+imported_link_categories: []
+tags: []
+---
+<p>An occasional request I hear about the AutoCompleteBox control in the <a href="http://www.codeplex.com/Silverlight/">toolkit</a> is about the cyclical navigation in the list box of suggestions. If you're browsing through a list of items, pressing the down arrow, eventually you'll reach the bottom - and then be cycled back to the top of the list.</p>  <p>This cycling behavior is consistent with many of the auto complete controls that users interact with most often: Internet Explorer, Mozilla Firefox, Windows search, and Google Suggest. Auto complete controls that default to not cycling through include the ASP.NET AJAX Toolkit, Yahoo's YUI component, and OS X.</p>  <p>In this post, I'm going to walk you through creating a derived AutoCompleteBox control that has a &quot;UseCyclicNavigation&quot; property that enables or disables this behavior.</p>  <p><a href="http://media.jeff.wilcox.name/blog/AutoComplete/xap/AutoCompleteExamplesApp.html"><img alt="Sample application screenshot" src="http://media.jeff.wilcox.name/blog/AutoComplete/CustomizedAutoCompleteBox.png" /></a> </p>  <h3>Overview</h3>  <p>To accomplish this work, we'll:</p>  <ul>   <li>Create a new class library for the custom control</li>    <li>Create a new selection adapter that derives from ListBox, and modify the navigation logic</li>    <li>Create a derived auto complete control</li>    <li>Setup the default style and template for the control in generic.xaml</li> </ul>  <p>This is an intermediate tutorial, I'll be glossing over a lot of the smaller parts. The source is attached to the post for download. Feel free to leave any questions that you may have.</p>  <h3>Brief background</h3>  <p>One of the things that we've been trying to do is keep the auto complete control simple enough that it meets the needs of most folks, without being inundated with a lot of properties that are only applicable to very specific, limited scenarios. This was tracked in <a href="http://www.codeplex.com/Silverlight/WorkItem/View.aspx?WorkItemId=891">CodePlex issue #891</a> for the toolkit. We've decided not to add this functionality to the standard shipping control at this time, especially given that the ability to customize the selection adapter is out there.</p>  <h3>Creating a new custom control class library</h3>  <p>Open up Visual Studio with the Silverlight Tools installed and create a new Visual C# &quot;Silverlight Class Library&quot; project. I named my project &quot;CustomAutoComplete&quot;.</p>  <ul>   <li>Make sure that you've downloaded the <em>source code release</em> of the <a href="http://www.codeplex.com/Silverlight/Release/ProjectReleases.aspx">Silverlight Toolkit December 2008</a> release (alternatively, you can grab the source files we're borrowing from the <a href="http://www.codeplex.com/Silverlight/SourceControl/changeset/view/8633">source code browser online</a>)</li>    <li>Add a reference to the Microsoft.Windows.Controls.dll binary</li> </ul>  <h3>Making a new ISelectionAdapter</h3>  <p>A selection adapter is a concept that the auto complete control uses for handing off the suggestion navigation, presentation, and selection to another control.</p>  <p>Instead of requiring that the auto complete control always use a ListBox to work, we opted for a design with the ISelectionAdapter interface. This means that you can create a wrapper for any control, regardless of whether the control derives from Selector or not. This allows you to use DataGrid, for instance.</p>  <p>I copied the contents of the SelectorSelectionAdapter.cs file in the Source\Controls\AutoCompleteBox\ directory of the toolkit source download.</p>  <p>Although a good starting place for our adapter, we are going to switch from the &quot;wrapper&quot; style of selection adapter and instead make ours an actual control by deriving directly from the Silverlight ListBox control.</p>  <p>This is not particularly important for this scenario, but I'll be re-using this project for some other posts where it does make a difference.</p>  <p>Changes I've made: named the file and class ListBoxSelectionAdapter. Derived from ListBox:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:59f76829-318a-4755-a4e6-b8701f0bbb51" class="wlWriterSmartContent"><pre class="c-sharp" name="code">namespace CustomAutoCompleteBox
+{
+    /// &lt;summary&gt;
+    /// A selection adapter that is also a ListBox, for use with the
+    /// AutoCompleteBox control.
+    /// &lt;/summary&gt;
+    public partial class ListBoxSelectionAdapter : ListBox, ISelectionAdapter
+    {</pre></div>
+
+<p>I added a simple CLR property of type 'bool' that will track whether cyclic navigation is being used:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:23169fa5-1585-4c04-a5ff-f1c825a7f20a" class="wlWriterSmartContent"><pre class="c-sharp" name="code">        /// &lt;summary&gt;
+        /// Gets or sets a value that indicates whether cyclic navigation 
+        /// should be used or not. When on, and at the bottom of the list, 
+        /// a user pressing down will receive no response. The shipping 
+        /// AutoCompleteBox implementation always cycles.
+        /// &lt;/summary&gt;
+        public bool UseCyclicNavigation { get; set; }</pre></div>
+
+<p>And then modifying the increment and decrement methods to take the cyclic property into account:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:fb3e61d4-cded-4c39-87cf-5401878d85c4" class="wlWriterSmartContent"><pre class="c-sharp" name="code">        /// &lt;summary&gt;
+        /// Increment the selected index, or wrap.
+        /// &lt;/summary&gt;
+        protected void SelectedIndexIncrement()
+        {
+            if (UseCyclicNavigation)
+            {
+                // Standard control implementation
+                SelectedIndex = SelectedIndex + 1 &gt;= Items.Count ? -1 : SelectedIndex + 1;
+            }
+            else
+            {
+                // Limiting implementation
+                SelectedIndex = SelectedIndex + 1 &gt;= Items.Count ? Items.Count - 1 : SelectedIndex + 1;
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Decrement the SelectedIndex, or wrap around, inside the nested 
+        /// SelectionAdapter's control.
+        /// &lt;/summary&gt;
+        protected void SelectedIndexDecrement()
+        {
+            int index = SelectedIndex;
+            if (index &gt;= 0)
+            {
+                SelectedIndex--;
+            }
+            else if (index == -1 && UseCyclicNavigation)
+            {
+                // Only when cycling navigation is on
+                SelectedIndex = Items.Count - 1;
+            }
+        }</pre></div>
+
+<h3>Derive CustomizedAutoCompleteBox from AutoCompleteBox</h3>
+
+<p>Now that the selection adapter is ready, we should create our own AutoCompleteBox control. We'll derive from the toolkit control and add a new dependency property for the cyclic navigation.</p>
+
+<p>First off, create the new code file, CustomizedAutoCompleteBox.cs:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:0e82bb03-076b-4205-a10f-fc970b0351fa" class="wlWriterSmartContent"><pre class="c-sharp" name="code">// (c) Copyright Microsoft Corporation.
+// This source is subject to the Microsoft Public License (Ms-PL).
+// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+// All other rights reserved.
+
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using Microsoft.Windows.Controls;
+
+namespace CustomAutoCompleteBox
+{
+    /// &lt;summary&gt;
+    /// An AutoCompleteBox control implementation that has a few additional 
+    /// features, as a demonstration. "Polished" with features such as page up
+    /// and page down support, and cyclic navigation settings for the list box.
+    /// &lt;/summary&gt;
+    /// &lt;remarks&gt;This is a demonstration only and is strongly tied to the use of
+    /// a ListBox as the selection adapter.&lt;/remarks&gt;
+    public class CustomizedAutoCompleteBox : AutoCompleteBox
+    {</pre></div>
+
+<p>The standard implementation of AutoCompleteBox handles most of the interaction with the SelectionAdapter, but we still need to find the template part in the OnApplyTemplate method, so that we can change the CLR property in the adapter whenever our property value changes.</p>
+
+<p>So, we add a private or internal automatic property for our ListBoxSelectionAdapter:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1964cd1c-6d0c-497c-aecb-879856fd5e46" class="wlWriterSmartContent"><pre class="c-sharp" name="code">        /// &lt;summary&gt;
+        /// The selection adapter.
+        /// &lt;/summary&gt;
+        internal ListBoxSelectionAdapter SelectionAdapterPart { get; set; }</pre></div>
+
+<p>Followed by the dependency property declaration for our 'UseCyclicNavigationProperty'. Things to look for:</p>
+
+<ul>
+  <li>Property declaration</li>
+
+  <li>Default value</li>
+
+  <li>Property changed handler, that interacts with the SelectionAdapterPart property when it is not null</li>
+</ul>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:37859692-d45e-4824-ab1c-70853a4cfc41" class="wlWriterSmartContent"><pre class="c-sharp" name="code">#region public bool UseCyclicNavigation
+/// &lt;summary&gt;
+/// Gets or sets a value indicating whether cyclic navigation should be 
+/// used by the control.
+/// &lt;/summary&gt;
+public bool UseCyclicNavigation
+{
+    get { return (bool)GetValue(UseCyclicNavigationProperty); }
+    set { SetValue(UseCyclicNavigationProperty, value); }
+}
+
+/// &lt;summary&gt;
+/// Identifies the UseCyclicNavigation dependency property.
+/// &lt;/summary&gt;
+public static readonly DependencyProperty UseCyclicNavigationProperty =
+    DependencyProperty.Register(
+        "UseCyclicNavigation",
+        typeof(bool),
+        typeof(CustomizedAutoCompleteBox),
+        new PropertyMetadata(true, OnUseCyclicNavigationPropertyChanged));
+
+/// &lt;summary&gt;
+/// The UseCyclicNavigation property changed handler.
+/// &lt;/summary&gt;
+/// &lt;param name="d"&gt;The dependency object that had its property
+/// changed.&lt;/param&gt;
+/// &lt;param name="e"&gt;Event arguments.&lt;/param&gt;
+private static void OnUseCyclicNavigationPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+{
+    CustomizedAutoCompleteBox source = d as CustomizedAutoCompleteBox;
+    if (source.SelectionAdapterPart != null)
+    {
+        source.SelectionAdapterPart.UseCyclicNavigation = (bool)e.NewValue;
+    }
+}
+
+#endregion public bool UseCyclicNavigation</pre></div>
+
+<p>Next up, we override the OnApplyTemplate method to grab the selection adapter instance and set it to our local SelectionAdapterPart property. It also will set the initial value based on the current dependency property's value.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:6413982f-1264-41f3-a62c-5549f3f36108" class="wlWriterSmartContent"><pre class="c-sharp" name="code">/// &lt;summary&gt;
+/// Overrides the on apply template method.
+/// &lt;/summary&gt;
+public override void OnApplyTemplate()
+{
+    SelectionAdapterPart = GetTemplateChild("SelectionAdapter") as ListBoxSelectionAdapter;
+    if (SelectionAdapterPart != null)
+    {
+        SelectionAdapterPart.UseCyclicNavigation = UseCyclicNavigation;
+    }
+
+    base.OnApplyTemplate();
+}</pre></div>
+
+<p>We're almost there now!</p>
+
+<h3>Create the default template (generic.xaml)</h3>
+
+<p>If you provided a custom template for each instance of your CustomizedAutoCompleteBox control, you'd be good to go. But we still want to improve the experience by creating a default style and template, so that you can replace any toolkit AutoCompleteBox instance with a CustomizedAutoCompleteBox control in the basic scenario.</p>
+
+<p>To do this, we must create our generic.xaml file inside the class library:</p>
+
+<ul>
+  <li>Create a new folder in the project (right-click on the project in the Solution Explorer &gt; select Add &gt; then New Folder) called <strong>Themes</strong></li>
+
+  <li>Add a new Silverlight use control to the new Themes directory, call it <strong>generic.xaml</strong>. You can remove any associated generic.xaml.cs file, since there's no code behind for the default style file.</li>
+
+  <li>Change the file to compile as a Resource: right-click on generic.xaml, select Properties; then, in the property grid, change the <strong>Build Action</strong> to be <strong>Resource</strong> instead of Page.</li>
+</ul>
+
+<p>Next, open up the file, delete its contents, and replace it with the standard resource dictionary XML content, declare the local XMLNS for your assembly and namespace:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1606b245-c2b1-425d-af57-d00a54eaa9f5" class="wlWriterSmartContent"><pre class="xml" name="code">&lt;!--
+// (c) Copyright Microsoft Corporation.
+// This source is subject to the Microsoft Public License (Ms-PL).
+// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+// All other rights reserved.
+--&gt;
+
+&lt;ResourceDictionary
+  xmlns="http://schemas.microsoft.com/client/2007"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:controls="clr-namespace:CustomAutoCompleteBox"&gt;
+
+&lt;/ResourceDictionary&gt;</pre></div>
+
+<p>Now, we just have to add the style for the control. I've copied most of the template from the source download of the toolkit, but did modify the opacity of the list box a little bit. I also place an instance of ListBoxSelectionAdapter, with the x:Name of &quot;SelectionAdapter&quot; (the part name that AutoCompleteBox looks for), where the simple ListBox is in the default template:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:c9a1e0f8-9e09-4ca7-a75e-e68b80a3bbbb" class="wlWriterSmartContent"><pre class="xml" name="code">&lt;Style TargetType="controls:CustomizedAutoCompleteBox"&gt;
+    &lt;Setter Property="IsTabStop" Value="False" /&gt;
+    &lt;Setter Property="Template"&gt;
+        &lt;Setter.Value&gt;
+            &lt;ControlTemplate TargetType="controls:CustomizedAutoCompleteBox"&gt;
+                &lt;Grid Margin="{TemplateBinding Padding}" 
+                      Background="{TemplateBinding Background}"&gt;
+                    &lt;TextBox IsTabStop="True" x:Name="Text" Style="{TemplateBinding TextBoxStyle}" Margin="0" /&gt;
+                    &lt;Popup x:Name="Popup"&gt;
+                        &lt;Border x:Name="PopupBorder" HorizontalAlignment="Stretch" Opacity="0.0" BorderThickness="0" CornerRadius="3"&gt;
+                            &lt;Border.RenderTransform&gt;
+                                &lt;TranslateTransform X="1" Y="1" /&gt;
+                            &lt;/Border.RenderTransform&gt;
+                            &lt;Border
+                                HorizontalAlignment="Stretch" 
+                                Opacity="1.0" 
+                                Padding="0" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                CornerRadius="3"&gt;
+                                &lt;Border.RenderTransform&gt;
+                                    &lt;TransformGroup&gt;
+                                        &lt;TranslateTransform X="-1" Y="-1" /&gt;
+                                    &lt;/TransformGroup&gt;
+                                &lt;/Border.RenderTransform&gt;
+                                &lt;controls:ListBoxSelectionAdapter 
+                                    x:Name="SelectionAdapter" 
+                                    Background="#99ffffff"
+                                    ItemContainerStyle="{TemplateBinding ItemContainerStyle}"
+                                    ItemTemplate="{TemplateBinding ItemTemplate}" /&gt;
+                            &lt;/Border&gt;
+                        &lt;/Border&gt;
+                    &lt;/Popup&gt;
+                    &lt;VisualStateManager.VisualStateGroups&gt;
+                        &lt;VisualStateGroup x:Name="PopupStates"&gt;
+                            &lt;VisualStateGroup.Transitions&gt;
+                                &lt;VisualTransition GeneratedDuration="0:0:0.1" To="PopupOpened" /&gt;
+                                &lt;VisualTransition GeneratedDuration="0:0:0.2" To="PopupClosed" /&gt;
+                            &lt;/VisualStateGroup.Transitions&gt;
+                            &lt;VisualState x:Name="PopupOpened"&gt;
+                                &lt;Storyboard&gt;
+                                    &lt;DoubleAnimation Storyboard.TargetName="PopupBorder" Storyboard.TargetProperty="Opacity" To="1.0" /&gt;
+                                &lt;/Storyboard&gt;
+                            &lt;/VisualState&gt;
+                            &lt;VisualState x:Name="PopupClosed"&gt;
+                                &lt;Storyboard&gt;
+                                    &lt;DoubleAnimation Storyboard.TargetName="PopupBorder" Storyboard.TargetProperty="Opacity" To="0.0" /&gt;
+                                &lt;/Storyboard&gt;
+                            &lt;/VisualState&gt;
+                        &lt;/VisualStateGroup&gt;
+                    &lt;/VisualStateManager.VisualStateGroups&gt;
+                &lt;/Grid&gt;
+            &lt;/ControlTemplate&gt;
+        &lt;/Setter.Value&gt;
+    &lt;/Setter&gt;
+&lt;/Style&gt;</pre></div>
+
+<p>That is a lot of code; here's just the selection adapter part to make that clear. Remember, since we derived ListBoxSelectionAdapter directly from ListBox, this XAML is actually talking directly to a ListBox instance when initialized.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:53a1c379-c88a-431a-8ef4-ae57ba44bb87" class="wlWriterSmartContent"><pre class="xml" name="code">&lt;controls:ListBoxSelectionAdapter 
+    x:Name="SelectionAdapter" 
+    Background="#99ffffff"
+    ItemContainerStyle="{TemplateBinding ItemContainerStyle}"
+    ItemTemplate="{TemplateBinding ItemTemplate}" /&gt;</pre></div>
+
+<h3>Validating the new experience</h3>
+
+<p>Ok, build the project. Hopefully you'll receive no errors, and we'll be ready to verify the new behavior.</p>
+
+<p>I added a regular Silverlight Application (with the auto-generated test page option) called 'Demo', and then:</p>
+
+<ul>
+  <li>Added a reference to Microsoft.Windows.Controls</li>
+
+  <li>Added a project reference to the CustomAutoCompleteBox project (that contains our CustomizedAutoCompleteBox control, the default template, and the ListBoxSelectionAdapter)</li>
+</ul>
+
+<p>Inside the page you're testing, make sure to add the XMLNS statement for your custom library; you can then place your custom control inside. I'm binding it to the data context and setting our new <strong>UseCyclicNavigation </strong>property in XAML:</p>
+
+<p>
+  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:72869f2d-9099-4135-81cd-ff9a33a75fc4" class="wlWriterSmartContent"><pre class="xml" name="code">&lt;UserControl x:Class="Demo.WithListBoxSelectionAdapter"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:custom="clr-namespace:CustomAutoCompleteBox;assembly=CustomAutoCompleteBox"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"&gt;
+    &lt;Grid x:Name="LayoutRoot"&gt;
+        &lt;StackPanel&gt;
+            &lt;custom:CustomizedAutoCompleteBox ItemsSource="{Binding}" UseCyclicNavigation="False" x:Name="autoComplete1" /&gt;
+        &lt;/StackPanel&gt;
+    &lt;/Grid&gt;
+&lt;/UserControl&gt;</pre></div>
+</p>
+
+<p>In my example, I set the page's DataContext to a bunch of sample data in the Loaded method. The download includes this data, plus the ability to compare the regular AutoCompleteBox control to the new one.</p>
+
+<p><strong>Download and explore this sample app</strong></p>
+
+<ul>
+  <li><a href="http://media.jeff.wilcox.name/blog/AutoComplete/xap/AutoCompleteExamplesApp.html">View the sample application live</a></li>
+
+  <li><a href="http://media.jeff.wilcox.name/blog/AutoComplete/AutoCompleteExamples.zip">Download the C# solution's source code</a> (includes the toolkit binary with the standard AutoCompleteBox, 86 KB)</li>
+</ul>
+
+<p><a href="http://media.jeff.wilcox.name/blog/AutoComplete/xap/AutoCompleteExamplesApp.html"><img alt="Sample application screenshot" src="http://media.jeff.wilcox.name/blog/AutoComplete/CustomizedAutoCompleteBox.png" /></a> </p>
+
+<p>In theory you could also just expose the dependency property on the ListBoxSelectionAdapter (in the sample project), and then re-template every use of auto complete to set your intended value - but this example instead can be swapped into most standard auto complete apps instead.</p>
+
+<p>Hope this helps, and that I didn't lose anybody - there's a lot of unrelated concepts here.</p>
+
+<h3>Download the December 2008 release of the Silverlight Toolkit</h3>
+
+<p><img src="http://media.jeff.wilcox.name/blog/view/Silverlight-Toolkit.png" /></p>
+
+<ul>
+  <li><a href="http://www.codeplex.com/Release/ProjectReleases.aspx?ProjectName=Silverlight&amp;ReleaseId=19172">Binaries, samples and documentation</a> (10 MB) </li>
+
+  <li><a href="http://www.codeplex.com/Release/ProjectReleases.aspx?ProjectName=Silverlight&amp;ReleaseId=19172">Binaries, samples, documentation, unit tests and complete source code</a> (11 MB) </li>
+
+  <li><a href="http://silverlight.net/samples/sl2/toolkitcontrolsamples/run/default.html">Explore the updated, combined sample explorer</a></li>
+
+  <li><a href="http://feeds.feedburner.com/SilverlightToolkitTeamMembersBlogFeeds">Subscribe to the syndicated feed of all team members</a> (RSS)</li>
+</ul>

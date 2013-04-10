@@ -1,0 +1,129 @@
+---
+layout: post
+comments: true
+title: The Silverlight Toolkit grows up a little with an install experience
+excerpt: The Silverlight Toolkit's March 2009 release is out, now with an installation
+  experience that adds controls to the Visual Studio and Expression Blend toolbox,
+  and improves the design experience.
+wordpress_id: 330
+wordpress_url: http://www.jeff.wilcox.name/?p=330
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: mix
+  slug: mix
+  autoslug: mix
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+- title: infrastructure
+  slug: infrastructure
+  autoslug: infrastructure
+imported_link_categories: []
+tags: []
+---
+<img alt="Silverlight 3 Visual Studio Toolbox" src="http://media.jeff.wilcox.name/blog/mix09/Silverlight3Toolbox.png" title="Silverlight 3 Visual Studio Toolbox" width="240" height="1946" align="right" hspace="4" vspace="4" />The <a href="http://silverlight.codeplex.com/">Silverlight Toolkit March 2009</a> includes an install experience for the first time. Instead of having to download a Zip file with all the bits and little instruction, we now have a complete installation experience for Windows.
+
+This provides a very nice experience when using Visual Studio 2008 and Expression Blend 3, since the Toolkit's controls appear alongside all other Silverlight SDK controls now.
+
+I wanted to take a few minutes and record a few questions and answers about the new experience. Let me know if there are some other questions you'd like answered.
+
+<h3>Why are there two setup downloads for the March 2009 release?</h3>
+The March 2009 release is available for targeting Silverlight 2 applications (recommended for most developers and designers working on current production Silverlight 2 apps), and a Silverlight 3 Beta release.
+
+Since the target platform is important, you can make a choice. Of course, both the Silverlight 2 and Silverlight 3 Beta installs for the Silverlight Toolkit support side-by-side; however, the Visual Studio 2008's Silverlight Tools do not support "multi-targeting," so you really should decide and stick to a single target development environment for Silverlight coding today.
+
+<h3>What are the system requirements?</h3>
+The Silverlight Toolkit only requires a recent version of the .NET framework to install. However, for the best experience, you should have one of these development environments installed and configured:
+<ul>
+<li>Visual Studio 2008 SP1 with the Silverlight Tools (Silverlight 2 or Silverlight 3 Beta)</li>
+<li>Visual Web Developer Express with the Silverlight Tools (Silverlight 2 or Silverlight 3 Beta)</li>
+<li>Expression Blend 2 SP1 with Silverlight 2</li>
+<li>Expression Blend 3 MIX '09 Preview with Silverlight 3 Beta</li>
+</ul>
+
+More information about these tools and downloads is available at <a href="http://silverlight.net/getstarted/silverlight3/default.aspx">http://silverlight.net/getstarted/silverlight3/default.aspx</a>.
+
+You can install the Silverlight Toolkit before or after the Silverlight Tools installation.
+
+<h3>What's with the namespace change to System.Windows.Controls?</h3>
+As the Silverlight Toolkit has begun delivering controls into the official Silverlight SDK, it became apparent that we should be consistent across the Silverlight platform with regard to the namespace used for the Microsoft controls. As a result, we decided to make this namespace change along with the new ".Toolkit" assembly name scheme.
+
+<h3>Where's the AutoCompleteBox control? How about TreeView?</h3>
+Some of the "Stable" controls were moved to the official Microsoft Silverlight 3 Beta SDK, since they are trending towards the "Mature" quality band. As a result, the controls live in different assemblies depending on whether you are performing Silverlight 2 or Silverlight 3 Beta development.
+
+In the Silverlight 2 Toolkit March 2009 release, AutoCompleteBox is in System.Windows.Controls.Input.Toolkit. TreeView is in System.Windows.Controls.Toolkit.
+
+In the Silverlight 3 Toolkit March 2009 release, AutoCompleteBox is in System.Windows.Controls.Input. TreeView is in System.Windows.Controls. <i>These assemblies are part of the Silverlight 3 Beta SDK and DO NOT require installation of the Silverlight Toolkit.</i>
+
+The Silverlight 2 controls are compatible with Silverlight 3, so existing applications will continue to work - but we do highly recommend that you update to the appropriate Silverlight Toolkit for your target Silverlight version, since we  do add version-enhanced features, such as animation easing for the Silverlight Toolkit charts in the Silverlight 3 Beta.
+
+More information about the assembly and namespace name changes is available in <a href="http://blogs.msdn.com/sburke/archive/2009/03/20/silverlight-toolkit-march-2009-release.aspx">this post by Shawn Burke</a>.
+
+<h3>What is installed with the Silverlight Toolkit now?</h3>
+You'll find the same basics as before, plus some. You'll find these in the "Microsoft Silverlight 3 Toolkit March 2009" (or similarly named folder for the Silverlight 2 version) folder in your Start Menu.
+<img alt="" src="http://media.jeff.wilcox.name/blog/mix09/StartMenu.png" title="Start Menu" class="alignnone" width="267" height="295" />
+<ul>
+	<li>New "Welcome" page with general information about the release, plus a link to the breaking changes and release notes for the release.</li>
+	<li>Links to the CodePlex site for the Toolkit, plus the Silverlight.net discussion forums</li>
+	<li>A link to the sample application for the Toolkit, served from the local system</li>
+	<li>Links to Zip files containing the control source code and/or the sample source code</li>
+	<li>The documentation for the Toolkit controls in CHM format. The documentation file no longer requires the "Unlock" workaround step on Windows Vista and Windows 7. Do note that the documentation for former Silverlight Toolkit controls that now appear in the Silverlight 3 SDK, such as AutoCompleteBox, are now located in the official Silverlight documentation. An <a href="http://blogs.msdn.com/silverlight_sdk/archive/2009/03/18/silverlight-3-beta-offline-msdn-docs-chm-is-available.aspx">offline download of the SDK documentation</a> is also available.</li>
+
+</ul>
+
+
+<h3>What rocked about the Zip?</h3>
+Well, in my mind, it was:
+<ul>
+	<li>Transparent experience</li>
+	<li>Nothing fancy</li>
+	<li>Lightweight. Nothing to install, so if you didn't want it anymore, you could just delete the files, for instance.</li>
+
+</ul>
+
+<h3>What was so bad about the Zip?</h3>
+<ul>
+	<li>No integration into Visual Studio or Expression Blend out-of-the-box, without doing some manual file copy or registry work</li>
+
+	<li>Confusing to users used to a setup experience</li>
+
+	<li>CHM documentation files downloaded in a Zip require "Unlocking" before they work. Until then, they appear broken.</li>
+
+</ul>
+
+<h3>Would you consider offering releases in a Zip file, optionally, still?</h3>
+We're open to the idea. Especially now that there's an Eclipse Silverlight development experience, we do need to be mindful of the need to use the releases on other platforms.
+
+Since our packaging infrastructure was initially designed to output these nice .Zip files, it wouldn't be too tough for us to get this going. We'll see what the customer requests look like.
+
+<h3>How do I select whether I want to get the source code to the controls?</h3>
+There is an installation option for a feature called "Source code," you can click on the box to the left of the item and remove the component if you would not like to install the source package.
+
+If you do select this feature (per the default), a .Zip file is placed on the system that contains the source code. You can extract the zip file into a location of your selection to build or view the source.
+
+<img alt="Setup Options" src="http://media.jeff.wilcox.name/blog/mix09/SetupOptions.png" title="Setup Options" class="alignnone" width="509" height="398" />
+
+As always, the source is also available on the <a href="http://silverlight.codeplex.com/">Silverlight Toolkit CodePlex site</a>.
+
+<h3>What about Microsoft Expression Blend integration?</h3>
+The Blend 3 MIX09 Preview release includes support for having the Silverlight Toolkit appear in the "Custom Controls" tab of the Asset Library. This is only available for Silverlight 3 Beta, not the Silverlight 2 / Expression Blend 2 product.
+
+<img alt="" src="http://media.jeff.wilcox.name/blog/mix09/Blend3Toolbox.png" title="Blend 3 Toolbox" class="alignnone" width="685" height="323" />
+
+There is some really great design time support in this release. For instance, if you just drop a "Chart" control onto your Blend design canvas, you're greeted with a chart that has simple design time data! It might look a little like one of those "the most bars anywhere" cell phone commercials, but it is very helpful for styling.
+
+<img alt="" src="http://media.jeff.wilcox.name/blog/mix09/ChartDesignTime.png" title="Chart design time" class="alignnone" width="685" height="347" />
+
+<h3>What powers the installer?</h3>
+We leveraged the open source <a href="http://wix.sourceforge.net/">Windows Installer XML (WiX) toolset</a>, an excellent and easy way to build Windows Installer packages. Kudos to Eric St. John, a Microsoft developer who contributes to WiX, for excellent advice, btw!
+
+<img alt="" src="http://media.jeff.wilcox.name/blog/mix09/SilverlightToolkitInstaller.png" title="Silverlight Toolkit Installer" class="alignnone" width="509" height="398" />
+
+This was important to our small development team, since we wanted to spend time working on new features like <b>awesome design-time integration</b> and new controls like <b>accordion</b> instead of assigning a developer to the setup full-time.
+
+Hope you like the new experience. Let us know!

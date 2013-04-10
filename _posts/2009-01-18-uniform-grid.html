@@ -1,0 +1,290 @@
+---
+layout: post
+comments: true
+title: UniformGrid for Silverlight
+wordpress_id: 256
+wordpress_url: http://www.jeff.wilcox.name/2009/01/uniform-grid/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+imported_link_categories: []
+tags: []
+---
+<p>One of the primitive layout panels in WPF is the UniformGrid. Here’s a Silverlight port of the control. I use this panel a lot in quick apps because it just works, and I admit I’m a little too code-lazy in the XAML editor to type Grid.Row a few times. So, figured I’d share.</p>  <p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2009/01/uniformgridsample1.png"><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="UniformGrid sample" border="0" alt="UniformGrid sample" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/01/uniformgridsample1-thumb.png" width="643" height="604" /></a> </p>  <p>The <a href="http://msdn.microsoft.com/en-us/library/system.windows.controls.primitives.uniformgrid.aspx">UniformGrid</a> contains cells, but without any real options. The only dependency properties are <strong><a href="http://msdn.microsoft.com/en-us/library/system.windows.controls.primitives.uniformgrid.columns.aspx">Columns</a></strong>, <strong><a href="http://msdn.microsoft.com/en-us/library/system.windows.controls.primitives.uniformgrid.rows.aspx">Rows</a></strong>, and <strong><a href="http://msdn.microsoft.com/en-us/library/system.windows.controls.primitives.uniformgrid.firstcolumn.aspx">FirstColumn</a></strong>.</p>  <p>The panel is almost too easy to use, for better or worse:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1a351504-31e4-43ea-b4e9-43350fbe4e25" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;UserControl x:Class="UniformGrid.Page"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:local="clr-namespace:System.Windows.Controls.Primitives"&gt;
+&lt;Grid x:Name="LayoutRoot" Width="600" Height="450"&gt;
+    &lt;local:UniformGrid Columns="2"&gt;
+        &lt;Image Source="/UniformGrid;component/Chicago.jpg" Stretch="Uniform" /&gt;
+        &lt;Grid&gt;
+            &lt;Image Source="/UniformGrid;component/London.jpg" Stretch="Uniform" /&gt;
+            &lt;TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" Opacity=".5" FontSize="52"&gt;london&lt;/TextBlock&gt;
+        &lt;/Grid&gt;
+        &lt;Image Source="/UniformGrid;component/Neuschwanstein.jpg" Stretch="Uniform" /&gt;
+        &lt;local:UniformGrid Columns="3" Margin="2"&gt;
+            &lt;Button Content="Blue" Background="Blue" /&gt;
+            &lt;Button Content="Red" Background="Red" /&gt;
+            &lt;Button Content="Yellow" Background="Yellow" /&gt;
+            &lt;Button Content="Green" Background="Green" /&gt;
+            &lt;Button Content="Purple" Background="Purple" /&gt;
+            &lt;Button Content="Teal" Background="Teal" /&gt;
+        &lt;/local:UniformGrid&gt;
+    &lt;/local:UniformGrid&gt;
+&lt;/Grid&gt;
+&lt;/UserControl&gt;</pre></div>
+
+<p><a href="http://media.jeff.wilcox.name/blog/code/UniformGrid.zip">Download the sample application with UniformGrid.cs</a> [Zip, 486 KB]
+
+  <br /><a href="http://media.jeff.wilcox.name/blog/code/UniformGrid.cs.txt">Download UniformGrid.cs</a> [Text, 10 KB]</p>
+
+<p>One small note on transitioning this control from WPF to Silverlight: I did have had to modify the validation logic a little from WPF, since Silverlight doesn’t have value coercion built-in. Instead, negative or non-integer values used for the dependency properties simply revert back to their old values. I find this behavior acceptable, but its the only artist license I’ve really taken with the control.</p>
+
+<p>Here’s the control itself:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:b24cfd0d-087d-4071-9581-49f28eea6d52" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">// (c) Copyright Microsoft Corporation.
+// This source is subject to the Microsoft Public License (Ms-PL).
+// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+// All other rights reserved.
+
+using System;
+using System.Windows;
+using System.Windows.Controls;
+
+namespace System.Windows.Controls.Primitives
+{
+    /// &lt;summary&gt;
+    /// A UniformGrid implementation for Silverlight that arranges children in a
+    /// grid with all equal cell sizes.
+    /// &lt;/summary&gt;
+    public class UniformGrid : Panel
+    {
+        /// &lt;summary&gt;
+        /// Gets or sets the computed row value.
+        /// &lt;/summary&gt;
+        private int ComputedRows { get; set; }
+
+        /// &lt;summary&gt;
+        /// Gets or sets the computed column value.
+        /// &lt;/summary&gt;
+        private int ComputedColumns { get; set; }
+
+        /// &lt;summary&gt;
+        /// Initializes a new instance of UniformGrid.
+        /// &lt;/summary&gt;
+        public UniformGrid()
+        {
+        }
+
+        /// &lt;summary&gt;
+        /// Gets or sets the number of first columns to leave blank.
+        /// &lt;/summary&gt;
+        public int FirstColumn
+        {
+            get { return (int)GetValue(FirstColumnProperty); }
+            set { SetValue(FirstColumnProperty, value); }
+        }
+
+        /// &lt;summary&gt;
+        /// The FirstColumnProperty dependency property.
+        /// &lt;/summary&gt;
+        public static readonly DependencyProperty FirstColumnProperty =
+                DependencyProperty.Register(
+                        "FirstColumn",
+                        typeof(int),
+                        typeof(UniformGrid),
+                        new PropertyMetadata(0, OnIntegerDependencyPropertyChanged));
+
+        /// &lt;summary&gt;
+        /// Gets or sets the number of columns in the grid. A value of zero 
+        /// indicates that the count should be dynamically computed based on the
+        /// number of rows and the number of non-collapsed children in the grid.
+        /// &lt;/summary&gt;
+        public int Columns
+        {
+            get { return (int)GetValue(ColumnsProperty); }
+            set { SetValue(ColumnsProperty, value); }
+        }
+
+        /// &lt;summary&gt;
+        /// DependencyProperty for the Columns property.
+        /// &lt;/summary&gt;
+        public static readonly DependencyProperty ColumnsProperty =
+                DependencyProperty.Register(
+                        "Columns",
+                        typeof(int),
+                        typeof(UniformGrid),
+                        new PropertyMetadata(0, OnIntegerDependencyPropertyChanged));
+
+        /// &lt;summary&gt;
+        /// Validate the new property value and silently revert if the new value
+        /// is not appropriate. Used in place of WPF value coercian by the 
+        /// dependency properties in UniformGrid.
+        /// &lt;/summary&gt;
+        /// &lt;param name="o"&gt;The dependency object.&lt;/param&gt;
+        /// &lt;param name="e"&gt;The dependency property.&lt;/param&gt;
+        private static void OnIntegerDependencyPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
+        {
+            // Silently coerce the value back to &gt;= 0 if negative.
+            if (!(e.NewValue is int) || (int)e.NewValue &lt; 0)
+            {
+                o.SetValue(e.Property, e.OldValue);
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Gets or sets the number of rows in the grid. A value of zero 
+        /// indicates that the row count should be dynamically computed based on
+        /// the number of columns and the number of non-collapsed children in
+        /// the grid.
+        /// &lt;/summary&gt;
+        public int Rows
+        {
+            get { return (int)GetValue(RowsProperty); }
+            set { SetValue(RowsProperty, value); }
+        }
+
+        /// &lt;summary&gt;
+        /// The Rows DependencyProperty.
+        /// &lt;/summary&gt;
+        public static readonly DependencyProperty RowsProperty =
+                DependencyProperty.Register(
+                        "Rows",
+                        typeof(int),
+                        typeof(UniformGrid),
+                        new PropertyMetadata(0, OnIntegerDependencyPropertyChanged));
+
+        /// &lt;summary&gt;
+        /// Compute the desired size of the UniformGrid by measuring all of the
+        /// children with a constraint equal to a cell's portion of the given
+        /// constraint. The maximum child width and maximum child height are 
+        /// tracked, and then the desired size is computed by multiplying these
+        /// maximums by the row and column count.
+        /// &lt;/summary&gt;
+        /// &lt;param name="constraint"&gt;The size constraint.&lt;/param&gt;
+        /// &lt;returns&gt;Returns the desired size.&lt;/returns&gt;
+        protected override Size MeasureOverride(Size constraint)
+        {
+            UpdateComputedValues();
+
+            Size childConstraint = new Size(constraint.Width / ComputedColumns, constraint.Height / ComputedRows);
+            double maxChildDesiredWidth = 0.0;
+            double maxChildDesiredHeight = 0.0;
+
+            //  Measure each child, keeping track of max desired width & height.
+            for (int i = 0, count = Children.Count; i &lt; count; ++i)
+            {
+                UIElement child = Children[i];
+                child.Measure(childConstraint);
+                Size childDesiredSize = child.DesiredSize;
+                if (maxChildDesiredWidth &lt; childDesiredSize.Width)
+                {
+                    maxChildDesiredWidth = childDesiredSize.Width;
+                }
+                if (maxChildDesiredHeight &lt; childDesiredSize.Height)
+                {
+                    maxChildDesiredHeight = childDesiredSize.Height;
+                }
+            }
+            return new Size((maxChildDesiredWidth * ComputedColumns), (maxChildDesiredHeight * ComputedRows));
+        }
+
+        /// &lt;summary&gt;
+        /// Arrange the children of the UniformGrid by distributing space evenly
+        /// among the children, making each child the size equal to a cell
+        /// portion of the arrangeSize parameter.
+        /// &lt;/summary&gt;
+        /// &lt;param name="arrangeSize"&gt;The arrange size.&lt;/param&gt;
+        /// &lt;returns&gt;Returns the updated Size.&lt;/returns&gt;
+        protected override Size ArrangeOverride(Size arrangeSize)
+        {
+            Rect childBounds = new Rect(0, 0, arrangeSize.Width / ComputedColumns, arrangeSize.Height / ComputedRows);
+            double xStep = childBounds.Width;
+            double xBound = arrangeSize.Width - 1.0;
+            childBounds.X += childBounds.Width * FirstColumn;
+
+            // Arrange and Position each child to the same cell size
+            foreach (UIElement child in Children)
+            {
+                child.Arrange(childBounds);
+                if (child.Visibility != Visibility.Collapsed)
+                {
+                    childBounds.X += xStep;
+                    if (childBounds.X &gt;= xBound)
+                    {
+                        childBounds.Y += childBounds.Height;
+                        childBounds.X = 0;
+                    }
+                }
+            }
+
+            return arrangeSize;
+        }
+
+        /// &lt;summary&gt;
+        /// If the Rows or Columns values are set to 0, dynamically compute the
+        /// values based on the actual number of non-collapsed children.
+        /// &lt;/summary&gt;
+        /// &lt;remarks&gt;
+        /// In the case when both Rows and Columns are set to 0, the Rows and 
+        /// Columns will be equal, laying out a square grid.
+        /// &lt;/remarks&gt;
+        private void UpdateComputedValues()
+        {
+            ComputedColumns = Columns;
+            ComputedRows = Rows;
+
+            // Reset the first column. This is the same logic performed by WPF.
+            if (FirstColumn &gt;= ComputedColumns)
+            {
+                FirstColumn = 0;
+            }
+
+            if ((ComputedRows == 0) || (ComputedColumns == 0))
+            {
+                int nonCollapsedCount = 0;
+                for (int i = 0, count = Children.Count; i &lt; count; ++i)
+                {
+                    UIElement child = Children[i];
+                    if (child.Visibility != Visibility.Collapsed)
+                    {
+                        nonCollapsedCount++;
+                    }
+                }
+                if (nonCollapsedCount == 0)
+                {
+                    nonCollapsedCount = 1;
+                }
+                if (ComputedRows == 0)
+                {
+                    if (ComputedColumns &gt; 0)
+                    {
+                        ComputedRows = (nonCollapsedCount + FirstColumn + (ComputedColumns - 1)) / ComputedColumns;
+                    }
+                    else
+                    {
+                        ComputedRows = (int)Math.Sqrt(nonCollapsedCount);
+                        if ((ComputedRows * ComputedRows) &lt; nonCollapsedCount)
+                        {
+                            ComputedRows++;
+                        }
+                        ComputedColumns = ComputedRows;
+                    }
+                }
+                else if (ComputedColumns == 0)
+                {
+                    ComputedColumns = (nonCollapsedCount + (ComputedRows - 1)) / ComputedRows;
+                }
+            }
+        }
+    }
+}</pre></div>
+
+<p>Hope this helps.</p>

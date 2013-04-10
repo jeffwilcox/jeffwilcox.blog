@@ -1,0 +1,60 @@
+---
+layout: post
+comments: true
+title: Injecting JavaScript into a web page using HtmlElement (Silverlight v1.1 MIX
+  CTP)
+wordpress_id: 14
+wordpress_url: http://linux.jeff.wilcox.name/2007/07/18/silverlight-javascript-injection/
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+imported_link_categories: []
+tags:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+---
+[RAW]
+
+<P>One question I received several times at the MIX conference involved invoking arbitrary JavaScript, as well as injecting JavaScript, into a page using managed code.</P>
+
+
+
+<P>Stefan Schackow noted in his MIX session (<A href="http://sessions.visitmix.com/" mce_href="http://sessions.visitmix.com/">http://sessions.visitmix.com/</A>) that we’re going to be finding better ways post-CTP to do a lot of this work, but in the mean time, if you’re still experimenting with the MIX CTP managed code bits, here’s a way to inject JavaScript into a page.</P>
+
+
+
+<P>In this sample, I create a new HtmlElement, include some JavaScript using SetProperty for "text", then append it to the body element.&nbsp; You can use this to define new functions, run arbitrary code, and other fun stuff.</P>
+
+
+
+<P><TT>HtmlElement js = HtmlPage.Document.CreateElement("script");<BR>js.SetAttribute("type", "text/javascript");<BR>js.SetAttribute("language", "JavaScript");<BR>js.SetProperty("text", "alert('This is an alert box, injected from managed code!')");</TT></P>
+
+
+
+<P><TT>HtmlElement body = HtmlPage.Document.GetElementsByTagName("body")[0];<BR>body.AppendChild(js);</TT></P>
+
+
+
+<P>There are some other slick ways to evaluate code from managed code, but I'll save that for another day.</P>
+
+
+
+<P>Hope this helps!</P>
+
+
+
+[/RAW]

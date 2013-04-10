@@ -1,0 +1,50 @@
+---
+layout: post
+comments: true
+title: ! 'Silverlight Charting: Creating rich data point tooltips'
+wordpress_id: 186
+wordpress_url: http://www.jeff.wilcox.name/2008/12/10/charting-rich-tooltips/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: software-development
+  slug: dev
+  autoslug: software-development
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+imported_link_categories: []
+tags: []
+---
+<p>A few weeks ago I sat down, built a simple app using the DataVisualization control assembly (charting) from the <a href="http://www.codeplex.com/Silverlight/">Silverlight Toolkit December 2008</a> release, and then started gold plating it with a few additional features and tricks. I was pleasantly surprised that retemplating is the key to customizing most of the charting experience, just as with all other WPF and Silverlight controls.</p>  <p>The default data point tooltips are useful - they show the formatted dependent value, which is just what you'd expect: &quot;show me the exact value.&quot; But, for me, since I'm already bound to rich business objects on the client side, I'd much rather have is &quot;show me the details!&quot; Although this feels lengthy and involved, once I figured it out, this only took about 5 minutes to accomplish. This guide should make it easy enough for you to use when you'd like to.</p>  <p>In my application, here's what the default experience looks like when I hover the house over a point:</p>  <p><img src="http://media.jeff.wilcox.name/blog/view/DefaultTooltip.png" /> </p>  <p>Informative; here's the associated tool tip binding that is in the default template for the LineDataPoint (see also, the <a href="http://www.codeplex.com/Silverlight/Release/ProjectReleases.aspx?ReleaseId=19172">source code download</a> for the Silverlight Toolkit):</p>  <p><img src="http://media.jeff.wilcox.name/blog/view/DefaultLineDataPointTemplate.png" /> </p>  <p>But for my application, I wanted to pull more of the associated business object data and place it in the tooltip. This actually only took retemplating of the LineDataPoint to bind to a custom property of type 'object' on my business object, and then updating my business object to output the necessary UI elements to appear inside the tooltip.</p>  <p><img src="http://media.jeff.wilcox.name/blog/view/AdvancedTooltip.png" /> </p>  <p>Here's the custom binding, defined in my page's resources, with the key name CustomLineDataPointTemplate:</p>  <p><img src="http://media.jeff.wilcox.name/blog/view/CustomLineDataPointTemplate.png" /> </p>  <p>Then, I need to make sure that the custom template is used for all the line data points. So, I provide a style palette that binds all of its points to the custom keyed template. I copied most of the color palette, including the nice-looking colors and gradients, straight from the default template's source. For each color, I bound to the custom template for the line data point:</p>  <p><img src="http://media.jeff.wilcox.name/blog/view/CustomStylePalette.png" /> </p>  <p>Now, for the business object. If you're using data from a web service, you will probably want to create a wrapper data object and then bind to that - it'll open up the ability to extend the class with this bound method to return the content for the tooltip.</p>  <ul>   <li>Add the method named in your custom binding, in my case, 'DataPointTooltipText'</li>    <li>The method signature returns an object</li>    <li>Return the tooltip content - something as simple as a TextBlock, or a Grid or other sophisticated UI tree.</li> </ul>  <p>My example will just return a TextBlock, with a few Run and LineBreak inlines placed:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:300ef2d8-d637-4119-82eb-c0a3f11f45a6" class="wlWriterSmartContent"><pre class="c-sharp" name="code">public object DataPointTooltipText
+{
+    get
+    {
+        TextBlock tb = new TextBlock();
+        tb.Inlines.Add(new Run { Text = basics });
+        tb.Inlines.Add(new LineBreak());
+        tb.Inlines.Add(new Run { Text = "XAP: " + ZipSizeText + " KB" });
+        tb.Inlines.Add(new LineBreak());
+        tb.Inlines.Add(new Run { Text = "Uncompressed: " + SizeText + " KB" });
+        tb.Inlines.Add(new LineBreak());
+        tb.Inlines.Add(new Run { Text = "Changeset: " + Changeset });
+        tb.Inlines.Add(new LineBreak());
+        tb.Inlines.Add(new Run { Text = Assembly, Foreground = GrayBrush });
+
+        if (IsKnownReleaseWeek)
+        {
+            tb.Inlines.Add(new LineBreak());
+            tb.Inlines.Add(new Run { Text = "Official release week", FontWeight = FontWeights.Bold });
+        }
+        return tb;
+    }
+}</pre></div>
+
+<p>Hope this helps. And, if you haven't checked it out, David posted a great run-down of <a href="http://blogs.msdn.com/delay/archive/2008/12/09/silverlight-charting-gets-a-host-of-improvements-silverlight-toolkit-december-08-release-now-available.aspx">what's new for the December release of the charting components</a>.</p>

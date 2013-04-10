@@ -1,0 +1,105 @@
+---
+layout: post
+comments: true
+title: ! 'Debugging managed Silverlight applications on a web server: Make sure that
+  PDB can be served!'
+wordpress_id: 15
+wordpress_url: http://linux.jeff.wilcox.name/2007/08/17/silverlight-debugging-pdb-reminder/
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: web-servers
+  slug: webservers
+  autoslug: web-servers
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+imported_link_categories: []
+tags:
+- title: iis
+  slug: iis
+  autoslug: iis
+- title: web-servers
+  slug: webservers
+  autoslug: web-servers
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+---
+[RAW]
+
+<P>A common question I’m asked is “Why can I debug fine in Visual Studio 2008, but not once I’ve copied my assembly and debug symbol to my web server?”&nbsp; The answer is most likely that your web server isn’t serving debug symbol files (*.pdb).</P>
+
+
+
+<P>If you’re using a Linux web host, you shouldn’t need to make any changes—Apache typically comes preconfigured to serve pdb’s without issue.&nbsp; So this is a post for Windows web server users.</P>
+
+
+
+<P>I’ve covered some of this before, but hey here’s the “with pictures” version for adding the MIME entry on an IIS 7.0 machine (either running Vista or Windows Server 2008).</P>
+
+
+
+<H2>First, verify the issue is that the PDB cannot be served</H2>
+
+<P>On the local web server, request the debug symbol file (pdb) for your assembly and see if you’re offered to download it, or provided with an error message.&nbsp; An HTTP 404.3 message indicates that the MIME type is restricted and cannot be deleted.</P>
+
+
+
+<P><IMG title="What you see when IIS denies a PDB file" style="WIDTH: 540px; HEIGHT: 429px" height=429 alt="What you see when IIS denies a PDB file" src="http://media.jeff.wilcox.name/blog/view/silverlight/IIS4043.jpg" width=540 border=0 mce_src="http://media.jeff.wilcox.name/blog/view/silverlight/IIS4043.jpg"><BR><EM>Note: You will only see this error when you're requesting localhost I believe... otherwise its a truncated message.</EM></P>
+
+
+
+<P>If you can’t get debugging going, but PDBs are being served fine, unfortunately this post won’t help you—but do leave a message and I’ll look into your problem.</P>
+
+
+
+<H2>Second, add the MIME type</H2>
+
+<UL>
+
+<LI>Start InetMgr</LI>
+
+
+
+<LI>Select the level within your machine and the web services that are running to add the MIME type to.&nbsp; I’d recommend adding this at the machine level (click on your machine name, in my case JWMACBOOKPRO) instead of to an individual web site if possible.</LI>
+
+
+
+<LI>Double-click on the MIME types feature entry in the main content pane.<BR><IMG title="Adding the PDB MIME type" style="WIDTH: 540px; HEIGHT: 426px" height=426 alt="Adding the PDB MIME type" src="http://media.jeff.wilcox.name/blog/view/silverlight/AddMime.jpg" width=540 border=0 mce_src="http://media.jeff.wilcox.name/blog/view/silverlight/AddMime.jpg"></LI>
+
+
+
+<LI>Verify that the “pdb” MIME type is not listed</LI>
+
+
+
+<LI>Click “Add” under the Actions menu (far right corner of the screen)</LI>
+
+
+
+<LI>In the form... extension “pdb”, and I typically use “application/octet-stream” for the MIME type</LI>
+
+
+
+<LI>Click Ok and you should be good to go!&nbsp; Re-request the file and see if its served to you!&nbsp; You might want to reset the web server process just to be sure also.</LI>
+
+</UL>
+
+
+
+<P>Hope this helps!</P>
+
+
+
+[/RAW]

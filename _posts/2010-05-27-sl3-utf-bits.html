@@ -1,0 +1,26 @@
+---
+layout: post
+comments: true
+title: Updated Silverlight Unit Test Framework bits for Windows Phone and Silverlight
+  3
+excerpt: Here's the same unit test framework from the April 2010 Silverlight Toolkit,
+  built for Windows Phone and SL3 developers only.
+wordpress_id: 666
+wordpress_url: http://www.jeff.wilcox.name/2010/05/sl3-utf-bits/
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: testing
+  slug: testing
+  autoslug: testing
+- title: silverlight-toolkit
+  slug: silverlight-toolkit
+  autoslug: silverlight-toolkit
+- title: windows-phone
+  slug: windows-phone
+  autoslug: windows-phone
+imported_link_categories: []
+tags: []
+---
+<p>Here are updated quasi-official unit test framework bits for Silverlight 3 and Windows Phone developers. These are <strong>not</strong> intended for Silverlight 4 developers, since the same framework built for SL4 is included in the <a href="http://silverlight.codeplex.com/">April 2010 Silverlight Toolkit</a>.</p>  <p>This brings the <a href="http://www.jeff.wilcox.name/2010/05/new-2010-test-framework/">new features</a> from the Silverlight 4 version to developers who have a business reason to continue with Silverlight 3 development for the time being:</p>  <ul>   <li>Updated user interface</li>    <li>Integrated “tag expression” support for selecting subsets of tests to run</li>    <li>Performance improvements</li>    <li>Removal of dependencies on XLinq and System.Windows.Browser assemblies</li> </ul>  <p>These are also the bits you want for Windows Phone testing.</p>  <h4>Why wasn’t there one for Silverlight 3 already?</h4>  <p>Since the April 2010 toolkit release was targeted for Silverlight 4 developers only, these bits were not released for version 3 (though were built from the same source).</p>  <h4>Why doesn’t the April 2010 toolkit work for Windows Phone development &amp; testing?</h4>  <p>The Windows Phone development environment is based on a version of Silverlight 3 today, and so that means that you need to use Silverlight 3 binaries and class libraries when re-using Silverlight apps and code – <em>not</em> Silverlight 4.</p>  <p>These bits work well for phone developers and replace the older bits I had posted to my <a href="http://www.jeffatmix.com/">MIX talk site</a>.</p>  <h4>Download the binaries</h4>  <p>[<a href="http://media.jeff.wilcox.name/blog/ut/SL3_UTF_May.zip"><strong>Silverlight 3 binaries for the Silverlight Unit Test Framework</strong></a>, Zip 452KB]    <br />You may need to ‘unlock’ the binaries for security reasons once downloading and extracting the assemblies from the .Zip. To do this, right-click on the file and select the ‘Unlock’ button.</p>  <p>These binaries are strong named as before, but are <em>not</em> Authenticode signed, so they are not official. This helps work around some Windows Phone signing issues I’ve heard reports of.</p>  <p>Hope this helps,   <br />Jeff</p>

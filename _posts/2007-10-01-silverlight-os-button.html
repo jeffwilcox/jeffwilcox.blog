@@ -1,0 +1,133 @@
+---
+layout: post
+comments: true
+title: A managed Silverlight button that resembles the underlying operating system
+wordpress_id: 20
+wordpress_url: http://linux.jeff.wilcox.name/2007/10/01/silverlight-os-button/
+imported_categories:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+imported_link_categories: []
+tags:
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: c#
+  slug: c
+  autoslug: c#
+- title: software-development
+  slug: software-development
+  autoslug: software-development
+- title: web-development
+  slug: web-development
+  autoslug: web-development
+---
+Talking with designers, there’s sometimes a need to differentiate your experience based on the underlying platform. When I was working on some Silverlight v1.1 CTP app building before the last MIX conference, I created a managed Button control that resembles the underlying OS’s button styling.
+
+
+
+A classic example of this need is the Office (for Windows) vs. Office Mac experience—both are completely different interfaces, with different ashetics. The ability to create subtly different styling by platform is most useful for the RIA/LOB space where users expect a certain level of familiarity. In Vista, there’s the ‘Command Link’ concept of a large button coupled within a wizard experience. On Macs, the experience is often refined and minimalistic.
+
+
+
+Here’s a simple Silverlight v1.1 control. The canvas has two managed buttons on it which lookup the environment settings to determine how to render...
+
+
+
+<strong>Safari and Apple OS X 10.4:
+
+</strong><a href="http://www.jeff.wilcox.name/blog/sampleApps/analytics/"><img border="0" width="540" src="http://media.jeff.wilcox.name/blog/view/silverlight/analytics-mac.jpg" height="62" /></a>
+
+
+
+<strong>Windows Vista and Windows Internet Explorer 7:</strong>
+
+<a href="http://www.jeff.wilcox.name/blog/sampleApps/analytics/"><img border="0" width="540" src="http://media.jeff.wilcox.name/blog/view/silverlight/analytics-win.jpg" height="121" /></a>
+
+
+
+To accomplish this, the XAML I generated using Expression Blend was that of a Vista-style “Aero” button, complete with styled gradient fill. Simply setting the rounded corner radius on the border rectangle to a much higher number gave the buttons that half-circle edge that Apple OS X buttons have. For this exercise, I didn’t worry about customizing the gradients, creating XP-style buttons for older platforms, or anything fancy—this was just a proof of concept for me really.
+
+
+
+Switch using System.Environment.OSVersion:
+
+
+
+[RAW]<tt><span style="color: #008000">// Mac OS X: Rounder buttons
+
+</span><span style="color: #0000ff">if</span> (<span style="color: #2b91af">Environment</span>.OSVersion.Platform == <span style="color: #2b91af">PlatformID</span>.MacOSX)
+
+{
+
+    ConvertToOSXButtons();
+
+}</tt>[/RAW]
+
+
+
+Change the radius of the rectangles.  In my prototype Button implementation, I had separate rectangles for each state (mouse over, mouse down, default), so I have to make sure to change the radius on all of them to maintain consistency:
+
+
+
+<tt><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;
+
+///</span><span style="color: #008000"> Convert the rectangles for the button border into OS X-style
+
+</span><span style="color: #808080">///</span><span style="color: #008000"> rounded corners (very rounded)
+
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;
+
+</span><span style="color: #0000ff">private</span> <span style="color: #0000ff">void</span> ConvertToOSXButtons()
+
+{
+
+    ConvertToOSXButton(<span style="color: #a31515">"ButtonStandard"</span>);
+
+    ConvertToOSXButton(<span style="color: #a31515">"ButtonMouseOver"</span>);
+
+    ConvertToOSXButton(<span style="color: #a31515">"ButtonMouseDown"</span>);
+
+}</tt>
+
+
+
+<tt></tt><tt><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;summary&gt;
+
+///</span><span style="color: #008000"> Find the rectangle, set the rounded corner radius if it 
+
+</span><span style="color: #808080">///</span><span style="color: #008000"> exists
+
+</span><span style="color: #808080">///</span><span style="color: #008000"> </span><span style="color: #808080">&lt;/summary&gt;
+
+</span><span style="color: #0000ff">private</span> <span style="color: #0000ff">void</span> ConvertToOSXButton(<span style="color: #0000ff">string</span> rectangleName)
+
+{
+
+    <span style="color: #2b91af">Rectangle</span> rectangle = FindNameInControl(rectangleName) <span style="color: #0000ff">as</span> <span style="color: #2b91af">Rectangle</span>;
+
+    <span style="color: #0000ff">if</span> (rectangle != <span style="color: #0000ff">null</span>) {
+
+        rectangle.SetValue(<span style="color: #2b91af">Rectangle</span>.RadiusXProperty, 11);
+
+        rectangle.SetValue(<span style="color: #2b91af">Rectangle</span>.RadiusYProperty, 11);
+
+    }
+
+}</tt><tt> </tt>
+
+
+
+If a designer wanted a really special experience, you could even load completely separate XAML assets based on platform, or reference a platform-specific factory and assembly That, however, is left as an exercise for the reader!
+
+
+
+The platform information could also be used to provide customized instructions for common tasks on the visitor’s computer, such as selecting files and interacting with other programs <em>If you’re developing Silverlight v1.0 apps</em>, you can use the information that the browser exposes about the platform to do similar swapping.
+
+
+
+Let me know if you do anything interesting like this within your managed samples &amp; prototypes!

@@ -1,0 +1,50 @@
+---
+layout: post
+comments: true
+title: Homepage &ldquo;link cloud&quot; application
+wordpress_id: 49
+wordpress_url: http://www.jeff.wilcox.name/2008/04/01/link-cloud/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: web
+  slug: web
+  autoslug: web
+- title: javascript
+  slug: javascript
+  autoslug: javascript
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+imported_link_categories:
+- title: silverlight-toolkit
+  slug: team
+  autoslug: silverlight-toolkit
+tags:
+- title: cloud
+  slug: cloud
+  autoslug: cloud
+- title: link-cloud
+  slug: link-cloud
+  autoslug: link-cloud
+- title: dom
+  slug: dom
+  autoslug: dom
+- title: html-dom-bridge
+  slug: html-dom-bridge
+  autoslug: html-dom-bridge
+- title: silverlight-2
+  slug: silverlight-2
+  autoslug: silverlight-2
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: link
+  slug: link
+  autoslug: link
+---
+<p>My new browser start page uses Silverlight to produce a simple link cloud.&nbsp; By targeting the rich class libraries of .NET that are available in Silverlight 2, the app loads quicker than a server-based solution, is useful, and very simple.&nbsp; The <a href="http://media.jeff.wilcox.name/apps/home/index.htm">app</a> I built is a good demonstration of the “zero pixel” Silverlight plugin concept: I’m using the HTML DOM bridge to create and manage all of the elements in the web page document.</p> <p>The app has some key features:</p> <ul> <li>No dependencies on a web server, web service, or database server  </li><li>Links are true HTML links that get larger the more often they’re clicked.&nbsp; They can be added, removed, and rearranged  </li><li>Stores the link information locally, available to all browsers on the platform  </li><li>The data is yours: you can import/export the raw data to easily bring it to another of your computers</li></ul> <p>Special thanks to <a href="http://d-struct.org/">Chris Gansen</a> for letting me borrow the specifics from his <a href="http://www.rubyonrails.org/">RoR</a> implementation of this application, it translated nicely to a client app.</p> <p><a href="http://media.jeff.wilcox.name/apps/home/index.htm"><strong>Experience this application</strong></a><strong> live.</strong>&nbsp; <br />Since the local isolated storage is used, the links are only on your machine, the first time you use the app it’ll have no links.&nbsp; <a href="http://media.jeff.wilcox.name/apps/home/SampleData.txt">Click here</a> for a text file you can paste in using the import/export feature to load a set of sample links.&nbsp; I store my link cloud in <a href="http://mail.google.com/">GMail</a> so that I can always setup another machine in seconds from my mail account.</p> <p><a href="http://media.jeff.wilcox.name/apps/home/index.htm"><img src="http://media.jeff.wilcox.name/blog/view/apps/home/safari-home.png"/></a></p> <p>The .Xap file that represents the app is a miniscule 10kb.&nbsp; By comparison, a server-side version of this app can easily serve 40kb pages once the editing interface is included.&nbsp; The only hard-coded dependency is the stylesheet link that I’m injecting at runtime.</p> <p>This uses many of the less sexy Silverlight 2 Beta 1 features:</p> <ul> <li><a href="http://msdn2.microsoft.com/en-us/library/system.windows.browser(VS.95).aspx">HTML DOM</a> interoperability: the bridge between managed code and the web browser, the entire underlying user interface is generated and managed by managed code  </li><li>Local <a href="http://msdn2.microsoft.com/en-us/library/system.io.isolatedstorage(VS.95).aspx">isolated storage</a>: By storing the data on the local machine, there's no complex web service or database required  </li><li><a href="http://msdn2.microsoft.com/en-us/library/system.io.isolatedstorage.applicationsettings(VS.95).aspx">ApplicationSettings</a>: An easy-to-use way of storing data to the isolated storage area, there's no need to deal with StringReaders and Stream manipulation code  </li><li>Zero pixel 0x0 plugin: By resizing the Silverlight plugin to occupy no space upon load, the application demonstrates the capabilities of managed code without the use of controls and the rich presentation framework  </li><li>.Xap package is easy to deploy and store on a content delivery network, file or web server</li></ul> <p>Although I’m using ApplicationSettings type to store the link cloud data, I just wanted to get this up and running, so I’m not following any best practices, and am actually serializing the cloud data myself into a single string.</p> <p><strong>Downloads</strong><br /><a href="http://media.jeff.wilcox.name/apps/home/index.htm">Live app</a> (10k) – feel free to use this for your homepage<br /><a href="http://media.jeff.wilcox.name/apps/home/SampleData.txt">Sample data file</a> (2k) – can import for sample data<br /><a href="http://media.jeff.wilcox.name/apps/home/LinkPage.zip">Source code</a> (39k) – Zip file with the Visual Studio project, just barebones code, no good code in here<br /><a href="http://media.jeff.wilcox.name/apps/home/LinkPage.cs.txt">LinkPage.cs</a> (21k) – Primary source file</p> <p>Briefly jumping into the code, you’ll find that everything’s really contained inside <a href="http://media.jeff.wilcox.name/apps/home/LinkPage.cs.txt">LinkPage.cs</a>.&nbsp; Some of the things inside the file that I’d like to call out:</p> <h3>Setting the page title</h3> <p><img src="http://media.jeff.wilcox.name/blog/linkcloud/lc1.png"/> </p> <p>This updates the title displayed in the browser’s window.&nbsp; It’s equivalent to the simple JavaScript call of setting document.title.&nbsp; The <a href="http://msdn2.microsoft.com/en-us/library/system.windows.browser.htmldocument(VS.95).aspx">HtmlDocument</a> type, in the System.Windows.Browser namespace, maps directly.</p> <h3>Reading from ApplicationSettings and changing the &lt;body /&gt; element’s CSS class</h3> <p><img src="http://media.jeff.wilcox.name/blog/linkcloud/lc2.png"/> </p> <p>The <a href="http://msdn2.microsoft.com/en-us/library/system.io.isolatedstorage.applicationsettings(VS.95).aspx">ApplicationSettings type</a> is a nice shortcut to having to use Isolated Storage, and is used to store two settings for this link cloud application: the color used for the stylesheet (there’s a few themes available), and the actual link cloud data.&nbsp; The data’s updated and saved whenever a change occurs to avoid having to write the changes at one time.</p> <h3>Injecting a Stylesheet element</h3> <p><img src="http://media.jeff.wilcox.name/blog/linkcloud/lc3.png"/> </p> <p>Pretty standard document object model workflow here: the code’s nothing but spaghetti.&nbsp; The new element is created, attributes set, and then appended.&nbsp; There’s no need to keep a reference to the element unless you intend on interacting with it later.</p> <p>There’s a built-in property HtmlPage.Document.Body that can be used to return the &lt;body /&gt; element on the web page, but not one for the &lt;head /&gt; element.&nbsp; The code above successfully will add to the head of the page, assuming the head exists.</p> <h3>Prompting the user for confirmation</h3> <p>A lot of AJAX applications use ‘confirm(…)’ to get quick verification before deleting data permanently.&nbsp; Both <a href="http://msdn2.microsoft.com/en-us/library/system.windows.browser.htmlwindow.alert(VS.95).aspx">Alert</a> and <a href="http://msdn2.microsoft.com/en-us/library/system.windows.browser.htmlwindow.confirm(VS.95).aspx">Confirm</a> are available within the HtmlWindow type in the HTML DOM bridge, so it’s super easy to do the same in managed code:</p> <p><img src="http://media.jeff.wilcox.name/blog/linkcloud/lc5.png"/> </p> <h3>Navigating to a new web page</h3> <p><img src="http://media.jeff.wilcox.name/blog/linkcloud/lc6.png"/> </p> <p>The links in the link cloud have the href attribute set to point to the destination page – this enables the end user to open the links in a new tab or window easily.&nbsp; However, the click count is only incremented when the link is clicked since the onclick event is used to track and increment the underlying hit data.</p> <p>The <a href="http://msdn2.microsoft.com/en-us/library/system.windows.browser.htmlwindow.navigate(VS.95).aspx">Navigate</a> method of <a href="http://msdn2.microsoft.com/en-us/library/system.windows.browser.htmlwindow(VS.95).aspx">HtmlWindow</a> is used to go to the requested URI.</p> <h3>Creating an HTML button and hooking up to its Click event</h3> <p>The form that’s created on the page uses managed event handlers in C# to process events and read data:</p> <p><img src="http://media.jeff.wilcox.name/blog/linkcloud/lc4.png"/> </p> <p>The button above is used to add the form data into the cloud as a new link.&nbsp; If you examine it you’ll also see use of SetProperty, SetStyleAttribute, GetProperty, and more – these are all at parity with traditional AJAX JavaScript coding, so it should be quite familiar.&nbsp; </p> <p><a href="http://www.wilcob.com/Wilco/News/silverlight-interoperability.aspx">Wilco</a> has a lot <a href="http://www.wilcob.com/Wilco/News/silverlight-interoperability.aspx">more information</a> on the subject of the HTML DOM interoperability feature in Silverlight 2.</p> <p><a href="http://media.jeff.wilcox.name/apps/home/index.htm"><img src="http://media.jeff.wilcox.name/blog/view/apps/home/ie-home.png"/></a> </p> <p><em>Hope you find this useful!</em></p> <p><em>Looking at the spaghetti code, it’s clear that some kind of helpful “managed HTML object” library would make creating this style of application a lot easier in the future.</em></p>

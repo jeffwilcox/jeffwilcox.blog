@@ -1,0 +1,372 @@
+---
+layout: post
+comments: true
+title: Introducing the AutoCompleteBox
+wordpress_id: 137
+wordpress_url: http://www.jeff.wilcox.name/?p=137
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: software-development
+  slug: dev
+  autoslug: software-development
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+- title: web
+  slug: web
+  autoslug: web
+imported_link_categories: []
+tags: []
+---
+<p>The Silverlight AutoCompleteBox is now available. This guide covers the control's properties, usage, and demonstrates how to hook it up to a JSON web service.</p>  <p><img alt="AutoCompleteBox for Silverlight" src="http://media.jeff.wilcox.name/blog/AutoComplete/AutoCompleteBox.png" /> </p>  <p><em><font color="#404040">Note: This post contains live Silverlight content that your news reader may not be able to display.</font></em></p>  <p>The auto complete pattern is well-known, useful, time-tested. There's been one in IE for ages. You expect that your e-mail client auto completes. Auto complete functionality can be found in controls in Winforms, WPF, AJAX, Flex. And now, Silverlight.</p>  <p>With the Silverlight Toolkit, we've decided to go beyond text-only suggestions. With basics in mind, we designed a flexible &amp; extensible control that lets modern app developers use data binding, styling, data templates, and more.</p>  <p><strong>Auto complete features you expect</strong></p>  <ul>   <li>Bind to a list </li>    <li>Override population </li>    <li>Set a minimum length required to get results </li>    <li>Set a delay before fetching suggestions </li> </ul>  <p><strong>Silverlight AutoCompleteBox features</strong></p>  <ul>   <li>Style and retemplate: style the control, the text box, the container; set a DataTemplate for items in the drop down; retemplate the control to look like a combo box; you name it. </li>    <li>Built-in search modes. Provide your own custom text and item filter lambdas. </li>    <li>Replace the ListBox with your own custom selection adapter </li> </ul>  <h3>Using AutoComplete</h3>  <p>To get started, just set the ItemsSource property to an IEnumerable. You're then hooked up to the default filtering and are ready to go.</p>  <p>I'm going to walk you through some simple scenarios now using the control assemblies that we shipped in the toolkit. To follow along, you'll need Visual Studio 2008 (SP1) with the Silverlight 2 Tools installed, plus the free <a href="http://www.codeplex.com/Silverlight/">Silverlight Toolkit</a>.</p>  <p>First, create a new Silverlight application project: open Visual Studio, go to the File | New | Project menu option, and create a new C# 'Silverlight Application' project.</p>  <p>In the 'Add Silverlight Application' dialog, select the 2nd option to 'Automatically generate a test page', and click Ok.</p>  <p>To add a reference to the main toolkit control library, right-click on the project in the Solution Explorer and select 'Add Reference'.</p>  <p>Now, click on the 'Browse' tab, locate the extracted toolkit folders, and move into the 'Binaries' directory. Select the 'Microsoft.Windows.Controls.dll' file and click Ok.</p>  <p><img alt="Add Reference" src="http://media.jeff.wilcox.name/blog/AutoComplete/AddReference.png" /> </p>  <p>If you create a new Silverlight Application project and add a reference to the Microsoft.Windows.Controls.dll assembly that we shipped in the toolkit, you can follow along and learn about the control.</p>  <p>Inside Microsoft.Windows.Controls we included ObjectCollection. It makes it easy to create collections in SIlverlight XAML.</p>  <p>Inside Page.xaml:</p>  <ul>   <li>Add the XML namespace for the Silverlight Toolkit controls. I'm using the prefix &quot;controls&quot; here. </li>    <li>Add mscorlib as a namespace, for strings. </li>    <li>Add an ObjectCollection of months in the resources. </li>    <li>Create an AutoCompleteBox control, setting the ItemsSource. </li> </ul>  <p>Here's the Page.xaml file:</p>  <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:55663c25-0377-4ab5-a71b-983beb9f62b9" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="xml" name="code">&lt;UserControl x:Class="SilverlightApplication6.Page"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:clr="clr-namespace:System;assembly=mscorlib"
+    xmlns:controls="clr-namespace:Microsoft.Windows.Controls;assembly=Microsoft.Windows.Controls"
+    Width="400" Height="300"&gt;
+    &lt;UserControl.Resources&gt;
+        &lt;controls:ObjectCollection x:Key="Months"&gt;
+            &lt;clr:String&gt;January&lt;/clr:String&gt;
+            &lt;clr:String&gt;February&lt;/clr:String&gt;
+            &lt;clr:String&gt;March&lt;/clr:String&gt;
+            &lt;clr:String&gt;April&lt;/clr:String&gt;
+            &lt;clr:String&gt;May&lt;/clr:String&gt;
+            &lt;clr:String&gt;June&lt;/clr:String&gt;
+            &lt;clr:String&gt;July&lt;/clr:String&gt;
+            &lt;clr:String&gt;August&lt;/clr:String&gt;
+            &lt;clr:String&gt;September&lt;/clr:String&gt;
+            &lt;clr:String&gt;October&lt;/clr:String&gt;
+            &lt;clr:String&gt;November&lt;/clr:String&gt;
+            &lt;clr:String&gt;December&lt;/clr:String&gt;
+        &lt;/controls:ObjectCollection&gt;
+    &lt;/UserControl.Resources&gt;
+    &lt;StackPanel VerticalAlignment="Top" Margin="5"&gt;
+        &lt;controls:AutoCompleteBox ItemsSource="{StaticResource Months}" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/UserControl&gt;</pre></div>
+
+<p>If you press F5 to run the project, you'll get a text box that lets you type in a month.</p>
+
+<p><img src="http://media.jeff.wilcox.name/blog/AutoComplete/January.png" /> </p>
+
+<p>Here is the application:</p>
+
+<p><img alt="Embedded Silverlight Application (begin)" src="http://media.jeff.wilcox.name/blog/view/ESAStart.png" /><br /><object data="data:application/x-silverlight-2," type="application/x-silverlight-2" width="400" height="150">
+<param name="source" value="http://www.jeff.wilcox.name/xap/2008/SilverlightApplication6.xap" />
+<a href="http://go2.microsoft.com/fwlink/?LinkID=124807" style="text-decoration: none;"><img src="http://go2.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style: none" /></a>
+</object><br /><img alt="Embedded Silverlight Application (end)" src="http://media.jeff.wilcox.name/blog/view/ESAFinish.png" /> </p>
+
+<p>Do know that in the current release, this control does not respect the INotifyCollectionChanged interface. If you're changing the underlying data, please reset the ItemsSource to a new list. We'll address this in a future release.</p>
+
+<h3>Key AutoCompleteBox properties, methods and events</h3>
+
+<p><strong>ItemsSource</strong> 
+
+  <br />Set your data here.</p>
+
+<p><strong>Text</strong> 
+
+  <br />Contains the current text that the user has entered or selected.</p>
+
+<p>The <strong>TextChanged</strong> event is fired whenever the text is updated. Most classic auto complete applications function like text boxes, so those apps can use the Text and TextChanged events as they are.</p>
+
+<p>You can also replace most simple TextBox instances in your applications with AutoCompleteBox.</p>
+
+<p><strong>IsTextCompletionEnabled</strong> 
+
+  <br />This property is true by default. It will perform a search on your items and look for the best match; if one is found, the text box is updated with the item's string value, and the rest of the text will be highlighted.</p>
+
+<p><img alt="IsTextCompletionEnabled property" src="http://media.jeff.wilcox.name/blog/AutoComplete/itce.png" /> </p>
+
+<p><strong>SelectedItem</strong> 
+
+  <br />Is null if no item is currently selected.</p>
+
+<p>If the user navigates through the drop down, selecting items, or clicks on an item, this will be updated to that item.</p>
+
+<p>The <strong>SelectedItemChanged</strong> event fires when the item changes.</p>
+
+<p>If you enter text into the control, such as &quot;Steve Ballmer,&quot; the SelectedItem may not be updated to an item unless the list box item is selected or if you have text completion enabled.</p>
+
+<p><strong>SearchMode</strong> 
+
+  <br />Selects the built-in search filter to use. The default is &quot;StartsWith,&quot; and checks that each item's string value starts with the user's search string. &quot;Contains&quot; is another very useful value, as is &quot;None&quot;.</p>
+
+<p>If you connect AutoCompleteBox to a web server that performs its own filtering, you'll probably want to set the SearchMode to 'None'.</p>
+
+<p><strong>MinimumPopulateDelay</strong> 
+
+  <br />This is an amount of time that elapses after the user types and the population event is fired.</p>
+
+<p>The default value of 0 is very quick, so every time the user enters new character, the Populating event is fired. If you're connected to a web service, you'll want to step back and place a reasonable value in here so that not every keypress goes straight to the server.</p>
+
+<p><strong>MinimumPrefixLength</strong> 
+
+  <br />This is the minimum number of characters that must be entered before the control looks for suggestions. The default value is 1, but a lot of classic AJAX auto complete controls use 3 as the default value, so this is a common customization property.</p>
+
+<p><em>Advanced scenarios might make use of:</em></p>
+
+<p><strong>TextFilter</strong> 
+
+  <br />Provide a lambda/delegate that takes two parameters: the search string, and the string that represents an item. The function needs to return bool true or false, indicating whether the item should be shown as a suggestion in the drop down list.</p>
+
+<p><strong>ItemFilter</strong> 
+
+  <br />The more fun version of TextFilter, this takes a lambda expression that has two inputs: the search string, and the item as an object. You are then free to use your own filtering logic with your rich data types to return true or false.</p>
+
+<p><strong>Populating event</strong> 
+
+  <br />Called whenever the control is ready to search for suggestions, this is your opportunity to intercept the standard filtering and manage the items source first.</p>
+
+<p>If you have the data available immediately, before your handler returns, you can simply change the ItemsSource property of the AutoCompleteBox control right here, no other changes necessary.</p>
+
+<p>But if you're going to perform an asynchronous operation (background thread calculations; call a web service), you need to set the Cancel property of the event arguments to True. This will cancel the built-in AutoComplete filtering and effectively tell the control to hold off until you are ready.</p>
+
+<p>To continue the suggestion process, you need to then call the <strong>PopulateComplete</strong> method. In your web service completion event, you'll want to place this call.</p>
+
+<p><strong>Populated event</strong> 
+
+  <br />This is called once suggestions are found and ready to be displayed. The Data property of the event arguments gives you read-only access to the view that will be provided to the selection control.</p>
+
+<p><strong>DropDownOpening, DropDownOpened, DropDownClosing, DropDownClosed</strong> 
+
+  <br />A nice set of drop down events. The Opening and Closing events can be canceled.</p>
+
+<h3>AutoComplete items in the real world</h3>
+
+<p>Setting the ItemsSource in XAML is not a real scenario. Enter web services, business object collections, XML files.</p>
+
+<p>The ItemsSource property will take any IEnumerable. Linq fans rejoice. If you don't have the data ahead of time, you can subscribe to the Populating event of AutoCompleteBox and update the ItemsSource with the appropriate results, synchronously or asynchronously.</p>
+
+<p><strong>Using ItemsSource with a collection</strong></p>
+
+<p>If your application already has a set of data available (list of names, parsed XML, set of static city and state names), you can just set the items source in code to your enumerable collection.</p>
+
+<p>Here's another quick app. The XAML is:</p>
+
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:d3b8e49c-1f14-4541-8be8-63e721cf67c8" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="xml" name="code">&lt;UserControl x:Class="SilverlightApplication7.Page"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    xmlns:controls="clr-namespace:Microsoft.Windows.Controls;assembly=Microsoft.Windows.Controls"
+    Width="400" Height="100"&gt;
+    &lt;StackPanel VerticalAlignment="Top" Margin="5"&gt;
+        &lt;controls:AutoCompleteBox x:Name="AutoComplete1" /&gt;
+    &lt;/StackPanel&gt;
+&lt;/UserControl&gt;</pre></div>
+
+<p>And the code behind file:</p>
+
+<p></p>
+
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:585071d7-d37d-45d3-bb11-23347fc5b2d3" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="c-sharp" name="code">using System.Windows;
+using System.Windows.Controls;
+
+namespace SilverlightApplication7
+{
+    public partial class Page : UserControl
+    {
+        public Page()
+        {
+            InitializeComponent();
+            Loaded += OnLoaded;
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            AutoComplete1.ItemsSource = new string[]
+            {
+                "Steve Ballmer",
+                "Bill Gates",
+            };
+        }
+    }
+}</pre></div>
+
+<p></p>
+
+<p><img alt="Embedded Silverlight Application (begin)" src="http://media.jeff.wilcox.name/blog/view/ESAStart.png" /><br /><object data="data:application/x-silverlight-2," type="application/x-silverlight-2" width="400" height="150">
+<param name="source" value="http://www.jeff.wilcox.name/xap/2008/SilverlightApplication7.xap" />
+<a href="http://go2.microsoft.com/fwlink/?LinkID=124807" style="text-decoration: none;"><img src="http://go2.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style: none" /></a>
+</object><br /><img alt="Embedded Silverlight Application (end)" src="http://media.jeff.wilcox.name/blog/view/ESAFinish.png" /> </p>
+
+<p><strong>Connecting to a JSON web service</strong></p>
+
+<p>Most AJAX auto complete controls today use JSON. The transmit format is lightweight, able to transfer rich object data, and supported by just about everything out there. The System.Json assembly in Silverlight makes it easy to parse in VB and C#.</p>
+
+<p>Here is a minimalistic example. I have this PHP page deployed:</p>
+
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:35087a74-4eac-4fe8-a4ac-301baf6eabc2" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="php" name="code">&lt;?php
+header("Content-type: application/json");
+
+$var = "prefix";
+if (isset($_GET[$var]) and $_GET[$var] != "")
+{
+        // Shorten
+        $prefix = substr($_GET[$var], 0, 40);
+
+        // Strip
+        $s = strip_tags($prefix);
+
+        // Create suggestions
+        $suggestions = array();
+
+        for ($i = 0; $i &lt; 11; $i++)
+        {
+                $suggestions[] = $s . $i;
+        }
+
+        print json_encode($suggestions);
+}
+?&gt;</pre></div>
+
+<p>I'm using the same Page.xaml from before. To get ready to use JSON, I need to:</p>
+
+<ul>
+  <li>Add a reference to the System.Json Silverlight assembly </li>
+
+  <li>Add a using statement to the top of my file for 'System.Json', 'Microsoft.Windows.Controls', 'System.Linq', and 'System.Windows.Browser' </li>
+</ul>
+
+<p>The code behind file doesn't need many changes to deal with a web service.</p>
+
+<p>The basic idea is to intercept the Populating event, cancel it, and kick off a web client. In the completion event for the web client, we update the items source of the AutoCompleteBox and call the PopulateComplete method to display the suggestions.</p>
+
+<p>In my app, I first subscribe to Population. I set some basic properties too:</p>
+
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:46bba493-b99c-4691-a398-b5ec69af52eb" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="c-sharp" name="code">        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            AutoComplete1.IsTextCompletionEnabled = false;
+            
+            // Server does the filtering
+            AutoComplete1.SearchMode = AutoCompleteSearchMode.None;
+
+            AutoComplete1.Populating += (s, args) =&gt;
+                {
+                    args.Cancel = true;
+                    WebClient wc = new WebClient();
+                    string prefix = HttpUtility.UrlEncode(args.Parameter);
+                    Uri service = new Uri("http://www.jwpc.com/services/suggest/?prefix=" + prefix);
+                    wc.DownloadStringCompleted += DownloadStringCompleted;
+                    wc.DownloadStringAsync(service, s);
+                };
+        }</pre></div>
+
+<p>Then, in the DownloadStringCompleted handler, I parse the JSON response:</p>
+
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:cf922312-381a-4bc5-bc66-59e7a3387c01" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="c-sharp" name="code">        private void DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
+        {
+            AutoCompleteBox acb = e.UserState as AutoCompleteBox;
+            if (acb != null && e.Error == null && !e.Cancelled && !string.IsNullOrEmpty(e.Result))
+            {
+                List&lt;string&gt; suggestions = new List&lt;string&gt;();
+                JsonArray ja = JsonArray.Parse(e.Result) as JsonArray;
+                foreach (JsonPrimitive suggestion in ja)
+                {
+                    suggestions.Add(suggestion.ToString());
+                }
+                if (suggestions.Count &gt; 0)
+                {
+                    acb.ItemsSource = suggestions;
+                    acb.PopulateComplete();
+                }
+            }
+        }</pre></div>
+
+<p>That's all there is to it!</p>
+
+<p><img alt="Embedded Silverlight Application (begin)" src="http://media.jeff.wilcox.name/blog/view/ESAStart.png" /><br /><object data="data:application/x-silverlight-2," type="application/x-silverlight-2" width="400" height="200">
+<param name="source" value="http://www.jeff.wilcox.name/xap/2008/SilverlightApplication8.xap" />
+<a href="http://go2.microsoft.com/fwlink/?LinkID=124807" style="text-decoration: none;"><img src="http://go2.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style: none" /></a>
+</object><br /><img alt="Embedded Silverlight Application (end)" src="http://media.jeff.wilcox.name/blog/view/ESAFinish.png" /> </p>
+
+<p><strong>Real world AutoComplete example</strong></p>
+
+<p>Inside the Silverlight Toolkit samples project, I've included a similar example of connecting to a JSON web service. It uses the excellent Live search suggestions. In this sample, the MinimumPopulateDelay is set to 150 milliseconds.</p>
+
+<p>Here's the Live.com sample:</p>
+
+<p><img alt="Embedded Silverlight Application (begin)" src="http://media.jeff.wilcox.name/blog/view/ESAStart.png" /><br /><object data="data:application/x-silverlight-2," type="application/x-silverlight-2" width="685" height="410">
+<param name="source" value="http://www.jeff.wilcox.name/xap/2008/SilverlightApplication9.xap" />
+<a href="http://go2.microsoft.com/fwlink/?LinkID=124807" style="text-decoration: none;"><img src="http://go2.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style: none" /></a>
+</object><br /><img alt="Embedded Silverlight Application (end)" src="http://media.jeff.wilcox.name/blog/view/ESAFinish.png" /> </p>
+
+<h3>How we determine what text to display in the text box</h3>
+
+<p>For performance reasons, we haven't exposed the ability for you to creating a binding expression linking your items and the text that should be used in comparisons.</p>
+
+<p>When you bind to a list of objects, the string representation is evaluated in the following order:</p>
+
+<ul>
+  <li>Attempting to use an IValueConverter instance (this is the <strong>Converter</strong> property, along with ConverterParameter and ConverterCulture) </li>
+
+  <li>Calling <strong>ToString()</strong> on the item </li>
+</ul>
+
+<p>So, if you own the data classes in your application, you'll want to expose the most meaningful name (such as a person's full name, or employee ID), since the default ToString operator is going to return the type name of your item instead.</p>
+
+<p>You can also provide a value converter in all situations.</p>
+
+<h3>AutoCompleteBox data templates, styling, and templating</h3>
+
+<p>You can use the <strong>ItemTemplate</strong> property to provide a DataTemplate that is used for rendering items.</p>
+
+<p>These dependency properties can be used for styling:</p>
+
+<ul>
+  <li><strong>ItemContainerStyle</strong> </li>
+
+  <li><strong>TextBoxStyle</strong> </li>
+</ul>
+
+<p>In the Live search example, the text box style was:</p>
+
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:30688ea8-60cc-4d2e-853f-370a7a3b3a22" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="xml" name="code">    &lt;UserControl.Resources&gt;
+        &lt;Style x:Key="SearchTextBoxStyle" TargetType="TextBox"&gt;
+            &lt;Setter Property="Background" Value="#AAFFFFFF" /&gt;
+            &lt;Setter Property="FontFamily" Value="Verdana" /&gt;
+            &lt;Setter Property="FontSize" Value="18" /&gt;
+            &lt;Setter Property="Padding" Value="2" /&gt;
+        &lt;/Style&gt;
+    &lt;/UserControl.Resources&gt;</pre></div>
+
+<p>And the AutoCompleteBox XAML:</p>
+
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:ecb2ba6b-84db-4f46-bf85-95f8dc42f87e" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="xml" name="code">&lt;controls:AutoCompleteBox 
+    SearchMode="None"
+    x:Name="Search" 
+    TextBoxStyle="{StaticResource SearchTextBoxStyle}"
+    IsTextCompletionEnabled="False"
+    IsEnabled="False" /&gt;</pre></div>
+
+<p>The control defines four template parts, similar to ComboBox; however, the default control template only provides 3 of those parts, since it does not expose a toggle button. All 4 are:</p>
+
+<ul>
+  <li>The text box; named 'Text' </li>
+
+  <li>The popup; named 'Popup' </li>
+
+  <li>The selection adapter (ListBox is the default); control type or wrapper implements the ISelectionAdapter interface; named 'SelectionAdapter' </li>
+
+  <li>The drop down toggle button; named 'DropDownToggle' and of type ToggleButton </li>
+</ul>
+
+<h3>What's next?</h3>
+
+<p>I hope this gives you what you need to get started using AutoCompleteBox in your own applications. In the coming days I'll be posting some details and fun examples of how you can really make your apps shine with this control.</p>
+
+<p>If you're looking for other posts about the control, I'd recommend checking out <a href="http://jonas.follesoe.no/ImproveYourUserExperienceUsingTheAutoCompleteBox.aspx">Jonas Folles&#248;'s AutoCompleteBox post</a> too. He's a blogging machine!</p>
+
+<p><em>Hope this helps.</em></p>
+
+<p>See also: 
+  <br /><a href="http://www.jeff.wilcox.name/2008/10/30/fivethings-autocompletebox/">AutoCompleteBox: The 5 things you need to know</a>
+
+  <br /><a href="http://www.jeff.wilcox.name/2008/10/30/video-autocompletebox/">AutoCompleteBox Video Introduction</a></p>

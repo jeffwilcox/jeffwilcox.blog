@@ -1,0 +1,50 @@
+---
+layout: post
+comments: true
+title: I reduced my cloud bill 9% this month by favoring my most active Windows Phone
+  app users (Live Tiles, Leaderboards, Toasts)
+wordpress_id: 931
+wordpress_url: http://www.jeff.wilcox.name/?p=931
+categories: [windows-phone, cloud, nodejs]
+imported_categories:
+- title: windows-phone
+  slug: windows-phone
+  autoslug: windows-phone
+- title: node.js
+  slug: node-js
+  autoslug: node.js
+- title: cloud
+  slug: cloud-2
+  autoslug: cloud
+imported_link_categories: []
+tags: []
+---
+<p>I run a compute-intensive set of cloud operations for my users to let them see their points through a live tile generated in the cloud. I send toast notifications when your friends are nearby you. And these operations all build on top of mostly polling-based work I perform, as well as some real-time data I receive. As my push user base has grown into the 5- and 6- figures of users, I’ve found that my most appreciative users who love my app should be where I dedicate my cloud resources, as opposed to very rare users.</p>  <p>Ever since launching the cloud-backed services that power a lot of the neat value-add in Windows Phone for my application, 4th &amp; Mayor, I’ve learned a lot, and been trying some fun things along the way. Recently I’ve had a fun conversation with a few people about how I’m finding good ways to save money in my cloud computing bill, and though they may be “common sense” to some, they didn’t all occur to me when I created my initial implementation.</p>  <p><strong>I’m saving 9% on my bill over last month, although my user base has increased at a good clip, just by favoring my most active users.</strong></p>  <p>My app has four major cloud components powered by <a href="http://nodejs.org/">Node.js</a>:</p>  <ul>   <li>Hosting the <a href="http://www.4thandmayor.com">www.4thandmayor.com</a> web site</li>    <li>Hosting RESTful web services for the application to communicate with</li>    <li>Processing push notifications through real-time APIs as well as polling mechanisms (“worker” role)</li>    <li>Live tile image generation</li> </ul>  <p>The web server and services are all load balanced and in general experience pretty steady but low-CPU traffic. However, watching processing spikes and what’s going on, I realized that I was a) spending a ton of processing power updating live tiles of infrequent users of the app who may not even be looking and b) my push notifications mechanism is rather expensive and involved, and about 40% of the users of my app are relatively infrequent users.</p>  <p>Since I run a free app and all my costs are my own, I’m interested in cutting costs for those that must not get as much value from the app.</p>  <h3>History</h3>  <p>Over the months I’ve used a lot of different techniques, from exponential-backoff algorithms, server CPU loads, and even bugs, to see how it affects my costs. I saved a ton of money in April when a bug I introduced stopped most toasts from working! After fixing that bug, though, it was clear I needed to back off my expenses some by reducing load, compute, and traffic some – and so many of the users I was doing processing for effectively have no net change, no need for a new sweet live tile, etc.</p>  <h3>Tracking the ‘last seen’ date/time</h3>  <p>Every time that a Windows Phone application starts, for users who have opted in to receiving push notifications, you acquire the channel, and that takes the form of a URI. You typically want to send that URI to your service tiers to make sure that your app can continue to send notifications, especially if the channel URI changes.</p>  <p>I store a lot of fields for push notification users to help me provide cloud services at an implementation level, including:</p>  <ul>   <li>The date/time the connection happens (typically close to app start-up time)</li>    <li>The channel URI</li>    <li>The operating system version</li>    <li>The application version</li>    <li>The number of times the app has been run</li> </ul>  <p>One of the core reasons for these is to be able to remove processing and storing information about users who have abandoned my application. I generally define that as someone who hasn’t used the app in 60 days. Since my application doesn’t actually do much active processing and data storage (the “truth” is stored on foursquare, not my services), the worst case is that someone abandons the app for 60 days, runs it again, and I think they are a brand new user at a server implementation level.</p>  <p>Nothing fancy here, just make sure that you track the 'last seen’ date and time information. I use Mongo DB for my data storage, and so I use an <em>upsert</em> to do this operation. If it’s a brand new user, I set the seen information. If they’ve been a user before, that’s fine, I just update the ‘seen’ information.</p>  <h3>Where is the work going?</h3>  <p>An analysis of the work I’m doing found some expensive things:</p>  <ul>   <li>My live tiles are half static, half dynamic</li>    </ul><ul>     <li>Static: the front of my app’s tile, with “unread” notification count, are static and hosted on a CDN – cheap</li>      <li>Dynamic: the back tile is a leaderboard with friend profile pics, “points” for the current week, etc. Very expensive – images to download, images to composite, points that are always changing – very little can be cached</li>   </ul>    <li>Latency and data transfer costs communicating between my services, the web, image servers, data tiers, foursquare’s APIs, etc.</li>    <li>Having a fixed “poll” period for users’ scheduled work doesn’t make sense</li>   <p>Meanwhile, cheap things: Sending a toast push notification to MPNS is dirt cheap. Sending a tile notification is just as cheap, but not generating the tile! Calculating basic information is quick.</p>  <h3>Defining tiers of service</h3>  <p>Watching users in terms of app use and ‘last seen’, I decided to offer these levels of “service” where I could scale back the application. Some of this is still in progress in terms of updates, but basically:</p>  <table border="0" cellspacing="0" cellpadding="2" width="680"><tbody>     <tr>       <td valign="top" width="134"><strong><em>Tier</em></strong></td>        <td valign="top" width="117"><strong><em>Last seen</em></strong></td>        <td valign="top" width="207"><strong><em>Push Notification Processing</em></strong></td>        <td valign="top" width="222"><strong><em>Live Tiles</em></strong></td>     </tr>      <tr>       <td valign="top" width="134">Active</td>        <td valign="top" width="117">Within 2 days</td>        <td valign="top" width="207">Very active. Real-time and 20-30 polls per hour.</td>        <td valign="top" width="222">Real-time with any check-in, plus when the leaderboard tile is stale.</td>     </tr>      <tr>       <td valign="top" width="134">Recent</td>        <td valign="top" width="117">3.5 days</td>        <td valign="top" width="207">Polls fall back to 10-20 per hour.</td>        <td valign="top" width="222">When the leaderboard tile is stale.</td>     </tr>      <tr>       <td valign="top" width="134">“The One-Weeker”</td>        <td valign="top" width="117">7 days</td>        <td valign="top" width="207">1 pph</td>        <td valign="top" width="222">One leaderboard per day max.</td>     </tr>      <tr>       <td valign="top" width="134">Older</td>        <td valign="top" width="117">13 days</td>        <td valign="top" width="207">No polling</td>        <td valign="top" width="222">One leaderboard per day.</td>     </tr>      <tr>       <td valign="top" width="134">Oldest</td>        <td valign="top" width="117">Remainder</td>        <td valign="top" width="207">No polling</td>        <td valign="top" width="222">Once every 3 days max.</td>     </tr>   </tbody></table>  <p>And I should say, I just made these tiers up. So far, so good.</p>  <h3>Tiers without memory</h3>  <p>To minimize computation of actually figuring out how active a user is, I don’t do any active processing at all: rather, the tier is determined when I process a piece of due work for a client, and that helps me to figure out when to schedule the next piece of work.</p>  <p>I suppose another idea would be to try and figure out who my true “active” users are, but I’ve found that the days-since-seen indicator is actually quite great, simple, and really reducing my server processing loads.</p>  <h3>Implementation details</h3>  <p>Not that fancy! Here is the simple code for figuring out which tier a user is in. Dirty JavaScript, really.</p>  <pre class="js" name="code">this.getPollFrequency = function () {
+  var r = thisTask.r;
+        var prop = 'oldest';
+  if (r.seen) {
+      var now = new Date().getTime();
+            var then = r.seen.getTime();
+            var diff = now - then;
+            diff /= 1000;
+            diff /= 60;
+            diff /= 60;
+            diff /= 24;
+
+            if (diff &lt; 2) {
+              prop = 'active';
+            } else if (diff &lt; 3.5) {
+              prop = 'recent';
+            } else if (diff &lt; 7) {
+              prop = 'week';
+            } else if (diff &lt; 13) {
+              prop = 'older';
+            }
+        }            
+        thisTask.storage.activityFrequency = prop;
+        return context.configuration.poll[prop];
+}</pre>
+
+<p>I then use this tier designation to look up a configurable property that I have, which is how long to wait before scheduling the next piece of work for the client. The other code isn’t that exciting, but will be part of some other posts at some point, I am sure.</p>
+
+<p>Let me know if you’re able to make use of this concept, or how you might use it in your apps!</p>

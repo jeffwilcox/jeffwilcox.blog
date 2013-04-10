@@ -1,0 +1,397 @@
+---
+layout: post
+comments: true
+title: Building a detailed About page for your Windows Phone application
+wordpress_id: 839
+wordpress_url: http://www.jeff.wilcox.name/2011/07/my-app-about-page/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: windows-phone
+  slug: windows-phone
+  autoslug: windows-phone
+imported_link_categories: []
+tags: []
+---
+<p>I’ve gotten enough questions about the “About” page in my app that I figure it’s time to share it.</p>  <p>Is this the best way to do it? No clue… last year when I started building my first app, this is how I decided to write the about page in a few unique ways, so here it is!</p>  <p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2011/07/AboutPages.png"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="AboutPages" border="0" alt="AboutPages" src="http://www.jeff.wilcox.name/wp-content/uploads/2011/07/AboutPages_thumb.png" width="680" height="378" /></a></p>  <p>The tech industry has a long and fun history, having gone many directions, with “credits”, about experiences, and more. Do you remember when Internet Explorer had a Credits listing? Photoshop always starts up with Thomas Knoll and friends.</p>  <p>With mobile apps, the quickest way to make an app that rocks is to borrow most of the app. That’s where helper libraries, toolkits, open source friends, and everything else comes together into one shippable piece of marketplace goo.</p>  <p>Now, with most open source projects, you definitely need to remember to keep the license files in tact, track your sources, make sure licenses are compatible… and whatever else your lawyer tells you.</p>  <p>But it’s also a pretty common practice to give public credit to the developers who helped make your app possible, and as a developer, I’ll admit my ego doesn’t mind seeing my name plastered in an about page on a favorite app or two.</p>  <h3>What I put into my About page</h3>  <p>I decided to put a lot of good information in the about experience, separated using a Pivot control and a few items. At one point and time, the marketplace ingestion requirements asked for support data and some other things for all apps, but I believe these requirements have been relaxed. So, I have:</p>  <ul>   <li>Main pivot item and about screen      <ul>       <li>App name, author, version dynamically populate from the app package </li>        <li>A link to review the app </li>        <li>Support information </li>        <li>Links to the app’s privacy policy </li>     </ul>   </li>    <li>Legal page with lots of text </li>    <li>“What’s new” dynamic pivot item </li> </ul>  <h3>Note: A nice ‘About’ experience can have zero performance impact</h3>  <p>The About page for my app is contained in its own assembly, “About.dll”. It’s small in size, but since it’s a separate assembly not often used (and not loaded at startup).</p>  <p>According to analytics data, less than 3% of the time people look at my About page, so most probably have not seen it – why make them pay for it?</p>  <p>All that’s required for this is:</p>  <ul>   <li>Referencing the About project/assembly from your main app’s project </li>    <li>Navigating to this URI: <strong>/About;component/About.xaml</strong> </li> </ul>  <h3>Creating the info page</h3>  <p>So to get started…</p>  <ul>   <li>Add a new class library project to your app’s solution; I named mine simply, ‘About’ </li>    <li>Delete the Class1.cs that comes with it </li>    <li>Add an About.xaml to the project </li>    <li>Add any XMLNS and project references you may need (such as the TiltEffect from the toolkit, etc.) </li> </ul>  <p>In the pivot, I set its Title to my app’s name, then put in a few text blocks and hyperlink buttons. I’ve named the version block and also have a Review this app button.</p>  <pre class="xml" name="code">&lt;controls:PivotItem Header=&quot;about&quot;&gt;
+    &lt;ScrollViewer&gt;
+        &lt;StackPanel Margin=&quot;0,-12,0,24&quot;&gt;
+            &lt;TextBlock
+                Style=&quot;{StaticResource PhoneTextExtraLargeStyle}&quot;
+                Text=&quot;4th &amp;amp; Mayor&quot;
+                Foreground=&quot;{StaticResource PhoneAccentBrush}&quot; /&gt;
+            &lt;TextBlock
+                Style=&quot;{StaticResource PhoneTextLargeStyle}&quot;
+                Text=&quot;by Jeff Wilcox&quot; /&gt;
+
+            &lt;HyperlinkButton
+                NavigateUri=&quot;http://www.4thandmayor.com/&quot;
+                TargetName=&quot;_new&quot;
+                HorizontalAlignment=&quot;Left&quot;
+                Content=&quot;www.4thandmayor.com&quot; /&gt;
+
+            &lt;StackPanel Orientation=&quot;Horizontal&quot; Margin=&quot;0,18,0,0&quot;&gt;
+                &lt;TextBlock
+                    Style=&quot;{StaticResource PhoneTextNormalStyle}&quot;
+                    Text=&quot;Version:&quot; /&gt;
+                &lt;TextBlock
+                    Margin=&quot;0&quot;
+                    Style=&quot;{StaticResource PhoneTextNormalStyle}&quot;
+                    x:Name=&quot;_versionText&quot; /&gt;
+            &lt;/StackPanel&gt;
+              &lt;Button
+                  HorizontalAlignment=&quot;Left&quot;
+                  Tag=&quot;Review&quot;
+                  Click=&quot;HyperlinkButton_Click&quot;
+                  Content=&quot;Review this app&quot;/&gt;
+        &lt;/StackPanel&gt;
+    &lt;/ScrollViewer&gt;
+&lt;/controls:PivotItem&gt;</pre>
+
+<p>In code behind, I’m then hooking up a few quick things…</p>
+
+<pre class="c-sharp" name="code">private void HyperlinkButton_Click(object sender, RoutedEventArgs e)
+{
+    string s = ((ButtonBase)sender).Tag as string;
+
+    switch (s)
+    {
+        case &quot;Review&quot;:
+            var task = new MarketplaceReviewTask();
+            task.Show();
+            break;
+    }
+}</pre>
+
+<p>And the version that I pull in isn’t pretty code, but it’ll grab it from the manifest file. This can be done in the constructor or in the OnNavigatedTo event:</p>
+
+<pre class="c-sharp" name="code">Uri manifest = new Uri(&quot;WMAppManifest.xml&quot;, UriKind.Relative);
+var si = Application.GetResourceStream(manifest);
+if (si != null)
+{
+    using (StreamReader sr = new StreamReader(si.Stream))
+    {
+        bool haveApp = false;
+        while (!sr.EndOfStream)
+        {
+            string line = sr.ReadLine();
+            if (!haveApp)
+            {
+                int i = line.IndexOf(&quot;AppPlatformVersion=\&quot;&quot;, StringComparison.InvariantCulture);
+                if (i &gt;= 0)
+                {
+                    haveApp = true;
+                    line = line.Substring(i + 20);
+
+                    int z = line.IndexOf(&quot;\&quot;&quot;);
+                    if (z &gt;= 0)
+                    {
+                      // if you're interested in the app plat version at all
+                      // AppPlatformVersion = line.Substring(0, z);
+                    }
+                }
+            }
+
+            int y = line.IndexOf(&quot;Version=\&quot;&quot;, StringComparison.InvariantCulture);
+            if (y &gt;= 0)
+            {
+                int z = line.IndexOf(&quot;\&quot;&quot;, y + 9, StringComparison.InvariantCulture);
+                if (z &gt;= 0)
+                {
+                    // We have the version, no need to read on.
+                    _versionText.Text = line.Substring(y + 9, z - y - 9);
+                    break;
+                }
+            }
+        }
+    }
+}
+else
+{
+    _versionText.Text = &quot;Unknown&quot;;
+}</pre>
+
+<p>OK, so that gives us at least a simple starting point for the about page. Of course a solid app would also try and tombstone the select pivot item, etc.</p>
+
+<h3>My dynamic LICENSE.TXT solution</h3>
+
+<p>Instead of just embedding the XAML for my ‘legal’ pivot item, I decided that it would be much easier to maintain if I just pulled this information in from a file inside the application’s installation directory called LICENSE.TXT. As an app dev, I’m used to using this kind of file to track dependencies and credit.</p>
+
+<h4>Prepare the file:</h4>
+
+<ul>
+  <li>In your <em>main application’s project</em>, right-click in VS and add a new Text File</li>
+
+  <li>Select the file, open the Properties window</li>
+
+  <li>Change the type of the file to ‘Content’</li>
+</ul>
+
+<p>Content will make sure that the file ends up inside your XAP (which is ‘exploded’ on the client into an installation directory), but it won’t take up space in any of the app’s assemblies.</p>
+
+<h4>Prep the pivot and pivot item:</h4>
+
+<p>First, let’s add the new pivot item for the ‘legal’ information.</p>
+
+<pre class="xml" name="code">&lt;controls:PivotItem Header=&quot;legal&quot;&gt;
+    &lt;ScrollViewer x:Name=&quot;sv1&quot;
+                    Margin=&quot;0,0,-12,24&quot;/&gt;
+&lt;/controls:PivotItem&gt;</pre>
+
+<p>Pretty simple. Note I named the scroll viewer “sv1” so that I could dynamically add everything I needed to it. This is partly to workaround the 2000x2000 pixel limitation for large things like text blocks, so that it doesn’t clip.</p>
+
+<p>Add a SelectionChanged event to the pivot and wire it up (or just do it in XAML). I use this to wait until someone swipes to the ‘legal’ pivot item to actually load in the file. It’s all such little work for the device to do that you really could just do it in the page constructor, too, but when I first coded this, I decided to do it this way!</p>
+
+<p>This is probably way too code heavy, but hey it works. It uses the app’s GetResourceStream to load the LICENSE.txt from the installation directory. I also decided that when the code encounters a blank line, that the next will have full opacity (instead of 0.7), so it stands out. This helps designate ‘sections’ in the text.</p>
+
+<pre class="c-sharp" name="code">private void Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+{
+    Pivot piv = (Pivot)sender;
+    if (piv.SelectedIndex &gt; 0 &amp;&amp; _licenses == null)
+    {
+        Dispatcher.BeginInvoke(() =&gt;
+        {
+            _licenses = new StackPanel();
+
+            StreamResourceInfo sri = Application.GetResourceStream(
+                new Uri(&quot;LICENSE.txt&quot;, UriKind.Relative));
+            if (sri != null)
+            {
+                using (StreamReader sr = new StreamReader(sri.Stream))
+                {
+                    string line;
+                    bool lastWasEmpty = true;
+                    do
+                    {
+                        line = sr.ReadLine();
+
+                        if (line == string.Empty)
+                        {
+                            Rectangle r = new Rectangle
+                            {
+                                Height = 20,
+                            };
+                            _licenses.Children.Add(r);
+                            lastWasEmpty = true;
+                        }
+                        else
+                        {
+                            TextBlock tb = new TextBlock
+                            {
+                                TextWrapping = TextWrapping.Wrap,
+                                Text = line,
+                                Style = (Style)Application.Current.Resources[&quot;PhoneTextNormalStyle&quot;],
+                            };
+                            if (!lastWasEmpty)
+                            {
+                                tb.Opacity = 0.7;
+                            }
+                            lastWasEmpty = false;
+                            _licenses.Children.Add(tb);
+                        }
+                    } while (line != null);
+                }
+            }
+
+            sv1.Content = _licenses;
+        });
+    }
+}</pre>
+
+<h3>A web-connected “What’s New” display</h3>
+
+<p>OK, so now we have a <em>static</em> first page, a <em>runtime-read</em> license display, and next, let’s finish off with a <em>dynamic, web-requested block of XAML</em>.</p>
+
+<p>When I created the app, I really wanted to be able to provide updated information or bug listings on the fly if needed. I decided to host a XAML file in the cloud; if the file can be resolved, it’s downloaded and displayed, and if not, it falls back to some basic text.</p>
+
+<p>Another idea I had, but never implemented fully, was to have a blog/RSS feed with ‘known issues’, and then let the app pick up the recent posts and show them inside this tab: then users could see if they’re experiencing issues, and if they were, could even go to the blog post and comment on it with others. Didn’t get there. Maybe in a future update I’ll spend the time!</p>
+
+<p>So here’s what my final pivot item looks like in XAML</p>
+
+<pre class="xml" name="code">&lt;controls:PivotItem Header=&quot;what's new?&quot;&gt;
+    &lt;ScrollViewer&gt;
+          &lt;shared:WebXamlBlock
+            Margin=&quot;0,24,12,24&quot;
+            VerticalAlignment=&quot;Top&quot;
+            HorizontalContentAlignment=&quot;Left&quot;
+            XamlUri=&quot;http://www.4thandmayor.com/app/changelog.xaml&quot;&gt;
+              &lt;shared:WebXamlBlock.FallbackContent&gt;
+                  &lt;StackPanel&gt;
+                      &lt;TextBlock
+                        TextWrapping=&quot;Wrap&quot;
+                        Style=&quot;{StaticResource PhoneTextLargeStyle}&quot;&gt;Information about the latest version can be found out at:&lt;/TextBlock&gt;
+                      &lt;TextBlock
+                        Text=&quot; &quot; /&gt;
+                      &lt;HyperlinkButton
+                        HorizontalAlignment=&quot;Left&quot;
+                        Style=&quot;{StaticResource AccentHyperlink}&quot;
+                        FontSize=&quot;{StaticResource PhoneFontSizeMediumLarge}&quot;
+                        NavigateUri=&quot;http://www.4thandmayor.com/&quot;
+                        Content=&quot;http://www.4thandmayor.com/&quot;
+                        TargetName=&quot;_self&quot; /&gt;
+                  &lt;/StackPanel&gt;
+              &lt;/shared:WebXamlBlock.FallbackContent&gt;
+          &lt;/shared:WebXamlBlock&gt;
+    &lt;/ScrollViewer&gt;
+&lt;/controls:PivotItem&gt;</pre>
+
+<p>So the final piece that’s missing is the ‘Shared:WebXamlBlock’ control that dynamically downloads from the web the XAML. If you use this, be sure to have a complete security review and make sure it’s OK for you to grab dynamic pieces, some people might be spooked by that.</p>
+
+<p>Here is a version of the control; I’ve removed a few dependencies I had on other components I had build to support my projects. The control is a ContentControl and has no default style so it’s simple to get going.</p>
+
+<pre class="c-sharp" name="code">using System.Windows.Controls;
+using System;
+using System.Windows;
+using System.Net;
+using System.Windows.Data;
+using System.Windows.Markup;
+
+namespace JeffWilcox.Controls
+{
+    public class WebXamlBlock : ContentControl
+    {
+        #region public Uri XamlUri
+        /// &lt;summary&gt;
+        /// Gets or sets the XAML Uri.
+        /// &lt;/summary&gt;
+        public Uri XamlUri
+        {
+            get { return GetValue(XamlUriProperty) as Uri; }
+            set { SetValue(XamlUriProperty, value); }
+        }
+
+        /// &lt;summary&gt;
+        /// Identifies the XamlUri dependency property.
+        /// &lt;/summary&gt;
+        public static readonly DependencyProperty XamlUriProperty =
+            DependencyProperty.Register(
+                &quot;XamlUri&quot;,
+                typeof(Uri),
+                typeof(WebXamlBlock),
+                new PropertyMetadata(null, OnXamlUriPropertyChanged));
+
+        /// &lt;summary&gt;
+        /// XamlUriProperty property changed handler.
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;d&quot;&gt;WebXamlBlock that changed its XamlUri.&lt;/param&gt;
+        /// &lt;param name=&quot;e&quot;&gt;Event arguments.&lt;/param&gt;
+        private static void OnXamlUriPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            WebXamlBlock source = d as WebXamlBlock;
+            source.TryDownloading();
+        }
+        #endregion public Uri XamlUri
+
+        #region public object FallbackContent
+        /// &lt;summary&gt;
+        /// Gets or sets the content to fallback to if the request fails.
+        /// &lt;/summary&gt;
+        public object FallbackContent
+        {
+            get { return GetValue(FallbackContentProperty) as object; }
+            set { SetValue(FallbackContentProperty, value); }
+        }
+
+        /// &lt;summary&gt;
+        /// Identifies the FallbackContent dependency property.
+        /// &lt;/summary&gt;
+        public static readonly DependencyProperty FallbackContentProperty =
+            DependencyProperty.Register(
+                &quot;FallbackContent&quot;,
+                typeof(object),
+                typeof(WebXamlBlock),
+                new PropertyMetadata(null));
+        #endregion public object FallbackContent
+
+        public WebXamlBlock()
+        {
+        }
+
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+
+            TryDownloading();
+        }
+
+        private bool _haveTried;
+
+        private void TryDownloading()
+        {
+            if (_haveTried)
+            {
+                return;
+            }
+            _haveTried = true;
+            if (XamlUri != null)
+            {
+                var wc = new WebClient();
+                wc.DownloadStringCompleted += OnDownloadStringCompleted;
+                wc.DownloadStringAsync(XamlUri);
+            }
+        }
+
+        private void OnError()
+        {
+            Dispatcher.BeginInvoke(() =&gt;
+                {
+                    var b = new Binding(&quot;FallbackContent&quot;) {Source = this};
+                    SetBinding(ContentProperty, b);
+                });
+        }
+
+        private void OnDownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
+        {
+            if (e.Error != null || e.Cancelled)
+            {
+                OnError();
+            }
+            else
+            {
+                string xaml = e.Result;
+                Dispatcher.BeginInvoke(() =&gt;
+                    {
+                        try
+                        {
+                            var o = XamlReader.Load(xaml);
+                            if (o != null)
+                            {
+                                Content = o;
+                            }
+                        }
+                        catch
+                        {
+                            OnError();
+                        }
+                    });
+            }
+        }
+    }
+}</pre>
+
+<p>And now, for your actual XAML file that you host in the cloud, just drop your XAML in the file with the appropriate standard XML namespaces for XAML and you’re good-to-go.</p>
+
+<h3>Fun aside</h3>
+
+<p>Activity if you’re ever super bored: </p>
+
+<ul>
+  <li>borrow a friends’ iOS device. </li>
+
+  <li>Go into the Settings. </li>
+
+  <li>Touch ‘General’. </li>
+
+  <li>Touch ‘About’. </li>
+
+  <li>Touch ‘Legal’. </li>
+
+  <li>Begin reading and/or scrolling </li>
+</ul>
+
+<p>That’s right, it’s just like the iTunes user agreement! But it’s also full of information about the tons of libraries and contributors that make that product.</p>
+
+<h3>Source note</h3>
+
+<p>My implementation is actually pretty tightly coupled to a bunch of random components; until I update the source drop of my app and framework online, this post’s walkthrough will have to do – I don’t have a separate .csproj file with the About app right now. Sorry!</p>

@@ -1,0 +1,26 @@
+---
+layout: post
+comments: true
+title: Silverlight unit test framework - updated source and binaries now available
+wordpress_id: 181
+wordpress_url: http://www.jeff.wilcox.name/2008/12/09/silverlight-unit-testing-december-2008/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: software-development
+  slug: dev
+  autoslug: software-development
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: testing
+  slug: testing
+  autoslug: testing
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+imported_link_categories: []
+tags: []
+---
+<p>The latest release of the Silverlight Unit Test Framework is now available for download. This release contains a few simple bug fixes and was built with the RTM version of the Silverlight Tools.</p>  <p>Download it today!</p>  <ul>   <li>Binaries and control sample tests, part of the <a href="http://www.codeplex.com/Silverlight/">Silverlight Toolkit download</a>      <br />(you'll find the bits in the .\Source\Binaries\ directory)</li>    <li><a href="https://code.msdn.microsoft.com/Release/ProjectReleases.aspx?ProjectName=silverlightut&amp;ReleaseId=1913">Unit test framework binaries only</a></li>    <li><a href="http://www.codeplex.com/Silverlight/SourceControl/changeset/view/8631">Source code</a></li> </ul>  <p>This interim release corrected a few simple issues that customers have reported, and is included along with the December 2008 release of the Silverlight Toolkit. Changes of note:</p>  <ul>   <li>Asynchronous exception handling fixes and improvements</li>    <li>[Priority(...)] attribute from VSTT is now supported. They receive implicit Tag values of PriorityN, where N is the integer priority.</li>    <li>WorkItemTest type: EnqueueDelay method added, has two method signatures that accept either the milliseconds to delay, or a TimeSpan object.</li>    <li>EnqueueCallback has a new overload that takes a number of Action parameters, for easy action chaining</li>    <li>Enqueue has been marked as obsolete: please use EnqueueCallback, for consistency</li>    <li>EnqueueSleep has been marked as obsolete: please use EnqueueDelay, which is a more clear name</li>    <li>Silverlight test service fixes, you can now run test applications from a web server in more scenarios</li>    <li>Silverlight test service can co-exist with other web servers and hosts</li> </ul>  <p>Hope this helps.</p>

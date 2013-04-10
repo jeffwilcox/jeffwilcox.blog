@@ -1,0 +1,64 @@
+---
+layout: post
+comments: true
+title: ! 'Book Review: "Framework Design Guidelines: Conventions, Idioms, and Patterns
+  for Reusable .NET Libraries"'
+wordpress_id: 7
+wordpress_url: http://linux.jeff.wilcox.name/2007/02/16/framework-design-guidelines/
+imported_categories:
+- title: software-development
+  slug: dev
+  autoslug: software-development
+- title: books
+  slug: books
+  autoslug: books
+imported_link_categories: []
+tags:
+- title: books
+  slug: books
+  autoslug: books
+- title: code-design
+  slug: code-design
+  autoslug: code-design
+- title: design-patterns
+  slug: design-patterns
+  autoslug: design-patterns
+- title: software-development
+  slug: software-development
+  autoslug: software-development
+---
+<a href="http://www.amazon.com/Framework-Design-Guidelines-Conventions-Development/dp/0321246756/sr=1-1/qid=1171648192/ref=pd_bbs_sr_1/104-8428099-5383120?ie=UTF8&amp;s=books"><img border="0" align="right" width="178" src="http://media.jeff.wilcox.name/blog/view/books/fxdesign.jpg" height="232" /></a>I recently picked up a copy of "<a href="http://www.amazon.com/Framework-Design-Guidelines-Conventions-Development/dp/0321246756/sr=1-1/qid=1171648192/ref=pd_bbs_sr_1/104-8428099-5383120?ie=UTF8&amp;s=books">Framework Design Guidelines: Conventions, Idioms, and Patterns for Reusable .NET Libraries</a>" by <a href="/kcwalina/">Krzysztof Cwalina</a> and <a href="/brada/">Brad Abrams</a>.  This is a great find; I've never picked up a hard cover book from the Microsoft .NET Development Series (Addison-Wesley Professional) that didn't rock and belong in my library at home. 
+
+
+
+As I've been working recently on a new test framework library (while reusing a lot of existing components), the release of this book couldn't have come at a better time.   We all know there's no silver bullet, and this book doesn't try to pretend there is one-Krzysztof and Brad make it very clear that there still aren't any perfect answers.  A lot of decisions depend on your framework consumer.
+
+
+
+The book is organized much like a Microsoft specification or guidelines document is; you'll find helpful bullets designated all the way from "DO" to "CONSIDER" and "DO NOT," among others.
+
+
+
+Some of the key takeaways that I have:
+
+<ul>
+
+	<li>Keep it simple. Design with your customer in mind, and don't get carried away with creating a framework worthy of a prize in perfection of theory</li>
+
+	<li>Capitalization of your public methods is really important to creating a self-documenting framework that users are comfortable with immediately. I still cannot believe there's so much contention in naming in the .NET platform even today.</li>
+
+	<li>There's no need to go virtual method happy with overloads; you often can provide your most specific overload the virtual designation</li>
+
+	<li>Good reasoning and comments revolving around some classic situations: Array or Collection as a return type? String or Uri?</li>
+
+</ul>
+
+There are also some good resources near the back of the book, such as a starting point for your own coding conventions that take into account the implementation specifics and private code in your framework.
+
+
+
+And I do have to point out one thing: The book format is truly unique for a reference that is 300+ pages.  "Framework Design Guidelines" is effectively a massive bulleted manuscript, full of inline comments.  I enjoyed this format, it really helped to bring home that these are suggestions, not solid rules; the arguments and points for- and against- were borderline fun, as were anecdotes about earlier .NET framework releases.
+
+
+
+The reason I point out this unique format is that it is truly a Microsoft creation by two brilliant Microsofties: I can just imagine the Microsoft Word file that was used for collaborating between the annotators, and it is pretty fun seeing a book in print that roughly aligns with the "Final Showing Markup" reviewing mode of Word 2007.

@@ -1,0 +1,276 @@
+---
+layout: post
+comments: true
+title: ! 'Silverlight Unit Test Framework: Breaking changes from Beta 1 to Release
+  Candidate'
+wordpress_id: 124
+wordpress_url: http://www.jeff.wilcox.name/?p=124
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: software-development
+  slug: dev
+  autoslug: software-development
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: testing
+  slug: testing
+  autoslug: testing
+- title: microsoft
+  slug: microsoft
+  autoslug: microsoft
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+imported_link_categories: []
+tags: []
+---
+<p>Update your test projects to the first <a href="http://code.msdn.microsoft.com/silverlightut/">Silverlight Unit Test Framework</a> update in half a year, it should take <em>two minutes</em> to update and get the awesome new features and functionality.</p>  <p>The improvements and changes made to the surface area of the test framework and runtime are a good thing. I've organized the high-level changes into the following sections: Highlights and important notes, new functionality, for test developers, test harness changes, and miscellaneous notes.</p>  <p><img alt="Update references. Rename the TestSurface. Rebuild your test projects." src="http://media.jeff.wilcox.name/blog/rc0/quicksteps.png" /></p>  <p>Although it looks and feels like the previous release we did back in Vegas, this one has more extension points and has reduced the learning curve of the complex harness types by making the programming interfaces more concise &amp; easier to discover.</p>  <p>I hope that you find this unit test framework release for the <a href="http://weblogs.asp.net/scottgu/archive/2008/09/25/silverlight-2-release-candidate-now-available.aspx">developer-targeted Silverlight 2 Release Candidate</a> to be a nice step forward. The developer release candidate should be complete now.</p>  <p>Go ahead and fire up Reflector, the simplified namespaces are easy to look at. That'd be more interesting than reading this post - almost as exciting as watching real-time stock quotes today. Oh, and if you've done any cool customizations, you'll want to check out the bottom, boring part of this post.</p>  <p><a href="http://code.msdn.microsoft.com/silverlightut/"><strong>Download</strong></a> (MSDN Code Gallery) the updated test bits today.</p>  <p><em>Happy Silverlight unit testing!     <br />- Jeff</em></p>  <h2>Highlights &amp; important notes</h2>  <h3>Simplified, improved APIs and developer experience</h3>  <p>Less is more. Fewer namespaces, fewer assemblies, fewer framework types, more discoverable with IntelliSense. For most test development tasks, you should only need to reference two namespaces:</p>  <ul>   <li>Microsoft.VisualStudio.TestTools.UnitTesting: For desktop unit test framework compatibility, contains the Visual Studio unit test framework metadata. </li>    <li>Microsoft.Silverlight.Testing: Contains the UnitTestSystem (used to start the test project at runtime), as well as all the other custom attributes and types that are needed for developing tests. Includes the base test classes for working with the presentation system through a &quot;test panel.&quot;</li> </ul>  <h3>From 3 to 2 assemblies</h3>  <p>The Microsoft.Silverlight.Testing.dll and Microsoft.Silverlight.Testing.Framework.dll assemblies have been merged into a single assembly, Microsoft.Silverlight.Testing.dll.</p>  <p>Test projects should remove any references to Microsoft.Silverlight.TestingFramework.dll. Also, assembly file versions have changed to 2.0.20929.1929 from 1.0.0.0. A simple rebuild of your test projects is all that is required.</p>  <h3>The TestSurface functionality has been renamed</h3>  <p>The TestPanel is a special container (formerly known as the TestSurface); when you access the panel during a test case, the children of the panel are automatically cleared after the TestMethod executes. It makes testing with controls and shapes quick and easy.</p>  <p>If you make use of the test surface, you will need to modify your tests ever so slightly. This only impacts tests that derive from SilverlightTest and include a call to the exposed Silverlight property.</p>  <p>Before:</p>  <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:2b1a8c01-d961-4ce9-83aa-8ada185ce330" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px">   <pre class="c-sharp" name="code">using System;
+using Microsoft.Silverlight.Testing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Windows.Controls;
+
+namespace Test
+{
+    [TestClass]
+    public class TestPanelTest : PresentationTest
+    {
+        [TestMethod]
+        public void Bug484164()
+        {
+            Button b = new Button();
+            Silverlight.TestSurface.Children.Add(b);
+        }
+    }
+}</pre>
+</div>
+
+<p>After:</p>
+
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:ec4b57ec-5573-40f4-92e1-60c0ed0f13ce" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px">
+  <pre class="c-sharp" name="code">using System;
+using Microsoft.Silverlight.Testing;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Windows.Controls;
+
+namespace Test
+{
+    [TestClass]
+    public class TestPanelTest : PresentationTest
+    {
+        [TestMethod]
+        public void Bug484164()
+        {
+            Button b = new Button();
+            TestPanel.Children.Add(b);
+        }
+    }
+}</pre>
+</div>
+
+<h3>Simple asynchronous enqueue method name changes</h3>
+
+<p>The Enqueue* methods that are present on SilverlightTest are now found in the WorkItemTest class. SilverlightTest still inherits this functionality. The following methods are exposed by WorkItemTest and are similar to the earlier names, no longer using custom delegates:</p>
+
+<ul>
+  <li>Enqueue(Action), EnqueueCallback(Action) </li>
+
+  <li>EnqueueConditional(Func&lt;bool&gt;) </li>
+
+  <li>EnqueueSleep(int) </li>
+
+  <li>EnqueueTestComplete() </li>
+
+  <li>EnqueueWorkItem(IWorkItem) </li>
+
+  <li>Sleep(int, Action) </li>
+
+  <li>TestComplete() </li>
+</ul>
+
+<h3>First debugger-attached run notes</h3>
+
+<p>The first time that you run a Silverlight test project with these new bits, you may receive a FileNotFoundException depending on the exception handling settings you're using in Visual Studio. This is an artifact of the move to using the IsolatedStorage system for optional settings.</p>
+
+<p>This is not an unhandled exception, but if you are setup to break on first chance CLR exceptions, you might think that is what is happening here. Just press F5 to continue the test run.</p>
+
+<h2>New functionality</h2>
+
+<p>There are additional features built into the framework now, which will be documented in detail in <a href="http://www.jeff.wilcox.name/topics/dev/silverlight/">coming blog posts</a>. Since we're sharing the same bits we use on our team, these features are more specific than a simple unit test harness and are totally unsupported. But they're there none the less!</p>
+
+<ul>
+  <li>TagExpressions</li>
+
+  <li>Enhanced interactive results explorer</li>
+
+  <li>BugAttribute</li>
+
+  <li>Visual Studio Team Test log format output provider</li>
+
+  <li>Test service provider implementation</li>
+
+  <li>Dynamic test methods</li>
+
+  <li>Dynamic test method attributes</li>
+</ul>
+
+<h3></h3>
+
+<h2>For test developers</h2>
+
+<h3>New runtime dependencies: System.Core, System.Xml.Linq</h3>
+
+<p>With the RC0 release of the Silverlight 2 runtime, the System.Core runtime is built in to the platform. However, System.Xml.Linq will need to be included with your test projects, since the Visual Studio log provider requires it.</p>
+
+<p>Updated list of framework assemblies that the test framework is dependent on:</p>
+
+<ul>
+  <li>mscorlib 
+    <br /></li>
+
+  <li>System 
+    <br /></li>
+
+  <li>System.Core 
+    <br /></li>
+
+  <li>System.Net 
+    <br /></li>
+
+  <li>System.Windows 
+    <br /></li>
+
+  <li>System.Windows.Browser 
+    <br /></li>
+
+  <li>System.Xml 
+    <br /></li>
+
+  <li>System.Xml.Linq </li>
+</ul>
+
+<h3>Custom delegate types removed. Please use Action and Func&lt;T&gt; objects.</h3>
+
+<p>The original release used custom delegates named VoidDelegate, ConditionalDelegate, and GenericDelegate. Please instead use the standard framework's Action, Action&lt;T&gt;, and Func&lt;T&gt; types.</p>
+
+<h3>TestPanel has been changed from a StackPanel to a Grid</h3>
+
+<p>The TestPanel (Silverlight.TestSurface before) is now a Grid by default. It was a StackPanel in the original release. To enable namescope testing properly, the TestPage is now instantiated using XamlReader.</p>
+
+<h3>UnitTestSystem changes, CreateTestPage no longer requires casting</h3>
+
+<p>Although the test framework did not need to be updated for Beta 2, the Beta 2 runtime did require that the UnitTestSystem.CreateTestPage() result be cast to UIElement. The method signature has been updated to no longer require this explicit cast.</p>
+
+<p>Several of the static methods of UnitTestSystem are now public, and the type itself can be instantiated. These changes make it easier to customize the settings used when initializing the system, swapping out the TestService, TestHarness, LogProviders, and other components.</p>
+
+<h3>Known parameters and settings</h3>
+
+<p>There are a number of settings that can be stored in the TestHarnessSettings.Parameters string dictionary, and are recognized during a unit test run. Of interest are the &quot;tagExpression&quot;, &quot;computerName&quot;, &quot;userName&quot;, &quot;enablePluginResize&quot;, and &quot;testColumnWidth.&quot;</p>
+
+<p>A number of these address specific concerns, workaround needs, or logging fields that have been brought to my attention.</p>
+
+<h3>Exception handling changes</h3>
+
+<p>A simple fix, there is no longer a Debugger.Break() statement in the exception handlers for test methods.</p>
+
+<h3>New test class hierarchy</h3>
+
+<p>Although SilverlightTest is still supported, the unique functionality of the Silverlight Unit Test Framework has been split out into multiple test classes that you are free to inherit from.</p>
+
+<p>When inheriting from any of the four types, do realize that you are breaking the built-in compatibility with the desktop Visual Studio test framework, and it may require some creative juices to cross-compile or otherwise share tests between other projects.</p>
+
+<p>The idea of the test classes is to promote a &quot;bite off as much as you need&quot; story for test case development. All these types are found in the standard Microsoft.Silverlight.Testing namespace.</p>
+
+<p>No need to make changes if you're already inheriting from SilverlightTest.</p>
+
+<table cellspacing="0" cellpadding="2" width="624" border="0"><tbody>
+    <tr>
+      <td valign="top" width="176"><em><strong>Type</strong></em></td>
+
+      <td valign="top" width="177"><strong><em>Inherits from</em></strong></td>
+
+      <td valign="top" width="269"><strong><em>Purpose</em></strong></td>
+    </tr>
+
+    <tr>
+      <td valign="top" width="177">CustomFrameworkUnitTest</td>
+
+      <td valign="top" width="178"><font color="#c0c0c0">(object)</font></td>
+
+      <td valign="top" width="269">Makes it clear that the test may no longer be compatible with the standard desktop unit test framework in Visual Studio. Exposes a method to force handling an Exception object, and also a bool property that attaches and detaches the unit test framework from the application's unhandled exception handler.</td>
+    </tr>
+
+    <tr>
+      <td valign="top" width="177">WorkItemTest</td>
+
+      <td valign="top" width="178">CustomFrameworkUnitTest</td>
+
+      <td valign="top" width="269">Provides operations for psuedo-asynchronous testing through the primary user interface thread's test dispatcher. Includes the Enqueue, EnqueueCallback, EnqueueConditional, EnqueueSleep, and other calls.</td>
+    </tr>
+
+    <tr>
+      <td valign="top" width="177">PresentationTest</td>
+
+      <td valign="top" width="178">WorkItemTest</td>
+
+      <td valign="top" width="269">Provides the special TestPanel property. TestPanel is of type Panel and the default TestPage used for the root visual of test projects uses a Grid for the TestPanel.</td>
+    </tr>
+
+    <tr>
+      <td valign="top" width="177">SilverlightTest</td>
+
+      <td valign="top" width="178">PresentationTest</td>
+
+      <td valign="top" width="269">Silverlight-specific test functionality, compatibility with the original Silverlight unit test framework release for Silverlight 2 Beta 1.</td>
+    </tr>
+  </tbody></table>
+
+<h3>Browser property removed from SilverlightTest</h3>
+
+<p>The property has been removed and is now available as the static helper class Browser.</p>
+
+<h2>Test harness changes</h2>
+
+<p>If you dug in with Reflector to make your own customizations, here are some public types used in the construction of the test harness implementation that may affect your extensions:</p>
+
+<p><strong>UnitTestProvider changes:</strong> The interfaces have been updated to allow instantiated IAssembly types to store a reference to the underlying ITestHarness used to request the unit test provider. There is no longer a singleton providing access to the UnitTestHarness. You may need to update your IUnitTestProvider, IAssembly, and ITestMethod implementations.</p>
+
+<p><strong>Asynchronous test dispatcher:</strong> The RunMethodManager type has been renamed to RunDispatcher. This dispatcher that handles driving test run execution forward and running asynchronous work items can also now be restarted after a test run is complete.</p>
+
+<p>Many associated types and interfaces have had small name changes to help clarify their purpose, and shorten unhelpful long names. The AsyncTestTask type has been removed as it is redundant with the WorkItem base class.</p>
+
+<p><strong>UserInterfaceContext removed:</strong> The UI context concept and implementation was not simple enough to prove useful, it has been removed.</p>
+
+<p><strong>Logging changes:</strong> The initial implementation relied on a complex type hierarchy that has been replaced with a simple LogMessage type. More like the standard .NET framework's EventLog handling, the new LogMessage can be decorated with any type of additional reference, a type category, and other properties that permit the same functionality. LogMessageFactory and LogMessageWriter are new types to simplify working with the newer logging system.</p>
+
+<p>The ParameterizedLogProvider is now available through the ITestSettingsLogProvider interface. The LogManager and related interfaces have been removed.</p>
+
+<p>Earlier custom providers will need significant updates to work with the release candidate build.</p>
+
+<p><strong>TestOutcome enum replaces TestResult:</strong> The TestResult type now matches the name and enum values of the desktop unit test framework's TestOutcome. The unit test engine best understands the Passed state, but the others are provided for use by developers as it makes sense. The VisualStudioLogProvider implementation counts and tracks all legitimate TestOutcome values for reporting purposes.</p>
+
+<p><strong>BaseTestHarness changes:</strong></p>
+
+<ul>
+  <li>The BaseTestHarness base class has been renamed to TestHarness and moved into a different namespace. </li>
+
+  <li>The TestHarnessState type now allows for tracking total scenarios and failing scenarios. </li>
+
+  <li>TestHarness is able to hook into the reporting TestService provider, if present. It exposes a public TestService property. </li>
+
+  <li>LogProviders exposes the collection of active log providers. </li>
+
+  <li>The test harness implementation now has a WriteLogFile method that can be used to optionally store a log file when used with the test service. </li>
+
+  <li>The harness also exposes a Publishing event that is fired right before the complete events to offer your log providers the opportunity to subscribe and save results before the harness completes. </li>
+</ul>
+
+<p><strong>Web interface changes:</strong> Many changes were made to the coupling and implementation of the various HTML log providers and objects. A strongly typed, richer HTML control library is used for many of the interactive HTML DOM elements.</p>
+
+<h2>Closing note</h2>
+
+<p>Overall the process of updating existing test projects to this framework should be very simple. Let me know how you like the new bits, I should be posting a lot more on this subject in the coming weeks.</p>
+
+<p>Also do post a comment if you run into any issues with your existing projects. I've also enabled a few more tabs on the <a href="http://code.msdn.microsoft.com/silverlightut/">MSDN Code Gallery</a> site for the framework.</p>

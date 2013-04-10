@@ -1,0 +1,363 @@
+---
+layout: post
+comments: true
+title: Client-side HTML controls for Silverlight 2
+wordpress_id: 130
+wordpress_url: http://www.jeff.wilcox.name/2008/10/05/html-controls-for-silverlight/
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: software-development
+  slug: dev
+  autoslug: software-development
+- title: silverlight
+  slug: silverlight
+  autoslug: silverlight
+- title: web-development
+  slug: webdev
+  autoslug: web-development
+- title: javascript
+  slug: javascript
+  autoslug: javascript
+- title: web
+  slug: web
+  autoslug: web
+imported_link_categories: []
+tags: []
+---
+<p>What if you could use and create ASP.NET-like web controls that are 100% client-side, powered by the Silverlight 2 runtime? What if ViewState was a thing of the past? Would you like to cut your web application's load on your servers from 50 pageviews down to 0? Wouldn't your users love it if your application was always instantly responsive?</p>  <p>A week ago, I posted &quot;<a href="http://www.jeff.wilcox.name/2008/09/28/do-it-in-js-and-cs/">If you can do it in JavaScript, you can do it in managed Silverlight .NET code</a>.&quot; Here's proof that the HTML interoperability capabilities in Silverlight are not only world-class, but also amazingly powerful.</p>  <p>This &quot;managed HTML controls&quot; <strong>concept</strong> is a neat idea: something that might whet your appetite to explore the interoperability features and consider using the feature to build sophisticated applications. However, key hurdles leave this as a conversation piece more than a new application platform. At the end of the day, the Silverlight presentation framework as it stands if going to be your best bet for a majority of your applications.</p>  <p>Exploring and thinking about changing the boundaries and status quo of web apps is something that's fun and challenging. A client-side implementation of ASP.NET, enabling rich browser apps written in C#, was totally my dream a few years ago. Nikhil's <a href="http://projects.nikhilk.net/ScriptSharp/Default.aspx">Script#</a> actually can get you some of the way by letting you write client apps in .NET. </p>  <p>Today, a client-side ASP.NET HtmlControl is interesting, but not a game-changer, given the maturity of JavaScript platform and the richer app platforms out there like Silverlight (that is based on WPF) and Flex.</p>  <h3>What's the HtmlControls concept look like?</h3>  <p>Here's a look at a few of the types.</p>  <p>By exposing strongly typed properties, methods, and events, your .NET HTML application code will be cleaner, easier to maintain, enable you to use static analysis tools, and even perform unit testing.</p>  <p><img src="http://media.jeff.wilcox.name/blog/dom/SampleClasses.png" /></p>  <p>Although the HtmlControlBase exposes a lot of the sample string-based properties as the standard Silverlight HtmlElement, it adds overloads with enumeration-based parameters (cut down on spelling errors), and stop having to duplicate strings through your app:</p>  <p><img alt="The CssAttribute enum." src="http://media.jeff.wilcox.name/blog/dom/CssAttribute.png" /> </p>  <p>You can set Font properties like you would in ASP.NET, without worrying so much about CSS at the end of the day:</p>  <p><img alt="The FontInfo object." src="http://media.jeff.wilcox.name/blog/dom/FontInfo.png" /> </p>  <p>The same goes for standard HTML properties defined by the W3C - helpful HtmlProperty enum:</p>  <p><img alt="The HtmlProperty enum." src="http://media.jeff.wilcox.name/blog/dom/HtmlProperty.png" /> </p>  <h3>Thinking about the pros and cons</h3>  <p>Some of what you can do with managed HTML controls:</p>  <ul>   <li>Create strongly typed custom controls: be more efficient, create simpler code, less spaghetti code </li>    <li>Develop rich web applications using Visual Studio, including built-in FxCop, code refactoring, the object browser, XML documentation support, and more </li>    <li>Create sophisticated AJAX-like applications with IntelliSense support </li>    <li>No need for your controls to POST-back to the server or worry about ViewState ~ these are stateful, since they are in memory </li>    <li>Integrate with Silverlight 2 applications, and all the richness it provides in its framework and class libraries </li>    <li>You could move an application like 37signals' Backpack out of a server farm, store the .Xap on a CDN, and use occassional cross-domain web service calls to store and retrieve data... imagine, some types of apps could serve a billion application users with only 1 billion .Xap downloads from your CDN, instead of generating tens of billions of web pages on an expensive web farm </li> </ul>  <p><strong>What's so great about it?</strong></p>  <ul>   <li>Replace loosely typed string property setters (spaghetti code) with strongly typed code </li>    <li><a href="http://projects.nikhilk.net/ScriptSharp/Default.aspx">Like Script#</a>... but with the live .NET Silverlight 2 CLR! </li>    <li>Kind of like a cheap ASP.NET implementation, on the client side, that works on Windows and Mac (IE, Firefox, Safari) </li>    <li>Proves how powerful Silverlight can be, even for out-of-the-box projects </li>    <li>Fun! </li> </ul>  <p><strong>What are the drawbacks?</strong></p>  <ul>   <li>Silverlight has a much richer presentation story: <em>really</em> rich controls, animations, design tools like Blend, and WPF goodness. Videos. Audio. Full-screen. </li>    <li>Why build effectively an HTML-based AJAX app using Silverlight, and yet require your users to have the Silverlight 2 runtime on their machines? </li>    <li>The memory performance of this concept is probably quite bad: each element is already in the browser; there's a pointer to that from the native platform in Silverlight; there's the Silverlight HtmlElement object instance; and then there's the HtmlControl type. That's a lot of duplicated stuff! </li>    <li>The performance of the concept in general isn't going to be too awesome: there's a lot of interop here between the web browser, JavaScript, the browser's plugin APIs (NPAPI or ActiveX), the managed CLR, and back again </li>    <li>All the <a href="http://www.jeff.wilcox.name/2008/09/28/do-it-in-js-and-cs/">points made here to NOT use</a> the HTML DOM bridge </li> </ul>  <p><strong>What does it give you that you don't get with JavaScript?</strong></p>  <ul>   <li>C#, VB, or DLR languages like Ruby running in the browser, client-side, interacting with the HTML page </li>    <li>The ability to use Visual Studio for client web development </li> </ul>  <p>And, at the end of the day, Script# might get you these things, without the Silverlight dependency.</p>  <p><strong>What does it give you that you don't get with Silverlight today?</strong></p>  <ul>   <li>Add managed code to existing AJAX applications and HTML elements by hooking up events and altering properties </li>    <li>Easier way to work with HTML pages than using the functional but basic HTML interop </li>    <li>Create rich HTML text editing controls and web forms; create elements for the browser's built-in printing system </li> </ul>  <h3>Using the HTML control framework</h3>  <p><strong>Example: Setting the width and height</strong></p>  <p>Without this framework, to set the width of an HtmlElement in Silverlight, you'd need to write this code (assumes you have a regular Silverlight HtmlElement instance called &quot;element&quot;):</p>  <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:e8d37199-3177-4bd7-b8ce-4eeb1a8121f8" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="c-sharp" name="code">// Setting the height and width - notice the typo you wouldn't know 
+// about until runtime:
+element.SetStyleAttribute("width", "50px");
+element.SetStyleAttribute("height", "450ppx");</pre></div>
+
+<p>There's no type checking: you won't know about spelling errors or other problems until runtime, and if you do any CSS manipulation, your code will get very difficult to maintain. Here's the same code, with a managed HTML control (using a few different ways of setting the value):</p>
+
+<p></p>
+
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:60fdaa87-916b-40b5-afd1-51e0ae4a5ccd" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="c-sharp" name="code">// Set the width and height of the control
+control.Width = 50;
+control.Height = new Unit(450, UnitType.Pixel);</pre></div>
+
+<p></p>
+
+<p>Same # of lines of code, but a little more &quot;attractive&quot; API.</p>
+
+<p>You can also wrap existing HtmlElements with a managed control in some cases: either standard parts of your web page, existing AJAX applications. This is possible when the constructor exposes a HtmlElement parameter.</p>
+
+<p><strong>Creating a composite control</strong></p>
+
+<p>Here's a simple &quot;user control&quot; that has a link and a button inside of it:</p>
+
+<p></p>
+
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:e5fb406f-29ea-46dc-b686-61862b03507a" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="c-sharp" name="code">using System;
+using WebPage = System.Windows.Browser.HtmlPage;
+using Microsoft.Silverlight.Testing.Html;
+
+namespace HtmlControlSample
+{
+    /// &lt;summary&gt;
+    /// A simple managed HTML control.
+    /// &lt;/summary&gt;
+    public class MyUserControl : HtmlDiv
+    {
+        /// &lt;summary&gt;
+        /// A simple link that is hooked up to the app.
+        /// &lt;/summary&gt;
+        private HtmlAnchor _appLink;
+
+        /// &lt;summary&gt;
+        /// A simple button.
+        /// &lt;/summary&gt;
+        private HtmlButton _button;
+
+        /// &lt;summary&gt;
+        /// Initializes a new instance of the MyUserControl control.
+        /// &lt;/summary&gt;
+        public MyUserControl()
+        {
+            InitializeComponent();
+        }
+
+        /// &lt;summary&gt;
+        /// Initialize composite controls and add them as children.
+        /// &lt;/summary&gt;
+        private void InitializeComponent()
+        {
+            // A link that will display the current time
+            _appLink = new HtmlAnchor(
+                "Click me for the time!",
+                (sender, e) =&gt; Alert(DateTime.Now.ToLongTimeString()));
+
+            _button = new HtmlButton();
+            _button.InnerText = "Toggle my boldness";
+            _button.Click += (sender, e) =&gt; _button.Font.Bold = !_button.Font.Bold;
+
+            Controls.Add(_appLink);
+            Controls.Add(_button);
+        }
+
+        /// &lt;summary&gt;
+        /// Uses the Alert method of the HTML interoperability feature to 
+        /// display text.
+        /// &lt;/summary&gt;
+        /// &lt;param name="text"&gt;The text to display.&lt;/param&gt;
+        private static void Alert(string text)
+        {
+            WebPage.Window.Alert(text);
+        }
+    }
+}</pre></div>
+
+<p></p>
+
+<p>To hook it up to the application, here is a simple class that shrinks the Silverlight plugin to not occupy any space on the page, that creates a new instance of the MyUserControl type and appends it to the web page body.</p>
+
+<p>The HideSilverlightPlugin function is important because it lets you press F5 while working in a standard Silverlight application project.</p>
+
+<p></p>
+
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:d2316b18-4527-4620-8fb6-6c57927ad641" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="c-sharp" name="code">using System;
+using Microsoft.Silverlight.Testing.Html;
+using WebPage = System.Windows.Browser.HtmlPage;
+
+namespace HtmlControlSample
+{
+    /// &lt;summary&gt;
+    /// A sample HTML application.
+    /// &lt;/summary&gt;
+    public class SampleHtmlApp
+    {
+        /// &lt;summary&gt;
+        /// The application's user interface control.
+        /// &lt;/summary&gt;
+        private MyUserControl _myUserInterface;
+
+        /// &lt;summary&gt;
+        /// Initialize and run the application.
+        /// &lt;/summary&gt;
+        public static void Run()
+        {
+            new SampleHtmlApp();
+        }
+        
+        /// &lt;summary&gt;
+        /// Initializes a new instance of the SampleHtmlApp class.
+        /// &lt;/summary&gt;
+        private SampleHtmlApp()
+        {
+            HideSilverlightPlugin();
+            
+            // Creates a new managed HTML control
+            _myUserInterface = new MyUserControl();
+
+            // Appends the control to the web page body
+            WebPage.Document.Body.AppendChild(_myUserInterface);
+        }
+
+        /// &lt;summary&gt;
+        /// Takes the current Silverlight plugin instance and changes its size 
+        /// to be 0x0 pixels. Makes the same change to the hosting div element. 
+        /// This enables F5 testing of a managed HTML control app inside Visual 
+        /// Studio when using the standard TestPage.html in a Silverlight app.
+        /// &lt;/summary&gt;
+        private void HideSilverlightPlugin()
+        {
+            HtmlControl plugin = new HtmlControl(WebPage.Plugin);
+            HtmlControl host = new HtmlControl(WebPage.Plugin.Parent);
+            plugin.Width = 0;
+            plugin.Height = 0;
+            host.Width = 0;
+            host.Height = 0;
+        }
+    }
+}</pre></div>
+
+<p></p>
+
+<p>You can call the Run() method from anywhere in your Silverlight application - both can co-exist without issue. However, I've just replaced the RootVisual call in the Application_Startup method to demonstrate this example:</p>
+
+<p></p>
+
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:61ccbf1e-736d-499d-b9a7-6b4c23dd6cf9" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="c-sharp" name="code">        public App()
+        {
+            this.Startup += this.Application_Startup;
+            this.UnhandledException += this.Application_UnhandledException;
+
+            InitializeComponent();
+        }
+
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            SampleHtmlApp.Run();
+        }</pre></div>
+
+<p></p>
+
+<p>Here is this simple HTML application (powered by Silverlight) running on OS X 10.5 in the Safari web browser:</p>
+
+<p><img alt="The app running in Safari." src="http://media.jeff.wilcox.name/blog/dom/SafariTime.png" /> </p>
+
+<p><strong>Appending a managed control tree to HtmlElements</strong></p>
+
+<p>Thanks to an extension method, you can append a managed HTML control (that inherits from HtmlControlBase) to the standard HtmlElement inside Silverlight as if the control <em>is </em>an HtmlElement:</p>
+
+<p><img alt="The extension method on HtmlElement::AppendChild." src="http://media.jeff.wilcox.name/blog/dom/ExtensionMethod.png" /></p>
+
+<p>The managed control wrapper actually tracks any changes (styles, properties, child controls) to the control and waits until it is inserted into the live web page tree to apply the properties and create the child elements.</p>
+
+<p>At the end of the day there are a <em>lot</em> of types involved here, bridging several layers of abstraction. This is definitely <em>not</em> a &quot;lightweight&quot; solution.</p>
+
+<p><img alt="Looking at the abstractions." src="http://media.jeff.wilcox.name/blog/dom/HtmlObjectRelationDiagram.png" /></p>
+
+<h3>These bits are in use today</h3>
+
+<p>One of the key features of the in-browser <a href="http://code.msdn.microsoft.com/silverlightut/">Silverlight unit test framework</a> is that it exposes an interactive log inside the browser, using the HTML interoperability feature.</p>
+
+<p>If you've used the Silverlight unit test framework, then you've used this managed HTML controls implementation without knowing it: to move away from &quot;spaghetti-code&quot;, we setup the log to use simple custom controls built on top of this framework.</p>
+
+<p>Here's a few screenshots of components, including a ProgressBar control:</p>
+
+<p><img alt="The unit test log, powered by managed HTML controls." src="http://media.jeff.wilcox.name/blog/rc0/new_progress_bar.png" /> </p>
+
+<p>Here's the implementation of the ProgressBar:</p>
+
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:68bd98dd-0560-45ef-8e4e-c10c26651ba0" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="c-sharp" name="code">using System;
+using Microsoft.Silverlight.Testing.Html;
+
+namespace Microsoft.Silverlight.Testing.UnitTesting.UI
+{
+    /// &lt;summary&gt;
+    /// A control to visualize a test run's progress.
+    /// &lt;/summary&gt;
+    public partial class TestRunProgress : HtmlDiv
+    {
+        /// &lt;summary&gt;
+        /// The percent of the run that is complete.
+        /// &lt;/summary&gt;
+        private double _percent;
+
+        /// &lt;summary&gt;
+        /// The progress bar.
+        /// &lt;/summary&gt;
+        private HtmlDiv _progress;
+
+        /// &lt;summary&gt;
+        /// Initializes a new progress bar control.
+        /// &lt;/summary&gt;
+        public TestRunProgress() : base()
+        {
+            InitializeComponent();
+        }
+
+        /// &lt;summary&gt;
+        /// Gets or sets the percent complete on a scale from 0 to 100.
+        /// &lt;/summary&gt;
+        public double PercentComplete
+        {
+            set
+            {
+                _percent = value;
+                UpdateProgressBar();
+            }
+
+            get
+            {
+                return _percent;
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Sets the color of the progress bar.
+        /// &lt;/summary&gt;
+        /// &lt;param name="value"&gt;The color value.&lt;/param&gt;
+        public void SetProgressColor(string value)
+        {
+            _progress.BackgroundColor = value;
+        }
+
+        /// &lt;summary&gt;
+        /// Updates the progress bar.
+        /// &lt;/summary&gt;
+        private void UpdateProgressBar()
+        {
+            double width = (double)GetProperty(HtmlProperty.ClientWidth);
+            if (width &lt;= 0)
+            {
+                return;
+            }
+            int round = (int) Math.Round(_percent * (width / 100));
+            _progress.Width = round;
+        }
+
+        /// &lt;summary&gt;
+        /// Initializes the web control.
+        /// &lt;/summary&gt;
+        private void InitializeComponent()
+        {
+            SetStyleAttribute(CssAttribute.Position, "relative");
+            _progress = new HtmlDiv();
+            _progress.SetStyleAttribute(CssAttribute.Position, "absolute");
+            _progress.Position.Left = _progress.Position.Top = _progress.Position.Bottom = 0;
+            SetProgressColor(Color.Black);
+            MakeTransparent(_progress, 25);
+            Controls.Add(_progress);
+        }
+
+        /// &lt;summary&gt;
+        /// Makes a control transparent.  Works with several browsers.
+        /// &lt;/summary&gt;
+        /// &lt;param name="control"&gt;The control.&lt;/param&gt;
+        /// &lt;param name="opacity"&gt;The opacity amount.&lt;/param&gt;
+        private static void MakeTransparent(HtmlControl control, int opacity)
+        {
+            control.SetStyleAttribute("filter", "alpha(opacity=" + opacity + ")");
+            control.SetStyleAttribute("-moz-opacity", "." + opacity);
+            control.SetStyleAttribute("opacity", "." + opacity);
+        }
+    }
+}</pre></div>
+
+<p>Clicking on a test method name expands a details drill-down full of stats and information, including links that can be clicked to retry tests and display easy-to-copy details:</p>
+
+<p><img alt="The unit test log with details expanded." src="http://media.jeff.wilcox.name/blog/rc0/new_expander_details.png" /> </p>
+
+<h3>Download the bits</h3>
+
+<p>Since this is only a concept, and not something you would want to use in a production application, the bits are currently only available as part of the <a href="http://code.msdn.microsoft.com/Project/Download/FileDownload.aspx?ProjectName=silverlightut&amp;DownloadId=3274">Silverlight unit test framework download</a> for the Silverlight 2 Release Candidate 0.</p>
+
+<p>The implementation is not a complete framework, but rather a minimal set that enables basic functionality: links, buttons, and displaying and creating HTML elements. It does not contain a rich web forms implementation, cool validation controls, or anything like that.</p>
+
+<p>In the future I may make the concept available as a download separate from the test framework, but today I want to make it clear that it <strong>isn't something that is ready to really be used in everyday web applications</strong>... so hopefully the total size of the test framework assembly will discourage that [81kb]!</p>
+
+<p>It is totally unsupported, to be considered prototype code.</p>
+
+<p>Here's the set of types and enums in the namespace today. You'll see that it is a minimal set, and isn't including a lot of the typical HTML controls like check boxes, forms, or web form controls. There's room to innovate, but the value may not be there:</p>
+
+<p><img alt="List of types in the Microsoft.Silverlight.Testing.Html namespace." src="http://media.jeff.wilcox.name/blog/dom/TypeList.png" /> </p>
+
+<p>Do let me know if you like it, or build anything noteworthy, in the comments, and I will post a follow up in the future.</p>
+
+<h3>Other ideas</h3>
+
+<p>There is potential for the concept in some apps, and I'm sure some really brilliant folks out there could do any of the following things that've come across my mind:</p>
+
+<ul>
+  <li>Writing an ASP.NET-style XML parser using System.Xml.Linq, enabling you to embed .aspx-like pages inside your application to enable generating managed HTML control trees at runtime </li>
+
+  <li>Integrating with XAML, so a XAML page could contain a managed HTML control tree </li>
+
+  <li>Writing a compatibility layer that would allow custom ASP.NET controls to run inside Silverlight </li>
+
+  <li>Integrating or porting popular AJAX functionality (animations, rich control behaviors) </li>
+
+  <li>Writing applications that live as a .Xap file at your CDN or Amazon S3, and access cross-domain web services for any data needs, combined with isolated storage </li>
+</ul>
+
+<p>I've built a number of fun applications using this framework and think it's a neat concept, I will share those sometime... </p>
+
+<p><em>Special thanks to Hao Kung, Huangli Wu, Stefan Schackow, and Wilco Bauwer for their excellent work in shipping the amazing HTML DOM feature inside Silverlight 2!</em></p>
+
+<p><em>Hope you find this interesting, 
+    <br />-Jeff</em></p>

@@ -1,0 +1,42 @@
+---
+layout: post
+comments: true
+title: A note about remote URIs in Windows Phone secondary tiles
+wordpress_id: 848
+wordpress_url: http://www.jeff.wilcox.name/?p=848
+imported_categories:
+- title: c#
+  slug: csharp
+  autoslug: c#
+- title: windows-phone
+  slug: windows-phone
+  autoslug: windows-phone
+imported_link_categories: []
+tags: []
+---
+<p>One of my favorite features in Mango is the ability for developers to let users pin a deep linking secondary tile to their start screen. It’s a simple concept but really opens up a lot of new opportunities for apps-within-an-app, shortcuts to oft-used functionality, plus many other innovations.</p>  <p>In 4th &amp; Mayor, I use these to allow people to pin places to the start, and also to check-in a lot quicker. In my current released version, I actually found out after-the-fact about a remote URI bug, and wanted to share my notes on this.</p>  <p>If you’re looking for the basic reference on this deep-linking feature, do refer to the “<a href="http://msdn.microsoft.com/en-us/library/hh202979(v=VS.92).aspx">Create, Delete, and Update Tiles for Windows Phone</a>” entry on MSDN.</p>  <h3>What’s the issue with remote URIs?</h3>  <p>As best I can tell, the situation is: adding a secondary tile with a relative URI (pointing to an app’s content, such as SomeImage.png, that is packaged within the .Xap) is OK, and that secondary tile will always be present.</p>  <p>However, if you use a remote URI (such as a dynamically generated background image, or from a database or social network), that secondary tile is only present for that current device’s uptime: if you restart the device (or the battery dies, etc.), when you come back, the secondary tiles will no longer be present.</p>  <p>Users should still be able to re-pin any of their favorite secondary tiles to the start screen again. However, it turns out there is a bug here unfortunately: the secondary tile is still present in the ActiveTiles collection, and the OS seems to believe that it is still there, even though it is not.</p>  <p>The workaround is to search for the existing identical secondary tile and delete it, before re-pinning it, in your apps. This does mean that it’s not possible to tell whether a secondary tile with a remote URI is truly pinned or not – it will look pinned in the ActiveTiles collection but the user will not actually have the item pinned.</p>  <h3>Using a remote URI</h3>  <p>If you just use a remote URI (absolute), you will experience one-time pin ability; after that, and a device restart, it won’t be possible to re-pin the same page without first deleting the entry.</p>  <h3>Using a remote URI, working around re-pin issues</h3>  <p>Here is the code I’ve used to workaround these issues, effectively deleting the tile first, and re-pinning, only when using an absolute URI:</p>  <pre class="c-sharp" name="code">private void OnPinButtonPressed(object sender, RoutedEventArgs e)
+{
+    var backgroundImage = new Uri(&quot;http://tiles.4thandmayor.com/CrownBackground.png&quot;, UriKind.Absolute);
+
+    var tile  = ShellTile.ActiveTiles
+        .FirstOrDefault(x =&gt; x.NavigationUri == NavigationService.CurrentSource);
+
+    // Only if this is a remote background image URI do we need to
+    // delete and re-pin the secondary tile.
+    if (tile != null &amp;&amp; backgroundImage.IsAbsoluteUri)
+    {
+        tile.Delete();
+
+        var newTile = new StandardTileData
+        {
+            BackgroundImage = backgroundImage,
+            Title = &quot;Secondary Tile&quot;,
+        };
+
+        ShellTile.Create(NavigationService.CurrentSource, newTile);
+    }
+}</pre>
+
+<p><strong>9/29/11 1:40 PM PST note</strong>: It’s been pointed out to me that I don’t know how to code. The code above will re-pin, but not initially pin. A little more boolean logic is needed. I’ll try and update later, but the concept remains.</p>
+
+<p>Hope this helps.</p>
