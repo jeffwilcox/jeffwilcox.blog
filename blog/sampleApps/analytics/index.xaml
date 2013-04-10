@@ -1,0 +1,11 @@
+﻿<Canvas x:Name="parentCanvas" xmlns="http://schemas.microsoft.com/client/2007" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        Loaded="Page_Loaded" 
+        xmlns:jw="clr-namespace:JeffWilcox.RichWebClient.Controls;assembly=ClientBin/JeffWilcox.RichWebClient.Controls.dll" 
+        x:Class="GoogleAnalyticsSample.Page;assembly=ClientBin/JeffWilcox.RichWebClient.Samples.GoogleAnalyticsSample.dll"
+        Width="440"
+        Height="28"
+        >
+  <jw:VistaButton x:Name="SkipIntro" Canvas.Top="0" Canvas.Left="0" Text="Skip Intro" />
+  <jw:VistaButton x:Name="ReadDetails" Canvas.Top="0" Canvas.Left="80" Text="Details..." />
+  <TextBlock x:Name="Label1" Height="22" Width="350" Canvas.Top="0" Canvas.Left="170" />
+</Canvas>
