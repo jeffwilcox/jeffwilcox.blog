@@ -1,0 +1,16 @@
+# Jekyll Configuration File
+# www.jeff.wilcox.name
+
+base_url: http://www.jeff.wilcox.name
+#base_url: /
+
+description: "The blog of Jeff Wilcox: Windows Phone, Windows Azure, Microsoft and open source technology by software developer Jeff Wilcox at Microsoft."
+root_desc: "Jeff Wilcox is a Senior Software Developer at Microsoft."
+
+markdown: rdiscount
+pygments: false
+
+# Conforms to the same original WordPress format that I was using.
+permalink:	/:year/:month/:title/
+
+exclude: ['Rakefile', 'README.textile', 'server.bat']
