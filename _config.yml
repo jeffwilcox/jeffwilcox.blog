@@ -14,3 +14,6 @@ pygments: false
 permalink:	/:year/:month/:title/
 
 exclude: ['Rakefile', 'README.textile', 'server.bat']
+
+# Custom variables I use to define my primary and secondary CDN endpoints.
+cdn: //az414997.vo.msecnd.net/waz/
