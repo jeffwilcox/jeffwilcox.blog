@@ -544,6 +544,13 @@ Potential other features
 
 When I have time I'd like to add the ability to clear all rows from a table (delete and re-create the table), create a new table through the site, or add a basic entity to the table. I also thought about directly hitting table storage through AJAX instead of going through the server that then pipes back JSON to the app - but for now, I don't see this as a huge issue with the app. I also thought about adding the ability to get a one-time approximation of the number of rows in the table.
 
+Open Source Windows Azure
+-------------------------
+
+Have a few minutes? Check out our open source work at [http://windowsazure.github.io/](http://windowsazure.github.io/).
+
+> We actually accept contributions. We license everything Apache 2. We are on GitHub. Please join our community today!
+
 Related Windows Azure resources
 -------------------------------
 
@@ -555,6 +562,6 @@ If you want to learn more, check out:
 * [How to use the Table Service - a .NET example](http://www.windowsazure.com/en-us/develop/net/how-to-guides/table-services/)
 * [Windows Azure Storage Team Blog](http://blogs.msdn.com/b/windowsazurestorage/)
 * [GitHub repository - Windows Azure SDK for Node.js](https://github.com/WindowsAzure/azure-sdk-for-node)
-* [Open Source at Windows Azure information](http://windowszure.github.io/)
+* [Open Source at Windows Azure information](http://windowsazure.github.io/)
 
 Hope this helps, and let me know what you think on Twitter!
