@@ -9,6 +9,28 @@ After several years of hosting the production web services and web site for my f
 
 Thanks to the magic of DNS, I actually had the application deployed both on Amazon and Microsoft's clouds using DNS round robin for a while, helping me make sure that I had a high level of confidence in the fault tolerance of my application. Fun stuff.
 
+![.]({{ site.cdn }}4thwazblog/vsPublish.png =700x469 "title")
+
+![.]({{ site.cdn }}4thwazblog/vsCscfg.png =700x240 "title")
+
+![.]({{ site.cdn }}4thwazblog/vsWebConfig.png =700x523 "title")
+
+![.]({{ site.cdn }}4thwazblog/cloudServicesUploadCertificate.png =496x348 "title")
+
+![.]({{ site.cdn }}4thwazblog/cloudServicesCertificates.png =700x229 "title")
+
+![.]({{ site.cdn }}4thwazblog/mongoConnectionInfoToolbar.png =405x60 "title")
+
+![.]({{ site.cdn }}4thwazblog/mongoConnectionInfo.png =500x445 "title")
+
+![.]({{ site.cdn }}4thwazblog/mongoPersonalize.png =700x456 "title")
+
+![.]({{ site.cdn }}4thwazblog/mongoAddOn.png =700x457 "title")
+
+![.]({{ site.cdn }}4thwazblog/csrRequest.png =700x490 "title")
+
+![.]({{ site.cdn }}4thwazblog/csrSummary.png =700x490 "title")
+
 SSL FTW
 =======
 
