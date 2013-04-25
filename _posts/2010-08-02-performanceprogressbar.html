@@ -22,329 +22,654 @@ imported_categories:
 imported_link_categories: []
 tags: []
 ---
-<h2>2/17/2011 Update</h2>
-<p><strong>2/17/2011 update - this post is no longer needed:</strong> a performance progress bar is now included in the <a href="http://silverlight.codeplex.com/">Silverlight for Windows Phone Toolkit</a>.</p>
-<h2>Original post:</h2>
-<p>The ProgressBar template for Silverlight that is built into the Windows Phone today has a negative performance cost in ‘indeterminate’ mode (the animating dots that often indicate loading during an operation of unknown time). The control is also known as ‘progress indicator’ according to the UX guidelines for the phone.</p>  <p><strong>Please use this template and workaround source code (open and free source) in all Windows Phone applications.</strong></p>  <p>One of the reasons that this is so important is that performance is always an issue when there is a progress bar visible (whether you’re parsing data, processing layout changes, or performing network requests), so any issues with bogging down the user interface thread will be more obvious.</p>  <p>Here I offer a workaround which is identical in looks to the standard one, but with excellent performance that offloads from the UI thread. It uses the <strong>compositor thread</strong> exclusively for animation, instead of the <strong>UI (user interface) thread</strong>. I’ve touched on the differences in a post on <a href="http://www.jeff.wilcox.name/2010/07/counters/">performance and frame rate counters for the Windows Phone</a>.</p>  <p><em>Updated 9/15/10: Improvements per feedback. Thanks folks!     <br />Updated 8/17/10: Please also toggle IsIndeterminate, do not hard-code it to True.</em> <a href="http://www.jeff.wilcox.name/2010/08/progressbarperftips2/">More info in my 8/17 post</a>.</p>  <p><img style="border-right-width: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px" class="wlDisabledImage" title="IndeterminateWindowsPhoneProgressBar" border="0" alt="IndeterminateWindowsPhoneProgressBar" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/08/IndeterminateWindowsPhoneProgressBar.png" width="484" height="90" /></p>  <p>Moving the indeterminate animation to the render thread frees up the UI thread to handle application events, messages, interact with the networking stack, and otherwise keep the app running smoothly.</p>  <h2>Using the PerformanceProgressBar in your app</h2>  <p>This workaround requires you to add a simple <a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/08/RelativeAnimatingContentControl.cs_.txt">control</a> (a .cs file) to your Windows Phone project, as well as set the <a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/08/PerformanceProgressBarStyle.txt">ProgressBar style to the alternative</a>, and should take about 5 minutes. This is what you want if you want to give your users that “progress indicator” visual style while data or information is loading, and using this version will let the app continue to look responsive to your customers.</p>  <h3>Get the code</h3>  <p>Download and add the source file <a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/08/RelativeAnimatingContentControl.cs_.txt">RelativeAnimatingContentControl.cs</a> to your project (it is <a href="http://opensource.org/licenses/ms-pl.html">open source</a>)</p>  <h3>Add the PerformanceProgressBar style</h3>  <p>Open the App.xaml file in your Windows Phone project (or generic.xaml if a composite control library). Next, add the following XMLNS declaration at the top element – this is important as it tells the parser to look in your project for the code you added above.</p>  <p>Note that you may see warning or error messages in Visual Studio until after you’ve built the project, but it should work fine.</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:b02e0967-ee8d-4d6a-b0ee-db22877e8b6a" class="wlWriterEditableSmartContent"><pre class="xml" name="code">xmlns:unsupported="clr-namespace:Microsoft.Phone.Controls.Unsupported"</pre></div>
-
-<p>Now, go into the Resources section of the file and add this style (you can also download as <a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/08/PerformanceProgressBarStyle.txt">PerformanceProgressBarStyle.txt</a>) (the &lt;Application.Resources&gt; element).</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:78e389f1-aceb-4c16-9f10-1adbd13adf9d" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;Style x:Key="PerformanceProgressBar" TargetType="ProgressBar"&gt;
-    &lt;Setter Property="Foreground" Value="{StaticResource PhoneAccentBrush}"/&gt;
-    &lt;Setter Property="Background" Value="{StaticResource PhoneAccentBrush}"/&gt;
-    &lt;Setter Property="Maximum" Value="100"/&gt;
-    &lt;Setter Property="IsHitTestVisible" Value="False"/&gt;
-    &lt;Setter Property="Padding" Value="{StaticResource PhoneHorizontalMargin}"/&gt;
-    &lt;Setter Property="Template"&gt;
-        &lt;Setter.Value&gt;
-            &lt;ControlTemplate TargetType="ProgressBar"&gt;
-                &lt;unsupported:RelativeAnimatingContentControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"&gt;
-                    &lt;unsupported:RelativeAnimatingContentControl.Resources&gt;
-                        &lt;ExponentialEase EasingMode="EaseOut" Exponent="1" x:Key="ProgressBarEaseOut"/&gt;
-                        &lt;ExponentialEase EasingMode="EaseIn" Exponent="1" x:Key="ProgressBarEaseIn"/&gt;
-                    &lt;/unsupported:RelativeAnimatingContentControl.Resources&gt;
-                    &lt;VisualStateManager.VisualStateGroups&gt;
-                        &lt;VisualStateGroup x:Name="CommonStates"&gt;
-                            &lt;VisualState x:Name="Determinate"/&gt;
-                            &lt;VisualState x:Name="Indeterminate"&gt;
-                                &lt;Storyboard RepeatBehavior="Forever" Duration="00:00:04.4"&gt;
-                                    &lt;ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="IndeterminateRoot"&gt;
-                                        &lt;DiscreteObjectKeyFrame KeyTime="0"&gt;
-                                            &lt;DiscreteObjectKeyFrame.Value&gt;
-                                                &lt;Visibility&gt;Visible&lt;/Visibility&gt;
-                                            &lt;/DiscreteObjectKeyFrame.Value&gt;
-                                        &lt;/DiscreteObjectKeyFrame&gt;
-                                    &lt;/ObjectAnimationUsingKeyFrames&gt;
-                                    &lt;ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="DeterminateRoot"&gt;
-                                        &lt;DiscreteObjectKeyFrame KeyTime="0"&gt;
-                                            &lt;DiscreteObjectKeyFrame.Value&gt;
-                                                &lt;Visibility&gt;Collapsed&lt;/Visibility&gt;
-                                            &lt;/DiscreteObjectKeyFrame.Value&gt;
-                                        &lt;/DiscreteObjectKeyFrame&gt;
-                                    &lt;/ObjectAnimationUsingKeyFrames&gt;
-                                    &lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.0" Storyboard.TargetProperty="X" Storyboard.TargetName="R1TT"&gt;
-                                        &lt;LinearDoubleKeyFrame KeyTime="00:00:00.0" Value="0.1"/&gt;
-                                        &lt;EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="33.1" EasingFunction="{StaticResource ProgressBarEaseOut}"/&gt;
-                                        &lt;LinearDoubleKeyFrame KeyTime="00:00:02.0" Value="66.1"/&gt;
-                                        &lt;EasingDoubleKeyFrame KeyTime="00:00:02.5" Value="100.1" EasingFunction="{StaticResource ProgressBarEaseIn}"/&gt;
-                                    &lt;/DoubleAnimationUsingKeyFrames&gt;
-                                    &lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.2" Storyboard.TargetProperty="X" Storyboard.TargetName="R2TT"&gt;
-                                        &lt;LinearDoubleKeyFrame KeyTime="00:00:00.0" Value="0.1"/&gt;
-                                        &lt;EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="33.1" EasingFunction="{StaticResource ProgressBarEaseOut}"/&gt;
-                                        &lt;LinearDoubleKeyFrame KeyTime="00:00:02.0" Value="66.1"/&gt;
-                                        &lt;EasingDoubleKeyFrame KeyTime="00:00:02.5" Value="100.1" EasingFunction="{StaticResource ProgressBarEaseIn}"/&gt;
-                                    &lt;/DoubleAnimationUsingKeyFrames&gt;
-                                    &lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.4" Storyboard.TargetProperty="X" Storyboard.TargetName="R3TT"&gt;
-                                        &lt;LinearDoubleKeyFrame KeyTime="00:00:00.0" Value="0.1"/&gt;
-                                        &lt;EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="33.1" EasingFunction="{StaticResource ProgressBarEaseOut}"/&gt;
-                                        &lt;LinearDoubleKeyFrame KeyTime="00:00:02.0" Value="66.1"/&gt;
-                                        &lt;EasingDoubleKeyFrame KeyTime="00:00:02.5" Value="100.1" EasingFunction="{StaticResource ProgressBarEaseIn}"/&gt;
-                                    &lt;/DoubleAnimationUsingKeyFrames&gt;
-                                    &lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.6" Storyboard.TargetProperty="X" Storyboard.TargetName="R4TT"&gt;
-                                        &lt;LinearDoubleKeyFrame KeyTime="00:00:00.0" Value="0.1"/&gt;
-                                        &lt;EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="33.1" EasingFunction="{StaticResource ProgressBarEaseOut}"/&gt;
-                                        &lt;LinearDoubleKeyFrame KeyTime="00:00:02.0" Value="66.1"/&gt;
-                                        &lt;EasingDoubleKeyFrame KeyTime="00:00:02.5" Value="100.1" EasingFunction="{StaticResource ProgressBarEaseIn}"/&gt;
-                                    &lt;/DoubleAnimationUsingKeyFrames&gt;
-                                    &lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.8" Storyboard.TargetProperty="X" Storyboard.TargetName="R5TT"&gt;
-                                        &lt;LinearDoubleKeyFrame KeyTime="00:00:00.0" Value="0.1"/&gt;
-                                        &lt;EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="33.1" EasingFunction="{StaticResource ProgressBarEaseOut}"/&gt;
-                                        &lt;LinearDoubleKeyFrame KeyTime="00:00:02.0" Value="66.1"/&gt;
-                                        &lt;EasingDoubleKeyFrame KeyTime="00:00:02.5" Value="100.1" EasingFunction="{StaticResource ProgressBarEaseIn}"/&gt;
-                                    &lt;/DoubleAnimationUsingKeyFrames&gt;
-                                    &lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.0" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="R1"&gt;
-                                        &lt;DiscreteDoubleKeyFrame KeyTime="0" Value="1"/&gt;
-                                        &lt;DiscreteDoubleKeyFrame KeyTime="00:00:02.5" Value="0"/&gt;
-                                    &lt;/DoubleAnimationUsingKeyFrames&gt;
-                                    &lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.2" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="R2"&gt;
-                                        &lt;DiscreteDoubleKeyFrame KeyTime="0" Value="1"/&gt;
-                                        &lt;DiscreteDoubleKeyFrame KeyTime="00:00:02.5" Value="0"/&gt;
-                                    &lt;/DoubleAnimationUsingKeyFrames&gt;
-                                    &lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.4" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="R3"&gt;
-                                        &lt;DiscreteDoubleKeyFrame KeyTime="0" Value="1"/&gt;
-                                        &lt;DiscreteDoubleKeyFrame KeyTime="00:00:02.5" Value="0"/&gt;
-                                    &lt;/DoubleAnimationUsingKeyFrames&gt;
-                                    &lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.6" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="R4"&gt;
-                                        &lt;DiscreteDoubleKeyFrame KeyTime="0" Value="1"/&gt;
-                                        &lt;DiscreteDoubleKeyFrame KeyTime="00:00:02.5" Value="0"/&gt;
-                                    &lt;/DoubleAnimationUsingKeyFrames&gt;
-                                    &lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.8" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="R5"&gt;
-                                        &lt;DiscreteDoubleKeyFrame KeyTime="0" Value="1"/&gt;
-                                        &lt;DiscreteDoubleKeyFrame KeyTime="00:00:02.5" Value="0"/&gt;
-                                    &lt;/DoubleAnimationUsingKeyFrames&gt;
-                                &lt;/Storyboard&gt;
-                            &lt;/VisualState&gt;
-                        &lt;/VisualStateGroup&gt;
-                    &lt;/VisualStateManager.VisualStateGroups&gt;
-                    &lt;Grid&gt;
-                        &lt;Grid x:Name="DeterminateRoot" Margin="{TemplateBinding Padding}" Visibility="Visible"&gt;
-                            &lt;Rectangle x:Name="ProgressBarTrack" Fill="{TemplateBinding Background}" Height="4" Opacity="0.1"/&gt;
-                            &lt;Rectangle x:Name="ProgressBarIndicator" Fill="{TemplateBinding Foreground}" HorizontalAlignment="Left" Height="4"/&gt;
-                        &lt;/Grid&gt;
-                        &lt;Border x:Name="IndeterminateRoot" Margin="{TemplateBinding Padding}" Visibility="Collapsed"&gt;
-                            &lt;Grid HorizontalAlignment="Left"&gt;
-                                &lt;Rectangle Fill="{TemplateBinding Foreground}" Height="4" IsHitTestVisible="False" Width="4" x:Name="R1" Opacity="0" CacheMode="BitmapCache"&gt;
-                                    &lt;Rectangle.RenderTransform&gt;
-                                        &lt;TranslateTransform x:Name="R1TT"/&gt;
-                                    &lt;/Rectangle.RenderTransform&gt;
-                                &lt;/Rectangle&gt;
-                                &lt;Rectangle Fill="{TemplateBinding Foreground}" Height="4" IsHitTestVisible="False" Width="4" x:Name="R2" Opacity="0" CacheMode="BitmapCache"&gt;
-                                    &lt;Rectangle.RenderTransform&gt;
-                                        &lt;TranslateTransform x:Name="R2TT"/&gt;
-                                    &lt;/Rectangle.RenderTransform&gt;
-                                &lt;/Rectangle&gt;
-                                &lt;Rectangle Fill="{TemplateBinding Foreground}" Height="4" IsHitTestVisible="False" Width="4" x:Name="R3" Opacity="0" CacheMode="BitmapCache"&gt;
-                                    &lt;Rectangle.RenderTransform&gt;
-                                        &lt;TranslateTransform x:Name="R3TT"/&gt;
-                                    &lt;/Rectangle.RenderTransform&gt;
-                                &lt;/Rectangle&gt;
-                                &lt;Rectangle Fill="{TemplateBinding Foreground}" Height="4" IsHitTestVisible="False" Width="4" x:Name="R4" Opacity="0" CacheMode="BitmapCache"&gt;
-                                    &lt;Rectangle.RenderTransform&gt;
-                                        &lt;TranslateTransform x:Name="R4TT"/&gt;
-                                    &lt;/Rectangle.RenderTransform&gt;
-                                &lt;/Rectangle&gt;
-                                &lt;Rectangle Fill="{TemplateBinding Foreground}" Height="4" IsHitTestVisible="False" Width="4" x:Name="R5" Opacity="0" CacheMode="BitmapCache"&gt;
-                                    &lt;Rectangle.RenderTransform&gt;
-                                        &lt;TranslateTransform x:Name="R5TT"/&gt;
-                                    &lt;/Rectangle.RenderTransform&gt;
-                                &lt;/Rectangle&gt;
-                            &lt;/Grid&gt;
-                        &lt;/Border&gt;
-                    &lt;/Grid&gt;
-                &lt;/unsupported:RelativeAnimatingContentControl&gt;
-            &lt;/ControlTemplate&gt;
-        &lt;/Setter.Value&gt;
-    &lt;/Setter&gt;
-&lt;/Style&gt;</pre></div>
-
-<h3>Add this alternate ProgressBar control style everywhere</h3>
-
-<p>Now, whenever you or your designers place a ProgressBar in your app, set the style to be PerformanceProgressBar and it will be picked up from the App.xaml.</p>
-
-<p>In XAML:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:05b6aa71-5ca0-430e-a7fe-9dafce2ff2dd" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;ProgressBar IsIndeterminate="True" Style="{StaticResource PerformanceProgressBar}"/&gt;</pre></div>
-
-<p>In code:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:d749381b-3bdf-4a2f-9e00-2e29a80a1516" class="wlWriterEditableSmartContent"><pre class="csharp" name="code">Style style = (Style)App.Current.Resources["PerformanceProgressBar"];
-if (style == null) { throw new InvalidOperationException("The style was not found."); }
-ProgressBar bar = new ProgressBar
-{
-    IsIndeterminate = true,
-    Style = style,
-};
-LayoutRoot.Children.Add(bar);
-</pre></div>
-
-<p>That’s it! Read on if you want to learn about how this all actually works, why it isn’t built into the system (there’s a good reason), and just general info about the performance-improving workflow I went through.</p>
-
-<h2>The back story</h2>
-
-<p>When people started seeing poor performance on applications that were using indeterminate progress bars, it was a stumper. I’m pretty sure there were hallway conversations including: “what the heck? how’s this so bad? there’s nothing happening here – it’s just animating rectangles! WTF? is there a bug in the animation system? what’s really the issue? this is a super simple animation! fix it!”</p>
-
-<p>I jumped in and started looking at the root of the potential performance problem. It was definitely interesting because the emulator experience was pretty good (though still heavy in the UI thread), but once these same apps were on real developer devices, the issue manifested. The emulator is just that – <a href="http://www.bing.com/search?q=define+emulate&amp;go=&amp;form=QBLH&amp;qs=n&amp;sk=&amp;sc=5-10">it emulates</a>, so there will be differences.</p>
-
-<p>Working to unpeel the onion and diagnose the indeterminate ProgressBar as the root of the performance issue, some of what was tried:</p>
-
-<ul>
-  <li>Noting applications were sluggish on hardware devices when a progress bar would appear in indeterminate mode </li>
-
-  <li>Removing networking calls, commenting out any data parsing, and cutting out application logic – leaving just simple states and the progress bar </li>
-
-  <li>Building a repro application with an indeterminate ProgressBar, the UI thread was still stressed according to the <a href="http://www.jeff.wilcox.name/2010/07/counters/">frame rate counters</a> </li>
-
-  <li>Adding several progress bars compounded the problem </li>
-
-  <li>Trying to understand why the render thread frame rate was doing fine (above 50 fps), but the UI was below 10 fps at times </li>
-
-  <li>Reviewing the default control style and template’s visual state animations and code to look for complex animations or opportunities for improvement (BitmapCache was not being used for instance, but it wasn’t a big enough difference to explain the cause) </li>
-
-  <li>Identifying that the method used to move the small rectangles on the screen by animating the Value property of Slider would cause per-thread callbacks to the property change handler of the Slider control, forcing the animations to the UI thread <em>instead</em> of the independent animations render thread </li>
-</ul>
-
-<p>So there, the issue was in the animations and underlying template for the indeterminate ProgressBar and its use of Slider controls.</p>
-
-<h3>Why Slider is in the template</h3>
-
-<p>The default style and control template for the Windows Phone was created to meet the UX &amp; user interface guidelines that the Windows Phone team has created. A consistent and good-looking set of controls is an important part of the platform and so the progress bar has a very slick appearance.</p>
-
-<p>In “indeterminate” mode, five small rectangles in the user’s accent color, that move into the screen one just briefly after another. It’s mesmerizing and more fun than the standard Silverlight one you may have seen on the web before.</p>
-
-<p>Trouble is, the animation defined for the rectangles is impossible to declare in XAML markup – there’s no way to provide an animation frame description which says “at this keyframe, the rectangle should be positioned 1/3 of the width of the control”: Silverlight happily will let you define a specific fixed position (like translating 75 pixels), but not a variable or ratio-based size for the animation.</p>
-
-<p>But wait! There’s another control in the core platform that can do this visual concept.</p>
-
-<p>Enter <a href="http://msdn.microsoft.com/en-us/library/system.windows.controls.slider_members(v=VS.95).aspx">Slider</a>. Slider is a nice control because it calculates a position based on the width and effectively a percent (the Value divided by the Maximum provides the ratio), then uses that to update the Thumb/Track template part of the control.</p>
-
-<p>Here’s some short XAML that helps demonstrate how this ratio works for offsetting the thumb:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:f98d1ba3-3f7f-43c2-9312-edbd83c72d95" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;Grid Width="100" Background="#33000000" Margin="5"&gt;
-    &lt;Slider Value="30" Maximum="100"/&gt;
-&lt;/Grid&gt;
-&lt;Grid Grid.Column="1" Width="200" Background="#33000000" Margin="5"&gt;
-    &lt;Slider Value="30" Maximum="100"/&gt;
-&lt;/Grid&gt;</pre></div>
-
-<p>And you’ll see that even though the Value is 30 in each case, the Sliders are different sizes based on their parents’ size: effectively allowing for moving the thumb based on a ratio applied to the actual width:</p>
-
-<p><img style="border-right-width: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px" class="wlDisabledImage" title="IdenticalSliders" border="0" alt="IdenticalSliders" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/08/IdenticalSliders.png" width="325" height="130" /></p>
-
-<p>This let the designers create the ratio-based animation for the rectangles (thumbs of a slider) that makes them smoothly move in thirds. The rectangles enter to one third the width of the screen while fading in, then move at a different rate from 1/3 to 2/3 the width of the screen, and then fly and fade out.</p>
-
-<p>So indeterminate mode progress bar was destined to use a set of Sliders to move those rectangles. The progress bar defines 5 Slider controls.</p>
-
-<p>Here’s a snippet from the default style template in the beta release of the Windows Phone developer tools:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:a66539a3-cea5-48a7-b1d7-bef33c8f882a" class="wlWriterEditableSmartContent"><pre class="xml" name="code">  &lt;Border x:Name="IndeterminateRoot" Visibility="Collapsed" Margin="{TemplateBinding Padding}"&gt;
-    &lt;Grid&gt;
-      &lt;Slider x:Name="Slider1" Style="{StaticResource PhoneProgressBarSliderStyle}" Foreground="{TemplateBinding Foreground}"/&gt;
-      &lt;Slider x:Name="Slider2" Style="{StaticResource PhoneProgressBarSliderStyle}" Foreground="{TemplateBinding Foreground}"/&gt;
-      &lt;Slider x:Name="Slider3" Style="{StaticResource PhoneProgressBarSliderStyle}" Foreground="{TemplateBinding Foreground}"/&gt;
-      &lt;Slider x:Name="Slider4" Style="{StaticResource PhoneProgressBarSliderStyle}" Foreground="{TemplateBinding Foreground}"/&gt;
-      &lt;Slider x:Name="Slider5" Style="{StaticResource PhoneProgressBarSliderStyle}" Foreground="{TemplateBinding Foreground}"/&gt;
-    &lt;/Grid&gt;
-  &lt;/Border&gt;</pre></div>
-
-<p>The static style resource defines a custom look for the Slider to create an accent colored rectangle, instead of looking like the normal phone Slider control you may place on the page.</p>
-
-<p>Nesting controls within templates is how Silverlight was designed to work, so it isn’t the composition of controls that necessarily degrades performance in this case (though simplicity is always key, especially on a device that has very different computing properties than your PC).</p>
-
-<p>Now here’s a small chunk of the Storyboard animation code that animates the Slider instances. Note the <strong>Value</strong> target property:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:4add9eae-5ead-4c8c-afdd-ecaa898b2280" class="wlWriterEditableSmartContent"><pre class="csharp" name="code"> &lt;DoubleAnimationUsingKeyFrames 
-    Storyboard.TargetName="Slider3" 
-    Storyboard.TargetProperty="Value" 
-    BeginTime="00:00:00.4"&gt;
-&lt;!-- and so on --&gt;
- &lt;/DoubleAnimationUsingKeyFrames&gt;
- </pre></div>
-
-<p>And now we are finally to the root of the problem: the trouble is that <strong>Value</strong> is a DependencyProperty defined by the nested Slider controls, and it has some performance implications.</p>
-
-<h3>Animating the Slider::Value property means the animation happens on the UI thread (not good!)</h3>
-
-<p>The <a href="http://msdn.microsoft.com/en-us/library/system.windows.controls.primitives.rangebase.value(v=VS.95).aspx">Value</a> DependencyProperty of Slider comes from its parent class, RangeBase. The declaration for the property shows that there is a property change callback, OnValueChanged, that is called whenever the property changes, so in our case, when the progress bar animations animate the Slider.Value target property – which will be every single frame, it’s an animation.</p>
-
-<p>The platform allows dependency properties to optionally have these callbacks to perform logic and states changes, validation, and other operations. In real world control development, I’d guess that it’s 50/50 whether a property has that callback. So it’s not a design flaw of a property, they are there for a good reason, but can have unintended consequences to performance, especially once you start doing wild things with those properties.</p>
-
-<p>If you open up Reflector to look at Slider, you’ll see a call to UpdateTrackLayout. This is the meat of the control that updates the size of the template’s special Grid columns or rows to simulate the movement of the Slider.</p>
-
-<p><img style="border-right-width: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px" class="wlDisabledImage" title="ReflectorSlider" border="0" alt="ReflectorSlider" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/08/ReflectorSlider.png" width="685" height="371" /></p>
-
-<p>The callback will always happen on the UI thread, as all core UI interactions on the platform need to happen on the UI thread, and the runtime guarantees this.</p>
-
-<p>That means that the five animations for the value property cannot happen on the separate render thread.</p>
-
-<h3>What needs to change in ProgressBar? Should we build our own?</h3>
-
-<p>So maybe the default style on the phone is a little “heavy”; but the <a href="http://msdn.microsoft.com/en-us/library/system.windows.controls.progressbar(VS.95).aspx">ProgressBar control</a> implementation is fine. There are no code fixes or changes required to the actual control.</p>
-
-<p>I recommend just using a special C# file and re-templating the standard ProgressBar, though it would be easy enough to package this up into an independent control library or ship with some kind of toolkit. We’ll see what people do.</p>
-
-<h3>Why can’t MSFT update the progress bar in the platform?</h3>
-
-<p>I’m really only talking here about the beta version of the developer tools for the Windows Phone.</p>
-
-<p>In my opinion, changing this in the platform while matching the Windows Phone user interface guidelines is a big technical challenge (again, the lack of ratio-based translation key frames in Silverlight), so in the meantime, please use mine – I’ll make sure it continues to work through the release of the phone and will blog and <a href="http://www.twitter.com/jeffwilcox/">tweet</a> updates as necessary.</p>
-
-<p>This could change in the future, but since this workaround doesn’t change the ProgressBar control itself, it is easy enough to pull out the workaround – just remove the custom Style setter!</p>
-
-<h3>Shouldn’t everything just be fast and have great performance anyway?</h3>
-
-<p>We all wish. There is a lot of give and take in application development and especially tweaking for perf.</p>
-
-<p>On the Silverlight mobile team we’re very serious about performance, but don’t expect performance to be free: we’re doing our part to drive performance improvements through the product, but we need application developer’s help as well to optimize their applications for the phone experience.</p>
-
-<h3>What’s this RelativeAnimatingContentControl I added to my project?</h3>
-
-<p>I designed this custom content control that makes adjustments to the storyboards of the visual states attached to it. When the layout is updated (i.e. there is a known size), the control will go through the storyboards and update the properties that are designed to be “relative”, using its initial ratio.</p>
-
-<p>The control has some magic number trickery to accomplish this, and only works with double animation elements and double animations with key frames. Instead of hard-coding numbers and using that, the control interprets the initial values of the animation properties as a percentage. If you’re interested in the inner workings, let me know and I am happy to post more about it. Quickly, if a From, To, or keyframe Value has an initial value ending in “.1” (such as 33.1, or 75.1, or 0.1), the property is interpreted as a percentage ratio based on the width of the control – 0 to 100. The .1 is stipped off. If the magic number decimal is instead .2, like 50.2, then the height of the control is used for the calculation instead. The idea is that a designer and coder work to define the special template with these magic numbers, but it doesn’t keep the designer from defining other animations that are not ratio-based.</p>
-
-<p>Since the control must be the root of the ProgressBar template, it is an opt-in model and won’t affect any other uses of ProgressBar either.</p>
-
-<p>This is all to work around the lack of ratio animation properties in Silverlight, and it’s a pretty good solution, magic numbers aside. I feel a little sick about the magic numbers part. I’m sharing this feedback with the team of course and we’ll see what the future holds.</p>
-
-<h3>Why’s the control in the Microsoft.Phone.Controls.Unsupported namespace?</h3>
-
-<p>I wanted to make it clear to everyone that this is not an official Microsoft control. It’s a way to work around a limitation in Silverlight, and probably not a good general-purpose solution.</p>
-
-<p>That said, the namespace probably should be JeffWilcox.Controls.Supported: I’m always happy to look at the feedback I get on these posts and update the content to be relative and address issues.</p>
-
-<h3>What changed in the PerformanceProgressBar style</h3>
-
-<p>You’ll see that the ProgressBar style looks very similar. Here are some of the differences:</p>
-
-<ul>
-  <li>The root of the control template is this special RelativeAnimatingContentControl. The control updates the visual state storyboards when the size of the control changes, giving the animations a ratio to the size of the control based on the initial value stored in the storyboard. </li>
-
-  <li>The 5 Slider controls have been replaced by 5 simple Rectangle instances </li>
-
-  <li>The rectangles have BitmapCache turned on </li>
-
-  <li>Each rectangle has a defined TranslateTransform which is used to move the rectangle instead of the UI animation from the standard (which animated the Value property, on the UI thread, which then made the item move after a layout pass with the underlying grid in the template) </li>
-</ul>
-
-<p>So here’s the part with the rectangles:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:b5c76af6-4a75-4732-95cb-1c94fc0bd0f2" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;Rectangle Fill="{TemplateBinding Foreground}" Height="4" IsHitTestVisible="False" Width="4" x:Name="R1" Opacity="0" CacheMode="BitmapCache"&gt;
-    &lt;Rectangle.RenderTransform&gt;
-        &lt;TranslateTransform x:Name="R1TT"/&gt;
-    &lt;/Rectangle.RenderTransform&gt;
-&lt;/Rectangle&gt;</pre></div>
-
-<p>And here’s some of the animation code. Note the “magic” numbers ending in 0.1 – those tell the system it’s a ratio based on the width of the control. A hacky overload of a property, but something that can work and give us a real perf win today!</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:f6eb4232-271b-4bd0-a9fe-f81267588c50" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.0" Storyboard.TargetProperty="X" Storyboard.TargetName="R1TT"&gt;
-    &lt;LinearDoubleKeyFrame KeyTime="00:00:00.0" Value="0.1"/&gt;
-    &lt;EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="33.1" EasingFunction="{StaticResource ProgressBarEaseOut}"/&gt;
-    &lt;LinearDoubleKeyFrame KeyTime="00:00:02.0" Value="66.1"/&gt;
-    &lt;EasingDoubleKeyFrame KeyTime="00:00:02.5" Value="100.1" EasingFunction="{StaticResource ProgressBarEaseIn}"/&gt;
-&lt;/DoubleAnimationUsingKeyFrames&gt;</pre></div>
-
-<h3>Feedback</h3>
-
-<p>I hope everyone uses this ProgressBar to make their apps rock. Remember that one key to great perf is to let the UI thread “breath”: don’t bog it down, let it do its job, and especially in loading, downloading and parsing scenarios, really important to use a progress bar that won’t inhibit the progress.</p>
-
+<h2>2/17/2011 Update</h2>
+
+<p><strong>2/17/2011 update - this post is no longer needed:</strong> a performance progress bar is now included in the <a href="http://silverlight.codeplex.com/">Silverlight for Windows Phone Toolkit</a>.</p>
+
+<h2>Original post:</h2>
+
+<p>The ProgressBar template for Silverlight that is built into the Windows Phone today has a negative performance cost in ‘indeterminate’ mode (the animating dots that often indicate loading during an operation of unknown time). The control is also known as ‘progress indicator’ according to the UX guidelines for the phone.</p>  <p><strong>Please use this template and workaround source code (open and free source) in all Windows Phone applications.</strong></p>  <p>One of the reasons that this is so important is that performance is always an issue when there is a progress bar visible (whether you’re parsing data, processing layout changes, or performing network requests), so any issues with bogging down the user interface thread will be more obvious.</p>  <p>Here I offer a workaround which is identical in looks to the standard one, but with excellent performance that offloads from the UI thread. It uses the <strong>compositor thread</strong> exclusively for animation, instead of the <strong>UI (user interface) thread</strong>. I’ve touched on the differences in a post on <a href="http://www.jeff.wilcox.name/2010/07/counters/">performance and frame rate counters for the Windows Phone</a>.</p>  <p><em>Updated 9/15/10: Improvements per feedback. Thanks folks!     <br />Updated 8/17/10: Please also toggle IsIndeterminate, do not hard-code it to True.</em> <a href="http://www.jeff.wilcox.name/2010/08/progressbarperftips2/">More info in my 8/17 post</a>.</p>  <p><img style="border-right-width: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px" class="wlDisabledImage" title="IndeterminateWindowsPhoneProgressBar" border="0" alt="IndeterminateWindowsPhoneProgressBar" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/08/IndeterminateWindowsPhoneProgressBar.png" width="484" height="90" /></p>  <p>Moving the indeterminate animation to the render thread frees up the UI thread to handle application events, messages, interact with the networking stack, and otherwise keep the app running smoothly.</p>  <h2>Using the PerformanceProgressBar in your app</h2>  <p>This workaround requires you to add a simple <a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/08/RelativeAnimatingContentControl.cs_.txt">control</a> (a .cs file) to your Windows Phone project, as well as set the <a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/08/PerformanceProgressBarStyle.txt">ProgressBar style to the alternative</a>, and should take about 5 minutes. This is what you want if you want to give your users that “progress indicator” visual style while data or information is loading, and using this version will let the app continue to look responsive to your customers.</p>  <h3>Get the code</h3>  <p>Download and add the source file <a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/08/RelativeAnimatingContentControl.cs_.txt">RelativeAnimatingContentControl.cs</a> to your project (it is <a href="http://opensource.org/licenses/ms-pl.html">open source</a>)</p>  <h3>Add the PerformanceProgressBar style</h3>  <p>Open the App.xaml file in your Windows Phone project (or generic.xaml if a composite control library). Next, add the following XMLNS declaration at the top element – this is important as it tells the parser to look in your project for the code you added above.</p>  <p>Note that you may see warning or error messages in Visual Studio until after you’ve built the project, but it should work fine.</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:b02e0967-ee8d-4d6a-b0ee-db22877e8b6a" class="wlWriterEditableSmartContent"><pre class="brush: xml">xmlns:unsupported="clr-namespace:Microsoft.Phone.Controls.Unsupported"</pre></div>
+
+
+
+<p>Now, go into the Resources section of the file and add this style (you can also download as <a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/08/PerformanceProgressBarStyle.txt">PerformanceProgressBarStyle.txt</a>) (the &lt;Application.Resources&gt; element).</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:78e389f1-aceb-4c16-9f10-1adbd13adf9d" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;Style x:Key="PerformanceProgressBar" TargetType="ProgressBar"&gt;
+
+    &lt;Setter Property="Foreground" Value="{StaticResource PhoneAccentBrush}"/&gt;
+
+    &lt;Setter Property="Background" Value="{StaticResource PhoneAccentBrush}"/&gt;
+
+    &lt;Setter Property="Maximum" Value="100"/&gt;
+
+    &lt;Setter Property="IsHitTestVisible" Value="False"/&gt;
+
+    &lt;Setter Property="Padding" Value="{StaticResource PhoneHorizontalMargin}"/&gt;
+
+    &lt;Setter Property="Template"&gt;
+
+        &lt;Setter.Value&gt;
+
+            &lt;ControlTemplate TargetType="ProgressBar"&gt;
+
+                &lt;unsupported:RelativeAnimatingContentControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch"&gt;
+
+                    &lt;unsupported:RelativeAnimatingContentControl.Resources&gt;
+
+                        &lt;ExponentialEase EasingMode="EaseOut" Exponent="1" x:Key="ProgressBarEaseOut"/&gt;
+
+                        &lt;ExponentialEase EasingMode="EaseIn" Exponent="1" x:Key="ProgressBarEaseIn"/&gt;
+
+                    &lt;/unsupported:RelativeAnimatingContentControl.Resources&gt;
+
+                    &lt;VisualStateManager.VisualStateGroups&gt;
+
+                        &lt;VisualStateGroup x:Name="CommonStates"&gt;
+
+                            &lt;VisualState x:Name="Determinate"/&gt;
+
+                            &lt;VisualState x:Name="Indeterminate"&gt;
+
+                                &lt;Storyboard RepeatBehavior="Forever" Duration="00:00:04.4"&gt;
+
+                                    &lt;ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="IndeterminateRoot"&gt;
+
+                                        &lt;DiscreteObjectKeyFrame KeyTime="0"&gt;
+
+                                            &lt;DiscreteObjectKeyFrame.Value&gt;
+
+                                                &lt;Visibility&gt;Visible&lt;/Visibility&gt;
+
+                                            &lt;/DiscreteObjectKeyFrame.Value&gt;
+
+                                        &lt;/DiscreteObjectKeyFrame&gt;
+
+                                    &lt;/ObjectAnimationUsingKeyFrames&gt;
+
+                                    &lt;ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Visibility" Storyboard.TargetName="DeterminateRoot"&gt;
+
+                                        &lt;DiscreteObjectKeyFrame KeyTime="0"&gt;
+
+                                            &lt;DiscreteObjectKeyFrame.Value&gt;
+
+                                                &lt;Visibility&gt;Collapsed&lt;/Visibility&gt;
+
+                                            &lt;/DiscreteObjectKeyFrame.Value&gt;
+
+                                        &lt;/DiscreteObjectKeyFrame&gt;
+
+                                    &lt;/ObjectAnimationUsingKeyFrames&gt;
+
+                                    &lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.0" Storyboard.TargetProperty="X" Storyboard.TargetName="R1TT"&gt;
+
+                                        &lt;LinearDoubleKeyFrame KeyTime="00:00:00.0" Value="0.1"/&gt;
+
+                                        &lt;EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="33.1" EasingFunction="{StaticResource ProgressBarEaseOut}"/&gt;
+
+                                        &lt;LinearDoubleKeyFrame KeyTime="00:00:02.0" Value="66.1"/&gt;
+
+                                        &lt;EasingDoubleKeyFrame KeyTime="00:00:02.5" Value="100.1" EasingFunction="{StaticResource ProgressBarEaseIn}"/&gt;
+
+                                    &lt;/DoubleAnimationUsingKeyFrames&gt;
+
+                                    &lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.2" Storyboard.TargetProperty="X" Storyboard.TargetName="R2TT"&gt;
+
+                                        &lt;LinearDoubleKeyFrame KeyTime="00:00:00.0" Value="0.1"/&gt;
+
+                                        &lt;EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="33.1" EasingFunction="{StaticResource ProgressBarEaseOut}"/&gt;
+
+                                        &lt;LinearDoubleKeyFrame KeyTime="00:00:02.0" Value="66.1"/&gt;
+
+                                        &lt;EasingDoubleKeyFrame KeyTime="00:00:02.5" Value="100.1" EasingFunction="{StaticResource ProgressBarEaseIn}"/&gt;
+
+                                    &lt;/DoubleAnimationUsingKeyFrames&gt;
+
+                                    &lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.4" Storyboard.TargetProperty="X" Storyboard.TargetName="R3TT"&gt;
+
+                                        &lt;LinearDoubleKeyFrame KeyTime="00:00:00.0" Value="0.1"/&gt;
+
+                                        &lt;EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="33.1" EasingFunction="{StaticResource ProgressBarEaseOut}"/&gt;
+
+                                        &lt;LinearDoubleKeyFrame KeyTime="00:00:02.0" Value="66.1"/&gt;
+
+                                        &lt;EasingDoubleKeyFrame KeyTime="00:00:02.5" Value="100.1" EasingFunction="{StaticResource ProgressBarEaseIn}"/&gt;
+
+                                    &lt;/DoubleAnimationUsingKeyFrames&gt;
+
+                                    &lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.6" Storyboard.TargetProperty="X" Storyboard.TargetName="R4TT"&gt;
+
+                                        &lt;LinearDoubleKeyFrame KeyTime="00:00:00.0" Value="0.1"/&gt;
+
+                                        &lt;EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="33.1" EasingFunction="{StaticResource ProgressBarEaseOut}"/&gt;
+
+                                        &lt;LinearDoubleKeyFrame KeyTime="00:00:02.0" Value="66.1"/&gt;
+
+                                        &lt;EasingDoubleKeyFrame KeyTime="00:00:02.5" Value="100.1" EasingFunction="{StaticResource ProgressBarEaseIn}"/&gt;
+
+                                    &lt;/DoubleAnimationUsingKeyFrames&gt;
+
+                                    &lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.8" Storyboard.TargetProperty="X" Storyboard.TargetName="R5TT"&gt;
+
+                                        &lt;LinearDoubleKeyFrame KeyTime="00:00:00.0" Value="0.1"/&gt;
+
+                                        &lt;EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="33.1" EasingFunction="{StaticResource ProgressBarEaseOut}"/&gt;
+
+                                        &lt;LinearDoubleKeyFrame KeyTime="00:00:02.0" Value="66.1"/&gt;
+
+                                        &lt;EasingDoubleKeyFrame KeyTime="00:00:02.5" Value="100.1" EasingFunction="{StaticResource ProgressBarEaseIn}"/&gt;
+
+                                    &lt;/DoubleAnimationUsingKeyFrames&gt;
+
+                                    &lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.0" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="R1"&gt;
+
+                                        &lt;DiscreteDoubleKeyFrame KeyTime="0" Value="1"/&gt;
+
+                                        &lt;DiscreteDoubleKeyFrame KeyTime="00:00:02.5" Value="0"/&gt;
+
+                                    &lt;/DoubleAnimationUsingKeyFrames&gt;
+
+                                    &lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.2" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="R2"&gt;
+
+                                        &lt;DiscreteDoubleKeyFrame KeyTime="0" Value="1"/&gt;
+
+                                        &lt;DiscreteDoubleKeyFrame KeyTime="00:00:02.5" Value="0"/&gt;
+
+                                    &lt;/DoubleAnimationUsingKeyFrames&gt;
+
+                                    &lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.4" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="R3"&gt;
+
+                                        &lt;DiscreteDoubleKeyFrame KeyTime="0" Value="1"/&gt;
+
+                                        &lt;DiscreteDoubleKeyFrame KeyTime="00:00:02.5" Value="0"/&gt;
+
+                                    &lt;/DoubleAnimationUsingKeyFrames&gt;
+
+                                    &lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.6" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="R4"&gt;
+
+                                        &lt;DiscreteDoubleKeyFrame KeyTime="0" Value="1"/&gt;
+
+                                        &lt;DiscreteDoubleKeyFrame KeyTime="00:00:02.5" Value="0"/&gt;
+
+                                    &lt;/DoubleAnimationUsingKeyFrames&gt;
+
+                                    &lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.8" Storyboard.TargetProperty="Opacity" Storyboard.TargetName="R5"&gt;
+
+                                        &lt;DiscreteDoubleKeyFrame KeyTime="0" Value="1"/&gt;
+
+                                        &lt;DiscreteDoubleKeyFrame KeyTime="00:00:02.5" Value="0"/&gt;
+
+                                    &lt;/DoubleAnimationUsingKeyFrames&gt;
+
+                                &lt;/Storyboard&gt;
+
+                            &lt;/VisualState&gt;
+
+                        &lt;/VisualStateGroup&gt;
+
+                    &lt;/VisualStateManager.VisualStateGroups&gt;
+
+                    &lt;Grid&gt;
+
+                        &lt;Grid x:Name="DeterminateRoot" Margin="{TemplateBinding Padding}" Visibility="Visible"&gt;
+
+                            &lt;Rectangle x:Name="ProgressBarTrack" Fill="{TemplateBinding Background}" Height="4" Opacity="0.1"/&gt;
+
+                            &lt;Rectangle x:Name="ProgressBarIndicator" Fill="{TemplateBinding Foreground}" HorizontalAlignment="Left" Height="4"/&gt;
+
+                        &lt;/Grid&gt;
+
+                        &lt;Border x:Name="IndeterminateRoot" Margin="{TemplateBinding Padding}" Visibility="Collapsed"&gt;
+
+                            &lt;Grid HorizontalAlignment="Left"&gt;
+
+                                &lt;Rectangle Fill="{TemplateBinding Foreground}" Height="4" IsHitTestVisible="False" Width="4" x:Name="R1" Opacity="0" CacheMode="BitmapCache"&gt;
+
+                                    &lt;Rectangle.RenderTransform&gt;
+
+                                        &lt;TranslateTransform x:Name="R1TT"/&gt;
+
+                                    &lt;/Rectangle.RenderTransform&gt;
+
+                                &lt;/Rectangle&gt;
+
+                                &lt;Rectangle Fill="{TemplateBinding Foreground}" Height="4" IsHitTestVisible="False" Width="4" x:Name="R2" Opacity="0" CacheMode="BitmapCache"&gt;
+
+                                    &lt;Rectangle.RenderTransform&gt;
+
+                                        &lt;TranslateTransform x:Name="R2TT"/&gt;
+
+                                    &lt;/Rectangle.RenderTransform&gt;
+
+                                &lt;/Rectangle&gt;
+
+                                &lt;Rectangle Fill="{TemplateBinding Foreground}" Height="4" IsHitTestVisible="False" Width="4" x:Name="R3" Opacity="0" CacheMode="BitmapCache"&gt;
+
+                                    &lt;Rectangle.RenderTransform&gt;
+
+                                        &lt;TranslateTransform x:Name="R3TT"/&gt;
+
+                                    &lt;/Rectangle.RenderTransform&gt;
+
+                                &lt;/Rectangle&gt;
+
+                                &lt;Rectangle Fill="{TemplateBinding Foreground}" Height="4" IsHitTestVisible="False" Width="4" x:Name="R4" Opacity="0" CacheMode="BitmapCache"&gt;
+
+                                    &lt;Rectangle.RenderTransform&gt;
+
+                                        &lt;TranslateTransform x:Name="R4TT"/&gt;
+
+                                    &lt;/Rectangle.RenderTransform&gt;
+
+                                &lt;/Rectangle&gt;
+
+                                &lt;Rectangle Fill="{TemplateBinding Foreground}" Height="4" IsHitTestVisible="False" Width="4" x:Name="R5" Opacity="0" CacheMode="BitmapCache"&gt;
+
+                                    &lt;Rectangle.RenderTransform&gt;
+
+                                        &lt;TranslateTransform x:Name="R5TT"/&gt;
+
+                                    &lt;/Rectangle.RenderTransform&gt;
+
+                                &lt;/Rectangle&gt;
+
+                            &lt;/Grid&gt;
+
+                        &lt;/Border&gt;
+
+                    &lt;/Grid&gt;
+
+                &lt;/unsupported:RelativeAnimatingContentControl&gt;
+
+            &lt;/ControlTemplate&gt;
+
+        &lt;/Setter.Value&gt;
+
+    &lt;/Setter&gt;
+
+&lt;/Style&gt;</pre></div>
+
+
+
+<h3>Add this alternate ProgressBar control style everywhere</h3>
+
+
+
+<p>Now, whenever you or your designers place a ProgressBar in your app, set the style to be PerformanceProgressBar and it will be picked up from the App.xaml.</p>
+
+
+
+<p>In XAML:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:05b6aa71-5ca0-430e-a7fe-9dafce2ff2dd" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;ProgressBar IsIndeterminate="True" Style="{StaticResource PerformanceProgressBar}"/&gt;</pre></div>
+
+
+
+<p>In code:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:d749381b-3bdf-4a2f-9e00-2e29a80a1516" class="wlWriterEditableSmartContent"><pre class="csharp" name="code">Style style = (Style)App.Current.Resources["PerformanceProgressBar"];
+
+if (style == null) { throw new InvalidOperationException("The style was not found."); }
+
+ProgressBar bar = new ProgressBar
+
+{
+
+    IsIndeterminate = true,
+
+    Style = style,
+
+};
+
+LayoutRoot.Children.Add(bar);
+
+</pre></div>
+
+
+
+<p>That’s it! Read on if you want to learn about how this all actually works, why it isn’t built into the system (there’s a good reason), and just general info about the performance-improving workflow I went through.</p>
+
+
+
+<h2>The back story</h2>
+
+
+
+<p>When people started seeing poor performance on applications that were using indeterminate progress bars, it was a stumper. I’m pretty sure there were hallway conversations including: “what the heck? how’s this so bad? there’s nothing happening here – it’s just animating rectangles! WTF? is there a bug in the animation system? what’s really the issue? this is a super simple animation! fix it!”</p>
+
+
+
+<p>I jumped in and started looking at the root of the potential performance problem. It was definitely interesting because the emulator experience was pretty good (though still heavy in the UI thread), but once these same apps were on real developer devices, the issue manifested. The emulator is just that – <a href="http://www.bing.com/search?q=define+emulate&amp;go=&amp;form=QBLH&amp;qs=n&amp;sk=&amp;sc=5-10">it emulates</a>, so there will be differences.</p>
+
+
+
+<p>Working to unpeel the onion and diagnose the indeterminate ProgressBar as the root of the performance issue, some of what was tried:</p>
+
+
+
+<ul>
+
+  <li>Noting applications were sluggish on hardware devices when a progress bar would appear in indeterminate mode </li>
+
+
+
+  <li>Removing networking calls, commenting out any data parsing, and cutting out application logic – leaving just simple states and the progress bar </li>
+
+
+
+  <li>Building a repro application with an indeterminate ProgressBar, the UI thread was still stressed according to the <a href="http://www.jeff.wilcox.name/2010/07/counters/">frame rate counters</a> </li>
+
+
+
+  <li>Adding several progress bars compounded the problem </li>
+
+
+
+  <li>Trying to understand why the render thread frame rate was doing fine (above 50 fps), but the UI was below 10 fps at times </li>
+
+
+
+  <li>Reviewing the default control style and template’s visual state animations and code to look for complex animations or opportunities for improvement (BitmapCache was not being used for instance, but it wasn’t a big enough difference to explain the cause) </li>
+
+
+
+  <li>Identifying that the method used to move the small rectangles on the screen by animating the Value property of Slider would cause per-thread callbacks to the property change handler of the Slider control, forcing the animations to the UI thread <em>instead</em> of the independent animations render thread </li>
+
+</ul>
+
+
+
+<p>So there, the issue was in the animations and underlying template for the indeterminate ProgressBar and its use of Slider controls.</p>
+
+
+
+<h3>Why Slider is in the template</h3>
+
+
+
+<p>The default style and control template for the Windows Phone was created to meet the UX &amp; user interface guidelines that the Windows Phone team has created. A consistent and good-looking set of controls is an important part of the platform and so the progress bar has a very slick appearance.</p>
+
+
+
+<p>In “indeterminate” mode, five small rectangles in the user’s accent color, that move into the screen one just briefly after another. It’s mesmerizing and more fun than the standard Silverlight one you may have seen on the web before.</p>
+
+
+
+<p>Trouble is, the animation defined for the rectangles is impossible to declare in XAML markup – there’s no way to provide an animation frame description which says “at this keyframe, the rectangle should be positioned 1/3 of the width of the control”: Silverlight happily will let you define a specific fixed position (like translating 75 pixels), but not a variable or ratio-based size for the animation.</p>
+
+
+
+<p>But wait! There’s another control in the core platform that can do this visual concept.</p>
+
+
+
+<p>Enter <a href="http://msdn.microsoft.com/en-us/library/system.windows.controls.slider_members(v=VS.95).aspx">Slider</a>. Slider is a nice control because it calculates a position based on the width and effectively a percent (the Value divided by the Maximum provides the ratio), then uses that to update the Thumb/Track template part of the control.</p>
+
+
+
+<p>Here’s some short XAML that helps demonstrate how this ratio works for offsetting the thumb:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:f98d1ba3-3f7f-43c2-9312-edbd83c72d95" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;Grid Width="100" Background="#33000000" Margin="5"&gt;
+
+    &lt;Slider Value="30" Maximum="100"/&gt;
+
+&lt;/Grid&gt;
+
+&lt;Grid Grid.Column="1" Width="200" Background="#33000000" Margin="5"&gt;
+
+    &lt;Slider Value="30" Maximum="100"/&gt;
+
+&lt;/Grid&gt;</pre></div>
+
+
+
+<p>And you’ll see that even though the Value is 30 in each case, the Sliders are different sizes based on their parents’ size: effectively allowing for moving the thumb based on a ratio applied to the actual width:</p>
+
+
+
+<p><img style="border-right-width: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px" class="wlDisabledImage" title="IdenticalSliders" border="0" alt="IdenticalSliders" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/08/IdenticalSliders.png" width="325" height="130" /></p>
+
+
+
+<p>This let the designers create the ratio-based animation for the rectangles (thumbs of a slider) that makes them smoothly move in thirds. The rectangles enter to one third the width of the screen while fading in, then move at a different rate from 1/3 to 2/3 the width of the screen, and then fly and fade out.</p>
+
+
+
+<p>So indeterminate mode progress bar was destined to use a set of Sliders to move those rectangles. The progress bar defines 5 Slider controls.</p>
+
+
+
+<p>Here’s a snippet from the default style template in the beta release of the Windows Phone developer tools:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:a66539a3-cea5-48a7-b1d7-bef33c8f882a" class="wlWriterEditableSmartContent"><pre class="brush: xml">  &lt;Border x:Name="IndeterminateRoot" Visibility="Collapsed" Margin="{TemplateBinding Padding}"&gt;
+
+    &lt;Grid&gt;
+
+      &lt;Slider x:Name="Slider1" Style="{StaticResource PhoneProgressBarSliderStyle}" Foreground="{TemplateBinding Foreground}"/&gt;
+
+      &lt;Slider x:Name="Slider2" Style="{StaticResource PhoneProgressBarSliderStyle}" Foreground="{TemplateBinding Foreground}"/&gt;
+
+      &lt;Slider x:Name="Slider3" Style="{StaticResource PhoneProgressBarSliderStyle}" Foreground="{TemplateBinding Foreground}"/&gt;
+
+      &lt;Slider x:Name="Slider4" Style="{StaticResource PhoneProgressBarSliderStyle}" Foreground="{TemplateBinding Foreground}"/&gt;
+
+      &lt;Slider x:Name="Slider5" Style="{StaticResource PhoneProgressBarSliderStyle}" Foreground="{TemplateBinding Foreground}"/&gt;
+
+    &lt;/Grid&gt;
+
+  &lt;/Border&gt;</pre></div>
+
+
+
+<p>The static style resource defines a custom look for the Slider to create an accent colored rectangle, instead of looking like the normal phone Slider control you may place on the page.</p>
+
+
+
+<p>Nesting controls within templates is how Silverlight was designed to work, so it isn’t the composition of controls that necessarily degrades performance in this case (though simplicity is always key, especially on a device that has very different computing properties than your PC).</p>
+
+
+
+<p>Now here’s a small chunk of the Storyboard animation code that animates the Slider instances. Note the <strong>Value</strong> target property:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:4add9eae-5ead-4c8c-afdd-ecaa898b2280" class="wlWriterEditableSmartContent"><pre class="csharp" name="code"> &lt;DoubleAnimationUsingKeyFrames 
+
+    Storyboard.TargetName="Slider3" 
+
+    Storyboard.TargetProperty="Value" 
+
+    BeginTime="00:00:00.4"&gt;
+
+&lt;!-- and so on --&gt;
+
+ &lt;/DoubleAnimationUsingKeyFrames&gt;
+
+ </pre></div>
+
+
+
+<p>And now we are finally to the root of the problem: the trouble is that <strong>Value</strong> is a DependencyProperty defined by the nested Slider controls, and it has some performance implications.</p>
+
+
+
+<h3>Animating the Slider::Value property means the animation happens on the UI thread (not good!)</h3>
+
+
+
+<p>The <a href="http://msdn.microsoft.com/en-us/library/system.windows.controls.primitives.rangebase.value(v=VS.95).aspx">Value</a> DependencyProperty of Slider comes from its parent class, RangeBase. The declaration for the property shows that there is a property change callback, OnValueChanged, that is called whenever the property changes, so in our case, when the progress bar animations animate the Slider.Value target property – which will be every single frame, it’s an animation.</p>
+
+
+
+<p>The platform allows dependency properties to optionally have these callbacks to perform logic and states changes, validation, and other operations. In real world control development, I’d guess that it’s 50/50 whether a property has that callback. So it’s not a design flaw of a property, they are there for a good reason, but can have unintended consequences to performance, especially once you start doing wild things with those properties.</p>
+
+
+
+<p>If you open up Reflector to look at Slider, you’ll see a call to UpdateTrackLayout. This is the meat of the control that updates the size of the template’s special Grid columns or rows to simulate the movement of the Slider.</p>
+
+
+
+<p><img style="border-right-width: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px" class="wlDisabledImage" title="ReflectorSlider" border="0" alt="ReflectorSlider" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/08/ReflectorSlider.png" width="685" height="371" /></p>
+
+
+
+<p>The callback will always happen on the UI thread, as all core UI interactions on the platform need to happen on the UI thread, and the runtime guarantees this.</p>
+
+
+
+<p>That means that the five animations for the value property cannot happen on the separate render thread.</p>
+
+
+
+<h3>What needs to change in ProgressBar? Should we build our own?</h3>
+
+
+
+<p>So maybe the default style on the phone is a little “heavy”; but the <a href="http://msdn.microsoft.com/en-us/library/system.windows.controls.progressbar(VS.95).aspx">ProgressBar control</a> implementation is fine. There are no code fixes or changes required to the actual control.</p>
+
+
+
+<p>I recommend just using a special C# file and re-templating the standard ProgressBar, though it would be easy enough to package this up into an independent control library or ship with some kind of toolkit. We’ll see what people do.</p>
+
+
+
+<h3>Why can’t MSFT update the progress bar in the platform?</h3>
+
+
+
+<p>I’m really only talking here about the beta version of the developer tools for the Windows Phone.</p>
+
+
+
+<p>In my opinion, changing this in the platform while matching the Windows Phone user interface guidelines is a big technical challenge (again, the lack of ratio-based translation key frames in Silverlight), so in the meantime, please use mine – I’ll make sure it continues to work through the release of the phone and will blog and <a href="http://www.twitter.com/jeffwilcox/">tweet</a> updates as necessary.</p>
+
+
+
+<p>This could change in the future, but since this workaround doesn’t change the ProgressBar control itself, it is easy enough to pull out the workaround – just remove the custom Style setter!</p>
+
+
+
+<h3>Shouldn’t everything just be fast and have great performance anyway?</h3>
+
+
+
+<p>We all wish. There is a lot of give and take in application development and especially tweaking for perf.</p>
+
+
+
+<p>On the Silverlight mobile team we’re very serious about performance, but don’t expect performance to be free: we’re doing our part to drive performance improvements through the product, but we need application developer’s help as well to optimize their applications for the phone experience.</p>
+
+
+
+<h3>What’s this RelativeAnimatingContentControl I added to my project?</h3>
+
+
+
+<p>I designed this custom content control that makes adjustments to the storyboards of the visual states attached to it. When the layout is updated (i.e. there is a known size), the control will go through the storyboards and update the properties that are designed to be “relative”, using its initial ratio.</p>
+
+
+
+<p>The control has some magic number trickery to accomplish this, and only works with double animation elements and double animations with key frames. Instead of hard-coding numbers and using that, the control interprets the initial values of the animation properties as a percentage. If you’re interested in the inner workings, let me know and I am happy to post more about it. Quickly, if a From, To, or keyframe Value has an initial value ending in “.1” (such as 33.1, or 75.1, or 0.1), the property is interpreted as a percentage ratio based on the width of the control – 0 to 100. The .1 is stipped off. If the magic number decimal is instead .2, like 50.2, then the height of the control is used for the calculation instead. The idea is that a designer and coder work to define the special template with these magic numbers, but it doesn’t keep the designer from defining other animations that are not ratio-based.</p>
+
+
+
+<p>Since the control must be the root of the ProgressBar template, it is an opt-in model and won’t affect any other uses of ProgressBar either.</p>
+
+
+
+<p>This is all to work around the lack of ratio animation properties in Silverlight, and it’s a pretty good solution, magic numbers aside. I feel a little sick about the magic numbers part. I’m sharing this feedback with the team of course and we’ll see what the future holds.</p>
+
+
+
+<h3>Why’s the control in the Microsoft.Phone.Controls.Unsupported namespace?</h3>
+
+
+
+<p>I wanted to make it clear to everyone that this is not an official Microsoft control. It’s a way to work around a limitation in Silverlight, and probably not a good general-purpose solution.</p>
+
+
+
+<p>That said, the namespace probably should be JeffWilcox.Controls.Supported: I’m always happy to look at the feedback I get on these posts and update the content to be relative and address issues.</p>
+
+
+
+<h3>What changed in the PerformanceProgressBar style</h3>
+
+
+
+<p>You’ll see that the ProgressBar style looks very similar. Here are some of the differences:</p>
+
+
+
+<ul>
+
+  <li>The root of the control template is this special RelativeAnimatingContentControl. The control updates the visual state storyboards when the size of the control changes, giving the animations a ratio to the size of the control based on the initial value stored in the storyboard. </li>
+
+
+
+  <li>The 5 Slider controls have been replaced by 5 simple Rectangle instances </li>
+
+
+
+  <li>The rectangles have BitmapCache turned on </li>
+
+
+
+  <li>Each rectangle has a defined TranslateTransform which is used to move the rectangle instead of the UI animation from the standard (which animated the Value property, on the UI thread, which then made the item move after a layout pass with the underlying grid in the template) </li>
+
+</ul>
+
+
+
+<p>So here’s the part with the rectangles:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:b5c76af6-4a75-4732-95cb-1c94fc0bd0f2" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;Rectangle Fill="{TemplateBinding Foreground}" Height="4" IsHitTestVisible="False" Width="4" x:Name="R1" Opacity="0" CacheMode="BitmapCache"&gt;
+
+    &lt;Rectangle.RenderTransform&gt;
+
+        &lt;TranslateTransform x:Name="R1TT"/&gt;
+
+    &lt;/Rectangle.RenderTransform&gt;
+
+&lt;/Rectangle&gt;</pre></div>
+
+
+
+<p>And here’s some of the animation code. Note the “magic” numbers ending in 0.1 – those tell the system it’s a ratio based on the width of the control. A hacky overload of a property, but something that can work and give us a real perf win today!</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:f6eb4232-271b-4bd0-a9fe-f81267588c50" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;DoubleAnimationUsingKeyFrames BeginTime="00:00:00.0" Storyboard.TargetProperty="X" Storyboard.TargetName="R1TT"&gt;
+
+    &lt;LinearDoubleKeyFrame KeyTime="00:00:00.0" Value="0.1"/&gt;
+
+    &lt;EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="33.1" EasingFunction="{StaticResource ProgressBarEaseOut}"/&gt;
+
+    &lt;LinearDoubleKeyFrame KeyTime="00:00:02.0" Value="66.1"/&gt;
+
+    &lt;EasingDoubleKeyFrame KeyTime="00:00:02.5" Value="100.1" EasingFunction="{StaticResource ProgressBarEaseIn}"/&gt;
+
+&lt;/DoubleAnimationUsingKeyFrames&gt;</pre></div>
+
+
+
+<h3>Feedback</h3>
+
+
+
+<p>I hope everyone uses this ProgressBar to make their apps rock. Remember that one key to great perf is to let the UI thread “breath”: don’t bog it down, let it do its job, and especially in loading, downloading and parsing scenarios, really important to use a progress bar that won’t inhibit the progress.</p>
+
+
+
 <p>Let me know how it goes!</p>

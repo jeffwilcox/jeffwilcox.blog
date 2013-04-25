@@ -76,7 +76,7 @@ public class VisibilityConverter : IValueConverter
 <p>Next, add the converter in the UserControl's resources.&nbsp; In my simple project, I had to create this section - but hopefully you're already using this in your real apps!&nbsp; </p>
 <p>You may also need to add an xmlns attribute in page.xaml for your project's namespace.</p>
 <p></p>
-<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:83f52b46-0860-4aeb-a41b-f23a23fe85fc" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="xml">    &lt;UserControl.Resources&gt;
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:83f52b46-0860-4aeb-a41b-f23a23fe85fc" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="brush: xml">    &lt;UserControl.Resources&gt;
         &lt;myproject:VisibilityConverter x:Key="VisibilityConverter" /&gt;
     &lt;/UserControl.Resources&gt;
 </pre></div>
@@ -87,7 +87,7 @@ public class VisibilityConverter : IValueConverter
 <p>If you're looking for juicy details about the DataGrid in detail, head on over to the tutorials that <a href="http://blogs.msdn.com/scmorris/">Scott Morrison</a> has created.</p>
 <p>Make sure to set the AutoGenerateColumns property of the DataGrid to false, so that your template column is picked up.</p>
 <p>Here's the DataGrid element inside my page's Grid:</p>
-<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:03bbf3ad-88ca-4dad-91a5-50e3dc1bd883" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="xml">&lt;my:DataGrid x:Name="SampleGrid" AutoGenerateColumns="False"&gt;
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:03bbf3ad-88ca-4dad-91a5-50e3dc1bd883" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="brush: xml">&lt;my:DataGrid x:Name="SampleGrid" AutoGenerateColumns="False"&gt;
     &lt;my:DataGrid.Columns&gt;
         &lt;my:DataGridTextColumn Header="Product Name" 
                                DisplayMemberBinding="{Binding Name}" /&gt;

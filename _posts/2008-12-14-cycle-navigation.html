@@ -192,7 +192,7 @@ public override void OnApplyTemplate()
 
 <p>Next, open up the file, delete its contents, and replace it with the standard resource dictionary XML content, declare the local XMLNS for your assembly and namespace:</p>
 
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1606b245-c2b1-425d-af57-d00a54eaa9f5" class="wlWriterSmartContent"><pre class="xml" name="code">&lt;!--
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1606b245-c2b1-425d-af57-d00a54eaa9f5" class="wlWriterSmartContent"><pre class="brush: xml">&lt;!--
 // (c) Copyright Microsoft Corporation.
 // This source is subject to the Microsoft Public License (Ms-PL).
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
@@ -208,7 +208,7 @@ public override void OnApplyTemplate()
 
 <p>Now, we just have to add the style for the control. I've copied most of the template from the source download of the toolkit, but did modify the opacity of the list box a little bit. I also place an instance of ListBoxSelectionAdapter, with the x:Name of &quot;SelectionAdapter&quot; (the part name that AutoCompleteBox looks for), where the simple ListBox is in the default template:</p>
 
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:c9a1e0f8-9e09-4ca7-a75e-e68b80a3bbbb" class="wlWriterSmartContent"><pre class="xml" name="code">&lt;Style TargetType="controls:CustomizedAutoCompleteBox"&gt;
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:c9a1e0f8-9e09-4ca7-a75e-e68b80a3bbbb" class="wlWriterSmartContent"><pre class="brush: xml">&lt;Style TargetType="controls:CustomizedAutoCompleteBox"&gt;
     &lt;Setter Property="IsTabStop" Value="False" /&gt;
     &lt;Setter Property="Template"&gt;
         &lt;Setter.Value&gt;
@@ -267,7 +267,7 @@ public override void OnApplyTemplate()
 
 <p>That is a lot of code; here's just the selection adapter part to make that clear. Remember, since we derived ListBoxSelectionAdapter directly from ListBox, this XAML is actually talking directly to a ListBox instance when initialized.</p>
 
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:53a1c379-c88a-431a-8ef4-ae57ba44bb87" class="wlWriterSmartContent"><pre class="xml" name="code">&lt;controls:ListBoxSelectionAdapter 
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:53a1c379-c88a-431a-8ef4-ae57ba44bb87" class="wlWriterSmartContent"><pre class="brush: xml">&lt;controls:ListBoxSelectionAdapter 
     x:Name="SelectionAdapter" 
     Background="#99ffffff"
     ItemContainerStyle="{TemplateBinding ItemContainerStyle}"
@@ -288,7 +288,7 @@ public override void OnApplyTemplate()
 <p>Inside the page you're testing, make sure to add the XMLNS statement for your custom library; you can then place your custom control inside. I'm binding it to the data context and setting our new <strong>UseCyclicNavigation </strong>property in XAML:</p>
 
 <p>
-  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:72869f2d-9099-4135-81cd-ff9a33a75fc4" class="wlWriterSmartContent"><pre class="xml" name="code">&lt;UserControl x:Class="Demo.WithListBoxSelectionAdapter"
+  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:72869f2d-9099-4135-81cd-ff9a33a75fc4" class="wlWriterSmartContent"><pre class="brush: xml">&lt;UserControl x:Class="Demo.WithListBoxSelectionAdapter"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:custom="clr-namespace:CustomAutoCompleteBox;assembly=CustomAutoCompleteBox"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"&gt;

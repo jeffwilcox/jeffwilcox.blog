@@ -17,7 +17,7 @@ imported_categories:
 imported_link_categories: []
 tags: []
 ---
-<p>Thanks to the rich data binding system built into <a href="http://www.silverlight.net/getstarted/devices/windows-phone/">Silverlight for Windows Phone</a>, you can easily store rich user settings without using code behind files.</p>  <p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/03/StartupPage1.png"><img style="border-bottom: 0px; border-left: 0px; display: inline; margin-left: 0px; border-top: 0px; margin-right: 0px; border-right: 0px" title="StartupPage" border="0" alt="StartupPage" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/03/StartupPage_thumb1.png" width="301" height="589" /></a> </p>  <p>The canonical example of user settings is a “Show this welcome screen at startup” checkbox so that your application can offer a nice out-of-box experience.</p>  <p>By writing a simple type with some properties, adding a few helper files, and setting up a two-way data binding, you can store any settings without having to write special code.</p>  <p>Here’s what the completed project’s two-way data binding looks like for the checkbox shown to the right:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:31a809df-3c54-45c6-9f71-e3939f303551" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;CheckBox 
+<p>Thanks to the rich data binding system built into <a href="http://www.silverlight.net/getstarted/devices/windows-phone/">Silverlight for Windows Phone</a>, you can easily store rich user settings without using code behind files.</p>  <p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2010/03/StartupPage1.png"><img style="border-bottom: 0px; border-left: 0px; display: inline; margin-left: 0px; border-top: 0px; margin-right: 0px; border-right: 0px" title="StartupPage" border="0" alt="StartupPage" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/03/StartupPage_thumb1.png" width="301" height="589" /></a> </p>  <p>The canonical example of user settings is a “Show this welcome screen at startup” checkbox so that your application can offer a nice out-of-box experience.</p>  <p>By writing a simple type with some properties, adding a few helper files, and setting up a two-way data binding, you can store any settings without having to write special code.</p>  <p>Here’s what the completed project’s two-way data binding looks like for the checkbox shown to the right:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:31a809df-3c54-45c6-9f71-e3939f303551" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;CheckBox 
    IsChecked="{Binding Source={StaticResource MySettings}, Path=IsFirstRun, Mode=TwoWay}"
    Content="Show this page at startup"
 /&gt;</pre></div>
@@ -135,13 +135,13 @@ namespace Sample
 
 <p>Now, open up App.xaml. Add an XMLNS prefix declaration for your project. I named my app project “Sample”, so it’s short:</p>
 
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:acd9bf42-6d28-4915-bf66-d21d8e7c8936" class="wlWriterEditableSmartContent"><pre class="xml" name="code">xmlns:local="clr-namespace:Sample"</pre></div>
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:acd9bf42-6d28-4915-bf66-d21d8e7c8936" class="wlWriterEditableSmartContent"><pre class="brush: xml">xmlns:local="clr-namespace:Sample"</pre></div>
 
 <p>And then add your settings object to the resources (I’m omitting all the theme resources in App.xaml to make it clear where this goes only).</p>
 
 <p><strong>AlwaysSaveOnChange</strong> needs to be set to true for Windows Phone applications: if you’re building a regular Silverlight app, the Application.Exit event works well and can be used to store. But on the phone, since an app may be in a paused or unknown state, this property tells my helper code to save the settings <em>whenever</em> a binding has a change notification. For performance impact should be minimal.</p>
 
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:13458972-7b46-4eb1-bc09-09a5287a27df" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;Application.Resources&gt;
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:13458972-7b46-4eb1-bc09-09a5287a27df" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;Application.Resources&gt;
         &lt;!-- Settings --&gt;
         &lt;local:MySettings x:Key="MySettings" AlwaysSaveOnChange="True" /&gt;
 &lt;/Application.Resources&gt;</pre></div>
@@ -150,7 +150,7 @@ namespace Sample
 
 <p>Now on my MainPage.xaml, I am just going to bind to the Hello World property from the MySettings type. Any time you type characters into the text box, they will be saved, and always there when you run the app. No need to write code to save or read settings.</p>
 
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:30433b15-c4bf-475a-8a49-59b91a731f58" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;TextBox 
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:30433b15-c4bf-475a-8a49-59b91a731f58" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;TextBox 
     Text="{Binding Source={StaticResource MySettings}, Path=HelloWorld, Mode=TwoWay}" /&gt;
 </pre></div>
 

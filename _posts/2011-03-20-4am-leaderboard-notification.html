@@ -20,387 +20,770 @@ imported_categories:
 imported_link_categories: []
 tags: []
 ---
-<p>It’s just amazing how efficient the Windows Phone (powered by Silverlight) dev environment can be. I’m a little biased here (yeah yeah I work on the team), but wanted to start of my app development series with a short example of just how quickly the platform can enable rapid changes and innovation.</p>  <p>At SXSW a little over a week ago, foursquare introduced the new ‘<a href="http://blog.foursquare.com/2011/03/08/foursquare-3/">fsq3</a>’ version of their apps for iPhone, Android, and I believe eventually Blackberry, too, though not initially. Foursquare has always been about a fun time, exploring the city as part of a massive, worldwide-game, and so they did some nice work in version 3 to bring in a little more fun: every time you check-in to a place, there’s a leaderboard (relative to all of your friends) that appears, showing your latest scores and your close competition.</p>  <p>It took about 30 minutes to add this feature to my foursquare app, sadly this blog post will probably take 60 minutes to prepare.</p>  <p>The steps really are:</p>  <ul>   <li>Parsing the JSON of the added data</li>    <li>Creating a new data/model item</li>    <li>Designing and creating new XAML templates for presenting the data</li>    <li>Updating the data template selector for the added notification type</li>    <li>Binding the data and making the magic happen</li> </ul>  <p>Here’s what it looks like on an iPhone – the new “Leaderboard” section is of interest. Interestingly, the Android app for foursquare is pretty much a clone of the iPhone app… so no need to really highlight that.</p>  <p><img src="http://d2tz2ccf2zi8lx.cloudfront.net/media/posts/leaderboardInResults.png" /></p>  <p>The way that this is implemented on the foursquare service side is a simple new “notification” type that comes in after a check-in or other action. When working with services like this, as a developer it’s more important than ever to be resilient against “invalid” or unknown data and types – lots of null checks, default handling clauses, etc. So foursquare added a new <em>leaderboard</em> notification type to the others (such as mayor status, a recommended tip at a place, etc.)</p>  <p>The code I wrote to handle notifications started with a simple set of parsing methods. Notifications can actually come from any foursquare web request, but typically it’s just when you check-in. I use (and absolute love!) <a href="http://json.codeplex.com/">JSON.NET</a> by James Newton-King - the LINQ to JSON stuff is nice, and it’s a lot better than the JSON stuff built into the platform.</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:3636f1cf-0285-4a90-aa71-9cc2aa386cff" class="wlWriterEditableSmartContent"><pre class="csharp" name="code">// Notifications is a List&lt;Notification&gt;
-public static Notifications ParseJson(JToken json, string venueId)
-{
-    var ns = new Notifications();
-
-    foreach (var notif in json)
-    {
-        Notification notification = Notification.ParseJson(notif, venueId);
-        if (notification != null)
-        {
-            ns.Add(notification);
-        }
-    }
-
-    return ns;
-}
-
-
-public static Notification ParseJson(JToken notification, string venueId)
-{
-    Notification n = null;
-
-    string type = Checkin.TryGetJsonProperty(notification, "type");
-    var item = notification["item"];
-    if (item != null)
-    {
-        switch (type)
-        {
-            case "message":
-                n = new MessageNotification(item);
-                break;
-
-            case "badge":
-                n = new BadgeNotification(item);
-                break;
-
-            case "mayorship":
-                n = new MayorshipNotification(item);
-                break;
-
-            case "tip":
-                n = new RecommendedTipNotification(item);
-                break;
-
-            case "leaderboard":
-                n = new LeaderboardNotification(item);
-                break;
-
-            case "special":
-                n = new SpecialNotification(item, venueId);
-                break;
-
-            case "score":
-                n = new ScoreNotification(item);
-                break;
-
-            default:
-                var hasMessage = item["message"];
-                if (hasMessage != null)
-                {
-                    n = new MessageNotification(item);
-                }
-
-                break;
-        }
-    }
-
-    return n;
-}
-
-namespace JeffWilcox.FourthAndMayor.Model
-{
-    public class LeaderboardNotification : Notification
-    {
-        public string Message { get; private set; }
-
-        public List&lt;LeaderboardItem&gt; Leaderboard { get; private set; }
-
-        public LeaderboardNotification(JToken item)
-        {
-            Message = Checkin.SanitizeString(Checkin.TryGetJsonProperty(item, "message"));
-
-            var leaders = new List&lt;LeaderboardItem&gt;();
-            var lj = item["leaderboard"];
-            if (lj != null)
-            {
-                foreach (var victor in lj)
-                {
-                    var wolverine = LeaderboardItem.ParseJson(victor);
-                    if (wolverine != null)
-                    {
-                        leaders.Add(wolverine);
-                    }
-                }
-            }
-
-            Leaderboard = leaders;
-        }
-    }
-}</pre></div>
-
-<p>And then a switch to handle known notification types and create data model objects from that. This yields a nice strongly typed data object – I personally prefer this to just storing the JSON tree live, or using a property bag, but everyone has their own opinions. Strong typing makes data binding in Silverlight super easy.</p>
-
-<p>The JSON from foursquare looks a lot like this:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:13c02a2f-e8e1-46bf-aa3e-5eba88c5a2b7" class="wlWriterEditableSmartContent"><pre class="jscript" name="code">{
-"type": "mayorship",
-"item": {
-  "type": "nochange",
-  "checkins": 27,
-  "message": "You're still the Mayor of Boka Kitchen & Bar! (27 check-ins in the past two months)",
-  "image": "http://foursquare.com/img/crown.png"
-}
-},
-{
-"type": "leaderboard",
-"item": {
-  "leaderboard": [
-	{
-	  "user": {
-		"id": "4052351",
-		"firstName": "Gilles",
-		"lastName": "K",
-		"photo": "https://playfoursquare.s3.amazonaws.com/userpix_thumbs/FXM5YX5ABXZARAR1.png",
-		"gender": "male",
-		"homeCity": "WA",
-		"relationship": "friend"
-	  },
-	  "scores": {
-		"recent": 120,
-		"max": 127,
-		"checkinsCount": 31
-	  },
-	  "rank": 1
-	},
-	{
-	  "user": {
-		"id": "20057",
-		"firstName": "Jeff",
-		"lastName": "W",
-		"photo": "https://playfoursquare.s3.amazonaws.com/userpix_thumbs/RRJIFN1NATUHRN4J.jpg",
-		"gender": "male",
-		"homeCity": "Seattle, WA",
-		"relationship": "self"
-	  },
-	  "scores": {
-		"recent": 117,
-		"max": 124,
-		"checkinsCount": 49
-	  },
-	  "rank": 2
-	},
-	{
-	  "user": {
-		"id": "130986",
-		"firstName": "Tim",
-		"lastName": "H",
-		"photo": "https://playfoursquare.s3.amazonaws.com/userpix_thumbs/4A52T22PCNGR11EM.jpg",
-		"gender": "male",
-		"homeCity": "WA",
-		"relationship": "friend"
-	  },
-	  "scores": {
-		"recent": 116,
-		"max": 125,
-		"checkinsCount": 41
-	  },
-	  "rank": 3
-	}
-  ],
-  "message": "You jumped ahead of Tim!",
-  "scores": [
-	{
-	  "points": 3,
-	  "icon": "https://playfoursquare.s3.amazonaws.com/static/img/points/mayor.png",
-	  "message": "You're the Mayor!"
-	}
-  ],
-  "total": 3
-}
-},</pre></div>
-
-<p>And so at runtime, when you check-in, you’ll end up with this return result being stored. Since I’ve already coded in my app simple parsing methods for CompactUsers, it’s easy to work with this rich hierarchical data.</p>
-
-<p>In my checkin (“what’s new”) window of <a href="http://www.4thandmayor.com/">4th &amp; Mayor</a> I’ve a very simple items control that is used to expand at runtime the data objects into a nice visual presentation. Now in Silverlight 3 (the version that was forked for Windows Phone initially) there isn’t a way to have implicit “data templates” that key off of type, so I did have to do a little hacking. But this is super easy.</p>
-
-<p>Here’s my data template selector that I wrote as a value converter. I expose public properties of type DataTemplate:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:d523f33d-ef72-47f7-bfa5-d37000efafed" class="wlWriterEditableSmartContent"><pre class="csharp" name="code">namespace JeffWilcox.FourthAndMayor.Converters
-{
-    public class NotificationDataTemplateSelector : IValueConverter
-    {
-        public DataTemplate MessageTemplate { get; set; }
-        public DataTemplate MayorTemplate { get; set; }
-        public DataTemplate BadgeTemplate { get; set; }
-        public DataTemplate TipTemplate { get; set; }
-        public DataTemplate ScoreTemplate { get; set; }
-        public DataTemplate SpecialTemplate { get; set; }
-        public DataTemplate LeaderboardTemplate { get; set; }
-
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            ScoreNotification sn = value as ScoreNotification;
-            if (sn != null)
-            {
-                return ScoreTemplate;
-            }
-
-            BadgeNotification bn = value as BadgeNotification;
-            if (bn != null)
-            {
-                return BadgeTemplate;
-            }
-
-            MayorshipNotification mn = value as MayorshipNotification;
-            if (mn != null)
-            {
-                return MayorTemplate;
-            }
-
-            LeaderboardNotification ln = value as LeaderboardNotification;
-            if (ln != null)
-            {
-                return LeaderboardTemplate;
-            }
-
-            RecommendedTipNotification tip = value as RecommendedTipNotification;
-            if (tip != null)
-            {
-                return TipTemplate;
-            }
-
-            MessageNotification msg = value as MessageNotification;
-            if (msg != null)
-            {
-                return MessageTemplate;
-            }
-
-            var special = value as SpecialNotification;
-            if (special != null)
-            {
-                return SpecialTemplate;
-            }
-
-            return null;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-        {
-            throw new NotImplementedException();
-        }
-    }
-}</pre></div>
-
-<p>And then on my check-in page, in the page’s resources, I define the individual data templates that I would like different notification data objects to appear as. XAML is pretty verbose but wow, powerful. I hand-edited many of my data templates. And I’m picky, I prefer one attribute per line in most situations – it makes diffs in source control a lot easier to understand and work with, especially while integrating.</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:83ca7e7a-1eca-40ec-a2f1-96f251a7df9a" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;DataTemplate x:Key="Leaderboard"&gt;
-    &lt;StackPanel&gt;
-		&lt;ContentPresenter Content="Leaderboard"
-		                  ContentTemplate="{StaticResource GroupHeader}"/&gt;
-        &lt;TextBlock
-            Text="{Binding Message}"
-            TextWrapping="Wrap"
-            Margin="0,0,0,12"
-            Style="{StaticResource PhoneTextNormalStyle}"/&gt;
-        &lt;ItemsControl ItemsSource="{Binding Leaderboard}"&gt;
-            &lt;ItemsControl.ItemTemplate&gt;
-                &lt;DataTemplate&gt;
-                    &lt;HyperlinkButton Style="{StaticResource NoHyperlink}"
-                                HorizontalAlignment="Stretch"
-                                HorizontalContentAlignment="Stretch"
-                                NavigateUri="{Binding User.UserUri}"&gt;
-                        &lt;Grid Margin="0,0,0,12"&gt;
-                            &lt;Grid.ColumnDefinitions&gt;
-                                &lt;ColumnDefinition Width="72"/&gt;
-                                &lt;ColumnDefinition /&gt;
-                                &lt;ColumnDefinition Width="88"/&gt;
-                            &lt;/Grid.ColumnDefinitions&gt;
-                            &lt;Grid Grid.Column="0"&gt;
-                                &lt;Grid 
-                                    Width="72" 
-                                    Height="72" 
-                                    Background="{StaticResource PhoneChromeBrush}"&gt;
-                                    &lt;Image
-                                        jw:AwesomeImage.UriSource="{Binding User.Photo}"
-                                        Tag="clear"/&gt;
-                                &lt;/Grid&gt;
-                                &lt;Grid
-                                    Background="{StaticResource PhoneAccentBrush}"
-                                    Width="12"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Stretch"
-                                    Visibility="{Binding IsSelf, Converter={StaticResource Vis}}"&gt;
-                                    &lt;Grid.RenderTransform&gt;
-                                        &lt;TranslateTransform X="-24"/&gt;
-                                    &lt;/Grid.RenderTransform&gt;
-                                &lt;/Grid&gt;
-                            &lt;/Grid&gt;
-                            &lt;StackPanel 
-                                Grid.Column="1"
-                                Orientation="Horizontal"&gt;
-                                &lt;TextBlock
-                                    Style="{StaticResource PhoneTextLargeStyle}"
-                                    FontFamily="{StaticResource PhoneFontFamilySemiBold}"
-                                    VerticalAlignment="Center"
-                                    Text="{Binding Rank}"/&gt;
-                                &lt;TextBlock
-                                    VerticalAlignment="Center"
-                                    Margin="0"
-                                    Text="{Binding User}"
-                                    Style="{StaticResource PhoneTextLargeStyle}"/&gt;
-                            &lt;/StackPanel&gt;
-                            &lt;TextBlock
-                                Text="{Binding Scores.Recent}"
-                                HorizontalAlignment="Left"
-                                VerticalAlignment="Center"
-                                Grid.Column="2"
-                                Style="{StaticResource PhoneTextLargeStyle}"
-                                FontFamily="{StaticResource PhoneFontFamilySemiLight}"/&gt;
-                        &lt;/Grid&gt;
-                    &lt;/HyperlinkButton&gt;
-                &lt;/DataTemplate&gt;
-            &lt;/ItemsControl.ItemTemplate&gt;
-        &lt;/ItemsControl&gt;
-    &lt;/StackPanel&gt;
-&lt;/DataTemplate&gt;</pre></div>
-
-<p>So next I add an instance of the converter and give it a name. This is designed to associate the XAML data templates with the way to show specific notification object types when the items control expands after binding.</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:940a8a41-e4fb-4b4b-bda9-38db8861a7a5" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;Converters:NotificationDataTemplateSelector 
-    MessageTemplate="{StaticResource Message}"
-    BadgeTemplate="{StaticResource Badge}"
-    MayorTemplate="{StaticResource Mayor}"
-    TipTemplate="{StaticResource PopularTip}"
-    ScoreTemplate="{StaticResource Score}"
-    LeaderboardTemplate="{StaticResource Leaderboard}"
-    SpecialTemplate="{StaticResource Special}"
-    x:Key="DataTemplateSelector"/&gt;</pre></div>
-
-<p>And now here’s the items control. Here I bind the ItemsSource to my list of notifications, then use this syntax to use the data template selector:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:4f818259-6bd6-4faa-b1d7-99d0f9c4d170" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;jw:AwesomeScrollViewer&gt;
-    &lt;StackPanel Margin="12,0,12,12"&gt;
-        &lt;TextBlock 
-            Text="what's new" 
-            Margin="9,-7,0,16" 
-            Style="{StaticResource PhoneTextTitle1Style}"/&gt;
-        &lt;ItemsControl ItemsSource="{Binding}"
-                        Margin="0,0,0,24"&gt;
-            &lt;ItemsControl.ItemTemplate&gt;
-                &lt;DataTemplate&gt;
-                    &lt;Grid Margin="12,0"&gt;
-                        &lt;ContentControl
-                        HorizontalContentAlignment="Stretch"
-                        Content="{Binding}"
-                        ContentTemplate="{Binding Converter={StaticResource DataTemplateSelector}}"/&gt;
-                    &lt;/Grid&gt;
-                &lt;/DataTemplate&gt;
-            &lt;/ItemsControl.ItemTemplate&gt;
-        &lt;/ItemsControl&gt;
-    &lt;/StackPanel&gt;
-&lt;/jw:AwesomeScrollViewer&gt;</pre></div>
-
-<p>And at runtime we end up with this great output, now including the new <strong>v3 leaderboard feature</strong> in under 30 minutes! Building on all the other components in my app, and the rich Silverlight visual tree, I’m able to add features like this really quickly, without worry.</p>
-
-<p>Another nice thing about XAML and data templates: typically there is very little required testing, especially if you’re in the habit of going through code reviews or at least reviewing source control diffs first – if you don’t change the shape of your data, you’re in a pretty good place.</p>
-
-<p><img src="http://d2tz2ccf2zi8lx.cloudfront.net/media/posts/leaderboardWp7InResults.png" /></p>
-
-<p>There are a lot of amazing efficiencies possible thanks to XAML. For instance, I have just a few instances in my app of data templates for check-ins, places, tips, etc. Then, whenever I add a new page, I can refer to the existing tip template, so there’s a central places for any visual tweaks or fixes that I make.</p>
-
-<h3>Leaderboards to the next level</h3>
-
-<p>So there’s also a leaderboard endpoint on the foursquare v2 web service that lets you grab the complete leaderboard of your friends. I was able to add this to the app in another 15 minutes – but that’s for another blog post. At a high level for that,</p>
-
-<ul>
-  <li>I defined a new model item base that exposes a small list hierarchy – leaderboard items, leaderboard scores, and a leaderboard collection. (5 minutes) </li>
-
-  <li>Added a data loader class for the ‘leaderboard’ endpoint, powered by AgFx (5 minutes) </li>
-
-  <li>Added a new pivot item to the current users’ profile page, re-used the exact same “leaderboard” data template from the notifications window done above (5 minutes) </li>
-</ul>
-
+<p>It’s just amazing how efficient the Windows Phone (powered by Silverlight) dev environment can be. I’m a little biased here (yeah yeah I work on the team), but wanted to start of my app development series with a short example of just how quickly the platform can enable rapid changes and innovation.</p>  <p>At SXSW a little over a week ago, foursquare introduced the new ‘<a href="http://blog.foursquare.com/2011/03/08/foursquare-3/">fsq3</a>’ version of their apps for iPhone, Android, and I believe eventually Blackberry, too, though not initially. Foursquare has always been about a fun time, exploring the city as part of a massive, worldwide-game, and so they did some nice work in version 3 to bring in a little more fun: every time you check-in to a place, there’s a leaderboard (relative to all of your friends) that appears, showing your latest scores and your close competition.</p>  <p>It took about 30 minutes to add this feature to my foursquare app, sadly this blog post will probably take 60 minutes to prepare.</p>  <p>The steps really are:</p>  <ul>   <li>Parsing the JSON of the added data</li>    <li>Creating a new data/model item</li>    <li>Designing and creating new XAML templates for presenting the data</li>    <li>Updating the data template selector for the added notification type</li>    <li>Binding the data and making the magic happen</li> </ul>  <p>Here’s what it looks like on an iPhone – the new “Leaderboard” section is of interest. Interestingly, the Android app for foursquare is pretty much a clone of the iPhone app… so no need to really highlight that.</p>  <p><img src="http://d2tz2ccf2zi8lx.cloudfront.net/media/posts/leaderboardInResults.png" /></p>  <p>The way that this is implemented on the foursquare service side is a simple new “notification” type that comes in after a check-in or other action. When working with services like this, as a developer it’s more important than ever to be resilient against “invalid” or unknown data and types – lots of null checks, default handling clauses, etc. So foursquare added a new <em>leaderboard</em> notification type to the others (such as mayor status, a recommended tip at a place, etc.)</p>  <p>The code I wrote to handle notifications started with a simple set of parsing methods. Notifications can actually come from any foursquare web request, but typically it’s just when you check-in. I use (and absolute love!) <a href="http://json.codeplex.com/">JSON.NET</a> by James Newton-King - the LINQ to JSON stuff is nice, and it’s a lot better than the JSON stuff built into the platform.</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:3636f1cf-0285-4a90-aa71-9cc2aa386cff" class="wlWriterEditableSmartContent"><pre class="csharp" name="code">// Notifications is a List&lt;Notification&gt;
+
+public static Notifications ParseJson(JToken json, string venueId)
+
+{
+
+    var ns = new Notifications();
+
+
+
+    foreach (var notif in json)
+
+    {
+
+        Notification notification = Notification.ParseJson(notif, venueId);
+
+        if (notification != null)
+
+        {
+
+            ns.Add(notification);
+
+        }
+
+    }
+
+
+
+    return ns;
+
+}
+
+
+
+
+
+public static Notification ParseJson(JToken notification, string venueId)
+
+{
+
+    Notification n = null;
+
+
+
+    string type = Checkin.TryGetJsonProperty(notification, "type");
+
+    var item = notification["item"];
+
+    if (item != null)
+
+    {
+
+        switch (type)
+
+        {
+
+            case "message":
+
+                n = new MessageNotification(item);
+
+                break;
+
+
+
+            case "badge":
+
+                n = new BadgeNotification(item);
+
+                break;
+
+
+
+            case "mayorship":
+
+                n = new MayorshipNotification(item);
+
+                break;
+
+
+
+            case "tip":
+
+                n = new RecommendedTipNotification(item);
+
+                break;
+
+
+
+            case "leaderboard":
+
+                n = new LeaderboardNotification(item);
+
+                break;
+
+
+
+            case "special":
+
+                n = new SpecialNotification(item, venueId);
+
+                break;
+
+
+
+            case "score":
+
+                n = new ScoreNotification(item);
+
+                break;
+
+
+
+            default:
+
+                var hasMessage = item["message"];
+
+                if (hasMessage != null)
+
+                {
+
+                    n = new MessageNotification(item);
+
+                }
+
+
+
+                break;
+
+        }
+
+    }
+
+
+
+    return n;
+
+}
+
+
+
+namespace JeffWilcox.FourthAndMayor.Model
+
+{
+
+    public class LeaderboardNotification : Notification
+
+    {
+
+        public string Message { get; private set; }
+
+
+
+        public List&lt;LeaderboardItem&gt; Leaderboard { get; private set; }
+
+
+
+        public LeaderboardNotification(JToken item)
+
+        {
+
+            Message = Checkin.SanitizeString(Checkin.TryGetJsonProperty(item, "message"));
+
+
+
+            var leaders = new List&lt;LeaderboardItem&gt;();
+
+            var lj = item["leaderboard"];
+
+            if (lj != null)
+
+            {
+
+                foreach (var victor in lj)
+
+                {
+
+                    var wolverine = LeaderboardItem.ParseJson(victor);
+
+                    if (wolverine != null)
+
+                    {
+
+                        leaders.Add(wolverine);
+
+                    }
+
+                }
+
+            }
+
+
+
+            Leaderboard = leaders;
+
+        }
+
+    }
+
+}</pre></div>
+
+
+
+<p>And then a switch to handle known notification types and create data model objects from that. This yields a nice strongly typed data object – I personally prefer this to just storing the JSON tree live, or using a property bag, but everyone has their own opinions. Strong typing makes data binding in Silverlight super easy.</p>
+
+
+
+<p>The JSON from foursquare looks a lot like this:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:13c02a2f-e8e1-46bf-aa3e-5eba88c5a2b7" class="wlWriterEditableSmartContent"><pre class="jscript" name="code">{
+
+"type": "mayorship",
+
+"item": {
+
+  "type": "nochange",
+
+  "checkins": 27,
+
+  "message": "You're still the Mayor of Boka Kitchen & Bar! (27 check-ins in the past two months)",
+
+  "image": "http://foursquare.com/img/crown.png"
+
+}
+
+},
+
+{
+
+"type": "leaderboard",
+
+"item": {
+
+  "leaderboard": [
+
+	{
+
+	  "user": {
+
+		"id": "4052351",
+
+		"firstName": "Gilles",
+
+		"lastName": "K",
+
+		"photo": "https://playfoursquare.s3.amazonaws.com/userpix_thumbs/FXM5YX5ABXZARAR1.png",
+
+		"gender": "male",
+
+		"homeCity": "WA",
+
+		"relationship": "friend"
+
+	  },
+
+	  "scores": {
+
+		"recent": 120,
+
+		"max": 127,
+
+		"checkinsCount": 31
+
+	  },
+
+	  "rank": 1
+
+	},
+
+	{
+
+	  "user": {
+
+		"id": "20057",
+
+		"firstName": "Jeff",
+
+		"lastName": "W",
+
+		"photo": "https://playfoursquare.s3.amazonaws.com/userpix_thumbs/RRJIFN1NATUHRN4J.jpg",
+
+		"gender": "male",
+
+		"homeCity": "Seattle, WA",
+
+		"relationship": "self"
+
+	  },
+
+	  "scores": {
+
+		"recent": 117,
+
+		"max": 124,
+
+		"checkinsCount": 49
+
+	  },
+
+	  "rank": 2
+
+	},
+
+	{
+
+	  "user": {
+
+		"id": "130986",
+
+		"firstName": "Tim",
+
+		"lastName": "H",
+
+		"photo": "https://playfoursquare.s3.amazonaws.com/userpix_thumbs/4A52T22PCNGR11EM.jpg",
+
+		"gender": "male",
+
+		"homeCity": "WA",
+
+		"relationship": "friend"
+
+	  },
+
+	  "scores": {
+
+		"recent": 116,
+
+		"max": 125,
+
+		"checkinsCount": 41
+
+	  },
+
+	  "rank": 3
+
+	}
+
+  ],
+
+  "message": "You jumped ahead of Tim!",
+
+  "scores": [
+
+	{
+
+	  "points": 3,
+
+	  "icon": "https://playfoursquare.s3.amazonaws.com/static/img/points/mayor.png",
+
+	  "message": "You're the Mayor!"
+
+	}
+
+  ],
+
+  "total": 3
+
+}
+
+},</pre></div>
+
+
+
+<p>And so at runtime, when you check-in, you’ll end up with this return result being stored. Since I’ve already coded in my app simple parsing methods for CompactUsers, it’s easy to work with this rich hierarchical data.</p>
+
+
+
+<p>In my checkin (“what’s new”) window of <a href="http://www.4thandmayor.com/">4th &amp; Mayor</a> I’ve a very simple items control that is used to expand at runtime the data objects into a nice visual presentation. Now in Silverlight 3 (the version that was forked for Windows Phone initially) there isn’t a way to have implicit “data templates” that key off of type, so I did have to do a little hacking. But this is super easy.</p>
+
+
+
+<p>Here’s my data template selector that I wrote as a value converter. I expose public properties of type DataTemplate:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:d523f33d-ef72-47f7-bfa5-d37000efafed" class="wlWriterEditableSmartContent"><pre class="csharp" name="code">namespace JeffWilcox.FourthAndMayor.Converters
+
+{
+
+    public class NotificationDataTemplateSelector : IValueConverter
+
+    {
+
+        public DataTemplate MessageTemplate { get; set; }
+
+        public DataTemplate MayorTemplate { get; set; }
+
+        public DataTemplate BadgeTemplate { get; set; }
+
+        public DataTemplate TipTemplate { get; set; }
+
+        public DataTemplate ScoreTemplate { get; set; }
+
+        public DataTemplate SpecialTemplate { get; set; }
+
+        public DataTemplate LeaderboardTemplate { get; set; }
+
+
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+
+        {
+
+            ScoreNotification sn = value as ScoreNotification;
+
+            if (sn != null)
+
+            {
+
+                return ScoreTemplate;
+
+            }
+
+
+
+            BadgeNotification bn = value as BadgeNotification;
+
+            if (bn != null)
+
+            {
+
+                return BadgeTemplate;
+
+            }
+
+
+
+            MayorshipNotification mn = value as MayorshipNotification;
+
+            if (mn != null)
+
+            {
+
+                return MayorTemplate;
+
+            }
+
+
+
+            LeaderboardNotification ln = value as LeaderboardNotification;
+
+            if (ln != null)
+
+            {
+
+                return LeaderboardTemplate;
+
+            }
+
+
+
+            RecommendedTipNotification tip = value as RecommendedTipNotification;
+
+            if (tip != null)
+
+            {
+
+                return TipTemplate;
+
+            }
+
+
+
+            MessageNotification msg = value as MessageNotification;
+
+            if (msg != null)
+
+            {
+
+                return MessageTemplate;
+
+            }
+
+
+
+            var special = value as SpecialNotification;
+
+            if (special != null)
+
+            {
+
+                return SpecialTemplate;
+
+            }
+
+
+
+            return null;
+
+        }
+
+
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+
+        {
+
+            throw new NotImplementedException();
+
+        }
+
+    }
+
+}</pre></div>
+
+
+
+<p>And then on my check-in page, in the page’s resources, I define the individual data templates that I would like different notification data objects to appear as. XAML is pretty verbose but wow, powerful. I hand-edited many of my data templates. And I’m picky, I prefer one attribute per line in most situations – it makes diffs in source control a lot easier to understand and work with, especially while integrating.</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:83ca7e7a-1eca-40ec-a2f1-96f251a7df9a" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;DataTemplate x:Key="Leaderboard"&gt;
+
+    &lt;StackPanel&gt;
+
+		&lt;ContentPresenter Content="Leaderboard"
+
+		                  ContentTemplate="{StaticResource GroupHeader}"/&gt;
+
+        &lt;TextBlock
+
+            Text="{Binding Message}"
+
+            TextWrapping="Wrap"
+
+            Margin="0,0,0,12"
+
+            Style="{StaticResource PhoneTextNormalStyle}"/&gt;
+
+        &lt;ItemsControl ItemsSource="{Binding Leaderboard}"&gt;
+
+            &lt;ItemsControl.ItemTemplate&gt;
+
+                &lt;DataTemplate&gt;
+
+                    &lt;HyperlinkButton Style="{StaticResource NoHyperlink}"
+
+                                HorizontalAlignment="Stretch"
+
+                                HorizontalContentAlignment="Stretch"
+
+                                NavigateUri="{Binding User.UserUri}"&gt;
+
+                        &lt;Grid Margin="0,0,0,12"&gt;
+
+                            &lt;Grid.ColumnDefinitions&gt;
+
+                                &lt;ColumnDefinition Width="72"/&gt;
+
+                                &lt;ColumnDefinition /&gt;
+
+                                &lt;ColumnDefinition Width="88"/&gt;
+
+                            &lt;/Grid.ColumnDefinitions&gt;
+
+                            &lt;Grid Grid.Column="0"&gt;
+
+                                &lt;Grid 
+
+                                    Width="72" 
+
+                                    Height="72" 
+
+                                    Background="{StaticResource PhoneChromeBrush}"&gt;
+
+                                    &lt;Image
+
+                                        jw:AwesomeImage.UriSource="{Binding User.Photo}"
+
+                                        Tag="clear"/&gt;
+
+                                &lt;/Grid&gt;
+
+                                &lt;Grid
+
+                                    Background="{StaticResource PhoneAccentBrush}"
+
+                                    Width="12"
+
+                                    HorizontalAlignment="Left"
+
+                                    VerticalAlignment="Stretch"
+
+                                    Visibility="{Binding IsSelf, Converter={StaticResource Vis}}"&gt;
+
+                                    &lt;Grid.RenderTransform&gt;
+
+                                        &lt;TranslateTransform X="-24"/&gt;
+
+                                    &lt;/Grid.RenderTransform&gt;
+
+                                &lt;/Grid&gt;
+
+                            &lt;/Grid&gt;
+
+                            &lt;StackPanel 
+
+                                Grid.Column="1"
+
+                                Orientation="Horizontal"&gt;
+
+                                &lt;TextBlock
+
+                                    Style="{StaticResource PhoneTextLargeStyle}"
+
+                                    FontFamily="{StaticResource PhoneFontFamilySemiBold}"
+
+                                    VerticalAlignment="Center"
+
+                                    Text="{Binding Rank}"/&gt;
+
+                                &lt;TextBlock
+
+                                    VerticalAlignment="Center"
+
+                                    Margin="0"
+
+                                    Text="{Binding User}"
+
+                                    Style="{StaticResource PhoneTextLargeStyle}"/&gt;
+
+                            &lt;/StackPanel&gt;
+
+                            &lt;TextBlock
+
+                                Text="{Binding Scores.Recent}"
+
+                                HorizontalAlignment="Left"
+
+                                VerticalAlignment="Center"
+
+                                Grid.Column="2"
+
+                                Style="{StaticResource PhoneTextLargeStyle}"
+
+                                FontFamily="{StaticResource PhoneFontFamilySemiLight}"/&gt;
+
+                        &lt;/Grid&gt;
+
+                    &lt;/HyperlinkButton&gt;
+
+                &lt;/DataTemplate&gt;
+
+            &lt;/ItemsControl.ItemTemplate&gt;
+
+        &lt;/ItemsControl&gt;
+
+    &lt;/StackPanel&gt;
+
+&lt;/DataTemplate&gt;</pre></div>
+
+
+
+<p>So next I add an instance of the converter and give it a name. This is designed to associate the XAML data templates with the way to show specific notification object types when the items control expands after binding.</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:940a8a41-e4fb-4b4b-bda9-38db8861a7a5" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;Converters:NotificationDataTemplateSelector 
+
+    MessageTemplate="{StaticResource Message}"
+
+    BadgeTemplate="{StaticResource Badge}"
+
+    MayorTemplate="{StaticResource Mayor}"
+
+    TipTemplate="{StaticResource PopularTip}"
+
+    ScoreTemplate="{StaticResource Score}"
+
+    LeaderboardTemplate="{StaticResource Leaderboard}"
+
+    SpecialTemplate="{StaticResource Special}"
+
+    x:Key="DataTemplateSelector"/&gt;</pre></div>
+
+
+
+<p>And now here’s the items control. Here I bind the ItemsSource to my list of notifications, then use this syntax to use the data template selector:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:4f818259-6bd6-4faa-b1d7-99d0f9c4d170" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;jw:AwesomeScrollViewer&gt;
+
+    &lt;StackPanel Margin="12,0,12,12"&gt;
+
+        &lt;TextBlock 
+
+            Text="what's new" 
+
+            Margin="9,-7,0,16" 
+
+            Style="{StaticResource PhoneTextTitle1Style}"/&gt;
+
+        &lt;ItemsControl ItemsSource="{Binding}"
+
+                        Margin="0,0,0,24"&gt;
+
+            &lt;ItemsControl.ItemTemplate&gt;
+
+                &lt;DataTemplate&gt;
+
+                    &lt;Grid Margin="12,0"&gt;
+
+                        &lt;ContentControl
+
+                        HorizontalContentAlignment="Stretch"
+
+                        Content="{Binding}"
+
+                        ContentTemplate="{Binding Converter={StaticResource DataTemplateSelector}}"/&gt;
+
+                    &lt;/Grid&gt;
+
+                &lt;/DataTemplate&gt;
+
+            &lt;/ItemsControl.ItemTemplate&gt;
+
+        &lt;/ItemsControl&gt;
+
+    &lt;/StackPanel&gt;
+
+&lt;/jw:AwesomeScrollViewer&gt;</pre></div>
+
+
+
+<p>And at runtime we end up with this great output, now including the new <strong>v3 leaderboard feature</strong> in under 30 minutes! Building on all the other components in my app, and the rich Silverlight visual tree, I’m able to add features like this really quickly, without worry.</p>
+
+
+
+<p>Another nice thing about XAML and data templates: typically there is very little required testing, especially if you’re in the habit of going through code reviews or at least reviewing source control diffs first – if you don’t change the shape of your data, you’re in a pretty good place.</p>
+
+
+
+<p><img src="http://d2tz2ccf2zi8lx.cloudfront.net/media/posts/leaderboardWp7InResults.png" /></p>
+
+
+
+<p>There are a lot of amazing efficiencies possible thanks to XAML. For instance, I have just a few instances in my app of data templates for check-ins, places, tips, etc. Then, whenever I add a new page, I can refer to the existing tip template, so there’s a central places for any visual tweaks or fixes that I make.</p>
+
+
+
+<h3>Leaderboards to the next level</h3>
+
+
+
+<p>So there’s also a leaderboard endpoint on the foursquare v2 web service that lets you grab the complete leaderboard of your friends. I was able to add this to the app in another 15 minutes – but that’s for another blog post. At a high level for that,</p>
+
+
+
+<ul>
+
+  <li>I defined a new model item base that exposes a small list hierarchy – leaderboard items, leaderboard scores, and a leaderboard collection. (5 minutes) </li>
+
+
+
+  <li>Added a data loader class for the ‘leaderboard’ endpoint, powered by AgFx (5 minutes) </li>
+
+
+
+  <li>Added a new pivot item to the current users’ profile page, re-used the exact same “leaderboard” data template from the notifications window done above (5 minutes) </li>
+
+</ul>
+
+
+
 <p>Hope this helps. Oh, and if you’re noticing, these objects are not implementing INotifyPropertyChanged… in my app this sort of data doesn’t change at runtime. You only get a check-in report once for a check-in, with static data. Easy that way.</p>

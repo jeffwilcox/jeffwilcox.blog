@@ -17,48 +17,92 @@ imported_categories:
 imported_link_categories: []
 tags: []
 ---
-<h2>2/17/2011 Update</h2>
-<p><strong>2/17/2011 update - this post is no longer needed:</strong> a performance progress bar is now included in the <a href="http://silverlight.codeplex.com/">Silverlight for Windows Phone Toolkit</a>.</p>
-<h2>Original post:</h2>
-<p>If you are using the indeterminate ProgressBar (“process indicator”) control in Windows Phone applications, please follow these two easy steps to remove stuttering, inefficient animations from the control. If you see anyone not doing this, please send them here!</p>  <p>Your application’s progress bar should look good, but it should minimize its cost as much as possible to ensure that the available CPU cycles are spent doing your hard work – parsing code, making and processing web requests, and responding to the user’s touch input – all of which happens on the UI thread.</p>  <p><em>Updated 9/15/2010: Grammatical improvements and additional information per feedback. Moved the back story to the bottom of the post.</em></p>  <h3>1: Use PerformanceProgressBar instead of just the built-in ProgressBar style</h3>  <p><a href="http://www.jeff.wilcox.name/2010/08/performanceprogressbar/">Step one: please use my PerformanceProgressBar in your application.</a> It’s very easy to add in about 5 minutes and will pay dividends as your app gets faster. Progress bars as especially important to have low cost as they typically are only shown during potentially expensive operations.</p>  <p>As a recap, the <font size="2" face="Consolas">&lt;ProgressBar <strong>IsIndeterminate=”True”</strong>/&gt;</font> control built into the platform has an adverse effect on the user interface thread’s frame rate. This is because it the indeterminate animation is built up of 5 sliding rectangles, built from Slider controls with custom thumbs, and all that work needs to happen five times over every single frame on the UI stack. You can <a href="http://www.jeff.wilcox.name/2010/08/performanceprogressbar/">read more about it</a> if you like.</p>  <h3>2: Turn off IsIndeterminate when not needed</h3>  <p>When looking at this particular app, this was being used to show/hide the indeterminate progress bar. It means that the continuous animations and storyboard is <em>always</em> costing computing resources, so this is not what you want.</p>  <p><strong>Try not to do this (hardcoded to <font style="background-color: #ffff00">True</font>):</strong></p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:194ce6bf-4647-4269-9dcf-fb8b96de8bf4" class="wlWriterSmartContent">   <pre class="xml" name="code">&lt;ProgressBar
-    HorizontalAlignment=&quot;Left&quot; 
-    VerticalAlignment=&quot;Center&quot; 
-    IsIndeterminate=&quot;True&quot; 
-    Style=&quot;{StaticResource PerformanceProgressBar}&quot; 
-    Visibility=&quot;{Binding IsProgressBarVisible, Converter={StaticResource VisibilityConverter}}&quot;
-/&gt;</pre>
-</div>
-
-<p>Now this should have also data bound the IsIndeterminate property. Since there’s a Visibility converter being used already here, this is an easy fix – just directly bind the bool property that the converter was using as an input. So this is additive.</p>
-
-<p><strong>Do try this (<font style="background-color: #ffff00">bind or set</font>):</strong></p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:cd801c38-ef35-4cec-8d47-52cc11eb6828" class="wlWriterSmartContent">
-  <pre class="brush: xml; highlight: [4]" name="code">&lt;ProgressBar
-    HorizontalAlignment=&quot;Left&quot; 
-    VerticalAlignment=&quot;Center&quot; 
-    IsIndeterminate=&quot;{Binding IsProgressBarVisible}&quot; 
-    Style=&quot;{StaticResource PerformanceProgressBar}&quot; 
-    Visibility=&quot;{Binding IsProgressBarVisible, Converter={StaticResource VisibilityConverter}}&quot;
-/&gt;</pre>
-</div>
-
-<p>So to properly “turn off” the indeterminate (continuous animation) from the progress bar, whether using the built-in progress bar or the template in my <a href="http://www.jeff.wilcox.name/2010/08/performanceprogressbar/">performance progress bar</a>, you want to:</p>
-
-<ul>
-  <li>Bind or set the IsIndeterminate property: It should be False when you no longer need the continuous animations </li>
-
-  <li>Collapse the Visibility of the progress bar when not needed </li>
-</ul>
-
-<h3>Back story</h3>
-
-<p>On top of my previous <a href="http://www.jeff.wilcox.name/2010/08/performanceprogressbar/">post with a high performance progress bar</a>, I’ve identified uses of progress bars where the IsIndeterminate value is hard-coded to True, and only visibility collapsing is used to show/hide the effect. This actually also has a negative effect on performance when not in use, as the animation defined when IsIndeterminate==True is continuous, forever looping, and going to have some effect on the main user interface thread just computing animation states, properties, and communicating with the core platform.</p>
-
-<p>This came up as I was involved in a code review of a really sweet Windows Phone application that’s under development... Really sweet looking app, world class devs, and quality code – even a nicely architected lightweight model-view design. The application was using multiple indeterminate progress bars, plus my template, but was seeing performance degradation at times of 15-25 fps less than what we would hope for given the concious work to improve perf.</p>
-
-<p>Turns out, having a bunch of progress bars on screen, with Indeterminate mode on, but collapsed, was still having a toll on the frame rates as all animations incur some cost, even if you never see them on screen.</p>
-
-<p>This was an easy fix and I wanted to add this as guidance for having a good experience with progress bars in your phone apps.</p>
-
+<h2>2/17/2011 Update</h2>
+
+<p><strong>2/17/2011 update - this post is no longer needed:</strong> a performance progress bar is now included in the <a href="http://silverlight.codeplex.com/">Silverlight for Windows Phone Toolkit</a>.</p>
+
+<h2>Original post:</h2>
+
+<p>If you are using the indeterminate ProgressBar (“process indicator”) control in Windows Phone applications, please follow these two easy steps to remove stuttering, inefficient animations from the control. If you see anyone not doing this, please send them here!</p>  <p>Your application’s progress bar should look good, but it should minimize its cost as much as possible to ensure that the available CPU cycles are spent doing your hard work – parsing code, making and processing web requests, and responding to the user’s touch input – all of which happens on the UI thread.</p>  <p><em>Updated 9/15/2010: Grammatical improvements and additional information per feedback. Moved the back story to the bottom of the post.</em></p>  <h3>1: Use PerformanceProgressBar instead of just the built-in ProgressBar style</h3>  <p><a href="http://www.jeff.wilcox.name/2010/08/performanceprogressbar/">Step one: please use my PerformanceProgressBar in your application.</a> It’s very easy to add in about 5 minutes and will pay dividends as your app gets faster. Progress bars as especially important to have low cost as they typically are only shown during potentially expensive operations.</p>  <p>As a recap, the <font size="2" face="Consolas">&lt;ProgressBar <strong>IsIndeterminate=”True”</strong>/&gt;</font> control built into the platform has an adverse effect on the user interface thread’s frame rate. This is because it the indeterminate animation is built up of 5 sliding rectangles, built from Slider controls with custom thumbs, and all that work needs to happen five times over every single frame on the UI stack. You can <a href="http://www.jeff.wilcox.name/2010/08/performanceprogressbar/">read more about it</a> if you like.</p>  <h3>2: Turn off IsIndeterminate when not needed</h3>  <p>When looking at this particular app, this was being used to show/hide the indeterminate progress bar. It means that the continuous animations and storyboard is <em>always</em> costing computing resources, so this is not what you want.</p>  <p><strong>Try not to do this (hardcoded to <font style="background-color: #ffff00">True</font>):</strong></p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:194ce6bf-4647-4269-9dcf-fb8b96de8bf4" class="wlWriterSmartContent">   <pre class="brush: xml">&lt;ProgressBar
+
+    HorizontalAlignment=&quot;Left&quot; 
+
+    VerticalAlignment=&quot;Center&quot; 
+
+    IsIndeterminate=&quot;True&quot; 
+
+    Style=&quot;{StaticResource PerformanceProgressBar}&quot; 
+
+    Visibility=&quot;{Binding IsProgressBarVisible, Converter={StaticResource VisibilityConverter}}&quot;
+
+/&gt;</pre>
+
+</div>
+
+
+
+<p>Now this should have also data bound the IsIndeterminate property. Since there’s a Visibility converter being used already here, this is an easy fix – just directly bind the bool property that the converter was using as an input. So this is additive.</p>
+
+
+
+<p><strong>Do try this (<font style="background-color: #ffff00">bind or set</font>):</strong></p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:cd801c38-ef35-4cec-8d47-52cc11eb6828" class="wlWriterSmartContent">
+
+  <pre class="brush: xml; highlight: [4]" name="code">&lt;ProgressBar
+
+    HorizontalAlignment=&quot;Left&quot; 
+
+    VerticalAlignment=&quot;Center&quot; 
+
+    IsIndeterminate=&quot;{Binding IsProgressBarVisible}&quot; 
+
+    Style=&quot;{StaticResource PerformanceProgressBar}&quot; 
+
+    Visibility=&quot;{Binding IsProgressBarVisible, Converter={StaticResource VisibilityConverter}}&quot;
+
+/&gt;</pre>
+
+</div>
+
+
+
+<p>So to properly “turn off” the indeterminate (continuous animation) from the progress bar, whether using the built-in progress bar or the template in my <a href="http://www.jeff.wilcox.name/2010/08/performanceprogressbar/">performance progress bar</a>, you want to:</p>
+
+
+
+<ul>
+
+  <li>Bind or set the IsIndeterminate property: It should be False when you no longer need the continuous animations </li>
+
+
+
+  <li>Collapse the Visibility of the progress bar when not needed </li>
+
+</ul>
+
+
+
+<h3>Back story</h3>
+
+
+
+<p>On top of my previous <a href="http://www.jeff.wilcox.name/2010/08/performanceprogressbar/">post with a high performance progress bar</a>, I’ve identified uses of progress bars where the IsIndeterminate value is hard-coded to True, and only visibility collapsing is used to show/hide the effect. This actually also has a negative effect on performance when not in use, as the animation defined when IsIndeterminate==True is continuous, forever looping, and going to have some effect on the main user interface thread just computing animation states, properties, and communicating with the core platform.</p>
+
+
+
+<p>This came up as I was involved in a code review of a really sweet Windows Phone application that’s under development... Really sweet looking app, world class devs, and quality code – even a nicely architected lightweight model-view design. The application was using multiple indeterminate progress bars, plus my template, but was seeing performance degradation at times of 15-25 fps less than what we would hope for given the concious work to improve perf.</p>
+
+
+
+<p>Turns out, having a bunch of progress bars on screen, with Indeterminate mode on, but collapsed, was still having a toll on the frame rates as all animations incur some cost, even if you never see them on screen.</p>
+
+
+
+<p>This was an easy fix and I wanted to add this as guidance for having a good experience with progress bars in your phone apps.</p>
+
+
+
 <p>Hope this helps.</p>

@@ -18,7 +18,7 @@ imported_categories:
 imported_link_categories: []
 tags: []
 ---
-<p>I’ve updated my extended HyperlinkButton control for Windows Phone 7 to now support all the key tasks. This makes it really easy to build up about pages, user profiles, and of course fully supports data binding.</p>  <p>So the core phone tasks work well with this. Same story, you set the Tag to be effectively the Uri. There are a few reasons for this but I admit Tag is the ultimate hack/general property. I’ve also incorporated some earlier feedback from the first version I did; I’m using StartsWith instead of indexing into the Uris.</p>  <p>I’ve also added simple query string support for the tasks, so you can set the basic properties on the messages as well. Note that with the SMS and phone tasks I’ve deviated from the standard RFC 2806 here, so this syntax is specific to this control and supports additional properties that aren’t standard. So the links build on the standard (like you use when building web apps for phones).</p>  <h2>Adding the control to your project</h2>  <p>Just add the following as a class file in VS or Blend. Then, make sure you setup an xmlns for the namespace, and you use it much like a regular HyperlinkButton at that point, except please set or data bind the Tag property as a string or Uri, instead of NavigateUri.</p>  <h2>Example Tags (URIs) &amp; Tasks</h2>  <p>Here are some examples and the specific tasks that are used. Remember in the tag that, to make the XAML parser happy, you need to escape the ampersand as “&amp;amp;”.</p>  <h3>Phone call</h3>  <p>To allow the user the choice of placing a call, use this syntax in the tag. Understand that this won’t actually place the call; the user will be prompted with a allow/don’t allow prompt. It’s up to you to send it a valid phone number though, I’m not error checking this first!</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:52de7dc4-7186-4698-89cf-8d4f6859a9e4" class="wlWriterSmartContent">   <pre class="xml" name="code">&lt;unofficial:PhoneHyperlinkButton
+<p>I’ve updated my extended HyperlinkButton control for Windows Phone 7 to now support all the key tasks. This makes it really easy to build up about pages, user profiles, and of course fully supports data binding.</p>  <p>So the core phone tasks work well with this. Same story, you set the Tag to be effectively the Uri. There are a few reasons for this but I admit Tag is the ultimate hack/general property. I’ve also incorporated some earlier feedback from the first version I did; I’m using StartsWith instead of indexing into the Uris.</p>  <p>I’ve also added simple query string support for the tasks, so you can set the basic properties on the messages as well. Note that with the SMS and phone tasks I’ve deviated from the standard RFC 2806 here, so this syntax is specific to this control and supports additional properties that aren’t standard. So the links build on the standard (like you use when building web apps for phones).</p>  <h2>Adding the control to your project</h2>  <p>Just add the following as a class file in VS or Blend. Then, make sure you setup an xmlns for the namespace, and you use it much like a regular HyperlinkButton at that point, except please set or data bind the Tag property as a string or Uri, instead of NavigateUri.</p>  <h2>Example Tags (URIs) &amp; Tasks</h2>  <p>Here are some examples and the specific tasks that are used. Remember in the tag that, to make the XAML parser happy, you need to escape the ampersand as “&amp;amp;”.</p>  <h3>Phone call</h3>  <p>To allow the user the choice of placing a call, use this syntax in the tag. Understand that this won’t actually place the call; the user will be prompted with a allow/don’t allow prompt. It’s up to you to send it a valid phone number though, I’m not error checking this first!</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:52de7dc4-7186-4698-89cf-8d4f6859a9e4" class="wlWriterSmartContent">   <pre class="brush: xml">&lt;unofficial:PhoneHyperlinkButton
     Tag=&quot;tel:8005551212&quot;
     Content=&quot;Call customer support&quot;/&gt;</pre>
 </div>
@@ -26,7 +26,7 @@ tags: []
 <p>Optionally you can include a “displayname” property, which will appear to the user along with the phone number that is to be called. Note I’ve encoded the spaces as %20.</p>
 
 <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:2b5d63c3-b486-4ec9-aca5-c797cb8ea2a7" class="wlWriterSmartContent">
-  <pre class="xml" name="code">&lt;unofficial:PhoneHyperlinkButton
+  <pre class="brush: xml">&lt;unofficial:PhoneHyperlinkButton
     Tag=&quot;tel:8005551212?displayname=Some%20Company%20Support&quot;
     Content=&quot;Call customer support&quot;/&gt;</pre>
 </div>
@@ -36,7 +36,7 @@ tags: []
 <p>Just like the “tel” URI syntax, text messaging starts with “sms:” and I’ve added another parameter, body, which will be the initial text message content. The user can add to it, remove that body, or use the back button to cancel the sending of the text.</p>
 
 <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:eea462bb-3f27-4424-bf01-b64c68d817e2" class="wlWriterSmartContent">
-  <pre class="xml" name="code">&lt;unofficial:PhoneHyperlinkButton
+  <pre class="brush: xml">&lt;unofficial:PhoneHyperlinkButton
     Tag=&quot;sms:8005551212&quot;
     Content=&quot;Text a friend&quot; /&gt;
 
@@ -50,7 +50,7 @@ tags: []
 <p>Building on the earlier implementation that only supported the “to” address, I’m matching most of the standard mailto: URI expectations by now adding support for body, cc, and subject query string parameters.</p>
 
 <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:4dbd85d2-8872-49cc-9ce2-cd6c83b360e6" class="wlWriterSmartContent">
-  <pre class="xml" name="code">&lt;unofficial:PhoneHyperlinkButton
+  <pre class="brush: xml">&lt;unofficial:PhoneHyperlinkButton
     Tag=&quot;mailto:spam@spam.com?subject=Hello%20World&amp;cc=spammer@spam.com&amp;body=Hey%20spam.&quot;
     Content=&quot;Send an email&quot; /&gt;</pre>
 </div>
@@ -60,7 +60,7 @@ tags: []
 <p>Anything that doesn’t start with mailto, sms, or tel, will be sent to the web browser.</p>
 
 <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:4db236e2-5c4f-4070-9a01-dfddf68703cc" class="wlWriterSmartContent">
-  <pre class="xml" name="code">&lt;unofficial:PhoneHyperlinkButton
+  <pre class="brush: xml">&lt;unofficial:PhoneHyperlinkButton
     Tag=&quot;http://create.msdn.com/&quot;
     Content=&quot;Develop Windows Phone Apps&quot; /&gt;</pre>
 </div>
@@ -78,7 +78,7 @@ tags: []
 <p>I’m also using a content presenter here.</p>
 
 <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:624b4134-610c-440e-b628-77efd2603a40" class="wlWriterSmartContent">
-  <pre class="xml" name="code">&lt;Style x:Key=&quot;EmptyHyperlink&quot; TargetType=&quot;HyperlinkButton&quot;&gt;
+  <pre class="brush: xml">&lt;Style x:Key=&quot;EmptyHyperlink&quot; TargetType=&quot;HyperlinkButton&quot;&gt;
     &lt;Setter Property=&quot;Background&quot; Value=&quot;Transparent&quot; /&gt;
     &lt;Setter Property=&quot;Padding&quot; Value=&quot;0&quot; /&gt;
     &lt;Setter Property=&quot;Template&quot;&gt;
@@ -98,7 +98,7 @@ tags: []
 <p>I like this simple style. It gives the text a semi-bold effect, colors them to the user’s personalized accent color.</p>
 
 <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:c040e984-a44c-4fc4-8e5b-f43ccbddb93f" class="wlWriterSmartContent">
-  <pre class="xml" name="code">&lt;Style
+  <pre class="brush: xml">&lt;Style
     x:Key=&quot;AccentHyperlink&quot;
     TargetType=&quot;HyperlinkButton&quot;&gt;
     &lt;Setter

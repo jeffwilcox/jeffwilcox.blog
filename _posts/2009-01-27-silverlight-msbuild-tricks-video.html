@@ -22,23 +22,42 @@ imported_categories:
 imported_link_categories: []
 tags: []
 ---
-<p>A re-post, I had to switch video streaming services...</p><p>Part of the Silverlight SDK can be copied into your source tree to build projects on machines without requiring Silverlight or the SDK. This is great for continuous integration environments and build labs where having an independent build is key.</p>  <p>I’ve compiled a quick screencast (6:07) that demonstrates preparing a directory to check in the proper SDK components, updating a C# project file, and then proving the result by uninstalling the Silverlight SDK.</p>  <h3>Walkthrough video</h3>  <p><object data="data:application/x-silverlight-2," type="application/x-silverlight-2" width="685" height="385">  		<param name="source" value="http://media.jeff.wilcox.name/video/VideoPlayerM.xap" />  		<param name="background" value="white" />  		<param name="initParams" value="m=http://media.jeff.wilcox.name/video/SilverlightMsBuild.wmv" />  		<param name="enableHtmlAccess" value="true" />		                 <param name="minruntimeversion" value="2.0.31005.0" />  		Your machine either needs Silverlight, or your feed reader does not permit embedded Silverlight content.  Please click-through to the post to view the video.<br />		<a href="http://go.microsoft.com/fwlink/?LinkId=124807" style="text-decoration: none;"><img src="http://go.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style: none" /></a></object><br /><em>6:07, 60MB, HD 720p (<a href="http://media.jeff.wilcox.name/video/SilverlightMsBuild.wmv">Download WMV</a>)</em></p>  <h3>Properties respected by the Silverlight MsBuild targets</h3>  <p>The Silverlight build system respects these build properties that can override the standard SDK locations:</p>  <table border="0" cellspacing="0" cellpadding="2" width="670"><tbody>     <tr>       <td valign="top" width="335"><strong>Property</strong></td>        <td valign="top" width="335"><strong>Standard value</strong></td>     </tr>      <tr>       <td valign="top" width="335">TargetFrameworkDirectory</td>        <td valign="top" width="335">[Silverlight SDK]\Reference Assemblies\</td>     </tr>      <tr>       <td valign="top" width="335">TargetFrameworkSDKDirectory</td>        <td valign="top" width="335">[Silverlight SDK]\Libraries\Client\</td>     </tr>      <tr>       <td valign="top" width="335">SilverlightRuntimeVersion</td>        <td valign="top" width="335">2.0.31005.0</td>     </tr>   </tbody></table>  <p></p>  <p>The runtime version is used when generating the application manifest and HTML test page.</p>  <h3>Preparing your source enlistment</h3>  <p>On the Toolkit, we have a directory of external tools and engineering resources. One of these contains the Silverlight SDK’s assemblies, libraries, and build scripts, as shown in the video.</p>  <ul>   <li>Create a directory to store the MsBuild assets for Silverlight, and copy in the files from %programfiles%MSBuild\Microsoft\Silverlight\v2.0. </li>    <li>Copy the “Reference Assemblies” directory from %programfiles%\Microsoft SDKs\Silverlight\v2.0\ into the tools directory. </li>    <li>Copy the “Libraries” directory from %programfiles%\Microsoft SDKs\Silverlight\v2.0\ into the directory. </li> </ul>  <p>You can then use relative paths in your projects or custom build targets to get things rolling.</p>  <h3>Updating projects</h3>  <p>Depending on your build system, you’ll want to update your custom targets or project files. In the video I’m simply modifying the .csproj file to add the necessary properties and modify the import statement.</p>  <h4>Add properties</h4>  <p>I’d scroll through the .csproj and insert the new properties right before the Import statement that pulls in the Silverlight build targets. Here are the properties defined; the SilverlightBuildResources property is my own made-up name that I’m using to store the relative path to the new building bits:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1d721b58-bf73-4637-8135-1f7136b44119" class="wlWriterEditableSmartContent"><pre class="xml" name="code">  &lt;PropertyGroup&gt;
-    &lt;SilverlightBuildResources&gt;..\Build\&lt;/SilverlightBuildResources&gt;
-    &lt;TargetFrameworkDirectory&gt;$(SilverlightBuildResources)Reference Assemblies\&lt;/TargetFrameworkDirectory&gt;
-    &lt;TargetFrameworkSDKDirectory&gt;$(SilverlightBuildResources)Libraries\Client\&lt;/TargetFrameworkSDKDirectory&gt;
-    &lt;SilverlightRuntimeVersion&gt;2.0.31005.0&lt;/SilverlightRuntimeVersion&gt;
-  &lt;/PropertyGroup&gt;</pre></div>
-
-<h4>Import the new Silverlight build target</h4>
-
-<p>Silverlight projects import the Silverlight MsBuild targets from the central MsBuild extensions directory, so we just need to update the import to instead come from the source tree:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:21a1f393-b551-49ae-9ae0-e960ab17809f" class="wlWriterEditableSmartContent"><pre class="xml" name="code">  &lt;Import Project="$(SilverlightBuildResources)Microsoft.Silverlight.CSharp.targets" /&gt;
-  &lt;!-- 
-	This is the default provided for new Silverlight projects:
-  &lt;Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" /&gt;
-  --&gt;</pre></div>
-
-<h4>Build</h4>
-
+<p>A re-post, I had to switch video streaming services...</p><p>Part of the Silverlight SDK can be copied into your source tree to build projects on machines without requiring Silverlight or the SDK. This is great for continuous integration environments and build labs where having an independent build is key.</p>  <p>I’ve compiled a quick screencast (6:07) that demonstrates preparing a directory to check in the proper SDK components, updating a C# project file, and then proving the result by uninstalling the Silverlight SDK.</p>  <h3>Walkthrough video</h3>  <p><object data="data:application/x-silverlight-2," type="application/x-silverlight-2" width="685" height="385">  		<param name="source" value="http://media.jeff.wilcox.name/video/VideoPlayerM.xap" />  		<param name="background" value="white" />  		<param name="initParams" value="m=http://media.jeff.wilcox.name/video/SilverlightMsBuild.wmv" />  		<param name="enableHtmlAccess" value="true" />		                 <param name="minruntimeversion" value="2.0.31005.0" />  		Your machine either needs Silverlight, or your feed reader does not permit embedded Silverlight content.  Please click-through to the post to view the video.<br />		<a href="http://go.microsoft.com/fwlink/?LinkId=124807" style="text-decoration: none;"><img src="http://go.microsoft.com/fwlink/?LinkId=108181" alt="Get Microsoft Silverlight" style="border-style: none" /></a></object><br /><em>6:07, 60MB, HD 720p (<a href="http://media.jeff.wilcox.name/video/SilverlightMsBuild.wmv">Download WMV</a>)</em></p>  <h3>Properties respected by the Silverlight MsBuild targets</h3>  <p>The Silverlight build system respects these build properties that can override the standard SDK locations:</p>  <table border="0" cellspacing="0" cellpadding="2" width="670"><tbody>     <tr>       <td valign="top" width="335"><strong>Property</strong></td>        <td valign="top" width="335"><strong>Standard value</strong></td>     </tr>      <tr>       <td valign="top" width="335">TargetFrameworkDirectory</td>        <td valign="top" width="335">[Silverlight SDK]\Reference Assemblies\</td>     </tr>      <tr>       <td valign="top" width="335">TargetFrameworkSDKDirectory</td>        <td valign="top" width="335">[Silverlight SDK]\Libraries\Client\</td>     </tr>      <tr>       <td valign="top" width="335">SilverlightRuntimeVersion</td>        <td valign="top" width="335">2.0.31005.0</td>     </tr>   </tbody></table>  <p></p>  <p>The runtime version is used when generating the application manifest and HTML test page.</p>  <h3>Preparing your source enlistment</h3>  <p>On the Toolkit, we have a directory of external tools and engineering resources. One of these contains the Silverlight SDK’s assemblies, libraries, and build scripts, as shown in the video.</p>  <ul>   <li>Create a directory to store the MsBuild assets for Silverlight, and copy in the files from %programfiles%MSBuild\Microsoft\Silverlight\v2.0. </li>    <li>Copy the “Reference Assemblies” directory from %programfiles%\Microsoft SDKs\Silverlight\v2.0\ into the tools directory. </li>    <li>Copy the “Libraries” directory from %programfiles%\Microsoft SDKs\Silverlight\v2.0\ into the directory. </li> </ul>  <p>You can then use relative paths in your projects or custom build targets to get things rolling.</p>  <h3>Updating projects</h3>  <p>Depending on your build system, you’ll want to update your custom targets or project files. In the video I’m simply modifying the .csproj file to add the necessary properties and modify the import statement.</p>  <h4>Add properties</h4>  <p>I’d scroll through the .csproj and insert the new properties right before the Import statement that pulls in the Silverlight build targets. Here are the properties defined; the SilverlightBuildResources property is my own made-up name that I’m using to store the relative path to the new building bits:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1d721b58-bf73-4637-8135-1f7136b44119" class="wlWriterEditableSmartContent"><pre class="brush: xml">  &lt;PropertyGroup&gt;
+
+    &lt;SilverlightBuildResources&gt;..\Build\&lt;/SilverlightBuildResources&gt;
+
+    &lt;TargetFrameworkDirectory&gt;$(SilverlightBuildResources)Reference Assemblies\&lt;/TargetFrameworkDirectory&gt;
+
+    &lt;TargetFrameworkSDKDirectory&gt;$(SilverlightBuildResources)Libraries\Client\&lt;/TargetFrameworkSDKDirectory&gt;
+
+    &lt;SilverlightRuntimeVersion&gt;2.0.31005.0&lt;/SilverlightRuntimeVersion&gt;
+
+  &lt;/PropertyGroup&gt;</pre></div>
+
+
+
+<h4>Import the new Silverlight build target</h4>
+
+
+
+<p>Silverlight projects import the Silverlight MsBuild targets from the central MsBuild extensions directory, so we just need to update the import to instead come from the source tree:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:21a1f393-b551-49ae-9ae0-e960ab17809f" class="wlWriterEditableSmartContent"><pre class="brush: xml">  &lt;Import Project="$(SilverlightBuildResources)Microsoft.Silverlight.CSharp.targets" /&gt;
+
+  &lt;!-- 
+
+	This is the default provided for new Silverlight projects:
+
+  &lt;Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight\v2.0\Microsoft.Silverlight.CSharp.targets" /&gt;
+
+  --&gt;</pre></div>
+
+
+
+<h4>Build</h4>
+
+
+
 <p>You’re all set! And, for future reference: you can use this to build applications targeting multiple versions of Silverlight from the same tree. But more on that later.</p>
