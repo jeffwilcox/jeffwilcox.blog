@@ -20,7 +20,7 @@ imported_categories:
 imported_link_categories: []
 tags: []
 ---
-<p>When I was a test developer on the team that built the HTML DOM bridge feature for Silverlight 2, I often found myself needing to create a tiny, quick application to reproduce an issue. That meant quickly creating projects that used the dynamic test page, and without modifying the TestPage.html.</p> <p>The goal was to resize or hide the Silverlight plugin and its hosting element. Here's what I've been using as a code snippet that drops the ZeroPixelPlugin in the System.Windows.Browser namespace.</p> <p>One fine function call (Page.xaml.cs):</p> <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:415a6404-ea1a-4da8-8e08-93d959b50dbb" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="c-sharp" name="code">    private void Page_Loaded(object sender, RoutedEventArgs e)
+<p>When I was a test developer on the team that built the HTML DOM bridge feature for Silverlight 2, I often found myself needing to create a tiny, quick application to reproduce an issue. That meant quickly creating projects that used the dynamic test page, and without modifying the TestPage.html.</p> <p>The goal was to resize or hide the Silverlight plugin and its hosting element. Here's what I've been using as a code snippet that drops the ZeroPixelPlugin in the System.Windows.Browser namespace.</p> <p>One fine function call (Page.xaml.cs):</p> <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:415a6404-ea1a-4da8-8e08-93d959b50dbb" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="brush: c-sharp">    private void Page_Loaded(object sender, RoutedEventArgs e)
     {
         ZeroPixelPlugin.HideSilverlightPlugin();
 
@@ -50,7 +50,7 @@ Namespace System.Windows.Browser
     End Class
 End Namespace</pre></div>
 <p>And in C#:</p>
-<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:68d0b8b8-a12f-43d2-bcdd-ddcddda1da79" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="c-sharp" name="code">// This code is useful for Html DOM bridge testing. It is placed in this 
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:68d0b8b8-a12f-43d2-bcdd-ddcddda1da79" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="brush: c-sharp">// This code is useful for Html DOM bridge testing. It is placed in this 
 // namespace since it sort of assumes you're only using that feature and 
 // not the rich Silverlight presentation framework.
 

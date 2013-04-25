@@ -14,7 +14,7 @@ imported_categories:
 imported_link_categories: []
 tags: []
 ---
-<p>Since the generic .NET list (<a href="http://msdn.microsoft.com/en-us/library/6sh2ey19(v=VS.95).aspx">List&lt;T&gt; documentation</a>) is a pretty common data structure found in phone apps, I figured it was worth a few minutes to direct everyone’s attention to how the list and its capacity works on the phone.</p>  <p>Unlike desktop computers, where we’re often dealing with gigabytes of potential memory on a modern operating system, the phone has a number of fun and unique memory challenges that managed code developers should be cognizant of.</p>  <p>If you’re using the generic lists in your Windows Phone application, it’s OK to have a bunch sitting around – their default capacity is actually zero until you add items, but you can alter this behavior.</p>  <h3>Constructed capacity is ZERO</h3>  <p>When you create a new List&lt;T&gt;, the constructed capacity is 0. This means that the cost of creating a new list of pretty minimal, and creating one does <em>not</em> typically allocate any memory for items.</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:ee0d0411-ba53-4ace-b625-7f9b03d8f281" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">List&lt;string&gt; myList = new List&lt;string&gt;();
+<p>Since the generic .NET list (<a href="http://msdn.microsoft.com/en-us/library/6sh2ey19(v=VS.95).aspx">List&lt;T&gt; documentation</a>) is a pretty common data structure found in phone apps, I figured it was worth a few minutes to direct everyone’s attention to how the list and its capacity works on the phone.</p>  <p>Unlike desktop computers, where we’re often dealing with gigabytes of potential memory on a modern operating system, the phone has a number of fun and unique memory challenges that managed code developers should be cognizant of.</p>  <p>If you’re using the generic lists in your Windows Phone application, it’s OK to have a bunch sitting around – their default capacity is actually zero until you add items, but you can alter this behavior.</p>  <h3>Constructed capacity is ZERO</h3>  <p>When you create a new List&lt;T&gt;, the constructed capacity is 0. This means that the cost of creating a new list of pretty minimal, and creating one does <em>not</em> typically allocate any memory for items.</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:ee0d0411-ba53-4ace-b625-7f9b03d8f281" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">List&lt;string&gt; myList = new List&lt;string&gt;();
 // myList.Capacity == 0</pre></div>
 
 <p>I’ve heard of developers who used to think that at construction the list had a large capacity, and that setting an initial size to a few digit number was a performance win. This is often not the case.</p>
@@ -24,7 +24,7 @@ tags: []
 <p>The first time that you add a single item (or a few), you’ll notice that the capacity size on the Windows Phone will be 4. This is because the internal default number of 4.</p>
 
 <p>
-  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:0fd3b4b0-62db-4fe2-bfd5-7a8d38fca0b4" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">List&lt;string&gt; myList = new List&lt;string&gt;();
+  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:0fd3b4b0-62db-4fe2-bfd5-7a8d38fca0b4" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">List&lt;string&gt; myList = new List&lt;string&gt;();
 // myList.Capacity == 0
 
 myList.Add("hello");
@@ -33,7 +33,7 @@ myList.Add("hello");
 
 <p>You can add 4 items and the capacity will remain at 4.</p>
 
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:44939a17-d2ae-44f1-9da5-4d1d9a88cba8" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">List&lt;string&gt; myList = new List&lt;string&gt;();
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:44939a17-d2ae-44f1-9da5-4d1d9a88cba8" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">List&lt;string&gt; myList = new List&lt;string&gt;();
 // myList.Capacity == 0
 
 myList.Add("hello");
@@ -52,7 +52,7 @@ myList.Add("le monde!");
 
 <p>Once the Count == Capacity, it will exponentially grow the capacity. So the capacity will move from 4 to 8 to 16 to 32, 64, 128, 256, … 1024, and so on.</p>
 
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:9d8d73e5-5827-4d68-afa1-024e1e72eff4" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">List&lt;string&gt; myList = new List&lt;string&gt;();
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:9d8d73e5-5827-4d68-afa1-024e1e72eff4" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">List&lt;string&gt; myList = new List&lt;string&gt;();
 // myList.Capacity == 0
 
 myList.Add("hello");
@@ -75,14 +75,14 @@ myList.Add("a fifth item.");
 <p>If you’re in a situation where you’ve added say 500 names from a database, but the capacity is going to be at 1024 at this point, it might be worth clipping back the capacity. Just call the TrimExcess method on the generic list instance.</p>
 
 <p>
-  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:d3eaaee0-459f-4178-9e4b-3707b75f3f45" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">myList.TrimExcess();</pre></div>
+  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:d3eaaee0-459f-4178-9e4b-3707b75f3f45" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">myList.TrimExcess();</pre></div>
 </p>
 
 <h3>Initializing to a set size</h3>
 
 <p>And if you want to keep from potentially re-allocating memory as you add a lot of items, you can always initialize your list to a smart default number that is much larger than 0 or the default capacity of 4 by providing a size in the constructor.</p>
 
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:f3edda01-91da-462a-ad79-f8460e550c69" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">List&lt;string&gt; myList = new List&lt;string&gt;(900);
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:f3edda01-91da-462a-ad79-f8460e550c69" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">List&lt;string&gt; myList = new List&lt;string&gt;(900);
 // myList.Capacity == 900</pre></div>
 
 <p>Note that the capacity will exactly match the number you provide – it won’t jump up to the next exponent or anything like that. Of course it’s possible that behind the scenes the CLR is allocating a specific type of memory on the heap, but as far as numbers exposed to managed code, this is what you get.</p>

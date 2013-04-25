@@ -27,292 +27,580 @@ imported_categories:
 imported_link_categories: []
 tags: []
 ---
-<p><em>Code coverage note: this feature was unfortunately cut due to regressions in dependencies. Also, automated closing of the browser has issues in November and we are hoping to address in the future. Sorry for the troubles.</em></p>
-<p>The November 2009 Silverlight Toolkit is essentially a tools and infrastructure release on top of the October 2009 release (where we first introduced Visual Studio 2010 support). It also adds a Silverlight 4 Beta version.</p>  <h2>New infrastructure &amp; test tools ship in the Silverlight Toolkit</h2>  <p>There is a lot in the release that is joining publicly for the first time, based on some of the internal tools and utilities that we use in building and testing the Silverlight Toolkit, plus things we’d like to have as typical Silverlight developers.</p>  <p>These tools join in the Experimental quality band, and over the next few posts, I’ll dig into the details. This post is a literal walkthrough of how you could go about seeing all the utilities in the meantime.</p>  <p>One important thing to call out is that, as an initial release, there are definitely some rough edges: the test tools are centered around Microsoft Build (msbuild) integration, instead of Visual Studio integration; there’s no add-in or nice right-click project support to use these tools today.</p>  <p>We’ll be collecting feedback along the way and making changes in future releases. Until then, hopefully some of you will find the infrastructure useful, if only to peak behind the curtain. We’re also shipping the full source to these tools, you’ll find an Infrastructure.zip file inside the toolkit install folder.</p>  <h4>What we’ll do in this walkthrough</h4>  <p>This walkthrough uses Silverlight 4, though the instructions are virtually identical if you’re using Silverlight 3.</p>  <ul>   <li>Install the Silverlight Toolkit</li>    <li>Create a new Silverlight class library with a simple business object</li>    <li>Add a Silverlight Unit Test Application using the new templates found in the Silverlight Toolkit</li>    <li>Run the tests in Visual Studio</li>    <li>Run the tests from the command line in various browsers</li>    <li>Collect block-level code coverage information for the build</li> </ul>  <p>This is screen-shot heavy, as future posts will dig into the details. I appreciate your patience!</p>  <p>Requirements:</p>  <ul>   <li>Latest Silverlight Toolkit</li>    <li>For test automation:</li>    </ul><ul>     <li>MSBuild on the machine</li>   </ul>    <li>For code coverage:</li>    <ul>     <li>Visual Studio 2010 Beta 2 Ultimate</li>   </ul>   <h2>Installing the tools</h2>  <p>When you install either Silverlight Toolkit drop from November, you’ll see that there’s a new feature listed in the setup: the Tools &amp; Templates feature. It’s selected by default, and adds Visual Studio templates, installs the tools, and prepares the tools if your machine has the proper dependencies on it.</p>  <p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="SetupNewFeature" border="0" alt="SetupNewFeature" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/SetupNewFeature.png" width="541" height="430" /> </p>  <h2>Create a Silverlight Class Library</h2>  <p>Open Visual Studio 2010 Beta 2, after installing the toolkit. Create a new <strong>Silverlight Class Library</strong> project, we’ll store a simple business object in it.</p>  <p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioNewSilverlightClassLibraryProject" border="0" alt="VisualStudioNewSilverlightClassLibraryProject" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioNewSilverlightClassLibraryProject.png" width="685" height="480" /> </p>  <p>Whichever flavor of Silverlight you use, remember to use the same flavor while creating future projects in the same solution!</p>  <p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioSelectSilverlightVersion" border="0" alt="VisualStudioSelectSilverlightVersion" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioSelectSilverlightVersion.png" width="685" height="231" /></p>  <p>Create a new Person.cs type, with a few properties and a method. Here’s the source:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:bc34624e-1aaa-4618-a4cc-6c9dad4c3107" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">using System;
-
-namespace MyApplication
-{
-    public class Person
-    {
-        public string First { get; set; }
-        public string Last { get; set; }
-
-        public string FullName { get { return First + " " + Last; } }
-
-        public bool MightBe(string substring)
-        {
-            return FullName.Contains(substring);
-        }
-    }
-}</pre></div>
-
-<h2>Add a Silverlight Unit Test Application</h2>
-
-<p>Right-click on the solution in the Solution Explorer and select Add New Project. Under the Visual C# (and also Visual Basic) languages node, select the Silverlight subgroup. You’ll see a <strong>Silverlight Unit Test Application</strong> project template.</p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioUnitTestTemplate" border="0" alt="VisualStudioUnitTestTemplate" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioUnitTestTemplate.png" width="685" height="446" /></p>
-
-<p>You now have two projects:</p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioTestAppAndClassLibrarySolutionExplorer" border="0" alt="VisualStudioTestAppAndClassLibrarySolutionExplorer" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioTestAppAndClassLibrarySolutionExplorer.png" width="283" height="385" /></p>
-
-<p>Next up, we want to add a reference to the class library, so that the unit tests can access the library. Right-click on the new test project and then select the Add Reference option. Under the Project tab, choose the class library you created earlier.</p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioAddReference" border="0" alt="VisualStudioAddReference" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioAddReference.png" width="593" height="478" /></p>
-
-<p>Now, let’s add some unit tests. Clear out the content in the created Tests.cs file and drop this in:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:a7e8d8fd-b4cb-4725-bb1a-cd35db6190c2" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MyApplication;
-
-namespace PersonTestProject {
-    [TestClass]
-    public class Tests
-    {
-        [TestMethod]
-        public void TestCtor()
-        {
-            Person p = new Person();
-        }
-
-        [TestMethod]
-        public void TestSetName()
-        {
-            Person p = new Person { First = "Scott", Last = "Guthrie" };
-            Assert.AreNotEqual(p.First, p.Last);
-        }
-
-        [TestMethod]
-        public void TestGetFullName()
-        {
-            Person p = new Person { First = "Steve", Last = "Ballmer" };
-            StringAssert.Equals("Steve Ballmer", p.FullName);
-        }
-    }
-}</pre></div>
-
-<p>The tests are pretty simple, and exercise various simple PMEs on the type.</p>
-
-<h2>Run the unit tests from Visual Studio</h2>
-
-<p>Right-click on the test project and select Set as StartUp Project from the menu. Then, press F5 or click the Run button to begin execution.</p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioSetAsStartupProject" border="0" alt="VisualStudioSetAsStartupProject" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioSetAsStartupProject.png" width="530" height="605" /> </p>
-
-<p> The default web browser will open up, the tests will run, and the window will stay open. When you are satisfied, close the browser. You’ve just run some simple tests!</p>
-
-<h2>Running unit tests from the Visual Studio command line</h2>
-
-<p>More interesting is being able to automate the tests: through MSBuild, we’ve added a task that can control the browser and save out the log file(s) from the unit tests when they run.</p>
-
-<p>To do this, you need a few things:</p>
-
-<ul>
-  <li>The Visual Studio command prompt open.</li>
-
-  <li>The full path to the test project.</li>
-</ul>
-
-<h4>Open the command prompt</h4>
-
-<p>Personally, I always pin the Visual Studio 2008 tools command prompt next to my Visual Studio taskbar icons.</p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TaskbarCmdPrompt" border="0" alt="TaskbarCmdPrompt" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/TaskbarCmdPrompt.png" width="685" height="71" /> </p>
-
-<p>You can start it from the Start Menu, under the tools for the Visual Studio version you are using.</p>
-
-<p>Alternatively, make sure MSBuild is in your path.</p>
-
-<p>Or, start a command prompt and then move to your 32-bit Program Files, then ‘Visual Studio 9.0’, then VC. Run ‘vcvarsall.bat x86’</p>
-
-<p><strong>Note</strong>: all these command prompts should be 32-bit, even on a x64 machine. Silverlight is a 32-bit world today.</p>
-
-<h4>Move to the test project</h4>
-
-<p>To get the full path to the test project, I just right-click on the test project in Visual Studio, then Open Folder in Windows Explorer. I copy the path from the resulting Explorer dialog’s crumb navigation bar.</p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioOpenWindowsExplorerForProjectLocation" border="0" alt="VisualStudioOpenWindowsExplorerForProjectLocation" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioOpenWindowsExplorerForProjectLocation.png" width="685" height="428" /> </p>
-
-<p>Now, inside the command prompt window, move to that path:</p>
-
-<blockquote>
-  <p>pushd (PASTE PATH HERE) &lt;enter&gt;</p>
-</blockquote>
-
-<p>To run the unit tests in the default browser, simply type </p>
-
-<blockquote>
-  <p><strong>msbuild /t:test</strong> </p>
-</blockquote>
-
-<p>and press Enter.</p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CommandLineMsbuildTest" border="0" alt="CommandLineMsbuildTest" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/CommandLineMsbuildTest.png" width="685" height="120" /></p>
-
-<p>You’ll see the browser open, quickly run some tests, and then close. Here’s what it looks like, captured in the middle of the 5-second test run:</p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TestRunningInInternetExplorer" border="0" alt="TestRunningInInternetExplorer" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/TestRunningInInternetExplorer.png" width="685" height="345" /></p>
-
-<p>And afterwards, you’ll see that Msbuild reports success, and you can read the test to see that 3 passing tests were reported, out of 3 total tests.</p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CommandLineMsbuildTestWithResults" border="0" alt="CommandLineMsbuildTestWithResults" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/CommandLineMsbuildTestWithResults.png" width="685" height="433" /></p>
-
-<h3>Running tests in Google Chrome</h3>
-
-<p>It’s easy! Just set the browser property to Chrome.</p>
-
-<blockquote>
-  <p><strong><font color="#808080">msbuild /t:test </font>/p:browser=chrome</strong></p>
-</blockquote>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CommandLineMsbuildTestChrome" border="0" alt="CommandLineMsbuildTestChrome" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/CommandLineMsbuildTestChrome.png" width="685" height="67" />&#160;</p>
-
-<p>And just like that, Chrome opens up and runs the tests.</p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TestRunningInChrome" border="0" alt="TestRunningInChrome" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/TestRunningInChrome.png" width="685" height="428" /></p>
-
-<h3>Running tests in Mozilla Firefox</h3>
-
-<p>Just set the browser to Firefox.</p>
-
-<blockquote>
-  <p><strong><font color="#808080">msbuild /t:test </font>/p:browser=firefox</strong></p>
-</blockquote>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TestRunningInFirefox" border="0" alt="TestRunningInFirefox" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/TestRunningInFirefox.png" width="685" height="428" /></p>
-
-<h3>Tag Expressions</h3>
-
-<p>A nice feature to help select a subset of tests is the Tag Expression syntax. By specifying a tag expression at the command prompt, you can include and exclude tests that are marked with the Tag attribute found in Microsoft.Silverlight.Testing.</p>
-
-<p>Also, tags <strong>implicitly exist for all test method names,</strong> short and full.</p>
-
-<p>So, let’s run the test called <strong>TestSetName</strong> from our project.</p>
-
-<blockquote>
-  <p><strong><font color="#808080">msbuild /t:test </font>/p:tagexpression=TestSetName</strong></p>
-</blockquote>
-
-<p>You may briefly see indication in the test UI in the browser that a ‘Tag expression’ is in use.</p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TestRunningInInternetExplorerWithTagExpression" border="0" alt="TestRunningInInternetExplorerWithTagExpression" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/TestRunningInInternetExplorerWithTagExpression.png" width="685" height="344" /></p>
-
-<p>And the build results show that just one test ran:</p>
-
-<p>&#160;<img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CommandLineMsbuildTestWithTagExpressionResults" border="0" alt="CommandLineMsbuildTestWithTagExpressionResults" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/CommandLineMsbuildTestWithTagExpressionResults.png" width="685" height="433" /> </p>
-
-<p>If you want to run all tests <strong>except that one</strong>, use this tag expression:</p>
-
-<blockquote>
-  <p><strong><font color="#808080">msbuild /t:test </font>/p:tagexpression=!TestSetName</strong></p>
-</blockquote>
-
-<p>Cool, and easy!</p>
-
-<h3>Test results files</h3>
-
-<p>Another nice feature of running the tests through MSBuild is that you’ll see test result files (end in *.trx) inside the same folder as the test page for the application.</p>
-
-<p>Similar and conformant to the Visual Studio *.trx format, you can parse and work with this data to understand execution times, results, and read other information. Unfortunately, you cannot open these files in Visual Studio 2010 Beta 2, but they do open in Visual Studio 2008. Note that there isn’t any real test integration with VS here: this is just an informative display. </p>
-
-<p>Here’s a directory with several test result files (plus some coverage stuff we’ll get to later):</p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="LookingInTheBinariesFolderAfterTestsRun" border="0" alt="LookingInTheBinariesFolderAfterTestsRun" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/LookingInTheBinariesFolderAfterTestsRun.png" width="685" height="502" /></p>
-
-<p>You can open up the TestResults trx file and see what kind of information is in it:</p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="LookingAtTheTrxFile" border="0" alt="LookingAtTheTrxFile" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/LookingAtTheTrxFile.png" width="685" height="524" /></p>
-
-<p>And here’s the results file opened in Visual Studio:</p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudio2008TestResultsTrxFile" border="0" alt="VisualStudio2008TestResultsTrxFile" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudio2008TestResultsTrxFile.png" width="685" height="312" />&#160;</p>
-
-<h2>Preparing for Code Coverage</h2>
-
-<p>Ripe for a Visual Studio add-in, this process requires us modifying the test project’s .csproj file some. Instructions are the same for Visual Studio.</p>
-
-<p>We need to <strong>manually select the assembly to be instrumented </strong>by setting a property. The assembly to be instrumented must not be signed, and not have a strong name. In this example, the assembly is <strong>SilverlightClassLibrary3</strong>.</p>
-
-<p>To make changes to the test project, to specify this, first unload the project by right-clicking on the test project and selecting the Unload option: </p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioUnloadProject" border="0" alt="VisualStudioUnloadProject" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioUnloadProject.png" width="503" height="621" /></p>
-
-<p>Then, right-click the project file that is ‘(unavailable) and select ‘Edit’. </p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioEditProject" border="0" alt="VisualStudioEditProject" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioEditProject.png" width="492" height="214" /></p>
-
-<p>Now you’ll see the XML data for the project. Scroll down in the template to where there is a commented out ItemGroup, and some comments about the code coverage support. Remove the comments from the ItemGroup: </p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioEditingTestProjectFileOriginal" border="0" alt="VisualStudioEditingTestProjectFileOriginal" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioEditingTestProjectFileOriginal.png" width="685" height="435" /></p>
-
-<p>And now, change the Include statement from SilverlightClassLibrary1 to whatever your assembly to instrument is called. In our example here, it is called SilverlightClassLibrary3.</p>
-
-<p>&#160;<img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioEditingTestProjectFile2" border="0" alt="VisualStudioEditingTestProjectFile2" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioEditingTestProjectFile2.png" width="685" height="435" /> </p>
-
-<p> Now, that’s it. Let’s close the file and then right-click the project again and select Reload Project:</p>
-
-<p>&#160;<img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioReloadTestProject" border="0" alt="VisualStudioReloadTestProject" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioReloadTestProject.png" width="502" height="400" /> </p>
-
-<p> Now we’re ready to go!</p>
-
-<h2>Running Silverlight Code Coverage</h2>
-
-<p>Just like the msbuild /t:test from above, we have a similar target named <strong>CoverageTest</strong> and <strong>CoverageView</strong>. CoverageTest collects the data, while CoverageView collects the coverage data and then shows the results in an application that explores the hit and not hit portions of your source code.</p>
-
-<p>Let’s collect coverage!</p>
-
-<p><strong>Note:</strong> This is assuming that you have a high-level SKU of Visual Studio 2010 Beta 2 installed. The coverage tools depend on the Static Analysis Tools that ship in the beta. You will receive an error if you run this on a machine without those tools. We’ll look for a better experience in the future.</p>
-
-<p>Remember, the same properties from above – browser and tag expression – still can apply and work in the coverage targets.</p>
-
-<blockquote>
-  <p><strong><font color="#808080">msbuild </font>/t:coveragetest</strong></p>
-</blockquote>
-
-<p>Here is what it will look like if everything line up. Unfortunately, the coverage experience is a very early preview and very flaky in some situations due to the dependency on beta components. We also haven’t had I admit enough time to iron out all the issues customers may experience.</p>
-
-<p>You see the Instrumentation messages come out, then the RunTests target, then the coverage data is merged and things should be successful. </p>
-
-<p>&#160;<img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CommandLineMsbuildCoverageTestResults" border="0" alt="CommandLineMsbuildCoverageTestResults" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/CommandLineMsbuildCoverageTestResults.png" width="685" height="433" /></p>
-
-<p>If that worked, it is safe to assume that the view target will also work. It will re-run all the tests and instrument again as well.</p>
-
-<blockquote>
-  <p><strong><font color="#808080">msbuild </font>/t:coverageview</strong></p>
-</blockquote>
-
-<p>Now you’ll see the viewer popup, that lets you drill into types and methods to see what is hit (cyan) or not hit (red), to spot code that your tests are missing:</p>
-
-<h3><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="LookingAtCodeCoverage" border="0" alt="LookingAtCodeCoverage" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/LookingAtCodeCoverage.png" width="685" height="428" /></h3>
-
-<p>You’ll find a Coverage.xml file in the same directory where the test results go. This is the data that is used by the viewer application. You’ll see in the XML file a set of ‘visited’ blocks, and other information, in the file:</p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CoverageXmlFile" border="0" alt="CoverageXmlFile" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/CoverageXmlFile.png" width="685" height="435" /> </p>
-
-<p>More to come soon!</p>
-
-<h3>Download the Silverlight Toolkit November 2009 Release Today</h3>
-
-<p><a href="http://silverlight.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=36060"><img style="border-right-width: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px" title="Toolkit32[2][2][2]" border="0" alt="Toolkit32[2][2][2]" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/Toolkit32222.png" width="685" height="88" /></a> </p>
-
-<p>The Silverlight Toolkit is a collection of Silverlight controls, components and utilities that help make Silverlight development a little easier, more fun, and add value outside the regular Silverlight release cycle.</p>
-
-<p>The sixth release of the Silverlight Toolkit, the November 2009 release targets Silverlight 3. There is also a release available that targets the new Silverlight 4 Beta for developers.</p>
-
-<p>Resources of note:</p>
-
-<ul>
-  <li><a href="http://silverlight.codeplex.com/">Learn more about the Silverlight Toolkit</a> </li>
-
-  <li><a href="http://silverlight.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=36060"><strong>Download the November 2009 Release</strong></a> </li>
-
-  <li><a href="http://silverlight.net/getstarted/">Get started with Silverlight development</a> </li>
-
-  <li>Participate in the <a href="http://silverlight.net/forums/35.aspx">controls community at Silverlight.net</a> </li>
-
-  <li>Check out questions and answers on Stack Overflow using the <a href="http://stackoverflow.com/questions/tagged/silverlight-toolkit">‘silverlight-toolkit’ tag</a> </li>
-
-  <li>The <a href="http://silverlight.codeplex.com/WorkItem/List.aspx">Issue Tracker</a> can be used to report issues, add to the feature wish list, and vote on the work to be done by the Microsoft team </li>
-</ul>
-
+<p><em>Code coverage note: this feature was unfortunately cut due to regressions in dependencies. Also, automated closing of the browser has issues in November and we are hoping to address in the future. Sorry for the troubles.</em></p>
+
+<p>The November 2009 Silverlight Toolkit is essentially a tools and infrastructure release on top of the October 2009 release (where we first introduced Visual Studio 2010 support). It also adds a Silverlight 4 Beta version.</p>  <h2>New infrastructure &amp; test tools ship in the Silverlight Toolkit</h2>  <p>There is a lot in the release that is joining publicly for the first time, based on some of the internal tools and utilities that we use in building and testing the Silverlight Toolkit, plus things we’d like to have as typical Silverlight developers.</p>  <p>These tools join in the Experimental quality band, and over the next few posts, I’ll dig into the details. This post is a literal walkthrough of how you could go about seeing all the utilities in the meantime.</p>  <p>One important thing to call out is that, as an initial release, there are definitely some rough edges: the test tools are centered around Microsoft Build (msbuild) integration, instead of Visual Studio integration; there’s no add-in or nice right-click project support to use these tools today.</p>  <p>We’ll be collecting feedback along the way and making changes in future releases. Until then, hopefully some of you will find the infrastructure useful, if only to peak behind the curtain. We’re also shipping the full source to these tools, you’ll find an Infrastructure.zip file inside the toolkit install folder.</p>  <h4>What we’ll do in this walkthrough</h4>  <p>This walkthrough uses Silverlight 4, though the instructions are virtually identical if you’re using Silverlight 3.</p>  <ul>   <li>Install the Silverlight Toolkit</li>    <li>Create a new Silverlight class library with a simple business object</li>    <li>Add a Silverlight Unit Test Application using the new templates found in the Silverlight Toolkit</li>    <li>Run the tests in Visual Studio</li>    <li>Run the tests from the command line in various browsers</li>    <li>Collect block-level code coverage information for the build</li> </ul>  <p>This is screen-shot heavy, as future posts will dig into the details. I appreciate your patience!</p>  <p>Requirements:</p>  <ul>   <li>Latest Silverlight Toolkit</li>    <li>For test automation:</li>    </ul><ul>     <li>MSBuild on the machine</li>   </ul>    <li>For code coverage:</li>    <ul>     <li>Visual Studio 2010 Beta 2 Ultimate</li>   </ul>   <h2>Installing the tools</h2>  <p>When you install either Silverlight Toolkit drop from November, you’ll see that there’s a new feature listed in the setup: the Tools &amp; Templates feature. It’s selected by default, and adds Visual Studio templates, installs the tools, and prepares the tools if your machine has the proper dependencies on it.</p>  <p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="SetupNewFeature" border="0" alt="SetupNewFeature" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/SetupNewFeature.png" width="541" height="430" /> </p>  <h2>Create a Silverlight Class Library</h2>  <p>Open Visual Studio 2010 Beta 2, after installing the toolkit. Create a new <strong>Silverlight Class Library</strong> project, we’ll store a simple business object in it.</p>  <p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioNewSilverlightClassLibraryProject" border="0" alt="VisualStudioNewSilverlightClassLibraryProject" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioNewSilverlightClassLibraryProject.png" width="685" height="480" /> </p>  <p>Whichever flavor of Silverlight you use, remember to use the same flavor while creating future projects in the same solution!</p>  <p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioSelectSilverlightVersion" border="0" alt="VisualStudioSelectSilverlightVersion" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioSelectSilverlightVersion.png" width="685" height="231" /></p>  <p>Create a new Person.cs type, with a few properties and a method. Here’s the source:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:bc34624e-1aaa-4618-a4cc-6c9dad4c3107" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">using System;
+
+
+
+namespace MyApplication
+
+{
+
+    public class Person
+
+    {
+
+        public string First { get; set; }
+
+        public string Last { get; set; }
+
+
+
+        public string FullName { get { return First + " " + Last; } }
+
+
+
+        public bool MightBe(string substring)
+
+        {
+
+            return FullName.Contains(substring);
+
+        }
+
+    }
+
+}</pre></div>
+
+
+
+<h2>Add a Silverlight Unit Test Application</h2>
+
+
+
+<p>Right-click on the solution in the Solution Explorer and select Add New Project. Under the Visual C# (and also Visual Basic) languages node, select the Silverlight subgroup. You’ll see a <strong>Silverlight Unit Test Application</strong> project template.</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioUnitTestTemplate" border="0" alt="VisualStudioUnitTestTemplate" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioUnitTestTemplate.png" width="685" height="446" /></p>
+
+
+
+<p>You now have two projects:</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioTestAppAndClassLibrarySolutionExplorer" border="0" alt="VisualStudioTestAppAndClassLibrarySolutionExplorer" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioTestAppAndClassLibrarySolutionExplorer.png" width="283" height="385" /></p>
+
+
+
+<p>Next up, we want to add a reference to the class library, so that the unit tests can access the library. Right-click on the new test project and then select the Add Reference option. Under the Project tab, choose the class library you created earlier.</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioAddReference" border="0" alt="VisualStudioAddReference" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioAddReference.png" width="593" height="478" /></p>
+
+
+
+<p>Now, let’s add some unit tests. Clear out the content in the created Tests.cs file and drop this in:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:a7e8d8fd-b4cb-4725-bb1a-cd35db6190c2" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using MyApplication;
+
+
+
+namespace PersonTestProject {
+
+    [TestClass]
+
+    public class Tests
+
+    {
+
+        [TestMethod]
+
+        public void TestCtor()
+
+        {
+
+            Person p = new Person();
+
+        }
+
+
+
+        [TestMethod]
+
+        public void TestSetName()
+
+        {
+
+            Person p = new Person { First = "Scott", Last = "Guthrie" };
+
+            Assert.AreNotEqual(p.First, p.Last);
+
+        }
+
+
+
+        [TestMethod]
+
+        public void TestGetFullName()
+
+        {
+
+            Person p = new Person { First = "Steve", Last = "Ballmer" };
+
+            StringAssert.Equals("Steve Ballmer", p.FullName);
+
+        }
+
+    }
+
+}</pre></div>
+
+
+
+<p>The tests are pretty simple, and exercise various simple PMEs on the type.</p>
+
+
+
+<h2>Run the unit tests from Visual Studio</h2>
+
+
+
+<p>Right-click on the test project and select Set as StartUp Project from the menu. Then, press F5 or click the Run button to begin execution.</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioSetAsStartupProject" border="0" alt="VisualStudioSetAsStartupProject" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioSetAsStartupProject.png" width="530" height="605" /> </p>
+
+
+
+<p> The default web browser will open up, the tests will run, and the window will stay open. When you are satisfied, close the browser. You’ve just run some simple tests!</p>
+
+
+
+<h2>Running unit tests from the Visual Studio command line</h2>
+
+
+
+<p>More interesting is being able to automate the tests: through MSBuild, we’ve added a task that can control the browser and save out the log file(s) from the unit tests when they run.</p>
+
+
+
+<p>To do this, you need a few things:</p>
+
+
+
+<ul>
+
+  <li>The Visual Studio command prompt open.</li>
+
+
+
+  <li>The full path to the test project.</li>
+
+</ul>
+
+
+
+<h4>Open the command prompt</h4>
+
+
+
+<p>Personally, I always pin the Visual Studio 2008 tools command prompt next to my Visual Studio taskbar icons.</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TaskbarCmdPrompt" border="0" alt="TaskbarCmdPrompt" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/TaskbarCmdPrompt.png" width="685" height="71" /> </p>
+
+
+
+<p>You can start it from the Start Menu, under the tools for the Visual Studio version you are using.</p>
+
+
+
+<p>Alternatively, make sure MSBuild is in your path.</p>
+
+
+
+<p>Or, start a command prompt and then move to your 32-bit Program Files, then ‘Visual Studio 9.0’, then VC. Run ‘vcvarsall.bat x86’</p>
+
+
+
+<p><strong>Note</strong>: all these command prompts should be 32-bit, even on a x64 machine. Silverlight is a 32-bit world today.</p>
+
+
+
+<h4>Move to the test project</h4>
+
+
+
+<p>To get the full path to the test project, I just right-click on the test project in Visual Studio, then Open Folder in Windows Explorer. I copy the path from the resulting Explorer dialog’s crumb navigation bar.</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioOpenWindowsExplorerForProjectLocation" border="0" alt="VisualStudioOpenWindowsExplorerForProjectLocation" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioOpenWindowsExplorerForProjectLocation.png" width="685" height="428" /> </p>
+
+
+
+<p>Now, inside the command prompt window, move to that path:</p>
+
+
+
+<blockquote>
+
+  <p>pushd (PASTE PATH HERE) &lt;enter&gt;</p>
+
+</blockquote>
+
+
+
+<p>To run the unit tests in the default browser, simply type </p>
+
+
+
+<blockquote>
+
+  <p><strong>msbuild /t:test</strong> </p>
+
+</blockquote>
+
+
+
+<p>and press Enter.</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CommandLineMsbuildTest" border="0" alt="CommandLineMsbuildTest" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/CommandLineMsbuildTest.png" width="685" height="120" /></p>
+
+
+
+<p>You’ll see the browser open, quickly run some tests, and then close. Here’s what it looks like, captured in the middle of the 5-second test run:</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TestRunningInInternetExplorer" border="0" alt="TestRunningInInternetExplorer" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/TestRunningInInternetExplorer.png" width="685" height="345" /></p>
+
+
+
+<p>And afterwards, you’ll see that Msbuild reports success, and you can read the test to see that 3 passing tests were reported, out of 3 total tests.</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CommandLineMsbuildTestWithResults" border="0" alt="CommandLineMsbuildTestWithResults" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/CommandLineMsbuildTestWithResults.png" width="685" height="433" /></p>
+
+
+
+<h3>Running tests in Google Chrome</h3>
+
+
+
+<p>It’s easy! Just set the browser property to Chrome.</p>
+
+
+
+<blockquote>
+
+  <p><strong><font color="#808080">msbuild /t:test </font>/p:browser=chrome</strong></p>
+
+</blockquote>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CommandLineMsbuildTestChrome" border="0" alt="CommandLineMsbuildTestChrome" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/CommandLineMsbuildTestChrome.png" width="685" height="67" />&#160;</p>
+
+
+
+<p>And just like that, Chrome opens up and runs the tests.</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TestRunningInChrome" border="0" alt="TestRunningInChrome" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/TestRunningInChrome.png" width="685" height="428" /></p>
+
+
+
+<h3>Running tests in Mozilla Firefox</h3>
+
+
+
+<p>Just set the browser to Firefox.</p>
+
+
+
+<blockquote>
+
+  <p><strong><font color="#808080">msbuild /t:test </font>/p:browser=firefox</strong></p>
+
+</blockquote>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TestRunningInFirefox" border="0" alt="TestRunningInFirefox" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/TestRunningInFirefox.png" width="685" height="428" /></p>
+
+
+
+<h3>Tag Expressions</h3>
+
+
+
+<p>A nice feature to help select a subset of tests is the Tag Expression syntax. By specifying a tag expression at the command prompt, you can include and exclude tests that are marked with the Tag attribute found in Microsoft.Silverlight.Testing.</p>
+
+
+
+<p>Also, tags <strong>implicitly exist for all test method names,</strong> short and full.</p>
+
+
+
+<p>So, let’s run the test called <strong>TestSetName</strong> from our project.</p>
+
+
+
+<blockquote>
+
+  <p><strong><font color="#808080">msbuild /t:test </font>/p:tagexpression=TestSetName</strong></p>
+
+</blockquote>
+
+
+
+<p>You may briefly see indication in the test UI in the browser that a ‘Tag expression’ is in use.</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TestRunningInInternetExplorerWithTagExpression" border="0" alt="TestRunningInInternetExplorerWithTagExpression" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/TestRunningInInternetExplorerWithTagExpression.png" width="685" height="344" /></p>
+
+
+
+<p>And the build results show that just one test ran:</p>
+
+
+
+<p>&#160;<img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CommandLineMsbuildTestWithTagExpressionResults" border="0" alt="CommandLineMsbuildTestWithTagExpressionResults" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/CommandLineMsbuildTestWithTagExpressionResults.png" width="685" height="433" /> </p>
+
+
+
+<p>If you want to run all tests <strong>except that one</strong>, use this tag expression:</p>
+
+
+
+<blockquote>
+
+  <p><strong><font color="#808080">msbuild /t:test </font>/p:tagexpression=!TestSetName</strong></p>
+
+</blockquote>
+
+
+
+<p>Cool, and easy!</p>
+
+
+
+<h3>Test results files</h3>
+
+
+
+<p>Another nice feature of running the tests through MSBuild is that you’ll see test result files (end in *.trx) inside the same folder as the test page for the application.</p>
+
+
+
+<p>Similar and conformant to the Visual Studio *.trx format, you can parse and work with this data to understand execution times, results, and read other information. Unfortunately, you cannot open these files in Visual Studio 2010 Beta 2, but they do open in Visual Studio 2008. Note that there isn’t any real test integration with VS here: this is just an informative display. </p>
+
+
+
+<p>Here’s a directory with several test result files (plus some coverage stuff we’ll get to later):</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="LookingInTheBinariesFolderAfterTestsRun" border="0" alt="LookingInTheBinariesFolderAfterTestsRun" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/LookingInTheBinariesFolderAfterTestsRun.png" width="685" height="502" /></p>
+
+
+
+<p>You can open up the TestResults trx file and see what kind of information is in it:</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="LookingAtTheTrxFile" border="0" alt="LookingAtTheTrxFile" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/LookingAtTheTrxFile.png" width="685" height="524" /></p>
+
+
+
+<p>And here’s the results file opened in Visual Studio:</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudio2008TestResultsTrxFile" border="0" alt="VisualStudio2008TestResultsTrxFile" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudio2008TestResultsTrxFile.png" width="685" height="312" />&#160;</p>
+
+
+
+<h2>Preparing for Code Coverage</h2>
+
+
+
+<p>Ripe for a Visual Studio add-in, this process requires us modifying the test project’s .csproj file some. Instructions are the same for Visual Studio.</p>
+
+
+
+<p>We need to <strong>manually select the assembly to be instrumented </strong>by setting a property. The assembly to be instrumented must not be signed, and not have a strong name. In this example, the assembly is <strong>SilverlightClassLibrary3</strong>.</p>
+
+
+
+<p>To make changes to the test project, to specify this, first unload the project by right-clicking on the test project and selecting the Unload option: </p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioUnloadProject" border="0" alt="VisualStudioUnloadProject" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioUnloadProject.png" width="503" height="621" /></p>
+
+
+
+<p>Then, right-click the project file that is ‘(unavailable) and select ‘Edit’. </p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioEditProject" border="0" alt="VisualStudioEditProject" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioEditProject.png" width="492" height="214" /></p>
+
+
+
+<p>Now you’ll see the XML data for the project. Scroll down in the template to where there is a commented out ItemGroup, and some comments about the code coverage support. Remove the comments from the ItemGroup: </p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioEditingTestProjectFileOriginal" border="0" alt="VisualStudioEditingTestProjectFileOriginal" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioEditingTestProjectFileOriginal.png" width="685" height="435" /></p>
+
+
+
+<p>And now, change the Include statement from SilverlightClassLibrary1 to whatever your assembly to instrument is called. In our example here, it is called SilverlightClassLibrary3.</p>
+
+
+
+<p>&#160;<img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioEditingTestProjectFile2" border="0" alt="VisualStudioEditingTestProjectFile2" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioEditingTestProjectFile2.png" width="685" height="435" /> </p>
+
+
+
+<p> Now, that’s it. Let’s close the file and then right-click the project again and select Reload Project:</p>
+
+
+
+<p>&#160;<img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioReloadTestProject" border="0" alt="VisualStudioReloadTestProject" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/VisualStudioReloadTestProject.png" width="502" height="400" /> </p>
+
+
+
+<p> Now we’re ready to go!</p>
+
+
+
+<h2>Running Silverlight Code Coverage</h2>
+
+
+
+<p>Just like the msbuild /t:test from above, we have a similar target named <strong>CoverageTest</strong> and <strong>CoverageView</strong>. CoverageTest collects the data, while CoverageView collects the coverage data and then shows the results in an application that explores the hit and not hit portions of your source code.</p>
+
+
+
+<p>Let’s collect coverage!</p>
+
+
+
+<p><strong>Note:</strong> This is assuming that you have a high-level SKU of Visual Studio 2010 Beta 2 installed. The coverage tools depend on the Static Analysis Tools that ship in the beta. You will receive an error if you run this on a machine without those tools. We’ll look for a better experience in the future.</p>
+
+
+
+<p>Remember, the same properties from above – browser and tag expression – still can apply and work in the coverage targets.</p>
+
+
+
+<blockquote>
+
+  <p><strong><font color="#808080">msbuild </font>/t:coveragetest</strong></p>
+
+</blockquote>
+
+
+
+<p>Here is what it will look like if everything line up. Unfortunately, the coverage experience is a very early preview and very flaky in some situations due to the dependency on beta components. We also haven’t had I admit enough time to iron out all the issues customers may experience.</p>
+
+
+
+<p>You see the Instrumentation messages come out, then the RunTests target, then the coverage data is merged and things should be successful. </p>
+
+
+
+<p>&#160;<img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CommandLineMsbuildCoverageTestResults" border="0" alt="CommandLineMsbuildCoverageTestResults" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/CommandLineMsbuildCoverageTestResults.png" width="685" height="433" /></p>
+
+
+
+<p>If that worked, it is safe to assume that the view target will also work. It will re-run all the tests and instrument again as well.</p>
+
+
+
+<blockquote>
+
+  <p><strong><font color="#808080">msbuild </font>/t:coverageview</strong></p>
+
+</blockquote>
+
+
+
+<p>Now you’ll see the viewer popup, that lets you drill into types and methods to see what is hit (cyan) or not hit (red), to spot code that your tests are missing:</p>
+
+
+
+<h3><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="LookingAtCodeCoverage" border="0" alt="LookingAtCodeCoverage" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/LookingAtCodeCoverage.png" width="685" height="428" /></h3>
+
+
+
+<p>You’ll find a Coverage.xml file in the same directory where the test results go. This is the data that is used by the viewer application. You’ll see in the XML file a set of ‘visited’ blocks, and other information, in the file:</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CoverageXmlFile" border="0" alt="CoverageXmlFile" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/CoverageXmlFile.png" width="685" height="435" /> </p>
+
+
+
+<p>More to come soon!</p>
+
+
+
+<h3>Download the Silverlight Toolkit November 2009 Release Today</h3>
+
+
+
+<p><a href="http://silverlight.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=36060"><img style="border-right-width: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px" title="Toolkit32[2][2][2]" border="0" alt="Toolkit32[2][2][2]" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/11/Toolkit32222.png" width="685" height="88" /></a> </p>
+
+
+
+<p>The Silverlight Toolkit is a collection of Silverlight controls, components and utilities that help make Silverlight development a little easier, more fun, and add value outside the regular Silverlight release cycle.</p>
+
+
+
+<p>The sixth release of the Silverlight Toolkit, the November 2009 release targets Silverlight 3. There is also a release available that targets the new Silverlight 4 Beta for developers.</p>
+
+
+
+<p>Resources of note:</p>
+
+
+
+<ul>
+
+  <li><a href="http://silverlight.codeplex.com/">Learn more about the Silverlight Toolkit</a> </li>
+
+
+
+  <li><a href="http://silverlight.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=36060"><strong>Download the November 2009 Release</strong></a> </li>
+
+
+
+  <li><a href="http://silverlight.net/getstarted/">Get started with Silverlight development</a> </li>
+
+
+
+  <li>Participate in the <a href="http://silverlight.net/forums/35.aspx">controls community at Silverlight.net</a> </li>
+
+
+
+  <li>Check out questions and answers on Stack Overflow using the <a href="http://stackoverflow.com/questions/tagged/silverlight-toolkit">‘silverlight-toolkit’ tag</a> </li>
+
+
+
+  <li>The <a href="http://silverlight.codeplex.com/WorkItem/List.aspx">Issue Tracker</a> can be used to report issues, add to the feature wish list, and vote on the work to be done by the Microsoft team </li>
+
+</ul>
+
+
+
 <p><em>Hope you enjoy our new release!</em></p>

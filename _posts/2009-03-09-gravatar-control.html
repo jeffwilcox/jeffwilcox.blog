@@ -19,149 +19,294 @@ imported_categories:
 imported_link_categories: []
 tags: []
 ---
-<p><img alt="The Gravatar control in a WPF sample application." src="http://media.jeff.wilcox.name/blog/view/GravatarWpfListBox.png" title="The Gravatar control in action in WPF" align="right" width="306" height="231" />While adding Gravatar support to my blog comments yesterday, I realized that it is a nice candidate for a simple control or a Uri-to-image value converter for Silverlight, and also WPF.</p>
-
-<p>In fact, any application with a user’s e-mail address, or a contact list, could benefit greatly by this functionality. It’s a sweet addition that just works and provides a rich experience in just a few minutes.</p>
-
-<ul>
-<li><a href="http://media.jeff.wilcox.name/blog/view/GravatarControls.zip">Download GravatarControls.zip</a> [74 K Zip. Binaries and source for Visual Studio 2008, <a href="http://www.microsoft.com/opensource/licenses.mspx#Ms-PL">Ms-PL open source</a>]</li>
-</ul>
-
-<p>Since only a hash is used of the e-mail, it is secure enough to work from any app, simply using a URL, and without having to worry about messy web services, authentication, or security issues. Even better, with Silverlight’s reliance on the web browser’s network stack, you get caching and other nice functionality for free.</p>
-
-<p>I decided to quickly implement this as an actual custom control, so that I could take advantage of data binding with the Email field, and demonstrate some simple code sharing concepts. This could have easily been done with a few lines of code behind and an Image instead.</p>
-
-<p>It is then super easy to add a Gravatar control within a data template anywhere that your business object has an e-mail (or other unique identifying field). <a href="http://en.gravatar.com/">Gravatar</a> even supports Identicons (enabled by default in my control implementation), that assign a pretty unique geometric image to the e-mail in the case that the user hasn’t <a href="http://en.gravatar.com/site/signup">setup their gravatar yet</a>.</p>
-
-<p><img alt="Visual Studio and a WPF app" src="http://media.jeff.wilcox.name/blog/view/GravatarCider.png" title="Visual Studio and a WPF app" width="658" height="579" /></p>
-
-<p>This means that you can add images of users without messy database image work, personalizing their e-mail contact list, and otherwise making things look nice, for very little cost. Add it to</p>
-
-<ul>
-  <li>ListBox </li>
-
-  <li>AutoCompleteBox </li>
-
-  <li>ComboBox </li>
-
-  <li>DataGrid </li>
-
-  <li><em>you name it!</em> </li>
-</ul>
-
-<p>So, to use the control, just make sure to define an xmlns attribute for the control assembly, then just set the Email dependency property value. A few other properties are also available, and you should set the Height and Width to typically a square. Ratings and a default image Uri are also supported through other properties. When setting the Email property in Expression Blend or even Visual Studio at design time, you’ll even get the image in there.</p>
-
-<p><a href="http://en.gravatar.com/site/implement/url">Here’s implementation details</a> on the URL format that Gravatar uses, and is implemented by this control.</p>
-
-<p>When using the control in code behind or XAML, you’ll find it 100% compatible between WPF and Silverlight. Easy. What’s next? Here’s how it was done…</p>
-
-<h3>Building the Silverlight control to be WPF-compatible</h3>
-
-<p>There are a few steps I took throughout the process to make the control WPF-compatible enough that I could cross-compile the same source code and XAML template. Here are the steps I took.</p>
-
-<h4>XAML namespace</h4>
-
-<p>To create an application or control that works in WPF and Silverlight, you need to use the following XML namespace declaration:</p>
-
-<pre class="xml" name="code">
-&lt;ResourceDictionary
-    xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot;
-    xmlns:x=&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot; /&gt;
-</pre>
-
-<p>This is one of those simple steps that I can’t stress enough!</p>
-
-<h4>File links</h4>
-
-<p>The Silverlight project serves as the “master” control, and the WPF project uses file links to reference the source files from the Silverlight project. This enables easy reuse, since making a change in one project immediately affects the next build of the other project type.</p>
-
-<p>Since the Silverlight subset provides a good migration path, you typically will want to:</p>
-
-<ul>
-  <li>Create the Silverlight control project and implementation</li>
-
-  <li>Create the WPF custom control library project in a peer folder</li>
-
-  <li>Add links in VS to the source files</li>
-
-  <li>Fix up and build as needed!</li>
-</ul>
-
-<h4>Default style key</h4>
-
-<p>For custom controls, the default style information that hooks up Generic.xaml’s default control template and style is set using default style keys. WPF uses a one-time static constructor for this, while Silverlight uses a per-instance DefaultStyleKey setter.</p>
-
-<p>This is easiest accomplished using pre-processor directives from C# for the SILVERLIGHT name that is defined by the Silverlight project types and build tools.</p>
-
-<pre class="c-sharp" name="code">
-#if !SILVERLIGHT
-        /// &lt;summary&gt;
-        /// Static initializer for the Gravatar type.
-        /// &lt;/summary&gt;
-        static Gravatar()
-        {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(Gravatar), new FrameworkPropertyMetadata(typeof(Gravatar)));
-        }
-#endif
-
-        /// &lt;summary&gt;
-        /// Initializes a new instance of the Gravatar control.
-        /// &lt;/summary&gt;
-        public Gravatar()
-        {
-#if SILVERLIGHT
-            DefaultStyleKey = typeof(Gravatar);
-#endif
-            Loaded += (o, e) =&gt; ApplyTemplate();
-        }
-</pre>
-
-<h4>MD5 implementation</h4>
-
-<p>MD5 isn’t pretty, but it is simple and used across the web. I used <a href="http://blogs.msdn.com/delay/archive/2009/01/28/thank-goodness-for-reference-implementations-low-overhead-net-md5-implementation-source-code-and-tests-works-great-on-silverlight.aspx">David Anson’s implementation</a> of MD5 for Silverlight. For the WPF version, the standard MD5 code in System.Security.Cryptography is used.</p>
-
-<h4>Generic theme and WPF</h4>
-
-<p>Even though you can link in the Generic.xaml file that is 100% WPF source compatible, at build time, the resource won’t make its way properly into the metadata as “Themes\Generic.xaml”. To work around this, you’ll see in the WPF project that the linked Generic.xaml is in the root of the library, and contains the actual style information. WPF’s merged dictionary resource feature is then used inside a Themes\Generic.xaml file to pull in the linked Xaml content:</p>
-
-<p><pre class="xml" name="code">
-&lt;ResourceDictionary
-    xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot;
-    xmlns:x=&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot;&gt;
-    &lt;ResourceDictionary.MergedDictionaries&gt;
-        &lt;ResourceDictionary Source=&quot;/Controls.Gravatar;component/generic.xaml&quot;/&gt;
-    &lt;/ResourceDictionary.MergedDictionaries&gt;
-&lt;/ResourceDictionary&gt;
-</pre></p>
-
-<p>Do note the assembly name in there. Hacky, but functional.</p>
-
-<h4>Loading embedded resources</h4>
-
-<p>If the image fails to load, the control falls back to use an embedded resource stream. This took some hacky code, which you’ll find in the source download. Effectively, on WPF, I needed to use a Jpeg bitmap image decoder, vs. Silverlight that has a simple centralized decoder that is not codec-specific.</p>
-
-<p>I used simple #if SILVERLIGHT / #else / #endif preprocessor constructs to factor out the code differences.</p>
-
-<h4>URL encoding</h4>
-
-<p>Silverlight’s built in HttpUtility class is used for URL encoding as needed. This is the utility class found in the System.Windows.Browser namespace and assembly, and included with the runtime.</p>
-
-<p>In WPF’s case, System.Web (ASP.NET)’s HttpUtility is used for the same exact functionality. There are opportunities for developers not looking to use a fallback URL image to factor this dependency and startup time peformance hit, I’m sure.</p>
-
-<h4>Understand cross-scheme and Silverlight file access</h4>
-
-<p>If you are working with a simple Silverlight application project and <em>not</em> through a web server or web project, you’ll likely see that the URL scheme at runtime is file://. This means that the images cannot be loaded cross-scheme, so this is perfectly normal operation:</p>
-
-<p><img alt="What the fallback operation looks like for Silverlight cross-scheme" src="http://media.jeff.wilcox.name/blog/view/GravatarFallback.png" title="What the fallback operation looks like for Silverlight cross-scheme" width="227" height="307" /></p>
-
-<p>As long as your final application will be hosted on a web server or corporate network server that uses the http:// scheme, your application should be fine.</p>
-
-<h3>Download the control binaries and source code</h3>
-
-<ul>
-<li><a href="http://media.jeff.wilcox.name/blog/view/GravatarControls.zip">Download GravatarControls.zip</a> [74 K Zip. Binaries and source for Visual Studio 2008]</li>
-</ul>
-
-<p>The download contains simple samples, source projects for WPF and Silverlight, and release binaries. This code is licensed under the Microsoft Public License (Ms-PL).</p>
-
+<p><img alt="The Gravatar control in a WPF sample application." src="http://media.jeff.wilcox.name/blog/view/GravatarWpfListBox.png" title="The Gravatar control in action in WPF" align="right" width="306" height="231" />While adding Gravatar support to my blog comments yesterday, I realized that it is a nice candidate for a simple control or a Uri-to-image value converter for Silverlight, and also WPF.</p>
+
+
+
+<p>In fact, any application with a user’s e-mail address, or a contact list, could benefit greatly by this functionality. It’s a sweet addition that just works and provides a rich experience in just a few minutes.</p>
+
+
+
+<ul>
+
+<li><a href="http://media.jeff.wilcox.name/blog/view/GravatarControls.zip">Download GravatarControls.zip</a> [74 K Zip. Binaries and source for Visual Studio 2008, <a href="http://www.microsoft.com/opensource/licenses.mspx#Ms-PL">Ms-PL open source</a>]</li>
+
+</ul>
+
+
+
+<p>Since only a hash is used of the e-mail, it is secure enough to work from any app, simply using a URL, and without having to worry about messy web services, authentication, or security issues. Even better, with Silverlight’s reliance on the web browser’s network stack, you get caching and other nice functionality for free.</p>
+
+
+
+<p>I decided to quickly implement this as an actual custom control, so that I could take advantage of data binding with the Email field, and demonstrate some simple code sharing concepts. This could have easily been done with a few lines of code behind and an Image instead.</p>
+
+
+
+<p>It is then super easy to add a Gravatar control within a data template anywhere that your business object has an e-mail (or other unique identifying field). <a href="http://en.gravatar.com/">Gravatar</a> even supports Identicons (enabled by default in my control implementation), that assign a pretty unique geometric image to the e-mail in the case that the user hasn’t <a href="http://en.gravatar.com/site/signup">setup their gravatar yet</a>.</p>
+
+
+
+<p><img alt="Visual Studio and a WPF app" src="http://media.jeff.wilcox.name/blog/view/GravatarCider.png" title="Visual Studio and a WPF app" width="658" height="579" /></p>
+
+
+
+<p>This means that you can add images of users without messy database image work, personalizing their e-mail contact list, and otherwise making things look nice, for very little cost. Add it to</p>
+
+
+
+<ul>
+
+  <li>ListBox </li>
+
+
+
+  <li>AutoCompleteBox </li>
+
+
+
+  <li>ComboBox </li>
+
+
+
+  <li>DataGrid </li>
+
+
+
+  <li><em>you name it!</em> </li>
+
+</ul>
+
+
+
+<p>So, to use the control, just make sure to define an xmlns attribute for the control assembly, then just set the Email dependency property value. A few other properties are also available, and you should set the Height and Width to typically a square. Ratings and a default image Uri are also supported through other properties. When setting the Email property in Expression Blend or even Visual Studio at design time, you’ll even get the image in there.</p>
+
+
+
+<p><a href="http://en.gravatar.com/site/implement/url">Here’s implementation details</a> on the URL format that Gravatar uses, and is implemented by this control.</p>
+
+
+
+<p>When using the control in code behind or XAML, you’ll find it 100% compatible between WPF and Silverlight. Easy. What’s next? Here’s how it was done…</p>
+
+
+
+<h3>Building the Silverlight control to be WPF-compatible</h3>
+
+
+
+<p>There are a few steps I took throughout the process to make the control WPF-compatible enough that I could cross-compile the same source code and XAML template. Here are the steps I took.</p>
+
+
+
+<h4>XAML namespace</h4>
+
+
+
+<p>To create an application or control that works in WPF and Silverlight, you need to use the following XML namespace declaration:</p>
+
+
+
+<pre class="xml" name="code">
+
+&lt;ResourceDictionary
+
+    xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot;
+
+    xmlns:x=&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot; /&gt;
+
+</pre>
+
+
+
+<p>This is one of those simple steps that I can’t stress enough!</p>
+
+
+
+<h4>File links</h4>
+
+
+
+<p>The Silverlight project serves as the “master” control, and the WPF project uses file links to reference the source files from the Silverlight project. This enables easy reuse, since making a change in one project immediately affects the next build of the other project type.</p>
+
+
+
+<p>Since the Silverlight subset provides a good migration path, you typically will want to:</p>
+
+
+
+<ul>
+
+  <li>Create the Silverlight control project and implementation</li>
+
+
+
+  <li>Create the WPF custom control library project in a peer folder</li>
+
+
+
+  <li>Add links in VS to the source files</li>
+
+
+
+  <li>Fix up and build as needed!</li>
+
+</ul>
+
+
+
+<h4>Default style key</h4>
+
+
+
+<p>For custom controls, the default style information that hooks up Generic.xaml’s default control template and style is set using default style keys. WPF uses a one-time static constructor for this, while Silverlight uses a per-instance DefaultStyleKey setter.</p>
+
+
+
+<p>This is easiest accomplished using pre-processor directives from C# for the SILVERLIGHT name that is defined by the Silverlight project types and build tools.</p>
+
+
+
+<pre class="brush: c-sharp">
+
+#if !SILVERLIGHT
+
+        /// &lt;summary&gt;
+
+        /// Static initializer for the Gravatar type.
+
+        /// &lt;/summary&gt;
+
+        static Gravatar()
+
+        {
+
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(Gravatar), new FrameworkPropertyMetadata(typeof(Gravatar)));
+
+        }
+
+#endif
+
+
+
+        /// &lt;summary&gt;
+
+        /// Initializes a new instance of the Gravatar control.
+
+        /// &lt;/summary&gt;
+
+        public Gravatar()
+
+        {
+
+#if SILVERLIGHT
+
+            DefaultStyleKey = typeof(Gravatar);
+
+#endif
+
+            Loaded += (o, e) =&gt; ApplyTemplate();
+
+        }
+
+</pre>
+
+
+
+<h4>MD5 implementation</h4>
+
+
+
+<p>MD5 isn’t pretty, but it is simple and used across the web. I used <a href="http://blogs.msdn.com/delay/archive/2009/01/28/thank-goodness-for-reference-implementations-low-overhead-net-md5-implementation-source-code-and-tests-works-great-on-silverlight.aspx">David Anson’s implementation</a> of MD5 for Silverlight. For the WPF version, the standard MD5 code in System.Security.Cryptography is used.</p>
+
+
+
+<h4>Generic theme and WPF</h4>
+
+
+
+<p>Even though you can link in the Generic.xaml file that is 100% WPF source compatible, at build time, the resource won’t make its way properly into the metadata as “Themes\Generic.xaml”. To work around this, you’ll see in the WPF project that the linked Generic.xaml is in the root of the library, and contains the actual style information. WPF’s merged dictionary resource feature is then used inside a Themes\Generic.xaml file to pull in the linked Xaml content:</p>
+
+
+
+<p><pre class="xml" name="code">
+
+&lt;ResourceDictionary
+
+    xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot;
+
+    xmlns:x=&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot;&gt;
+
+    &lt;ResourceDictionary.MergedDictionaries&gt;
+
+        &lt;ResourceDictionary Source=&quot;/Controls.Gravatar;component/generic.xaml&quot;/&gt;
+
+    &lt;/ResourceDictionary.MergedDictionaries&gt;
+
+&lt;/ResourceDictionary&gt;
+
+</pre></p>
+
+
+
+<p>Do note the assembly name in there. Hacky, but functional.</p>
+
+
+
+<h4>Loading embedded resources</h4>
+
+
+
+<p>If the image fails to load, the control falls back to use an embedded resource stream. This took some hacky code, which you’ll find in the source download. Effectively, on WPF, I needed to use a Jpeg bitmap image decoder, vs. Silverlight that has a simple centralized decoder that is not codec-specific.</p>
+
+
+
+<p>I used simple #if SILVERLIGHT / #else / #endif preprocessor constructs to factor out the code differences.</p>
+
+
+
+<h4>URL encoding</h4>
+
+
+
+<p>Silverlight’s built in HttpUtility class is used for URL encoding as needed. This is the utility class found in the System.Windows.Browser namespace and assembly, and included with the runtime.</p>
+
+
+
+<p>In WPF’s case, System.Web (ASP.NET)’s HttpUtility is used for the same exact functionality. There are opportunities for developers not looking to use a fallback URL image to factor this dependency and startup time peformance hit, I’m sure.</p>
+
+
+
+<h4>Understand cross-scheme and Silverlight file access</h4>
+
+
+
+<p>If you are working with a simple Silverlight application project and <em>not</em> through a web server or web project, you’ll likely see that the URL scheme at runtime is file://. This means that the images cannot be loaded cross-scheme, so this is perfectly normal operation:</p>
+
+
+
+<p><img alt="What the fallback operation looks like for Silverlight cross-scheme" src="http://media.jeff.wilcox.name/blog/view/GravatarFallback.png" title="What the fallback operation looks like for Silverlight cross-scheme" width="227" height="307" /></p>
+
+
+
+<p>As long as your final application will be hosted on a web server or corporate network server that uses the http:// scheme, your application should be fine.</p>
+
+
+
+<h3>Download the control binaries and source code</h3>
+
+
+
+<ul>
+
+<li><a href="http://media.jeff.wilcox.name/blog/view/GravatarControls.zip">Download GravatarControls.zip</a> [74 K Zip. Binaries and source for Visual Studio 2008]</li>
+
+</ul>
+
+
+
+<p>The download contains simple samples, source projects for WPF and Silverlight, and release binaries. This code is licensed under the Microsoft Public License (Ms-PL).</p>
+
+
+
 <p>Hope this helps!</p>

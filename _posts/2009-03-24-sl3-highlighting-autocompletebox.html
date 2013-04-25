@@ -19,40 +19,76 @@ imported_categories:
 imported_link_categories: []
 tags: []
 ---
-About half a year ago, I blogged a nice <a href="http://www.jeff.wilcox.name/2008/11/highlighting-autocompletebox/">"highlighting AutoCompleteBox" post</a> that allowed you to use the Silverlight Toolkit's AutoCompleteBox control to give your users an experience just like that of Internet Explorer 8, Firefox, and other nice interfaces.
-
-Now, with Silverlight 3, the sample app has dropped in size, removing the need for 160 lines of "hack" code to enable the scenario.
-
-<img alt="" src="http://media.jeff.wilcox.name/blog/mix09/HighlightingIe.png" title="Internet Explorer 8 highlighting auto complete" class="alignnone" width="685" height="347" />
-
-This functionality was done using a helper control that I built, called HighlightingTextBlock, that has two primary dependency properties: the Text to display, and the HighlightText (subset) that should be highlighted visually.
-
-<a href="http://media.jeff.wilcox.name/blog/mix09/HighlightingTestPage.html"><img alt="" src="http://media.jeff.wilcox.name/blog/mix09/HighlightingSilverlight.png" title="Highlighting Silverlight" class="alignnone" width="685" height="412" /></a><br />
-<a href="http://media.jeff.wilcox.name/blog/mix09/HighlightingTestPage.html">If you have the Silverlight 3 Beta developer runtime, click here to view the sample app.</a>
-
-In Silverlight 2, without UI-to-UI binding (no <a href="http://msdn.microsoft.com/en-us/library/system.windows.data.binding.elementname.aspx">ElementName</a>), unfortunately this blog post included a little intense code to actually walk the visual tree, find all the HighlightingTextBlock instances, and update their values, whenever the searching changes. This was because a direct binding could not be made to the parent AutoCompleteBox control's "SearchText" property, which is a string value that is set to whatever the current searching text is.
-
-Thanks to the Silverlight 3 Beta's great support for ElementName binding, I was able to update the sample to be super easy.
-
-Using this, I can use the following ItemTemplate setting for any AutoCompleteBox to enable this very nice highlighting behavior.
-
-<pre name="code" class="xml">
-&lt;input:AutoCompleteBox
-    x:Name=&quot;HighlightingAutoCompleteBox&quot; IsTextCompletionEnabled=&quot;False&quot; SearchMode=&quot;Contains&quot;&gt;
-    &lt;input:AutoCompleteBox.ItemTemplate&gt;
-        &lt;DataTemplate&gt;
-            &lt;highlightingTextBlock:HighlightingTextBlock
-                HighlightText=&quot;{Binding SearchText, ElementName=HighlightingAutoCompleteBox}&quot;
-                Text=&quot;{Binding}&quot;
-                HighlightBrush=&quot;#FF44A0FF&quot; /&gt;
-        &lt;/DataTemplate&gt;
-    &lt;/input:AutoCompleteBox.ItemTemplate&gt;
-&lt;/input:AutoCompleteBox&gt;
-</pre>
-
-<ul>
-<li><a href="http://media.jeff.wilcox.name/blog/mix09/HighlightingSample.zip">Download HighlightingSample.zip</a> (Zip, 21K, requires Silverlight 3 Beta SDK)</li>
-<li><a href="http://media.jeff.wilcox.name/blog/mix09/HighlightingTestPage.html">View the live sample</a> (Requires Silverlight 3 Beta Developer Runtime)</li>
-</ul>
-
+About half a year ago, I blogged a nice <a href="http://www.jeff.wilcox.name/2008/11/highlighting-autocompletebox/">"highlighting AutoCompleteBox" post</a> that allowed you to use the Silverlight Toolkit's AutoCompleteBox control to give your users an experience just like that of Internet Explorer 8, Firefox, and other nice interfaces.
+
+
+
+Now, with Silverlight 3, the sample app has dropped in size, removing the need for 160 lines of "hack" code to enable the scenario.
+
+
+
+<img alt="" src="http://media.jeff.wilcox.name/blog/mix09/HighlightingIe.png" title="Internet Explorer 8 highlighting auto complete" class="alignnone" width="685" height="347" />
+
+
+
+This functionality was done using a helper control that I built, called HighlightingTextBlock, that has two primary dependency properties: the Text to display, and the HighlightText (subset) that should be highlighted visually.
+
+
+
+<a href="http://media.jeff.wilcox.name/blog/mix09/HighlightingTestPage.html"><img alt="" src="http://media.jeff.wilcox.name/blog/mix09/HighlightingSilverlight.png" title="Highlighting Silverlight" class="alignnone" width="685" height="412" /></a><br />
+
+<a href="http://media.jeff.wilcox.name/blog/mix09/HighlightingTestPage.html">If you have the Silverlight 3 Beta developer runtime, click here to view the sample app.</a>
+
+
+
+In Silverlight 2, without UI-to-UI binding (no <a href="http://msdn.microsoft.com/en-us/library/system.windows.data.binding.elementname.aspx">ElementName</a>), unfortunately this blog post included a little intense code to actually walk the visual tree, find all the HighlightingTextBlock instances, and update their values, whenever the searching changes. This was because a direct binding could not be made to the parent AutoCompleteBox control's "SearchText" property, which is a string value that is set to whatever the current searching text is.
+
+
+
+Thanks to the Silverlight 3 Beta's great support for ElementName binding, I was able to update the sample to be super easy.
+
+
+
+Using this, I can use the following ItemTemplate setting for any AutoCompleteBox to enable this very nice highlighting behavior.
+
+
+
+<pre class="brush: xml">
+
+&lt;input:AutoCompleteBox
+
+    x:Name=&quot;HighlightingAutoCompleteBox&quot; IsTextCompletionEnabled=&quot;False&quot; SearchMode=&quot;Contains&quot;&gt;
+
+    &lt;input:AutoCompleteBox.ItemTemplate&gt;
+
+        &lt;DataTemplate&gt;
+
+            &lt;highlightingTextBlock:HighlightingTextBlock
+
+                HighlightText=&quot;{Binding SearchText, ElementName=HighlightingAutoCompleteBox}&quot;
+
+                Text=&quot;{Binding}&quot;
+
+                HighlightBrush=&quot;#FF44A0FF&quot; /&gt;
+
+        &lt;/DataTemplate&gt;
+
+    &lt;/input:AutoCompleteBox.ItemTemplate&gt;
+
+&lt;/input:AutoCompleteBox&gt;
+
+</pre>
+
+
+
+<ul>
+
+<li><a href="http://media.jeff.wilcox.name/blog/mix09/HighlightingSample.zip">Download HighlightingSample.zip</a> (Zip, 21K, requires Silverlight 3 Beta SDK)</li>
+
+<li><a href="http://media.jeff.wilcox.name/blog/mix09/HighlightingTestPage.html">View the live sample</a> (Requires Silverlight 3 Beta Developer Runtime)</li>
+
+</ul>
+
+
+
 I think this would work with Relative Source as well, but haven't spent the time to try yet. Hope this helps! I can't wait for the final release of Silverlight 3, this beta is a really nice set of improvements.

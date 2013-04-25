@@ -26,45 +26,86 @@ tags:
   slug: popular
   autoslug: popular
 ---
-<p>A week ago, we gave the world the first release of the <a href="http://www.codeplex.com/Silverlight/">Silverlight Toolkit</a>. Shawn Burke told you that we're agile, and that we have a neat <a href="http://blogs.msdn.com/sburke/archive/2008/10/28/silverlight-toolkit-now-available-for-download.aspx">release model</a>. The fun continues!</p> <p>Today, the source code to the Silverlight Unit Test Framework is available with the same open source license. It is checked in to the <a href="http://www.codeplex.com/Silverlight/SourceControl/ListDownloadableCommits.aspx">source control</a> for the <a href="http://www.codeplex.com/Silverlight/">toolkit</a> on CodePlex.</p> <p>So, now you have more of the pieces to the toolkit story, in open source C#:</p> <ul> <li>controls and charting source code,  </li><li>unit tests source,  </li><li>unit test framework source.</li></ul> <p>This is like a telescope pointing straight at what it has taken our team to be successful in delivering the controls to you. Hopefully this is all good for you to study while building your own Silverlight solutions.</p> <p>Having source access will give you the opportunity to innovate, meld the framework to meet your needs, and understand the internals. We're committed to sharing more of our infrastructure and a look behind-the-scenes, so this is just a part of that story - one that I'm proud to be sharing with you.</p> <p>Previous key posts about the framework to help anyone looking to get started:</p> <ul> <li><a href="http://www.jeff.wilcox.name/2008/10/25/ut-docs/">Test framework API documentation</a>  </li><li><a href="http://www.jeff.wilcox.name/2008/10/24/final-ut-templates/">Test project templates for Silverlight 2</a>  </li><li><a href="http://www.jeff.wilcox.name/2008/08/16/utbasics/">Visual Studio unit test framework introduction</a>  </li><li><a href="http://www.jeff.wilcox.name/2008/09/30/rc0-new-test-features/">New features in the RC0/RTW release</a>  </li><li><a href="http://www.jeff.wilcox.name/2008/03/31/silverlight2-unit-testing/">Original MIX post and overview</a></li></ul> <p>There were some key design principles and goals in place for this framework to be useful for a broad range of needs. The principles are...</p> <ul> <li>Simple</li> <li>Visual Studio's unit test framework</li> <li>Good for Silverlight</li> <li>Extensible</li> <li>And, finally, <em>in your hands</em>!</li></ul> <p></p> <h3>Simple</h3> <p>At Microsoft, often our internal teams spin up a new test framework every few months. Each slightly different, incompatible, and not always with enough dedication for it to be successful over the lifetime of several releases. But this framework is a little different.</p> <p>From the start, you've been able to run a Silverlight unit test framework application just like any other Silverlight application. Same tools, nothing fancy. Just hit the app from a web browser; store it on a team web server; or open it from the file system.</p> <p>It uses the same Silverlight runtime, no need to install custom patches or customize the environment for the tests to run.</p> <p>By emphasizing simple, basic test scenarios, this framework is something you'll want to use. Yet, there are some simple extensibility points and even a simple test dispatcher design that will let you do amazing things.</p> <p>This means that the Silverlight unit test framework does <em>not</em> have a thousand types with a thousand custom testing APIs for specific features; instead, you are free to build up your own library of utility methods, libraries, and components. If you look through the source to the Silverlight Toolkit tests, you'll see that some simple base class work will let you achieve powerful results, without being forced to test a specific way. The entire Controls.Testing.Common project will be an interesting look, for sure.</p> <p>I bet that you could even spend half an hour with any of your designers and (gasp!) show them how to run the acceptance unit tests that you've created, right inside Blend. Simple!</p> <h3>Visual Studio's unit test framework</h3> <p>We've collaborated with the Visual Studio Team Test (VSTT) team, and that means that that unit test metadata that is in the Silverlight Unit Test Framework is the same core metadata that you find with the full desktop Visual Studio 2008 product.</p> <p>This is pretty important because many developers already know how to use the metadata and the assertions. And if you're new to unit testing, it's really easy to pick up. Plus, then you'll be able to take your testing knowledge back to the desktop and the full .NET framework.</p> <p>It is worth pointing out that the limitations of the Silverlight environment, and running in the web browser, do mean that the actual <em>test execution</em> environment in this framework is custom, and not the same as VSTT's today. But there is enough in common that you should be successful.</p> <h3>Good for Silverlight</h3>We have created a set of base classes, all the way up to the 'SilverlightTest' base class, that are built for richer, more functional test scenarios. The trade-off of using the asynchronous and Silverlight-specific functionality is that you lose true compatibility with the desktop unit test framework.  <p>Using the psuedo-asynchronous testing capabilities, you can write tests that wait for controls to be added to the visual tree, have their loaded event fire, and then make changes to them.</p> <p>For instance, from the AutoCompleteBox tests, here is part of a functional test written in this style:</p> <p></p> <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:6b0ed6ca-9e53-400e-863a-f8e6d8b5b667" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="c-sharp" name="code">[TestClass]
-public class AutoCompleteBoxTest : SilverlightTest
-{
-// (snip)
-
-[TestMethod]
-[Description("Validate that the IsTextCompletionEnabled property is updated in the standard AutoCompleteBox scenario.")]
-[Asynchronous]
-public void TextCompletionValidation()
-{
-    OverriddenAutoCompleteBox control = GetDerivedAutoComplete();
-    bool isLoaded = false;
-    control.Loaded += delegate { isLoaded = true; };
-    EnqueueCallback(() =&gt; TestPanel.Children.Add(control));
-    EnqueueConditional(() =&gt; isLoaded);
-    Enqueue(() =&gt; Assert.IsNotNull(control.TextBox, "The TextBox part could not be retrieved."));
-    Enqueue(() =&gt; control.TextBox.Text = "accounti");
-    EnqueueConditional(() =&gt; control.SearchText == "accounti");
-    Enqueue(() =&gt; StringAssert.Equals(control.TextBox.Text, "accounting"));
-    Enqueue(() =&gt; Assert.IsTrue(control.IsDropDownOpen));
-    EnqueueTestComplete();
-}
-}</pre></div>
-<p></p>
-<p>The test waits for the control's loaded event to fire, sets the text in a composite TextBox control, waits for the search text to change, and then performs some quick assertions.</p>
-<p>The framework itself is designed for easy execution inside of your web browser, so you can even re-run tests without having to restart your unit test run.</p>
-<p><img src="http://media.jeff.wilcox.name/blog/rc0/new_expander_details.png"/> </p>
-<h3>Extensible</h3>
-<p>By sticking to a simple LogMessage + TestHarness model, you're really free to plug in your own solutions, or build on the source and roll your own.</p>
-<p>Write your own custom log providers. Extend the asynchronous testing model for any advanced testing needs. Turn on and off features as you please. Hook up your own unit test provider (I've seen it work with NUnit).</p>
-<p>There is a 'TestHarness' base class that you can customize. Teams have developed stress testing harnesses, test generation systems, and other harnesses on top of this - completely skipping the standard unit test harness.</p>
-<h3>In your hands</h3>
-<p>By releasing the source code, the final piece of the puzzle is in place. Step through, examine how the framework works, learn about it, improve your test coverage, and enjoy it.</p>
-<p>That said, although you do have the source, there's a whole slew of updated features and API improvements that will continue to make their way into the toolkit.</p>
-<p>So, personally, I hope that people use the source code to create better customizations on top of the framework, instead of making massive alterations to the core unit test framework &amp; platform.</p>
-<p>That'll make it easier to take advantage of some of the other related pieces, like continuous integration support, that are built to hook into the test framework and its test service.</p>
-<p><em>Hope this helps.</em></p>
-<h3><em>Thanks...</em></h3>
-<p><em>I would also like to take a moment to thank everyone that has been involved in making Silverlight testing easy, powerful, and available to the world.</em></p>
-<p>Outside of Microsoft, I've received helpful feedback from a number of industry experts, MVPs, and passionate individuals - thanks. I'm hoping to highlight some of the posts that I've seen out there in the wild in the coming weeks, like this one on the <a href="http://jonas.follesoe.no/UnitTestingAsynchronousSilverlightCode.aspx">asynchronous testing model</a>, written by <a href="http://jonas.follesoe.no/UnitTestingAsynchronousSilverlightCode.aspx">Jonas Follesø</a>.</p>
-<p>Inside Microsoft, I still remember sitting in <strong>Scott Guthrie</strong>'s office before MIX last year when he said something like "we'll ship the source code to this, too, right?" It is great knowing that Scott is so supportive of our efforts to share our work with developers everywhere in order to make them more productive. This also sheds some light on Microsoft's testing efforts, since often you don't get a glimpse behind the curtain.</p>
+<p>A week ago, we gave the world the first release of the <a href="http://www.codeplex.com/Silverlight/">Silverlight Toolkit</a>. Shawn Burke told you that we're agile, and that we have a neat <a href="http://blogs.msdn.com/sburke/archive/2008/10/28/silverlight-toolkit-now-available-for-download.aspx">release model</a>. The fun continues!</p> <p>Today, the source code to the Silverlight Unit Test Framework is available with the same open source license. It is checked in to the <a href="http://www.codeplex.com/Silverlight/SourceControl/ListDownloadableCommits.aspx">source control</a> for the <a href="http://www.codeplex.com/Silverlight/">toolkit</a> on CodePlex.</p> <p>So, now you have more of the pieces to the toolkit story, in open source C#:</p> <ul> <li>controls and charting source code,  </li><li>unit tests source,  </li><li>unit test framework source.</li></ul> <p>This is like a telescope pointing straight at what it has taken our team to be successful in delivering the controls to you. Hopefully this is all good for you to study while building your own Silverlight solutions.</p> <p>Having source access will give you the opportunity to innovate, meld the framework to meet your needs, and understand the internals. We're committed to sharing more of our infrastructure and a look behind-the-scenes, so this is just a part of that story - one that I'm proud to be sharing with you.</p> <p>Previous key posts about the framework to help anyone looking to get started:</p> <ul> <li><a href="http://www.jeff.wilcox.name/2008/10/25/ut-docs/">Test framework API documentation</a>  </li><li><a href="http://www.jeff.wilcox.name/2008/10/24/final-ut-templates/">Test project templates for Silverlight 2</a>  </li><li><a href="http://www.jeff.wilcox.name/2008/08/16/utbasics/">Visual Studio unit test framework introduction</a>  </li><li><a href="http://www.jeff.wilcox.name/2008/09/30/rc0-new-test-features/">New features in the RC0/RTW release</a>  </li><li><a href="http://www.jeff.wilcox.name/2008/03/31/silverlight2-unit-testing/">Original MIX post and overview</a></li></ul> <p>There were some key design principles and goals in place for this framework to be useful for a broad range of needs. The principles are...</p> <ul> <li>Simple</li> <li>Visual Studio's unit test framework</li> <li>Good for Silverlight</li> <li>Extensible</li> <li>And, finally, <em>in your hands</em>!</li></ul> <p></p> <h3>Simple</h3> <p>At Microsoft, often our internal teams spin up a new test framework every few months. Each slightly different, incompatible, and not always with enough dedication for it to be successful over the lifetime of several releases. But this framework is a little different.</p> <p>From the start, you've been able to run a Silverlight unit test framework application just like any other Silverlight application. Same tools, nothing fancy. Just hit the app from a web browser; store it on a team web server; or open it from the file system.</p> <p>It uses the same Silverlight runtime, no need to install custom patches or customize the environment for the tests to run.</p> <p>By emphasizing simple, basic test scenarios, this framework is something you'll want to use. Yet, there are some simple extensibility points and even a simple test dispatcher design that will let you do amazing things.</p> <p>This means that the Silverlight unit test framework does <em>not</em> have a thousand types with a thousand custom testing APIs for specific features; instead, you are free to build up your own library of utility methods, libraries, and components. If you look through the source to the Silverlight Toolkit tests, you'll see that some simple base class work will let you achieve powerful results, without being forced to test a specific way. The entire Controls.Testing.Common project will be an interesting look, for sure.</p> <p>I bet that you could even spend half an hour with any of your designers and (gasp!) show them how to run the acceptance unit tests that you've created, right inside Blend. Simple!</p> <h3>Visual Studio's unit test framework</h3> <p>We've collaborated with the Visual Studio Team Test (VSTT) team, and that means that that unit test metadata that is in the Silverlight Unit Test Framework is the same core metadata that you find with the full desktop Visual Studio 2008 product.</p> <p>This is pretty important because many developers already know how to use the metadata and the assertions. And if you're new to unit testing, it's really easy to pick up. Plus, then you'll be able to take your testing knowledge back to the desktop and the full .NET framework.</p> <p>It is worth pointing out that the limitations of the Silverlight environment, and running in the web browser, do mean that the actual <em>test execution</em> environment in this framework is custom, and not the same as VSTT's today. But there is enough in common that you should be successful.</p> <h3>Good for Silverlight</h3>We have created a set of base classes, all the way up to the 'SilverlightTest' base class, that are built for richer, more functional test scenarios. The trade-off of using the asynchronous and Silverlight-specific functionality is that you lose true compatibility with the desktop unit test framework.  <p>Using the psuedo-asynchronous testing capabilities, you can write tests that wait for controls to be added to the visual tree, have their loaded event fire, and then make changes to them.</p> <p>For instance, from the AutoCompleteBox tests, here is part of a functional test written in this style:</p> <p></p> <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:6b0ed6ca-9e53-400e-863a-f8e6d8b5b667" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="brush: c-sharp">[TestClass]
+
+public class AutoCompleteBoxTest : SilverlightTest
+
+{
+
+// (snip)
+
+
+
+[TestMethod]
+
+[Description("Validate that the IsTextCompletionEnabled property is updated in the standard AutoCompleteBox scenario.")]
+
+[Asynchronous]
+
+public void TextCompletionValidation()
+
+{
+
+    OverriddenAutoCompleteBox control = GetDerivedAutoComplete();
+
+    bool isLoaded = false;
+
+    control.Loaded += delegate { isLoaded = true; };
+
+    EnqueueCallback(() =&gt; TestPanel.Children.Add(control));
+
+    EnqueueConditional(() =&gt; isLoaded);
+
+    Enqueue(() =&gt; Assert.IsNotNull(control.TextBox, "The TextBox part could not be retrieved."));
+
+    Enqueue(() =&gt; control.TextBox.Text = "accounti");
+
+    EnqueueConditional(() =&gt; control.SearchText == "accounti");
+
+    Enqueue(() =&gt; StringAssert.Equals(control.TextBox.Text, "accounting"));
+
+    Enqueue(() =&gt; Assert.IsTrue(control.IsDropDownOpen));
+
+    EnqueueTestComplete();
+
+}
+
+}</pre></div>
+
+<p></p>
+
+<p>The test waits for the control's loaded event to fire, sets the text in a composite TextBox control, waits for the search text to change, and then performs some quick assertions.</p>
+
+<p>The framework itself is designed for easy execution inside of your web browser, so you can even re-run tests without having to restart your unit test run.</p>
+
+<p><img src="http://media.jeff.wilcox.name/blog/rc0/new_expander_details.png"/> </p>
+
+<h3>Extensible</h3>
+
+<p>By sticking to a simple LogMessage + TestHarness model, you're really free to plug in your own solutions, or build on the source and roll your own.</p>
+
+<p>Write your own custom log providers. Extend the asynchronous testing model for any advanced testing needs. Turn on and off features as you please. Hook up your own unit test provider (I've seen it work with NUnit).</p>
+
+<p>There is a 'TestHarness' base class that you can customize. Teams have developed stress testing harnesses, test generation systems, and other harnesses on top of this - completely skipping the standard unit test harness.</p>
+
+<h3>In your hands</h3>
+
+<p>By releasing the source code, the final piece of the puzzle is in place. Step through, examine how the framework works, learn about it, improve your test coverage, and enjoy it.</p>
+
+<p>That said, although you do have the source, there's a whole slew of updated features and API improvements that will continue to make their way into the toolkit.</p>
+
+<p>So, personally, I hope that people use the source code to create better customizations on top of the framework, instead of making massive alterations to the core unit test framework &amp; platform.</p>
+
+<p>That'll make it easier to take advantage of some of the other related pieces, like continuous integration support, that are built to hook into the test framework and its test service.</p>
+
+<p><em>Hope this helps.</em></p>
+
+<h3><em>Thanks...</em></h3>
+
+<p><em>I would also like to take a moment to thank everyone that has been involved in making Silverlight testing easy, powerful, and available to the world.</em></p>
+
+<p>Outside of Microsoft, I've received helpful feedback from a number of industry experts, MVPs, and passionate individuals - thanks. I'm hoping to highlight some of the posts that I've seen out there in the wild in the coming weeks, like this one on the <a href="http://jonas.follesoe.no/UnitTestingAsynchronousSilverlightCode.aspx">asynchronous testing model</a>, written by <a href="http://jonas.follesoe.no/UnitTestingAsynchronousSilverlightCode.aspx">Jonas Follesø</a>.</p>
+
+<p>Inside Microsoft, I still remember sitting in <strong>Scott Guthrie</strong>'s office before MIX last year when he said something like "we'll ship the source code to this, too, right?" It is great knowing that Scott is so supportive of our efforts to share our work with developers everywhere in order to make them more productive. This also sheds some light on Microsoft's testing efforts, since often you don't get a glimpse behind the curtain.</p>
+
 <p>Thanks are also due to <strong>Shawn Burke</strong> and <strong>Imran Sargusingh</strong> for believing in the vision of a simple, useful test framework that developers and testers could unify around. <strong>Jad Baydoun</strong> for implementing changes to the UnitTestSystem startup design &amp; providing feedback. <strong>Ted Glaza</strong> contributed the tag expression implementation, and <strong>Beatriz Costa</strong> has been a strong supporter of the framework's vision as something that she is willing for us to take a bet on as the senior test lead for the controls team. Thanks to the internal Microsoft community that's been using the framework. And, thanks to everyone I just left out (sorry).</p>

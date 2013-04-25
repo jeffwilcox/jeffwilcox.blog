@@ -23,381 +23,758 @@ tags:
   slug: popular
   autoslug: popular
 ---
-<p>The auto complete functionality that IE and Firefox provide in the URL address bar is nice: both these browsers (and many other auto complete implementations) highlight the text that you've typed, inside the results display.</p>  <p><img src="http://media.jeff.wilcox.name/blog/view/Ie8AutoComplete.png" /> </p>  <p>If you use the <a href="http://www.codeplex.com/Silverlight/">Silverlight Toolkit</a>'s AutoCompleteBox control, and pair it with a fun SearchMode like 'Contains', you're able to offer your customers the same experience. The completed sample app has the highlight functionality, looking like this:</p>  <p><a href="http://media.jeff.wilcox.name/blog/AutoComplete/xap/HighlightingAutoCompleteSample.html"><img src="http://media.jeff.wilcox.name/blog/view/SilverlightHighlightingAutoCompleteSample.png" /></a> </p>  <p>Here's what we need to do to build this functionality into an app:</p>  <ul>   <li>Create a simple highlighting text block control that has a few properties: Text, HighlightText, HighlightBrush </li>    <li>Provide a custom data template for the items in the AutoCompleteBox </li>    <li>Wire up the search text of AutoCompleteBox to the highlight text </li> </ul>  <p>In a WPF world, we'd be able to accomplish the third bullet inside XAML, but I'm going to need to do some visual tree hacking to do this in today's example. But it's still quick!</p>  <h3>Creating a HighlightingTextBlock</h3>  <p>We need to create a control that takes care of managing the highlighting.</p>  <p>The control prepares an array of inline Run instances for its TextBlock, and then can selectively highlight and un-highlight individual Run instances. The relation is one Run instance to one character.</p>  <p>Since TextBlock is sealed in Silverlight, I've created a simple control that derives from Control, and exposes these dependency properties:</p>  <ul>   <li>Text: The text to display</li>    <li>HighlightText: The text to highlight</li>    <li>HighlightBrush: The brush to use for the foreground color on the highlighted text</li>    <li>HighlightTextWeight: You can provide a custom weight for highlight- Firefox, for instance, bolds and underlines the highlighted text to make it even more visible.</li> </ul>  <p>This control is simple enough, and only took a few minutes to create. It's a little lengthy only because of the regular control goo, like dependency property definitions:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:5ff9ff70-9761-486c-9318-1234d64fe1c8" class="wlWriterSmartContent"><pre class="c-sharp" name="code">// (c) Copyright Microsoft Corporation.
-// This source is subject to the Microsoft Public License (Ms-PL).
-// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
-// All other rights reserved.
-
-using System;
-using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Media;
-
-namespace JeffWilcox.Samples.HighlightingAutoComplete
-{
-    /// &lt;summary&gt;
-    /// A specialized highlighting text block control.
-    /// &lt;/summary&gt;
-    public partial class HighlightingTextBlock : Control
-    {
-        /// &lt;summary&gt;
-        /// The name of the TextBlock part.
-        /// &lt;/summary&gt;
-        private string TextBlockName = "Text";
-
-        /// &lt;summary&gt;
-        /// Gets or sets the text block reference.
-        /// &lt;/summary&gt;
-        private TextBlock TextBlock { get; set; }
-
-        /// &lt;summary&gt;
-        /// Gets or sets the inlines list.
-        /// &lt;/summary&gt;
-        private List&lt;Inline&gt; Inlines { get; set; }
-
-        #region public string Text
-        /// &lt;summary&gt;
-        /// Gets or sets the contents of the TextBox.
-        /// &lt;/summary&gt;
-        public string Text
-        {
-            get { return GetValue(TextProperty) as string; }
-            set { SetValue(TextProperty, value); }
-        }
-
-        /// &lt;summary&gt;
-        /// Identifies the Text dependency property.
-        /// &lt;/summary&gt;
-        public static readonly DependencyProperty TextProperty =
-            DependencyProperty.Register(
-                "Text",
-                typeof(string),
-                typeof(HighlightingTextBlock),
-                new PropertyMetadata(OnTextPropertyChanged));
-
-        /// &lt;summary&gt;
-        /// TextProperty property changed handler.
-        /// &lt;/summary&gt;
-        /// &lt;param name="d"&gt;AutoCompleteBox that changed its Text.&lt;/param&gt;
-        /// &lt;param name="e"&gt;Event arguments.&lt;/param&gt;
-        private static void OnTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            HighlightingTextBlock source = d as HighlightingTextBlock;
-
-            if (source.TextBlock != null)
-            {
-                while (source.TextBlock.Inlines.Count &gt; 0)
-                {
-                    source.TextBlock.Inlines.RemoveAt(0);
-                }
-                string value = e.NewValue as string;
-                source.Inlines = new List&lt;Inline&gt;();
-                if (value != null)
-                {
-                    for (int i = 0; i &lt; value.Length; i++)
-                    {
-                        Inline run = new Run { Text = value[i].ToString() };
-                        source.TextBlock.Inlines.Add(run);
-                        source.Inlines.Add(run);
-                    }
-
-                    source.ApplyHighlighting();
-                }
-            }
-        }
-
-        #endregion public string Text
-
-        #region public string HighlightText
-        /// &lt;summary&gt;
-        /// Gets or sets the highlighted text.
-        /// &lt;/summary&gt;
-        public string HighlightText
-        {
-            get { return GetValue(HighlightTextProperty) as string; }
-            set { SetValue(HighlightTextProperty, value); }
-        }
-
-        /// &lt;summary&gt;
-        /// Identifies the HighlightText dependency property.
-        /// &lt;/summary&gt;
-        public static readonly DependencyProperty HighlightTextProperty =
-            DependencyProperty.Register(
-                "HighlightText",
-                typeof(string),
-                typeof(HighlightingTextBlock),
-                new PropertyMetadata(OnHighlightTextPropertyChanged));
-
-        /// &lt;summary&gt;
-        /// HighlightText property changed handler.
-        /// &lt;/summary&gt;
-        /// &lt;param name="d"&gt;AutoCompleteBox that changed its HighlightText.&lt;/param&gt;
-        /// &lt;param name="e"&gt;Event arguments.&lt;/param&gt;
-        private static void OnHighlightTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            HighlightingTextBlock source = d as HighlightingTextBlock;
-            source.ApplyHighlighting();
-        }
-
-        #endregion public string HighlightText
-
-        #region public Brush HighlightBrush
-        /// &lt;summary&gt;
-        /// Gets or sets the highlight brush.
-        /// &lt;/summary&gt;
-        public Brush HighlightBrush
-        {
-            get { return GetValue(HighlightBrushProperty) as Brush; }
-            set { SetValue(HighlightBrushProperty, value); }
-        }
-
-        /// &lt;summary&gt;
-        /// Identifies the HighlightBrush dependency property.
-        /// &lt;/summary&gt;
-        public static readonly DependencyProperty HighlightBrushProperty =
-            DependencyProperty.Register(
-                "HighlightBrush",
-                typeof(Brush),
-                typeof(HighlightingTextBlock),
-                new PropertyMetadata(null, OnHighlightBrushPropertyChanged));
-
-        /// &lt;summary&gt;
-        /// HighlightBrushProperty property changed handler.
-        /// &lt;/summary&gt;
-        /// &lt;param name="d"&gt;HighlightingTextBlock that changed its HighlightBrush.&lt;/param&gt;
-        /// &lt;param name="e"&gt;Event arguments.&lt;/param&gt;
-        private static void OnHighlightBrushPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            HighlightingTextBlock source = d as HighlightingTextBlock;
-            source.ApplyHighlighting();
-        }
-        #endregion public Brush HighlightBrush
-
-        #region public FontWeight HighlightFontWeight
-        /// &lt;summary&gt;
-        /// Gets or sets the font weight used on highlighted text.
-        /// &lt;/summary&gt;
-        public FontWeight HighlightFontWeight
-        {
-            get { return (FontWeight)GetValue(HighlightFontWeightProperty); }
-            set { SetValue(HighlightFontWeightProperty, value); }
-        }
-
-        /// &lt;summary&gt;
-        /// Identifies the HighlightFontWeight dependency property.
-        /// &lt;/summary&gt;
-        public static readonly DependencyProperty HighlightFontWeightProperty =
-            DependencyProperty.Register(
-                "HighlightFontWeight",
-                typeof(FontWeight),
-                typeof(HighlightingTextBlock),
-                new PropertyMetadata(FontWeights.Normal, OnHighlightFontWeightPropertyChanged));
-
-        /// &lt;summary&gt;
-        /// HighlightFontWeightProperty property changed handler.
-        /// &lt;/summary&gt;
-        /// &lt;param name="d"&gt;HighlightingTextBlock that changed its HighlightFontWeight.&lt;/param&gt;
-        /// &lt;param name="e"&gt;Event arguments.&lt;/param&gt;
-        private static void OnHighlightFontWeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            HighlightingTextBlock source = d as HighlightingTextBlock;
-            FontWeight value = (FontWeight)e.NewValue;
-        }
-        #endregion public FontWeight HighlightFontWeight
-
-        /// &lt;summary&gt;
-        /// Initializes a new HighlightingTextBlock class.
-        /// &lt;/summary&gt;
-        public HighlightingTextBlock()
-        {
-            DefaultStyleKey = typeof(HighlightingTextBlock);
-            Loaded += OnLoaded;
-        }
-
-        /// &lt;summary&gt;
-        /// Loaded method handler.
-        /// &lt;/summary&gt;
-        /// &lt;param name="sender"&gt;The loaded event.&lt;/param&gt;
-        /// &lt;param name="e"&gt;The event data.&lt;/param&gt;
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            OnApplyTemplate();
-        }
-
-        /// &lt;summary&gt;
-        /// Override the apply template handler.
-        /// &lt;/summary&gt;
-        public override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-
-            // Grab the template part
-            TextBlock = GetTemplateChild(TextBlockName) as TextBlock;
-
-            // Re-apply the text value
-            string text = Text;
-            Text = null;
-            Text = text;
-        }
-
-        /// &lt;summary&gt;
-        /// Apply the visual highlighting.
-        /// &lt;/summary&gt;
-        private void ApplyHighlighting()
-        {
-            if (Inlines == null)
-            {
-                return;
-            }
-
-            string text = Text ?? string.Empty;
-            string highlight = HighlightText ?? string.Empty;
-            StringComparison compare = StringComparison.OrdinalIgnoreCase;
-
-            int cur = 0;
-            while (cur &lt; text.Length)
-            {
-                int i = highlight.Length == 0 ? -1 : text.IndexOf(highlight, cur, compare);
-                i = i &lt; 0 ? text.Length : i;
-
-                // Clear
-                while (cur &lt; i && cur &lt; text.Length)
-                {
-                    Inlines[cur].Foreground = Foreground;
-                    Inlines[cur].FontWeight = FontWeight;
-                    cur++;
-                }
-
-                // Highlight
-                int start = cur;
-                while (cur &lt; start + highlight.Length && cur &lt; text.Length)
-                {
-                    Inlines[cur].Foreground = HighlightBrush;
-                    Inlines[cur].FontWeight = HighlightFontWeight;
-                    cur++;
-                }
-            }
-        }
-    }
-}</pre></div>
-
-<p>Next, here's the generic.xaml for the control that is stored in the themes\generic.xaml file of the project, as a resource. Note the assembly reference in the xml namespace declaration - you may need to adjust it if you're building the project yourself.</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:646c6c54-5d4a-473c-b5ed-5fb87f1f0fa5" class="wlWriterSmartContent"><pre class="xml" name="code">&lt;ResourceDictionary 
-    xmlns="http://schemas.microsoft.com/client/2007"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-    xmlns:sample="clr-namespace:JeffWilcox.Samples.HighlightingAutoComplete;assembly=JeffWilcox.Samples.HighlightingAutoComplete.Sample"
-    xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"&gt;
-
-    &lt;Style TargetType="sample:HighlightingTextBlock"&gt;
-        &lt;Setter Property="HighlightBrush" Value="Blue" /&gt;
-        &lt;Setter Property="Template"&gt;
-            &lt;Setter.Value&gt;
-                &lt;ControlTemplate TargetType="sample:HighlightingTextBlock"&gt;
-                    &lt;TextBlock x:Name="Text" /&gt;
-                &lt;/ControlTemplate&gt;
-            &lt;/Setter.Value&gt;
-        &lt;/Setter&gt;
-    &lt;/Style&gt;
-
-&lt;/ResourceDictionary&gt;</pre></div>
-
-<h3>Setup the AutoCompleteBox item template</h3>
-
-<p>Now, with the highlighting text block ready, the ItemTemplate of the AutoCompleteBox control can be set to bind to our new control. The sample xmlns points to the CLR namespace of the control we built, JeffWilcox.Samples.HighlightingAutoComplete:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:3df0ba5b-9bfc-4507-9a8f-cd760e4994e3" class="wlWriterSmartContent"><pre class="xml" name="code">&lt;controls:AutoCompleteBox
-    x:Name="HighlightingAutoCompleteBox"
-    IsTextCompletionEnabled="False"
-    SearchMode="Contains"&gt;
-    &lt;controls:AutoCompleteBox.ItemTemplate&gt;
-        &lt;DataTemplate&gt;
-            &lt;sample:HighlightingTextBlock
-                Text="{Binding}"
-                HighlightBrush="#FF44A0FF" /&gt;
-        &lt;/DataTemplate&gt;
-    &lt;/controls:AutoCompleteBox.ItemTemplate&gt;
-&lt;/controls:AutoCompleteBox&gt;</pre></div>
-
-<p>I also set the ItemsSource to use some of the sample data from the toolkit, to load a bunch of names into the control.</p>
-
-<h3>Wire up search text updates to the highlight text block instances</h3>
-
-<p>Without UI-to-UI/element name binding in Silverlight, I've needed to do some extra code wiring here. Whenever the populated event is fired, I prepare a dispatcher invoke that pokes around the visual tree to grab all the HighlightingTextBlock instances and set the HighlightText property manually.</p>
-
-<p>This works, but ideally would be accomplished using some better binding support. I've also borrowed the <a href="http://www.codeplex.com/Silverlight/SourceControl/FileView.aspx?itemId=242100&amp;changeSetId=7238">VisualTreeExtensions.cs file</a> (<a href="http://www.microsoft.com/opensource/licenses.mspx#Ms-PL">Ms-PL</a>) from the Silverlight Toolkit to save time.</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:74ce5504-b8fe-4264-8101-356bff00623f" class="wlWriterSmartContent"><pre class="c-sharp" name="code">// From Page.xaml.cs
-
-private void Page_Loaded(object sender, RoutedEventArgs e)
-{
-    HighlightingAutoCompleteBox.ItemsSource = Employee.AllExecutives;
-    HighlightingAutoCompleteBox.Populated += Populated;
-}
-
-/// &lt;summary&gt;
-/// Cached Popup reference.
-/// &lt;/summary&gt;
-private Popup _popup;
-
-/// &lt;summary&gt;
-/// Cached ListBox reference.
-/// &lt;/summary&gt;
-private ListBox _listBox;
-
-/// &lt;summary&gt;
-/// Attach to the AutoCompleteBox's Populate event. Then, dive in and 
-/// grab references to the internal template parts. Hacky but gets 
-/// around the inability in Silverlight today to bind the SearchText 
-/// property of the AutoCompleteBox control wtih the highlighting text 
-/// block inside the item template.
-/// &lt;/summary&gt;
-private void Populated(object sender, PopulatedEventArgs e)
-{
-    Dispatcher.BeginInvoke(() =&gt;
-        {
-            if (_popup == null)
-            {
-                _popup = HighlightingAutoCompleteBox
-                    .GetLogicalChildrenBreadthFirst()
-                    .OfType&lt;Popup&gt;()
-                    .FirstOrDefault();
-            }
-            if (_popup != null && _listBox == null)
-            {
-                FrameworkElement fe = _popup.Child as FrameworkElement;
-                if (fe != null)
-                {
-                    _listBox = fe
-                        .GetLogicalChildrenBreadthFirst()
-                        .OfType&lt;ListBox&gt;()
-                        .FirstOrDefault();
-                }
-            }
-            if (_listBox != null)
-            {
-                foreach (var item in _listBox
-                    .GetLogicalChildrenBreadthFirst()
-                    .OfType&lt;HighlightingTextBlock&gt;())
-                {
-                    item.HighlightText = HighlightingAutoCompleteBox.SearchText;
-                }
-            }
-        });
-}</pre></div>
-
-<p>I'm hooked to the Populated event, since it is always called when the SearchText property changes on the AutoCompleteBox - but if you have a delay before the results are shown, you may need to do some more advanced logic, pulling in the DropDownOpened events and/or a DispatcherTimer. The code above assumes that the list box and other template parts inside of the Popup have already been loaded.</p>
-
-<h3>Experience this application</h3>
-
-<p><a href="http://media.jeff.wilcox.name/blog/AutoComplete/xap/HighlightingAutoCompleteSample.html"><strong>Run the application live</strong></a> (Silverlight 2, 74 KB)</p>
-
-<p>I'm also releasing the source code to this project under the <a href="http://www.microsoft.com/opensource/licenses.mspx#Ms-PL">Microsoft Public License</a>, just like the rest of the toolkit. I think it's a little too specialized to find its way into the <a href="http://www.codeplex.com/Silverlight/">Silverlight Toolkit</a>.</p>
-
-<p><a href="http://media.jeff.wilcox.name/blog/AutoComplete/HighlightingAutoCompleteSample.zip"><strong>Download the C# source project</strong></a> (Zip, 59 KB)</p>
-
-<p>Hope this helps!</p>
-
+<p>The auto complete functionality that IE and Firefox provide in the URL address bar is nice: both these browsers (and many other auto complete implementations) highlight the text that you've typed, inside the results display.</p>  <p><img src="http://media.jeff.wilcox.name/blog/view/Ie8AutoComplete.png" /> </p>  <p>If you use the <a href="http://www.codeplex.com/Silverlight/">Silverlight Toolkit</a>'s AutoCompleteBox control, and pair it with a fun SearchMode like 'Contains', you're able to offer your customers the same experience. The completed sample app has the highlight functionality, looking like this:</p>  <p><a href="http://media.jeff.wilcox.name/blog/AutoComplete/xap/HighlightingAutoCompleteSample.html"><img src="http://media.jeff.wilcox.name/blog/view/SilverlightHighlightingAutoCompleteSample.png" /></a> </p>  <p>Here's what we need to do to build this functionality into an app:</p>  <ul>   <li>Create a simple highlighting text block control that has a few properties: Text, HighlightText, HighlightBrush </li>    <li>Provide a custom data template for the items in the AutoCompleteBox </li>    <li>Wire up the search text of AutoCompleteBox to the highlight text </li> </ul>  <p>In a WPF world, we'd be able to accomplish the third bullet inside XAML, but I'm going to need to do some visual tree hacking to do this in today's example. But it's still quick!</p>  <h3>Creating a HighlightingTextBlock</h3>  <p>We need to create a control that takes care of managing the highlighting.</p>  <p>The control prepares an array of inline Run instances for its TextBlock, and then can selectively highlight and un-highlight individual Run instances. The relation is one Run instance to one character.</p>  <p>Since TextBlock is sealed in Silverlight, I've created a simple control that derives from Control, and exposes these dependency properties:</p>  <ul>   <li>Text: The text to display</li>    <li>HighlightText: The text to highlight</li>    <li>HighlightBrush: The brush to use for the foreground color on the highlighted text</li>    <li>HighlightTextWeight: You can provide a custom weight for highlight- Firefox, for instance, bolds and underlines the highlighted text to make it even more visible.</li> </ul>  <p>This control is simple enough, and only took a few minutes to create. It's a little lengthy only because of the regular control goo, like dependency property definitions:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:5ff9ff70-9761-486c-9318-1234d64fe1c8" class="wlWriterSmartContent"><pre class="brush: c-sharp">// (c) Copyright Microsoft Corporation.
+
+// This source is subject to the Microsoft Public License (Ms-PL).
+
+// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+
+// All other rights reserved.
+
+
+
+using System;
+
+using System.Collections.Generic;
+
+using System.Windows;
+
+using System.Windows.Controls;
+
+using System.Windows.Documents;
+
+using System.Windows.Media;
+
+
+
+namespace JeffWilcox.Samples.HighlightingAutoComplete
+
+{
+
+    /// &lt;summary&gt;
+
+    /// A specialized highlighting text block control.
+
+    /// &lt;/summary&gt;
+
+    public partial class HighlightingTextBlock : Control
+
+    {
+
+        /// &lt;summary&gt;
+
+        /// The name of the TextBlock part.
+
+        /// &lt;/summary&gt;
+
+        private string TextBlockName = "Text";
+
+
+
+        /// &lt;summary&gt;
+
+        /// Gets or sets the text block reference.
+
+        /// &lt;/summary&gt;
+
+        private TextBlock TextBlock { get; set; }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Gets or sets the inlines list.
+
+        /// &lt;/summary&gt;
+
+        private List&lt;Inline&gt; Inlines { get; set; }
+
+
+
+        #region public string Text
+
+        /// &lt;summary&gt;
+
+        /// Gets or sets the contents of the TextBox.
+
+        /// &lt;/summary&gt;
+
+        public string Text
+
+        {
+
+            get { return GetValue(TextProperty) as string; }
+
+            set { SetValue(TextProperty, value); }
+
+        }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Identifies the Text dependency property.
+
+        /// &lt;/summary&gt;
+
+        public static readonly DependencyProperty TextProperty =
+
+            DependencyProperty.Register(
+
+                "Text",
+
+                typeof(string),
+
+                typeof(HighlightingTextBlock),
+
+                new PropertyMetadata(OnTextPropertyChanged));
+
+
+
+        /// &lt;summary&gt;
+
+        /// TextProperty property changed handler.
+
+        /// &lt;/summary&gt;
+
+        /// &lt;param name="d"&gt;AutoCompleteBox that changed its Text.&lt;/param&gt;
+
+        /// &lt;param name="e"&gt;Event arguments.&lt;/param&gt;
+
+        private static void OnTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+
+        {
+
+            HighlightingTextBlock source = d as HighlightingTextBlock;
+
+
+
+            if (source.TextBlock != null)
+
+            {
+
+                while (source.TextBlock.Inlines.Count &gt; 0)
+
+                {
+
+                    source.TextBlock.Inlines.RemoveAt(0);
+
+                }
+
+                string value = e.NewValue as string;
+
+                source.Inlines = new List&lt;Inline&gt;();
+
+                if (value != null)
+
+                {
+
+                    for (int i = 0; i &lt; value.Length; i++)
+
+                    {
+
+                        Inline run = new Run { Text = value[i].ToString() };
+
+                        source.TextBlock.Inlines.Add(run);
+
+                        source.Inlines.Add(run);
+
+                    }
+
+
+
+                    source.ApplyHighlighting();
+
+                }
+
+            }
+
+        }
+
+
+
+        #endregion public string Text
+
+
+
+        #region public string HighlightText
+
+        /// &lt;summary&gt;
+
+        /// Gets or sets the highlighted text.
+
+        /// &lt;/summary&gt;
+
+        public string HighlightText
+
+        {
+
+            get { return GetValue(HighlightTextProperty) as string; }
+
+            set { SetValue(HighlightTextProperty, value); }
+
+        }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Identifies the HighlightText dependency property.
+
+        /// &lt;/summary&gt;
+
+        public static readonly DependencyProperty HighlightTextProperty =
+
+            DependencyProperty.Register(
+
+                "HighlightText",
+
+                typeof(string),
+
+                typeof(HighlightingTextBlock),
+
+                new PropertyMetadata(OnHighlightTextPropertyChanged));
+
+
+
+        /// &lt;summary&gt;
+
+        /// HighlightText property changed handler.
+
+        /// &lt;/summary&gt;
+
+        /// &lt;param name="d"&gt;AutoCompleteBox that changed its HighlightText.&lt;/param&gt;
+
+        /// &lt;param name="e"&gt;Event arguments.&lt;/param&gt;
+
+        private static void OnHighlightTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+
+        {
+
+            HighlightingTextBlock source = d as HighlightingTextBlock;
+
+            source.ApplyHighlighting();
+
+        }
+
+
+
+        #endregion public string HighlightText
+
+
+
+        #region public Brush HighlightBrush
+
+        /// &lt;summary&gt;
+
+        /// Gets or sets the highlight brush.
+
+        /// &lt;/summary&gt;
+
+        public Brush HighlightBrush
+
+        {
+
+            get { return GetValue(HighlightBrushProperty) as Brush; }
+
+            set { SetValue(HighlightBrushProperty, value); }
+
+        }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Identifies the HighlightBrush dependency property.
+
+        /// &lt;/summary&gt;
+
+        public static readonly DependencyProperty HighlightBrushProperty =
+
+            DependencyProperty.Register(
+
+                "HighlightBrush",
+
+                typeof(Brush),
+
+                typeof(HighlightingTextBlock),
+
+                new PropertyMetadata(null, OnHighlightBrushPropertyChanged));
+
+
+
+        /// &lt;summary&gt;
+
+        /// HighlightBrushProperty property changed handler.
+
+        /// &lt;/summary&gt;
+
+        /// &lt;param name="d"&gt;HighlightingTextBlock that changed its HighlightBrush.&lt;/param&gt;
+
+        /// &lt;param name="e"&gt;Event arguments.&lt;/param&gt;
+
+        private static void OnHighlightBrushPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+
+        {
+
+            HighlightingTextBlock source = d as HighlightingTextBlock;
+
+            source.ApplyHighlighting();
+
+        }
+
+        #endregion public Brush HighlightBrush
+
+
+
+        #region public FontWeight HighlightFontWeight
+
+        /// &lt;summary&gt;
+
+        /// Gets or sets the font weight used on highlighted text.
+
+        /// &lt;/summary&gt;
+
+        public FontWeight HighlightFontWeight
+
+        {
+
+            get { return (FontWeight)GetValue(HighlightFontWeightProperty); }
+
+            set { SetValue(HighlightFontWeightProperty, value); }
+
+        }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Identifies the HighlightFontWeight dependency property.
+
+        /// &lt;/summary&gt;
+
+        public static readonly DependencyProperty HighlightFontWeightProperty =
+
+            DependencyProperty.Register(
+
+                "HighlightFontWeight",
+
+                typeof(FontWeight),
+
+                typeof(HighlightingTextBlock),
+
+                new PropertyMetadata(FontWeights.Normal, OnHighlightFontWeightPropertyChanged));
+
+
+
+        /// &lt;summary&gt;
+
+        /// HighlightFontWeightProperty property changed handler.
+
+        /// &lt;/summary&gt;
+
+        /// &lt;param name="d"&gt;HighlightingTextBlock that changed its HighlightFontWeight.&lt;/param&gt;
+
+        /// &lt;param name="e"&gt;Event arguments.&lt;/param&gt;
+
+        private static void OnHighlightFontWeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+
+        {
+
+            HighlightingTextBlock source = d as HighlightingTextBlock;
+
+            FontWeight value = (FontWeight)e.NewValue;
+
+        }
+
+        #endregion public FontWeight HighlightFontWeight
+
+
+
+        /// &lt;summary&gt;
+
+        /// Initializes a new HighlightingTextBlock class.
+
+        /// &lt;/summary&gt;
+
+        public HighlightingTextBlock()
+
+        {
+
+            DefaultStyleKey = typeof(HighlightingTextBlock);
+
+            Loaded += OnLoaded;
+
+        }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Loaded method handler.
+
+        /// &lt;/summary&gt;
+
+        /// &lt;param name="sender"&gt;The loaded event.&lt;/param&gt;
+
+        /// &lt;param name="e"&gt;The event data.&lt;/param&gt;
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+
+        {
+
+            OnApplyTemplate();
+
+        }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Override the apply template handler.
+
+        /// &lt;/summary&gt;
+
+        public override void OnApplyTemplate()
+
+        {
+
+            base.OnApplyTemplate();
+
+
+
+            // Grab the template part
+
+            TextBlock = GetTemplateChild(TextBlockName) as TextBlock;
+
+
+
+            // Re-apply the text value
+
+            string text = Text;
+
+            Text = null;
+
+            Text = text;
+
+        }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Apply the visual highlighting.
+
+        /// &lt;/summary&gt;
+
+        private void ApplyHighlighting()
+
+        {
+
+            if (Inlines == null)
+
+            {
+
+                return;
+
+            }
+
+
+
+            string text = Text ?? string.Empty;
+
+            string highlight = HighlightText ?? string.Empty;
+
+            StringComparison compare = StringComparison.OrdinalIgnoreCase;
+
+
+
+            int cur = 0;
+
+            while (cur &lt; text.Length)
+
+            {
+
+                int i = highlight.Length == 0 ? -1 : text.IndexOf(highlight, cur, compare);
+
+                i = i &lt; 0 ? text.Length : i;
+
+
+
+                // Clear
+
+                while (cur &lt; i && cur &lt; text.Length)
+
+                {
+
+                    Inlines[cur].Foreground = Foreground;
+
+                    Inlines[cur].FontWeight = FontWeight;
+
+                    cur++;
+
+                }
+
+
+
+                // Highlight
+
+                int start = cur;
+
+                while (cur &lt; start + highlight.Length && cur &lt; text.Length)
+
+                {
+
+                    Inlines[cur].Foreground = HighlightBrush;
+
+                    Inlines[cur].FontWeight = HighlightFontWeight;
+
+                    cur++;
+
+                }
+
+            }
+
+        }
+
+    }
+
+}</pre></div>
+
+
+
+<p>Next, here's the generic.xaml for the control that is stored in the themes\generic.xaml file of the project, as a resource. Note the assembly reference in the xml namespace declaration - you may need to adjust it if you're building the project yourself.</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:646c6c54-5d4a-473c-b5ed-5fb87f1f0fa5" class="wlWriterSmartContent"><pre class="xml" name="code">&lt;ResourceDictionary 
+
+    xmlns="http://schemas.microsoft.com/client/2007"
+
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+
+    xmlns:sample="clr-namespace:JeffWilcox.Samples.HighlightingAutoComplete;assembly=JeffWilcox.Samples.HighlightingAutoComplete.Sample"
+
+    xmlns:vsm="clr-namespace:System.Windows;assembly=System.Windows"&gt;
+
+
+
+    &lt;Style TargetType="sample:HighlightingTextBlock"&gt;
+
+        &lt;Setter Property="HighlightBrush" Value="Blue" /&gt;
+
+        &lt;Setter Property="Template"&gt;
+
+            &lt;Setter.Value&gt;
+
+                &lt;ControlTemplate TargetType="sample:HighlightingTextBlock"&gt;
+
+                    &lt;TextBlock x:Name="Text" /&gt;
+
+                &lt;/ControlTemplate&gt;
+
+            &lt;/Setter.Value&gt;
+
+        &lt;/Setter&gt;
+
+    &lt;/Style&gt;
+
+
+
+&lt;/ResourceDictionary&gt;</pre></div>
+
+
+
+<h3>Setup the AutoCompleteBox item template</h3>
+
+
+
+<p>Now, with the highlighting text block ready, the ItemTemplate of the AutoCompleteBox control can be set to bind to our new control. The sample xmlns points to the CLR namespace of the control we built, JeffWilcox.Samples.HighlightingAutoComplete:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:3df0ba5b-9bfc-4507-9a8f-cd760e4994e3" class="wlWriterSmartContent"><pre class="xml" name="code">&lt;controls:AutoCompleteBox
+
+    x:Name="HighlightingAutoCompleteBox"
+
+    IsTextCompletionEnabled="False"
+
+    SearchMode="Contains"&gt;
+
+    &lt;controls:AutoCompleteBox.ItemTemplate&gt;
+
+        &lt;DataTemplate&gt;
+
+            &lt;sample:HighlightingTextBlock
+
+                Text="{Binding}"
+
+                HighlightBrush="#FF44A0FF" /&gt;
+
+        &lt;/DataTemplate&gt;
+
+    &lt;/controls:AutoCompleteBox.ItemTemplate&gt;
+
+&lt;/controls:AutoCompleteBox&gt;</pre></div>
+
+
+
+<p>I also set the ItemsSource to use some of the sample data from the toolkit, to load a bunch of names into the control.</p>
+
+
+
+<h3>Wire up search text updates to the highlight text block instances</h3>
+
+
+
+<p>Without UI-to-UI/element name binding in Silverlight, I've needed to do some extra code wiring here. Whenever the populated event is fired, I prepare a dispatcher invoke that pokes around the visual tree to grab all the HighlightingTextBlock instances and set the HighlightText property manually.</p>
+
+
+
+<p>This works, but ideally would be accomplished using some better binding support. I've also borrowed the <a href="http://www.codeplex.com/Silverlight/SourceControl/FileView.aspx?itemId=242100&amp;changeSetId=7238">VisualTreeExtensions.cs file</a> (<a href="http://www.microsoft.com/opensource/licenses.mspx#Ms-PL">Ms-PL</a>) from the Silverlight Toolkit to save time.</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:74ce5504-b8fe-4264-8101-356bff00623f" class="wlWriterSmartContent"><pre class="brush: c-sharp">// From Page.xaml.cs
+
+
+
+private void Page_Loaded(object sender, RoutedEventArgs e)
+
+{
+
+    HighlightingAutoCompleteBox.ItemsSource = Employee.AllExecutives;
+
+    HighlightingAutoCompleteBox.Populated += Populated;
+
+}
+
+
+
+/// &lt;summary&gt;
+
+/// Cached Popup reference.
+
+/// &lt;/summary&gt;
+
+private Popup _popup;
+
+
+
+/// &lt;summary&gt;
+
+/// Cached ListBox reference.
+
+/// &lt;/summary&gt;
+
+private ListBox _listBox;
+
+
+
+/// &lt;summary&gt;
+
+/// Attach to the AutoCompleteBox's Populate event. Then, dive in and 
+
+/// grab references to the internal template parts. Hacky but gets 
+
+/// around the inability in Silverlight today to bind the SearchText 
+
+/// property of the AutoCompleteBox control wtih the highlighting text 
+
+/// block inside the item template.
+
+/// &lt;/summary&gt;
+
+private void Populated(object sender, PopulatedEventArgs e)
+
+{
+
+    Dispatcher.BeginInvoke(() =&gt;
+
+        {
+
+            if (_popup == null)
+
+            {
+
+                _popup = HighlightingAutoCompleteBox
+
+                    .GetLogicalChildrenBreadthFirst()
+
+                    .OfType&lt;Popup&gt;()
+
+                    .FirstOrDefault();
+
+            }
+
+            if (_popup != null && _listBox == null)
+
+            {
+
+                FrameworkElement fe = _popup.Child as FrameworkElement;
+
+                if (fe != null)
+
+                {
+
+                    _listBox = fe
+
+                        .GetLogicalChildrenBreadthFirst()
+
+                        .OfType&lt;ListBox&gt;()
+
+                        .FirstOrDefault();
+
+                }
+
+            }
+
+            if (_listBox != null)
+
+            {
+
+                foreach (var item in _listBox
+
+                    .GetLogicalChildrenBreadthFirst()
+
+                    .OfType&lt;HighlightingTextBlock&gt;())
+
+                {
+
+                    item.HighlightText = HighlightingAutoCompleteBox.SearchText;
+
+                }
+
+            }
+
+        });
+
+}</pre></div>
+
+
+
+<p>I'm hooked to the Populated event, since it is always called when the SearchText property changes on the AutoCompleteBox - but if you have a delay before the results are shown, you may need to do some more advanced logic, pulling in the DropDownOpened events and/or a DispatcherTimer. The code above assumes that the list box and other template parts inside of the Popup have already been loaded.</p>
+
+
+
+<h3>Experience this application</h3>
+
+
+
+<p><a href="http://media.jeff.wilcox.name/blog/AutoComplete/xap/HighlightingAutoCompleteSample.html"><strong>Run the application live</strong></a> (Silverlight 2, 74 KB)</p>
+
+
+
+<p>I'm also releasing the source code to this project under the <a href="http://www.microsoft.com/opensource/licenses.mspx#Ms-PL">Microsoft Public License</a>, just like the rest of the toolkit. I think it's a little too specialized to find its way into the <a href="http://www.codeplex.com/Silverlight/">Silverlight Toolkit</a>.</p>
+
+
+
+<p><a href="http://media.jeff.wilcox.name/blog/AutoComplete/HighlightingAutoCompleteSample.zip"><strong>Download the C# source project</strong></a> (Zip, 59 KB)</p>
+
+
+
+<p>Hope this helps!</p>
+
+
+
 <strong>Updated 3/24/09</strong> Added a new <a href="http://www.jeff.wilcox.name/2009/03/sl3-highlighting-autocompletebox/">Silverlight 3 Beta</a> post for the same sample.

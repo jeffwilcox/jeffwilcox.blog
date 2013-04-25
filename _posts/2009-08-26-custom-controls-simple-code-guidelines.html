@@ -19,193 +19,382 @@ imported_categories:
 imported_link_categories: []
 tags: []
 ---
-<p>Great custom control development is a skill that takes more than time and experience to perfect. It’s also not a widely documented practice. When it comes to Silverlight controls, there are similarities and differences from WPF custom control development, too – so that chapter on controls in your favorite WPF book often is not directly applicable.</p>  <p>While working with teams throughout Microsoft, and trolling Silverlight forums on <a href="http://silverlight.net/">Silverlight.net</a> and <a href="http://www.stackoverflow.com/">StackOverflow</a>, I’ve come across a few situations where I’ve wanted to share some guidelines for custom control development. Over the next few posts, I’d like to occasionally share my thoughts on this topic, and whatever tips seem pertinent at the time of posting.</p>  <p>I do admit that there’s a lot of flexibility in control development, so I’ll be basing a lot of my tips on both official and unofficial practices on the <a href="http://silverlight.codeplex.com/">Silverlight Toolkit</a> team. And I understand if you don’t agree with everything I have to say. But I do hope this information will be useful!</p>  <h3>Contain your classes</h3>  <p>Controls and classes should always be in their own unique file, instead of having multiple controls or classes in a single file. This includes enums and structs, etc.</p>  <p>So the Dock enum belongs in a file called Dock.cs.</p>  <p>Typically classes are broken up into folders of shared features or sub-namespaces.</p>  <h3>Keep your regions under control</h3>  <p>Regions that serve no real purpose have no need in your code. Grouping all “Public Methods&quot; into a region and having another region with “Private Methods” isn’t helpful to most people.</p>  <p>However, grouping related concepts, interface implementations, and complex algorithms into regions can be a great way to make that 2,000 line file feel a little more navigable.</p>  <p>We always place DependencyProperty declarations and change handlers inside clear regions.</p>  <p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="regions" border="0" alt="regions" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/08/regions.png" width="685" height="260" /> </p>  <h3>Be consistent about where fields belong</h3>  <p>Fields should always be private, only accessible to the control implementation. Whether you place them at the top of the file, the absolute bottom, or alongside related methods and properties (such as in a #region for a DependencyProperty), is a choice that should be consistent within a codebase.</p>  <p>We often try and place backing fields near their respective properties.</p>  <h3>Break comments at 80 characters</h3>  <p>By maintaining a visual break for comments, they become easier to digest while looking through code, regardless of monitor resolution.</p>  <p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="comment_breaks" border="0" alt="comment_breaks" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/08/comment_breaks.png" width="685" height="220" /> </p>  <p>To help with this, you can use a nice registry hack to place a visual guide in the Visual Studio editor (pictured in the above screen capture). Here’s the registry key to set (you can change the color and/or character placement as well):</p>  <blockquote>   <p>[HKEY_CURRENT_USER\Software\Microsoft\VisualStudio\9.0\Text Editor]     <br />&quot;Guides&quot;=&quot;RGB(220,220,220) 80&quot;</p> </blockquote>  <h3>Consider writing great XML comments</h3>  <p>By writing “great” XML comments, as they would be written in programmer documentation by a writer, you’ll save the time for anyone documenting the controls, improve the IntelliSense experience, and over time find that your code is very clear and crisp.</p>  <p>You can even consider using SandCastle for generating MSDN-style documentation from your code in this case.</p>  <p>If you find yourself writing too much in the comments, your method or feature may be too complex – consider simplifying.</p>  <p>The style we use on the Silverlight Toolkit consists of this:</p>  <ul>   <li>Comments end with a period</li>    <li>Properties start with “Gets or sets”, or “Gets or sets a value indicating whether”</li>    <li>Properties that are only a getter only have the “Gets” portion of “Gets or sets”, etc.</li>    <li>Constructors use wording such as “Initializes a new instance of Type.”</li> </ul>  <p>Here’s a set of example comments borrowed from the Silverlight team…</p>  <p>Class comments:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:22246144-933b-4aae-8f34-49e5214a44e7" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">/// &lt;summary&gt;
-/// Represents a control that displays hierarchical data in a tree structure
-/// that has items that can expand and collapse.
-/// &lt;/summary&gt;
-public partial class TreeView : ItemsControl, IUpdateVisualState
-{
-}</pre></div>
-
-<p>A private field:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:08c2b0ae-696d-4f34-bb15-c95a7d2f4ddc" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">        /// &lt;summary&gt;
-        /// A value indicating whether a read-only dependency property change
-        /// handler should allow the value to be set.  This is used to ensure
-        /// that read-only properties cannot be changed via SetValue, etc.
-        /// &lt;/summary&gt;
-        private bool _allowWrite;</pre></div>
-
-<p>A public property:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:0db8038f-1fab-4666-9cb0-ce0c3c89776f" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">        /// &lt;summary&gt;
-        /// Gets the selected item in a
-        /// &lt;see cref="T:System.Windows.Controls.TreeView" /&gt;.
-        /// &lt;/summary&gt;
-        /// &lt;value&gt;
-        /// The currently selected item or null if no item is selected. The
-        /// default value is null.
-        /// &lt;/value&gt;
-        public object SelectedItem
-        { get; set; }</pre></div>
-
-<p>An event handler method:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:0481c57c-6fda-49fc-ba49-3971915b235b" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">        /// &lt;summary&gt;
-        /// SelectedItemProperty property changed handler.
-        /// &lt;/summary&gt;
-        /// &lt;param name="d"&gt;TreeView that changed its SelectedItem.&lt;/param&gt;
-        /// &lt;param name="e"&gt;Event arguments.&lt;/param&gt;
-        private static void OnSelectedItemPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        { /* ... */ }</pre></div>
-
-<p>Public event comments:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1afb53e0-4b41-40fc-af6a-e1e43e28478a" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">        /// &lt;summary&gt;
-        /// Occurs when the value of the
-        /// &lt;see cref="P:System.Windows.Controls.TreeView.SelectedItem" /&gt;
-        /// property changes.
-        /// &lt;/summary&gt;
-        public event RoutedPropertyChangedEventHandler&lt;object&gt; SelectedItemChanged;</pre></div>
-
-<p>Constructor:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:9cad46ae-d362-4c1f-ad3f-14bdc6c1d20d" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">        /// &lt;summary&gt;
-        /// Initializes a new instance of the
-        /// &lt;see cref="T:System.Windows.Controls.TreeView" /&gt; class.
-        /// &lt;/summary&gt;
-        public TreeView()
-        {
-            DefaultStyleKey = typeof(TreeView);
-            ItemsControlHelper = new ItemsControlHelper(this);
-            Interaction = new InteractionHelper(this);
-        }</pre></div>
-
-<p>On template application:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:dbbf0324-eb9b-4278-9935-a25d4e0edb9e" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">        /// &lt;summary&gt;
-        /// Builds the visual tree for the
-        /// &lt;see cref="T:System.Windows.Controls.TreeView" /&gt; control when a new
-        /// control template is applied.
-        /// &lt;/summary&gt;
-        public override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-        }</pre></div>
-
-<p>Bool property with getter and setters:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:0addb496-288d-4bb6-9d7d-e0d5437b7d74" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">        /// &lt;summary&gt;
-        /// Gets or sets a value indicating whether the drop-down portion of
-        /// the control is open.
-        /// &lt;/summary&gt;
-        /// &lt;value&gt;
-        /// True if the drop-down is open; otherwise, false. The default is
-        /// false.
-        /// &lt;/value&gt;
-        public bool IsDropDownOpen
-        {
-            get { return (bool)GetValue(IsDropDownOpenProperty); }
-            set { SetValue(IsDropDownOpenProperty, value); }
-        }</pre></div>
-
-<h3>Your event handlers should be thread-safe</h3>
-
-<p>Firing events should be done by first storing the handler in a local variable, similar to this:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:05c559db-12d7-4162-9578-bde2d8381771" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">public event PropertyChangedEventHandler PropertyChanged;
-
-private void OnPropertyChanged(string propertyName)
-{
-    PropertyChangedEventHandler handler = PropertyChanged;
-    if (handler != null)
-    {
-        handler(this, new PropertyChangedEventArgs(propertyName));
-    }
-}</pre></div>
-
-<h3>Fire control events on the user interface thread</h3>
-
-<p>Silverlight only have a single UI thread. However, if you’re interacting with the network or worker threads, the users of your control should not have to worry about being on the UI thread.</p>
-
-<p>Expect that all your events will likely end up changing UIElements that will be checking the thread.</p>
-
-<p>Here’s a simple, efficient way to make sure that your events fire on the UI thread:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:69ae3046-a010-41ec-a37e-ddda219fb9d7" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">/// &lt;summary&gt;
-/// Occurs when the DownloadProgress property has changed.
-/// &lt;/summary&gt;
-public event RoutedEventHandler DownloadProgressChanged;
-
-private void OnDownloadProgressChanged(object sender, RoutedEventArgs args)
-{
-    if (!Dispatcher.CheckAccess())
-    {
-        Dispatcher.BeginInvoke(() =&gt; OnDownloadProgressChanged(sender, args));
-        return;
-    }
-
-    var handler = DownloadProgressChanged;
-    if (handler != null)
-    {
-        handler(this, args);
-    }
-}</pre></div>
-
-<h3>Miscellaneous C# things</h3>
-
-<ul>
-  <li>Don’t qualify members using “this” or “base” unless required to disambiguate</li>
-
-  <li>Prefix private fields with an underscore</li>
-
-  <li>Feel free to use automatic properties, but do not use private automatic properties.</li>
-
-  <li>Use lowercase ‘string’ when calling methods on it such as ‘string.IsNullOrEmpty’, instead of ‘String.IsNullOrEmpty’.</li>
-
-  <li>Similar, refer to and use “object” instead of “Object” for locks and other references to generic objects</li>
-</ul>
-
-<h3>Organize your Using statements</h3>
-
-<p>Instead of placing fully qualified type names with namespaces (System.Windows.Controls.Button is not great – just add a using statement for System.Windows.Controls and refer to this as Button), use the built-in Using statement refactoring support in Visual Studio:</p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="RefactorUsings[1]" border="0" alt="RefactorUsings[1]" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/08/RefactorUsings1.png" width="409" height="374" /> </p>
-
-<p>You want your using statements to be the proper subset of namespaces, and in alphabetical order.</p>
-
-<h3>Mind the .NET Framework Design Guidelines</h3>
-
-<p>When you’re building custom controls, you’re designing a rich API that will enable interesting scenarios for your target developers.</p>
-
-<p>The <a href="http://www.amazon.com/gp/product/0321545613?ie=UTF8&amp;tag=jwilcoxblog-20&amp;linkCode=as2&amp;camp=1789&amp;creative=390957&amp;creativeASIN=0321545613">.NET Framework Design Guidelines book</a> by Krzysztof Cwalina and Brad Abrams is a really important reference that should be regarded to help assist in the design of your framework.</p>
-
-<p>Depending on the target audience of your work, this may be more or less important: an internal development project may not have the same goals as a custom control that you’d like to sell to other developers.</p>
-
-<p>If you see a specific pattern in existing Silverlight or WPF controls, there’s precedent to use a similar implementation in your own controls for the convenience of developers used to the platform.</p>
-
-<p>Off hand, you should consider some of these tips from the book:</p>
-
-<h4>Remain CLS Compliant</h4>
-
-<p>So that you don’t shut out VB.NET and other language users from the control API, make sure to remain CLS compliant.</p>
-
-<p>This typically translates into situations where you want to expose a generic collection interface instead of an array, for instance. Don’t use the same name, differing only in case.</p>
-
-<p>Good, compliant code:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:b251e967-24bf-44e9-998e-22eed4e9d9b3" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">public IList&lt;interestingitem&gt; InterestingItems { get; }</pre></div>
-
-<p>Code that shouldn’t be exposed in a custom control with public visibility:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:0c220367-c16e-4a41-8535-7fcc96280cb6" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">public InterestingItem[] InterestingItems { get; }</pre></div>
-
-<h4>Naming guidelines</h4>
-
-<p>All .NET components typically use <em>PascalCasing</em> for properties, members, and events (PMEs). You’ll find <em>camelCasing</em> in use for parameter names only.</p>
-
-<p>You’ll want to be careful about the use of abbreviations and acronyms, and how compound words should appear in your programming interfaces.</p>
-
-<h3>What’s next?</h3>
-
+<p>Great custom control development is a skill that takes more than time and experience to perfect. It’s also not a widely documented practice. When it comes to Silverlight controls, there are similarities and differences from WPF custom control development, too – so that chapter on controls in your favorite WPF book often is not directly applicable.</p>  <p>While working with teams throughout Microsoft, and trolling Silverlight forums on <a href="http://silverlight.net/">Silverlight.net</a> and <a href="http://www.stackoverflow.com/">StackOverflow</a>, I’ve come across a few situations where I’ve wanted to share some guidelines for custom control development. Over the next few posts, I’d like to occasionally share my thoughts on this topic, and whatever tips seem pertinent at the time of posting.</p>  <p>I do admit that there’s a lot of flexibility in control development, so I’ll be basing a lot of my tips on both official and unofficial practices on the <a href="http://silverlight.codeplex.com/">Silverlight Toolkit</a> team. And I understand if you don’t agree with everything I have to say. But I do hope this information will be useful!</p>  <h3>Contain your classes</h3>  <p>Controls and classes should always be in their own unique file, instead of having multiple controls or classes in a single file. This includes enums and structs, etc.</p>  <p>So the Dock enum belongs in a file called Dock.cs.</p>  <p>Typically classes are broken up into folders of shared features or sub-namespaces.</p>  <h3>Keep your regions under control</h3>  <p>Regions that serve no real purpose have no need in your code. Grouping all “Public Methods&quot; into a region and having another region with “Private Methods” isn’t helpful to most people.</p>  <p>However, grouping related concepts, interface implementations, and complex algorithms into regions can be a great way to make that 2,000 line file feel a little more navigable.</p>  <p>We always place DependencyProperty declarations and change handlers inside clear regions.</p>  <p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="regions" border="0" alt="regions" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/08/regions.png" width="685" height="260" /> </p>  <h3>Be consistent about where fields belong</h3>  <p>Fields should always be private, only accessible to the control implementation. Whether you place them at the top of the file, the absolute bottom, or alongside related methods and properties (such as in a #region for a DependencyProperty), is a choice that should be consistent within a codebase.</p>  <p>We often try and place backing fields near their respective properties.</p>  <h3>Break comments at 80 characters</h3>  <p>By maintaining a visual break for comments, they become easier to digest while looking through code, regardless of monitor resolution.</p>  <p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="comment_breaks" border="0" alt="comment_breaks" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/08/comment_breaks.png" width="685" height="220" /> </p>  <p>To help with this, you can use a nice registry hack to place a visual guide in the Visual Studio editor (pictured in the above screen capture). Here’s the registry key to set (you can change the color and/or character placement as well):</p>  <blockquote>   <p>[HKEY_CURRENT_USER\Software\Microsoft\VisualStudio\9.0\Text Editor]     <br />&quot;Guides&quot;=&quot;RGB(220,220,220) 80&quot;</p> </blockquote>  <h3>Consider writing great XML comments</h3>  <p>By writing “great” XML comments, as they would be written in programmer documentation by a writer, you’ll save the time for anyone documenting the controls, improve the IntelliSense experience, and over time find that your code is very clear and crisp.</p>  <p>You can even consider using SandCastle for generating MSDN-style documentation from your code in this case.</p>  <p>If you find yourself writing too much in the comments, your method or feature may be too complex – consider simplifying.</p>  <p>The style we use on the Silverlight Toolkit consists of this:</p>  <ul>   <li>Comments end with a period</li>    <li>Properties start with “Gets or sets”, or “Gets or sets a value indicating whether”</li>    <li>Properties that are only a getter only have the “Gets” portion of “Gets or sets”, etc.</li>    <li>Constructors use wording such as “Initializes a new instance of Type.”</li> </ul>  <p>Here’s a set of example comments borrowed from the Silverlight team…</p>  <p>Class comments:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:22246144-933b-4aae-8f34-49e5214a44e7" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">/// &lt;summary&gt;
+
+/// Represents a control that displays hierarchical data in a tree structure
+
+/// that has items that can expand and collapse.
+
+/// &lt;/summary&gt;
+
+public partial class TreeView : ItemsControl, IUpdateVisualState
+
+{
+
+}</pre></div>
+
+
+
+<p>A private field:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:08c2b0ae-696d-4f34-bb15-c95a7d2f4ddc" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">        /// &lt;summary&gt;
+
+        /// A value indicating whether a read-only dependency property change
+
+        /// handler should allow the value to be set.  This is used to ensure
+
+        /// that read-only properties cannot be changed via SetValue, etc.
+
+        /// &lt;/summary&gt;
+
+        private bool _allowWrite;</pre></div>
+
+
+
+<p>A public property:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:0db8038f-1fab-4666-9cb0-ce0c3c89776f" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">        /// &lt;summary&gt;
+
+        /// Gets the selected item in a
+
+        /// &lt;see cref="T:System.Windows.Controls.TreeView" /&gt;.
+
+        /// &lt;/summary&gt;
+
+        /// &lt;value&gt;
+
+        /// The currently selected item or null if no item is selected. The
+
+        /// default value is null.
+
+        /// &lt;/value&gt;
+
+        public object SelectedItem
+
+        { get; set; }</pre></div>
+
+
+
+<p>An event handler method:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:0481c57c-6fda-49fc-ba49-3971915b235b" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">        /// &lt;summary&gt;
+
+        /// SelectedItemProperty property changed handler.
+
+        /// &lt;/summary&gt;
+
+        /// &lt;param name="d"&gt;TreeView that changed its SelectedItem.&lt;/param&gt;
+
+        /// &lt;param name="e"&gt;Event arguments.&lt;/param&gt;
+
+        private static void OnSelectedItemPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+
+        { /* ... */ }</pre></div>
+
+
+
+<p>Public event comments:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1afb53e0-4b41-40fc-af6a-e1e43e28478a" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">        /// &lt;summary&gt;
+
+        /// Occurs when the value of the
+
+        /// &lt;see cref="P:System.Windows.Controls.TreeView.SelectedItem" /&gt;
+
+        /// property changes.
+
+        /// &lt;/summary&gt;
+
+        public event RoutedPropertyChangedEventHandler&lt;object&gt; SelectedItemChanged;</pre></div>
+
+
+
+<p>Constructor:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:9cad46ae-d362-4c1f-ad3f-14bdc6c1d20d" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">        /// &lt;summary&gt;
+
+        /// Initializes a new instance of the
+
+        /// &lt;see cref="T:System.Windows.Controls.TreeView" /&gt; class.
+
+        /// &lt;/summary&gt;
+
+        public TreeView()
+
+        {
+
+            DefaultStyleKey = typeof(TreeView);
+
+            ItemsControlHelper = new ItemsControlHelper(this);
+
+            Interaction = new InteractionHelper(this);
+
+        }</pre></div>
+
+
+
+<p>On template application:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:dbbf0324-eb9b-4278-9935-a25d4e0edb9e" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">        /// &lt;summary&gt;
+
+        /// Builds the visual tree for the
+
+        /// &lt;see cref="T:System.Windows.Controls.TreeView" /&gt; control when a new
+
+        /// control template is applied.
+
+        /// &lt;/summary&gt;
+
+        public override void OnApplyTemplate()
+
+        {
+
+            base.OnApplyTemplate();
+
+        }</pre></div>
+
+
+
+<p>Bool property with getter and setters:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:0addb496-288d-4bb6-9d7d-e0d5437b7d74" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">        /// &lt;summary&gt;
+
+        /// Gets or sets a value indicating whether the drop-down portion of
+
+        /// the control is open.
+
+        /// &lt;/summary&gt;
+
+        /// &lt;value&gt;
+
+        /// True if the drop-down is open; otherwise, false. The default is
+
+        /// false.
+
+        /// &lt;/value&gt;
+
+        public bool IsDropDownOpen
+
+        {
+
+            get { return (bool)GetValue(IsDropDownOpenProperty); }
+
+            set { SetValue(IsDropDownOpenProperty, value); }
+
+        }</pre></div>
+
+
+
+<h3>Your event handlers should be thread-safe</h3>
+
+
+
+<p>Firing events should be done by first storing the handler in a local variable, similar to this:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:05c559db-12d7-4162-9578-bde2d8381771" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">public event PropertyChangedEventHandler PropertyChanged;
+
+
+
+private void OnPropertyChanged(string propertyName)
+
+{
+
+    PropertyChangedEventHandler handler = PropertyChanged;
+
+    if (handler != null)
+
+    {
+
+        handler(this, new PropertyChangedEventArgs(propertyName));
+
+    }
+
+}</pre></div>
+
+
+
+<h3>Fire control events on the user interface thread</h3>
+
+
+
+<p>Silverlight only have a single UI thread. However, if you’re interacting with the network or worker threads, the users of your control should not have to worry about being on the UI thread.</p>
+
+
+
+<p>Expect that all your events will likely end up changing UIElements that will be checking the thread.</p>
+
+
+
+<p>Here’s a simple, efficient way to make sure that your events fire on the UI thread:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:69ae3046-a010-41ec-a37e-ddda219fb9d7" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">/// &lt;summary&gt;
+
+/// Occurs when the DownloadProgress property has changed.
+
+/// &lt;/summary&gt;
+
+public event RoutedEventHandler DownloadProgressChanged;
+
+
+
+private void OnDownloadProgressChanged(object sender, RoutedEventArgs args)
+
+{
+
+    if (!Dispatcher.CheckAccess())
+
+    {
+
+        Dispatcher.BeginInvoke(() =&gt; OnDownloadProgressChanged(sender, args));
+
+        return;
+
+    }
+
+
+
+    var handler = DownloadProgressChanged;
+
+    if (handler != null)
+
+    {
+
+        handler(this, args);
+
+    }
+
+}</pre></div>
+
+
+
+<h3>Miscellaneous C# things</h3>
+
+
+
+<ul>
+
+  <li>Don’t qualify members using “this” or “base” unless required to disambiguate</li>
+
+
+
+  <li>Prefix private fields with an underscore</li>
+
+
+
+  <li>Feel free to use automatic properties, but do not use private automatic properties.</li>
+
+
+
+  <li>Use lowercase ‘string’ when calling methods on it such as ‘string.IsNullOrEmpty’, instead of ‘String.IsNullOrEmpty’.</li>
+
+
+
+  <li>Similar, refer to and use “object” instead of “Object” for locks and other references to generic objects</li>
+
+</ul>
+
+
+
+<h3>Organize your Using statements</h3>
+
+
+
+<p>Instead of placing fully qualified type names with namespaces (System.Windows.Controls.Button is not great – just add a using statement for System.Windows.Controls and refer to this as Button), use the built-in Using statement refactoring support in Visual Studio:</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="RefactorUsings[1]" border="0" alt="RefactorUsings[1]" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/08/RefactorUsings1.png" width="409" height="374" /> </p>
+
+
+
+<p>You want your using statements to be the proper subset of namespaces, and in alphabetical order.</p>
+
+
+
+<h3>Mind the .NET Framework Design Guidelines</h3>
+
+
+
+<p>When you’re building custom controls, you’re designing a rich API that will enable interesting scenarios for your target developers.</p>
+
+
+
+<p>The <a href="http://www.amazon.com/gp/product/0321545613?ie=UTF8&amp;tag=jwilcoxblog-20&amp;linkCode=as2&amp;camp=1789&amp;creative=390957&amp;creativeASIN=0321545613">.NET Framework Design Guidelines book</a> by Krzysztof Cwalina and Brad Abrams is a really important reference that should be regarded to help assist in the design of your framework.</p>
+
+
+
+<p>Depending on the target audience of your work, this may be more or less important: an internal development project may not have the same goals as a custom control that you’d like to sell to other developers.</p>
+
+
+
+<p>If you see a specific pattern in existing Silverlight or WPF controls, there’s precedent to use a similar implementation in your own controls for the convenience of developers used to the platform.</p>
+
+
+
+<p>Off hand, you should consider some of these tips from the book:</p>
+
+
+
+<h4>Remain CLS Compliant</h4>
+
+
+
+<p>So that you don’t shut out VB.NET and other language users from the control API, make sure to remain CLS compliant.</p>
+
+
+
+<p>This typically translates into situations where you want to expose a generic collection interface instead of an array, for instance. Don’t use the same name, differing only in case.</p>
+
+
+
+<p>Good, compliant code:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:b251e967-24bf-44e9-998e-22eed4e9d9b3" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">public IList&lt;interestingitem&gt; InterestingItems { get; }</pre></div>
+
+
+
+<p>Code that shouldn’t be exposed in a custom control with public visibility:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:0c220367-c16e-4a41-8535-7fcc96280cb6" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">public InterestingItem[] InterestingItems { get; }</pre></div>
+
+
+
+<h4>Naming guidelines</h4>
+
+
+
+<p>All .NET components typically use <em>PascalCasing</em> for properties, members, and events (PMEs). You’ll find <em>camelCasing</em> in use for parameter names only.</p>
+
+
+
+<p>You’ll want to be careful about the use of abbreviations and acronyms, and how compound words should appear in your programming interfaces.</p>
+
+
+
+<h3>What’s next?</h3>
+
+
+
 <p>Let me know in the comments what you think, and especially if you have any particular control development topic I should cover in a future post. Hope you like this!</p>

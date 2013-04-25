@@ -74,7 +74,7 @@ tags:
 
 <p>Here’s the slide show view model file btw:</p>
 
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:fd4331ad-ca66-49f3-843a-ffd56e1de05c" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">public class SlideshowViewModel : ViewModel
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:fd4331ad-ca66-49f3-843a-ffd56e1de05c" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">public class SlideshowViewModel : ViewModel
 {
     private readonly IFlickrService _flickr;
     private bool _isLoading;
@@ -154,7 +154,7 @@ tags:
 <p>The binding to ImageUrl is for the property on the Photo data object. Sorry it was a string instead of a Uri, cheap and easy on my side I suppose.</p>
 
 <p>
-  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:b0ad5a43-253a-44f7-8085-79cd22a7296e" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">namespace MyPhotoApp.Flickr
+  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:b0ad5a43-253a-44f7-8085-79cd22a7296e" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">namespace MyPhotoApp.Flickr
 {
     public class Photo
     {
@@ -195,7 +195,7 @@ tags:
 
 <h3>Moving to the sub-page</h3>
 
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:bff2b55a-702b-4780-8075-74eb3c8981fa" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">private void OnButtonClick(object sender, RoutedEventArgs e)
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:bff2b55a-702b-4780-8075-74eb3c8981fa" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">private void OnButtonClick(object sender, RoutedEventArgs e)
 {
     NavigationService.Navigate(new Uri(
         string.Format(
@@ -211,7 +211,7 @@ tags:
 <p>Also if you look at the implementation, you’ll note that the loading automatically happens in the view model – so I don’t have to have the code in the slideshow file worry at all about whether to show the loading indicator or not. That’s all declaratively setup in XAML. Nice.</p>
 
 <p>
-  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:959455a6-6054-43c1-bd52-7195040c4e1b" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">protected override void OnNavigatedTo(NavigationEventArgs e)
+  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:959455a6-6054-43c1-bd52-7195040c4e1b" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">protected override void OnNavigatedTo(NavigationEventArgs e)
 {
     base.OnNavigatedTo(e);
 

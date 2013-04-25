@@ -23,506 +23,1008 @@ imported_categories:
 imported_link_categories: []
 tags: []
 ---
-<p>When we first introduced the <a href="http://www.codeplex.com/Silverlight">Silverlight Toolkit</a>, we highlighted our agile, customer feedback-focused, transparent way of working. We talked about our open source model. And we’ve made a commitment to share what we’ve learned while developing the toolkit, whether that is knowledge, guides, blog posts, or sharing code. Today, I offer infrastructure in blog post format!</p>  <p>The task presented here is used (along with others) to help improve developer efficiency, cut down on simple coding mistakes, and specialize a number of functions to automation and tasks. This post is kind of like learning about how sausage is made: this is for power users and control developers who have an interest in geek’n out with this.</p>  <p>This particular post helps improve the development process for controls by letting us separate out the actual styles, so we don’t spend so much time worrying about merge conflicts and diffs.</p>  <h3>Merging resources into generic.xaml</h3>  <p>As recently <a href="http://silverlight.net/forums/t/60635.aspx">noted on the Silverlight.net forums</a>, the source code download for the Silverlight Toolkit sheds some light on an interesting “MergeDefaultStyles” task (and DefaultStyle item type) used to merge all the different control .Xaml files into one build file.</p>  <p>This allows us to bundle several controls in a single library, but not worry about merging source code changes for several templates in a single generic.xaml: TreeView, AutoCompleteBox, and other controls each have their own XAML resource dictionaries that contain their default styles and template: AutoCompleteBox.xaml is merged at build time into the generic.xaml, and so on.</p>  <p>I am assuming that you’re already familiar enough with msbuild to <a href="http://msdn.microsoft.com/en-us/library/t9883dzc.aspx">create your own tasks</a>… here goes. Also, do <a href="http://www.codeplex.com/Silverlight/Release/ProjectReleases.aspx?ReleaseId=19172">download the toolkit source code package</a> – although the package does not include the custom targets to use this task, it does include the individual resource dictionaries used by the controls.</p>  <h3>The MergeDefaultStylesTask</h3>  <p>The task has a few inputs:</p>  <ul>   <li>ProjectDirectory, required; sets the directory of the project where the generic.xaml resides.</li>    <li>DefaultStyles array of ITaskItem’s; represents the items that are marked with the DefaultStyle build action.</li> </ul>  <p>And the eventual output is the updating of the generic.xaml file.</p>  <p>The task references the typical MsBuild libraries, including Microsoft.Build.Framework, engine, and utilities. In our implementation, we also interact with our Visual Studio Team Foundation Server (TFS): however I’ve stripped that from this example, for simplicity sake, and instead just removed the read-only flag on the generic.xaml file when writing it.</p>  <p>Here’s MergeDefaultStylesTask.cs:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:37153f81-4dc9-4f37-a63c-f528a7a8bc28" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">// (c) Copyright Microsoft Corporation.
-// This source is subject to the Microsoft Public License (Ms-PL).
-// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
-// All other rights reserved.
-
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Text;
-using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
-
-namespace Engineering.Build.Tasks
-{
-    /// &lt;summary&gt;
-    /// Build task to automatically merge the default styles for controls into
-    /// a single generic.xaml file.
-    /// &lt;/summary&gt;
-    public class MergeDefaultStylesTask : Task
-    {
-        /// &lt;summary&gt;
-        /// Gets or sets the root directory of the project where the
-        /// generic.xaml file resides.
-        /// &lt;/summary&gt;
-        [Required]
-        public string ProjectDirectory { get; set; }
-
-        /// &lt;summary&gt;
-        /// Gets or sets the project items marked with the "DefaultStyle" build
-        /// action.
-        /// &lt;/summary&gt;
-        [Required]
-        public ITaskItem[] DefaultStyles { get; set; }
-
-        /// &lt;summary&gt;
-        /// Initializes a new instance of the MergeDefaultStylesTask class.
-        /// &lt;/summary&gt;
-        public MergeDefaultStylesTask()
-        {
-        }
-
-        /// &lt;summary&gt;
-        /// Merge the project items marked with the "DefaultStyle" build action
-        /// into a single generic.xaml file.
-        /// &lt;/summary&gt;
-        /// &lt;returns&gt;
-        /// A value indicating whether or not the task succeeded.
-        /// &lt;/returns&gt;
-        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Task should not throw exceptions.")]
-        public override bool Execute()
-        {
-            Log.LogMessage(MessageImportance.Low, "Merging default styles into generic.xaml.");
-
-            // Get the original generic.xaml
-            string originalPath = Path.Combine(ProjectDirectory, Path.Combine("themes", "generic.xaml"));
-            if (!File.Exists(originalPath))
-            {
-                Log.LogError("{0} does not exist!", originalPath);
-                return false;
-            }
-            Log.LogMessage(MessageImportance.Low, "Found original generic.xaml at {0}.", originalPath);
-            string original = null;
-            Encoding encoding = Encoding.Default;
-            try
-            {
-                using (StreamReader reader = new StreamReader(File.Open(originalPath, FileMode.Open, FileAccess.Read)))
-                {
-                    original = reader.ReadToEnd();
-                    encoding = reader.CurrentEncoding;
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.LogErrorFromException(ex);
-                return false;
-            }
-
-            // Create the merged generic.xaml
-            List&lt;DefaultStyle&gt; styles = new List&lt;DefaultStyle&gt;();
-            foreach (ITaskItem item in DefaultStyles)
-            {
-                string path = Path.Combine(ProjectDirectory, item.ItemSpec);
-                if (!File.Exists(path))
-                {
-                    Log.LogWarning("Ignoring missing DefaultStyle {0}.", path);
-                    continue;
-                }
-
-                try
-                {
-                    Log.LogMessage(MessageImportance.Low, "Processing file {0}.", item.ItemSpec);
-                    styles.Add(DefaultStyle.Load(path));
-                }
-                catch (Exception ex)
-                {
-                    Log.LogErrorFromException(ex);
-                }
-            }
-            string merged = null;
-            try
-            {
-                merged = DefaultStyle.Merge(styles).GenerateXaml();
-            }
-            catch (InvalidOperationException ex)
-            {
-                Log.LogErrorFromException(ex);
-                return false;
-            }
-            
-            // Write the new generic.xaml
-            if (original != merged)
-            {
-                Log.LogMessage(MessageImportance.Low, "Writing merged generic.xaml.");
-
-                try
-                {
-                    // Could interact with the source control system / TFS here
-                    File.SetAttributes(originalPath, FileAttributes.Normal);
-                    Log.LogMessage("Removed any read-only flag for generic.xaml.");
-
-                    File.WriteAllText(originalPath, merged, encoding);
-                    Log.LogMessage("Successfully merged generic.xaml.");
-                }
-                catch (Exception ex)
-                {
-                    Log.LogErrorFromException(ex);
-                    return false;
-                }
-            }
-            else
-            {
-                Log.LogMessage("Existing generic.xaml was up to date.");
-            }
-
-            return true;
-        }
-    }
-}</pre></div>
-
-<p>With the task in place, now we just need to add the DefaultStyle implementation and build the task assembly.</p>
-
-<h3>DefaultStyle does the heavy lifting</h3>
-
-<p>The type DefaultStyle is very LINQ-y and uses XLinq to handle parsing XAML, managing namespaces, and also the merging of multiple instances. Here’s DefaultStyle.cs, that should be included in the project (author: Ted Glaza):</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:6fe09b59-adac-4ec2-bea8-14e4a87e50d2" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">// (c) Copyright Microsoft Corporation.
-// This source is subject to the Microsoft Public License (Ms-PL).
-// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
-// All other rights reserved.
-
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Xml.Linq;
-
-namespace Engineering.Build
-{
-    /// &lt;summary&gt;
-    /// DefaultStyle represents the XAML of an individual Control's default
-    /// style (in particular its ControlTemplate) which can be merged with other
-    /// default styles).  The XAML must have a ResourceDictionary as its root
-    /// element and be marked with a DefaultStyle build action in Visual Studio.
-    /// &lt;/summary&gt;
-    public partial class DefaultStyle
-    {
-        /// &lt;summary&gt;
-        /// Root element of both the default styles and the merged generic.xaml.
-        /// &lt;/summary&gt;
-        private const string RootElement = "ResourceDictionary";
-
-        /// &lt;summary&gt;
-        /// Gets or sets the file path of the default style.
-        /// &lt;/summary&gt;
-        public string DefaultStylePath { get; set; }
-
-        /// &lt;summary&gt;
-        /// Gets the namespaces imposed on the root element of a default style
-        /// (including explicitly declared namespaces as well as those inherited
-        /// from the root ResourceDictionary element).
-        /// &lt;/summary&gt;
-        public SortedDictionary&lt;string, string&gt; Namespaces { get; private set; }
-
-        /// &lt;summary&gt;
-        /// Gets the elements in the XAML that include both styles and shared
-        /// resources.
-        /// &lt;/summary&gt;
-        public SortedDictionary&lt;string, XElement&gt; Resources { get; private set; }
-
-        /// &lt;summary&gt;
-        /// Gets or sets the history tracking which resources originated from
-        /// which files.
-        /// &lt;/summary&gt;
-        private Dictionary&lt;string, string&gt; MergeHistory { get; set; }
-
-        /// &lt;summary&gt;
-        /// Initializes a new instance of the DefaultStyle class.
-        /// &lt;/summary&gt;
-        protected DefaultStyle()
-        {
-            Namespaces = new SortedDictionary&lt;string, string&gt;(StringComparer.OrdinalIgnoreCase);
-            Resources = new SortedDictionary&lt;string, XElement&gt;(StringComparer.OrdinalIgnoreCase);
-            MergeHistory = new Dictionary&lt;string, string&gt;(StringComparer.OrdinalIgnoreCase);
-        }
-
-        /// &lt;summary&gt;
-        /// Load a DefaultStyle from the a project item.
-        /// &lt;/summary&gt;
-        /// &lt;param name="path"&gt;
-        /// Path of the default style which is used for reporting errors.
-        /// &lt;/param&gt;
-        /// &lt;returns&gt;The DefaultStyle.&lt;/returns&gt;
-        public static DefaultStyle Load(string path)
-        {
-            DefaultStyle style = new DefaultStyle();
-            style.DefaultStylePath = path;
-
-            string xaml = File.ReadAllText(path);
-            XElement root = XElement.Parse(xaml, LoadOptions.PreserveWhitespace);
-            if (root.Name.LocalName == RootElement)
-            {
-                // Get the namespaces
-                foreach (XAttribute attribute in root.Attributes())
-                {
-                    if (attribute.Name.LocalName == "xmlns")
-                    {
-                        style.Namespaces.Add("", attribute.Value);
-                    }
-                    else if (attribute.Name.NamespaceName == XNamespace.Xmlns.NamespaceName)
-                    {
-                        style.Namespaces.Add(attribute.Name.LocalName, attribute.Value);
-                    }
-                }
-
-                // Get the styles and shared resources
-                foreach (XElement element in root.Elements())
-                {
-                    string name = (element.Name.LocalName == "Style") ?
-                        GetAttribute(element, "TargetType", "Key", "Name") :
-                        GetAttribute(element, "Key", "Name");
-                    if (style.Resources.ContainsKey(name))
-                    {
-                        throw new InvalidOperationException(string.Format(
-                            CultureInfo.InvariantCulture,
-                            "Resource \"{0}\" is used multiple times in {1} (possibly as a Key, Name, or TargetType)!",
-                            name,
-                            path));
-                    }
-                    style.Resources.Add(name, element);
-                    style.MergeHistory[name] = path;
-                }
-            }
-
-            return style;
-        }
-
-        /// &lt;summary&gt;
-        /// Get the value of the first attribute that is defined.
-        /// &lt;/summary&gt;
-        /// &lt;param name="element"&gt;Element with the attributes defined.&lt;/param&gt;
-        /// &lt;param name="attributes"&gt;
-        /// Local names of the attributes to find.
-        /// &lt;/param&gt;
-        /// &lt;returns&gt;Value of the first attribute found.&lt;/returns&gt;
-        private static string GetAttribute(XElement element, params string[] attributes)
-        {
-            foreach (string name in attributes)
-            {
-                string value =
-                    (from a in element.Attributes()
-                     where a.Name.LocalName == name
-                     select a.Value)
-                     .FirstOrDefault();
-                if (name != null)
-                {
-                    return value;
-                }
-            }
-            return "";
-        }
-
-        /// &lt;summary&gt;
-        /// Merge a sequence of DefaultStyles into a single style.
-        /// &lt;/summary&gt;
-        /// &lt;param name="styles"&gt;Sequence of DefaultStyles.&lt;/param&gt;
-        /// &lt;returns&gt;Merged DefaultStyle.&lt;/returns&gt;
-        public static DefaultStyle Merge(IEnumerable&lt;DefaultStyle&gt; styles)
-        {
-            DefaultStyle combined = new DefaultStyle();
-            if (styles != null)
-            {
-                foreach (DefaultStyle style in styles)
-                {
-                    combined.Merge(style);
-                }
-            }
-            return combined;
-        }
-
-        /// &lt;summary&gt;
-        /// Merge with another DefaultStyle.
-        /// &lt;/summary&gt;
-        /// &lt;param name="other"&gt;Other DefaultStyle to merge.&lt;/param&gt;
-        private void Merge(DefaultStyle other)
-        {
-            // Merge or lower namespaces
-            foreach (KeyValuePair&lt;string, string&gt; ns in other.Namespaces)
-            {
-                string value = null;
-                if (!Namespaces.TryGetValue(ns.Key, out value))
-                {
-                    Namespaces.Add(ns.Key, ns.Value);
-                }
-                else if (value != ns.Value)
-                {
-                    other.LowerNamespace(ns.Key);
-                }
-            }
-
-            // Merge the resources
-            foreach (KeyValuePair&lt;string, XElement&gt; resource in other.Resources)
-            {
-                if (Resources.ContainsKey(resource.Key))
-                {
-                    throw new InvalidOperationException(string.Format(
-                        CultureInfo.InvariantCulture,
-                        "Resource \"{0}\" is used by both {1} and {2}!",
-                        resource.Key,
-                        MergeHistory[resource.Key],
-                        other.DefaultStylePath));
-                }
-                Resources[resource.Key] = resource.Value;
-                MergeHistory[resource.Key] = other.DefaultStylePath;
-            }
-        }
-
-        /// &lt;summary&gt;
-        /// Lower a namespace from the root ResourceDictionary to its child
-        /// resources.
-        /// &lt;/summary&gt;
-        /// &lt;param name="prefix"&gt;Prefix of the namespace to lower.&lt;/param&gt;
-        private void LowerNamespace(string prefix)
-        {
-            // Get the value of the namespace
-            string @namespace;
-            if (!Namespaces.TryGetValue(prefix, out @namespace))
-            {
-                return;
-            }
-
-            // Push the value into each resource
-            foreach (KeyValuePair&lt;string, XElement&gt; resource in Resources)
-            {
-                // Don't push the value down if it was overridden locally or if
-                // it's the default namespace (as it will be lowered
-                // automatically)
-                if (((from e in resource.Value.Attributes()
-                      where e.Name.LocalName == prefix
-                      select e).Count() == 0) &&
-                    !string.IsNullOrEmpty(prefix))
-                {
-                    resource.Value.Add(new XAttribute(XName.Get(prefix, XNamespace.Xmlns.NamespaceName), @namespace));
-                }
-            }
-        }
-
-        /// &lt;summary&gt;
-        /// Generate the XAML markup for the default style.
-        /// &lt;/summary&gt;
-        /// &lt;returns&gt;Generated XAML markup.&lt;/returns&gt;
-        public string GenerateXaml()
-        {
-            // Create the ResourceDictionary
-            string defaultNamespace = XNamespace.Xml.NamespaceName;
-            Namespaces.TryGetValue("", out defaultNamespace);
-            XElement resources = new XElement(XName.Get(RootElement, defaultNamespace));
-
-            // Add the shared namespaces
-            foreach (KeyValuePair&lt;string, string&gt; @namespace in Namespaces)
-            {
-                // The default namespace will be added automatically
-                if (string.IsNullOrEmpty(@namespace.Key))
-                {
-                    continue;
-                }
-                resources.Add(new XAttribute(
-                    XName.Get(@namespace.Key, XNamespace.Xmlns.NamespaceName),
-                    @namespace.Value));
-            }
-
-            // Add the resources
-            foreach (KeyValuePair&lt;string, XElement&gt; element in Resources)
-            {
-                resources.Add(
-                    new XText(Environment.NewLine + Environment.NewLine + "    "),
-                    new XComment("  " + element.Key + "  "),
-                    new XText(Environment.NewLine + "    "),
-                    element.Value);
-            }
-
-            resources.Add(new XText(Environment.NewLine + Environment.NewLine));
-
-            // Create the document
-            XDocument document = new XDocument(
-                // TODO: Pull this copyright header from some shared location
-                new XComment(Environment.NewLine +
-                    "// (c) Copyright Microsoft Corporation." + Environment.NewLine +
-                    "// This source is subject to the Microsoft Public License (Ms-PL)." + Environment.NewLine +
-                    "// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details." + Environment.NewLine +
-                    "// All other rights reserved." + Environment.NewLine),
-                new XText(Environment.NewLine + Environment.NewLine),
-                new XComment(Environment.NewLine +
-                    "// WARNING:" + Environment.NewLine +
-                    "// " + Environment.NewLine +
-                    "// This XAML was automatically generated by merging the individual default" + Environment.NewLine +
-                    "// styles.  Changes to this file may cause incorrect behavior and will be lost" + Environment.NewLine +
-                    "// if the XAML is regenerated." + Environment.NewLine),
-                new XText(Environment.NewLine + Environment.NewLine),
-                resources);
-
-            return document.ToString();
-        }
-
-        /// &lt;summary&gt;
-        /// Generate the XAML markup for the default style.
-        /// &lt;/summary&gt;
-        /// &lt;returns&gt;Generated XAML markup.&lt;/returns&gt;
-        public override string ToString()
-        {
-            return GenerateXaml();
-        }
-    }
-}</pre></div>
-
-<h3>Reference the task in your project or targets file</h3>
-
-<p>Now, with your task assembly in hand (and available in your source tree), add a UsingTask element to your project.</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:8812d69e-1407-4289-a9e2-0099e0da9add" class="wlWriterEditableSmartContent"><pre class="xml" name="code">  &lt;!--
-  // 
-  // Define our custom build tasks
-  // 
-  --&gt;
-  &lt;UsingTask
-    TaskName="Engineering.Build.Tasks.MergeDefaultStylesTask"
-    AssemblyFile="$(EngineeringResources)\Engineering.Build.dll" /&gt;</pre></div>
-
-<p><strong>Note:</strong> We’ve already defined the EngineeringResources property value elsewhere. You can substitute it with your own relative path as need be.</p>
-
-<p>Next up, add an item group that Visual Studio recognizes to add the DefaultStyle item to the property grid:</p>
-
-<p>
-  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:7999d807-b19f-4574-8ae1-4a7b929f9271" class="wlWriterEditableSmartContent"><pre class="xml" name="code">  &lt;!-- Add "DefaultStyle" as a Build Action in Visual Studio --&gt;
-  &lt;ItemGroup Condition="'$(BuildingInsideVisualStudio)'=='true'"&gt;
-    &lt;AvailableItemName Include="DefaultStyle" /&gt;
-  &lt;/ItemGroup&gt;</pre></div>
-</p>
-
-<p>Finally, we have two overridden (and custom) targets for merging the default styles, and for “touching” the default styles:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:497fc194-b9b6-4f29-9a74-ec232f9b7051" class="wlWriterEditableSmartContent"><pre class="xml" name="code">  &lt;!--
-  Merge the default styles of controls (only if any of the DefaultStyle files is
-  more recent than the project's generic.xaml file) before compilation
-  dependencies are processed.
-  --&gt;
-  &lt;PropertyGroup&gt;
-    &lt;PrepareResourcesDependsOn&gt;
-      MergeDefaultStyles;
-      $(PrepareResourcesDependsOn);
-    &lt;/PrepareResourcesDependsOn&gt;
-  &lt;/PropertyGroup&gt;
-  &lt;Target
-    Name="MergeDefaultStyles"
-    Inputs="@(DefaultStyle)"
-    Outputs="$(MSBuildProjectDirectory)\generic.xaml"&gt;
-    &lt;MergeDefaultStylesTask
-      DefaultStyles="@(DefaultStyle)"
-      ProjectDirectory="$(MSBuildProjectDirectory)" /&gt;
-  &lt;/Target&gt;
-  &lt;!--
-  Touch DefaultStyles on Rebuild to force generation of generic.xaml.
-  --&gt;
-  &lt;PropertyGroup&gt;
-    &lt;RebuildDependsOn&gt;
-      TouchDefaultStyles;
-      $(RebuildDependsOn);
-    &lt;/RebuildDependsOn&gt;
-  &lt;/PropertyGroup&gt;
-  &lt;Target Name="TouchDefaultStyles"&gt;
-    &lt;Touch Files="@(DefaultStyle)" ForceTouch="true" /&gt;
-  &lt;/Target&gt;</pre></div>
-
-<h3>Use the MergeDefaultStyles task in the project</h3>
-
-<p>Now, you can change the build actions of the appropriate control .Xaml files (that are resource dictionaries) to use this new task:</p>
-
-<p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2009/01/defaultstylebuildaction1.png"><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="DefaultStyleBuildAction[1]" border="0" alt="DefaultStyleBuildAction[1]" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/01/defaultstylebuildaction1-thumb.png" width="222" height="240" /></a> </p>
-
-<p>When building, you should see the Generic.xaml file update! (Themes\generic.xaml should probably exist before using this task, btw).</p>
-
+<p>When we first introduced the <a href="http://www.codeplex.com/Silverlight">Silverlight Toolkit</a>, we highlighted our agile, customer feedback-focused, transparent way of working. We talked about our open source model. And we’ve made a commitment to share what we’ve learned while developing the toolkit, whether that is knowledge, guides, blog posts, or sharing code. Today, I offer infrastructure in blog post format!</p>  <p>The task presented here is used (along with others) to help improve developer efficiency, cut down on simple coding mistakes, and specialize a number of functions to automation and tasks. This post is kind of like learning about how sausage is made: this is for power users and control developers who have an interest in geek’n out with this.</p>  <p>This particular post helps improve the development process for controls by letting us separate out the actual styles, so we don’t spend so much time worrying about merge conflicts and diffs.</p>  <h3>Merging resources into generic.xaml</h3>  <p>As recently <a href="http://silverlight.net/forums/t/60635.aspx">noted on the Silverlight.net forums</a>, the source code download for the Silverlight Toolkit sheds some light on an interesting “MergeDefaultStyles” task (and DefaultStyle item type) used to merge all the different control .Xaml files into one build file.</p>  <p>This allows us to bundle several controls in a single library, but not worry about merging source code changes for several templates in a single generic.xaml: TreeView, AutoCompleteBox, and other controls each have their own XAML resource dictionaries that contain their default styles and template: AutoCompleteBox.xaml is merged at build time into the generic.xaml, and so on.</p>  <p>I am assuming that you’re already familiar enough with msbuild to <a href="http://msdn.microsoft.com/en-us/library/t9883dzc.aspx">create your own tasks</a>… here goes. Also, do <a href="http://www.codeplex.com/Silverlight/Release/ProjectReleases.aspx?ReleaseId=19172">download the toolkit source code package</a> – although the package does not include the custom targets to use this task, it does include the individual resource dictionaries used by the controls.</p>  <h3>The MergeDefaultStylesTask</h3>  <p>The task has a few inputs:</p>  <ul>   <li>ProjectDirectory, required; sets the directory of the project where the generic.xaml resides.</li>    <li>DefaultStyles array of ITaskItem’s; represents the items that are marked with the DefaultStyle build action.</li> </ul>  <p>And the eventual output is the updating of the generic.xaml file.</p>  <p>The task references the typical MsBuild libraries, including Microsoft.Build.Framework, engine, and utilities. In our implementation, we also interact with our Visual Studio Team Foundation Server (TFS): however I’ve stripped that from this example, for simplicity sake, and instead just removed the read-only flag on the generic.xaml file when writing it.</p>  <p>Here’s MergeDefaultStylesTask.cs:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:37153f81-4dc9-4f37-a63c-f528a7a8bc28" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">// (c) Copyright Microsoft Corporation.
+
+// This source is subject to the Microsoft Public License (Ms-PL).
+
+// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+
+// All other rights reserved.
+
+
+
+using System;
+
+using System.Collections.Generic;
+
+using System.Diagnostics.CodeAnalysis;
+
+using System.IO;
+
+using System.Text;
+
+using Microsoft.Build.Framework;
+
+using Microsoft.Build.Utilities;
+
+
+
+namespace Engineering.Build.Tasks
+
+{
+
+    /// &lt;summary&gt;
+
+    /// Build task to automatically merge the default styles for controls into
+
+    /// a single generic.xaml file.
+
+    /// &lt;/summary&gt;
+
+    public class MergeDefaultStylesTask : Task
+
+    {
+
+        /// &lt;summary&gt;
+
+        /// Gets or sets the root directory of the project where the
+
+        /// generic.xaml file resides.
+
+        /// &lt;/summary&gt;
+
+        [Required]
+
+        public string ProjectDirectory { get; set; }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Gets or sets the project items marked with the "DefaultStyle" build
+
+        /// action.
+
+        /// &lt;/summary&gt;
+
+        [Required]
+
+        public ITaskItem[] DefaultStyles { get; set; }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Initializes a new instance of the MergeDefaultStylesTask class.
+
+        /// &lt;/summary&gt;
+
+        public MergeDefaultStylesTask()
+
+        {
+
+        }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Merge the project items marked with the "DefaultStyle" build action
+
+        /// into a single generic.xaml file.
+
+        /// &lt;/summary&gt;
+
+        /// &lt;returns&gt;
+
+        /// A value indicating whether or not the task succeeded.
+
+        /// &lt;/returns&gt;
+
+        [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Task should not throw exceptions.")]
+
+        public override bool Execute()
+
+        {
+
+            Log.LogMessage(MessageImportance.Low, "Merging default styles into generic.xaml.");
+
+
+
+            // Get the original generic.xaml
+
+            string originalPath = Path.Combine(ProjectDirectory, Path.Combine("themes", "generic.xaml"));
+
+            if (!File.Exists(originalPath))
+
+            {
+
+                Log.LogError("{0} does not exist!", originalPath);
+
+                return false;
+
+            }
+
+            Log.LogMessage(MessageImportance.Low, "Found original generic.xaml at {0}.", originalPath);
+
+            string original = null;
+
+            Encoding encoding = Encoding.Default;
+
+            try
+
+            {
+
+                using (StreamReader reader = new StreamReader(File.Open(originalPath, FileMode.Open, FileAccess.Read)))
+
+                {
+
+                    original = reader.ReadToEnd();
+
+                    encoding = reader.CurrentEncoding;
+
+                }
+
+            }
+
+            catch (Exception ex)
+
+            {
+
+                Log.LogErrorFromException(ex);
+
+                return false;
+
+            }
+
+
+
+            // Create the merged generic.xaml
+
+            List&lt;DefaultStyle&gt; styles = new List&lt;DefaultStyle&gt;();
+
+            foreach (ITaskItem item in DefaultStyles)
+
+            {
+
+                string path = Path.Combine(ProjectDirectory, item.ItemSpec);
+
+                if (!File.Exists(path))
+
+                {
+
+                    Log.LogWarning("Ignoring missing DefaultStyle {0}.", path);
+
+                    continue;
+
+                }
+
+
+
+                try
+
+                {
+
+                    Log.LogMessage(MessageImportance.Low, "Processing file {0}.", item.ItemSpec);
+
+                    styles.Add(DefaultStyle.Load(path));
+
+                }
+
+                catch (Exception ex)
+
+                {
+
+                    Log.LogErrorFromException(ex);
+
+                }
+
+            }
+
+            string merged = null;
+
+            try
+
+            {
+
+                merged = DefaultStyle.Merge(styles).GenerateXaml();
+
+            }
+
+            catch (InvalidOperationException ex)
+
+            {
+
+                Log.LogErrorFromException(ex);
+
+                return false;
+
+            }
+
+            
+
+            // Write the new generic.xaml
+
+            if (original != merged)
+
+            {
+
+                Log.LogMessage(MessageImportance.Low, "Writing merged generic.xaml.");
+
+
+
+                try
+
+                {
+
+                    // Could interact with the source control system / TFS here
+
+                    File.SetAttributes(originalPath, FileAttributes.Normal);
+
+                    Log.LogMessage("Removed any read-only flag for generic.xaml.");
+
+
+
+                    File.WriteAllText(originalPath, merged, encoding);
+
+                    Log.LogMessage("Successfully merged generic.xaml.");
+
+                }
+
+                catch (Exception ex)
+
+                {
+
+                    Log.LogErrorFromException(ex);
+
+                    return false;
+
+                }
+
+            }
+
+            else
+
+            {
+
+                Log.LogMessage("Existing generic.xaml was up to date.");
+
+            }
+
+
+
+            return true;
+
+        }
+
+    }
+
+}</pre></div>
+
+
+
+<p>With the task in place, now we just need to add the DefaultStyle implementation and build the task assembly.</p>
+
+
+
+<h3>DefaultStyle does the heavy lifting</h3>
+
+
+
+<p>The type DefaultStyle is very LINQ-y and uses XLinq to handle parsing XAML, managing namespaces, and also the merging of multiple instances. Here’s DefaultStyle.cs, that should be included in the project (author: Ted Glaza):</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:6fe09b59-adac-4ec2-bea8-14e4a87e50d2" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">// (c) Copyright Microsoft Corporation.
+
+// This source is subject to the Microsoft Public License (Ms-PL).
+
+// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+
+// All other rights reserved.
+
+
+
+using System;
+
+using System.Collections.Generic;
+
+using System.Globalization;
+
+using System.IO;
+
+using System.Linq;
+
+using System.Xml.Linq;
+
+
+
+namespace Engineering.Build
+
+{
+
+    /// &lt;summary&gt;
+
+    /// DefaultStyle represents the XAML of an individual Control's default
+
+    /// style (in particular its ControlTemplate) which can be merged with other
+
+    /// default styles).  The XAML must have a ResourceDictionary as its root
+
+    /// element and be marked with a DefaultStyle build action in Visual Studio.
+
+    /// &lt;/summary&gt;
+
+    public partial class DefaultStyle
+
+    {
+
+        /// &lt;summary&gt;
+
+        /// Root element of both the default styles and the merged generic.xaml.
+
+        /// &lt;/summary&gt;
+
+        private const string RootElement = "ResourceDictionary";
+
+
+
+        /// &lt;summary&gt;
+
+        /// Gets or sets the file path of the default style.
+
+        /// &lt;/summary&gt;
+
+        public string DefaultStylePath { get; set; }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Gets the namespaces imposed on the root element of a default style
+
+        /// (including explicitly declared namespaces as well as those inherited
+
+        /// from the root ResourceDictionary element).
+
+        /// &lt;/summary&gt;
+
+        public SortedDictionary&lt;string, string&gt; Namespaces { get; private set; }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Gets the elements in the XAML that include both styles and shared
+
+        /// resources.
+
+        /// &lt;/summary&gt;
+
+        public SortedDictionary&lt;string, XElement&gt; Resources { get; private set; }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Gets or sets the history tracking which resources originated from
+
+        /// which files.
+
+        /// &lt;/summary&gt;
+
+        private Dictionary&lt;string, string&gt; MergeHistory { get; set; }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Initializes a new instance of the DefaultStyle class.
+
+        /// &lt;/summary&gt;
+
+        protected DefaultStyle()
+
+        {
+
+            Namespaces = new SortedDictionary&lt;string, string&gt;(StringComparer.OrdinalIgnoreCase);
+
+            Resources = new SortedDictionary&lt;string, XElement&gt;(StringComparer.OrdinalIgnoreCase);
+
+            MergeHistory = new Dictionary&lt;string, string&gt;(StringComparer.OrdinalIgnoreCase);
+
+        }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Load a DefaultStyle from the a project item.
+
+        /// &lt;/summary&gt;
+
+        /// &lt;param name="path"&gt;
+
+        /// Path of the default style which is used for reporting errors.
+
+        /// &lt;/param&gt;
+
+        /// &lt;returns&gt;The DefaultStyle.&lt;/returns&gt;
+
+        public static DefaultStyle Load(string path)
+
+        {
+
+            DefaultStyle style = new DefaultStyle();
+
+            style.DefaultStylePath = path;
+
+
+
+            string xaml = File.ReadAllText(path);
+
+            XElement root = XElement.Parse(xaml, LoadOptions.PreserveWhitespace);
+
+            if (root.Name.LocalName == RootElement)
+
+            {
+
+                // Get the namespaces
+
+                foreach (XAttribute attribute in root.Attributes())
+
+                {
+
+                    if (attribute.Name.LocalName == "xmlns")
+
+                    {
+
+                        style.Namespaces.Add("", attribute.Value);
+
+                    }
+
+                    else if (attribute.Name.NamespaceName == XNamespace.Xmlns.NamespaceName)
+
+                    {
+
+                        style.Namespaces.Add(attribute.Name.LocalName, attribute.Value);
+
+                    }
+
+                }
+
+
+
+                // Get the styles and shared resources
+
+                foreach (XElement element in root.Elements())
+
+                {
+
+                    string name = (element.Name.LocalName == "Style") ?
+
+                        GetAttribute(element, "TargetType", "Key", "Name") :
+
+                        GetAttribute(element, "Key", "Name");
+
+                    if (style.Resources.ContainsKey(name))
+
+                    {
+
+                        throw new InvalidOperationException(string.Format(
+
+                            CultureInfo.InvariantCulture,
+
+                            "Resource \"{0}\" is used multiple times in {1} (possibly as a Key, Name, or TargetType)!",
+
+                            name,
+
+                            path));
+
+                    }
+
+                    style.Resources.Add(name, element);
+
+                    style.MergeHistory[name] = path;
+
+                }
+
+            }
+
+
+
+            return style;
+
+        }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Get the value of the first attribute that is defined.
+
+        /// &lt;/summary&gt;
+
+        /// &lt;param name="element"&gt;Element with the attributes defined.&lt;/param&gt;
+
+        /// &lt;param name="attributes"&gt;
+
+        /// Local names of the attributes to find.
+
+        /// &lt;/param&gt;
+
+        /// &lt;returns&gt;Value of the first attribute found.&lt;/returns&gt;
+
+        private static string GetAttribute(XElement element, params string[] attributes)
+
+        {
+
+            foreach (string name in attributes)
+
+            {
+
+                string value =
+
+                    (from a in element.Attributes()
+
+                     where a.Name.LocalName == name
+
+                     select a.Value)
+
+                     .FirstOrDefault();
+
+                if (name != null)
+
+                {
+
+                    return value;
+
+                }
+
+            }
+
+            return "";
+
+        }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Merge a sequence of DefaultStyles into a single style.
+
+        /// &lt;/summary&gt;
+
+        /// &lt;param name="styles"&gt;Sequence of DefaultStyles.&lt;/param&gt;
+
+        /// &lt;returns&gt;Merged DefaultStyle.&lt;/returns&gt;
+
+        public static DefaultStyle Merge(IEnumerable&lt;DefaultStyle&gt; styles)
+
+        {
+
+            DefaultStyle combined = new DefaultStyle();
+
+            if (styles != null)
+
+            {
+
+                foreach (DefaultStyle style in styles)
+
+                {
+
+                    combined.Merge(style);
+
+                }
+
+            }
+
+            return combined;
+
+        }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Merge with another DefaultStyle.
+
+        /// &lt;/summary&gt;
+
+        /// &lt;param name="other"&gt;Other DefaultStyle to merge.&lt;/param&gt;
+
+        private void Merge(DefaultStyle other)
+
+        {
+
+            // Merge or lower namespaces
+
+            foreach (KeyValuePair&lt;string, string&gt; ns in other.Namespaces)
+
+            {
+
+                string value = null;
+
+                if (!Namespaces.TryGetValue(ns.Key, out value))
+
+                {
+
+                    Namespaces.Add(ns.Key, ns.Value);
+
+                }
+
+                else if (value != ns.Value)
+
+                {
+
+                    other.LowerNamespace(ns.Key);
+
+                }
+
+            }
+
+
+
+            // Merge the resources
+
+            foreach (KeyValuePair&lt;string, XElement&gt; resource in other.Resources)
+
+            {
+
+                if (Resources.ContainsKey(resource.Key))
+
+                {
+
+                    throw new InvalidOperationException(string.Format(
+
+                        CultureInfo.InvariantCulture,
+
+                        "Resource \"{0}\" is used by both {1} and {2}!",
+
+                        resource.Key,
+
+                        MergeHistory[resource.Key],
+
+                        other.DefaultStylePath));
+
+                }
+
+                Resources[resource.Key] = resource.Value;
+
+                MergeHistory[resource.Key] = other.DefaultStylePath;
+
+            }
+
+        }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Lower a namespace from the root ResourceDictionary to its child
+
+        /// resources.
+
+        /// &lt;/summary&gt;
+
+        /// &lt;param name="prefix"&gt;Prefix of the namespace to lower.&lt;/param&gt;
+
+        private void LowerNamespace(string prefix)
+
+        {
+
+            // Get the value of the namespace
+
+            string @namespace;
+
+            if (!Namespaces.TryGetValue(prefix, out @namespace))
+
+            {
+
+                return;
+
+            }
+
+
+
+            // Push the value into each resource
+
+            foreach (KeyValuePair&lt;string, XElement&gt; resource in Resources)
+
+            {
+
+                // Don't push the value down if it was overridden locally or if
+
+                // it's the default namespace (as it will be lowered
+
+                // automatically)
+
+                if (((from e in resource.Value.Attributes()
+
+                      where e.Name.LocalName == prefix
+
+                      select e).Count() == 0) &&
+
+                    !string.IsNullOrEmpty(prefix))
+
+                {
+
+                    resource.Value.Add(new XAttribute(XName.Get(prefix, XNamespace.Xmlns.NamespaceName), @namespace));
+
+                }
+
+            }
+
+        }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Generate the XAML markup for the default style.
+
+        /// &lt;/summary&gt;
+
+        /// &lt;returns&gt;Generated XAML markup.&lt;/returns&gt;
+
+        public string GenerateXaml()
+
+        {
+
+            // Create the ResourceDictionary
+
+            string defaultNamespace = XNamespace.Xml.NamespaceName;
+
+            Namespaces.TryGetValue("", out defaultNamespace);
+
+            XElement resources = new XElement(XName.Get(RootElement, defaultNamespace));
+
+
+
+            // Add the shared namespaces
+
+            foreach (KeyValuePair&lt;string, string&gt; @namespace in Namespaces)
+
+            {
+
+                // The default namespace will be added automatically
+
+                if (string.IsNullOrEmpty(@namespace.Key))
+
+                {
+
+                    continue;
+
+                }
+
+                resources.Add(new XAttribute(
+
+                    XName.Get(@namespace.Key, XNamespace.Xmlns.NamespaceName),
+
+                    @namespace.Value));
+
+            }
+
+
+
+            // Add the resources
+
+            foreach (KeyValuePair&lt;string, XElement&gt; element in Resources)
+
+            {
+
+                resources.Add(
+
+                    new XText(Environment.NewLine + Environment.NewLine + "    "),
+
+                    new XComment("  " + element.Key + "  "),
+
+                    new XText(Environment.NewLine + "    "),
+
+                    element.Value);
+
+            }
+
+
+
+            resources.Add(new XText(Environment.NewLine + Environment.NewLine));
+
+
+
+            // Create the document
+
+            XDocument document = new XDocument(
+
+                // TODO: Pull this copyright header from some shared location
+
+                new XComment(Environment.NewLine +
+
+                    "// (c) Copyright Microsoft Corporation." + Environment.NewLine +
+
+                    "// This source is subject to the Microsoft Public License (Ms-PL)." + Environment.NewLine +
+
+                    "// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details." + Environment.NewLine +
+
+                    "// All other rights reserved." + Environment.NewLine),
+
+                new XText(Environment.NewLine + Environment.NewLine),
+
+                new XComment(Environment.NewLine +
+
+                    "// WARNING:" + Environment.NewLine +
+
+                    "// " + Environment.NewLine +
+
+                    "// This XAML was automatically generated by merging the individual default" + Environment.NewLine +
+
+                    "// styles.  Changes to this file may cause incorrect behavior and will be lost" + Environment.NewLine +
+
+                    "// if the XAML is regenerated." + Environment.NewLine),
+
+                new XText(Environment.NewLine + Environment.NewLine),
+
+                resources);
+
+
+
+            return document.ToString();
+
+        }
+
+
+
+        /// &lt;summary&gt;
+
+        /// Generate the XAML markup for the default style.
+
+        /// &lt;/summary&gt;
+
+        /// &lt;returns&gt;Generated XAML markup.&lt;/returns&gt;
+
+        public override string ToString()
+
+        {
+
+            return GenerateXaml();
+
+        }
+
+    }
+
+}</pre></div>
+
+
+
+<h3>Reference the task in your project or targets file</h3>
+
+
+
+<p>Now, with your task assembly in hand (and available in your source tree), add a UsingTask element to your project.</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:8812d69e-1407-4289-a9e2-0099e0da9add" class="wlWriterEditableSmartContent"><pre class="xml" name="code">  &lt;!--
+
+  // 
+
+  // Define our custom build tasks
+
+  // 
+
+  --&gt;
+
+  &lt;UsingTask
+
+    TaskName="Engineering.Build.Tasks.MergeDefaultStylesTask"
+
+    AssemblyFile="$(EngineeringResources)\Engineering.Build.dll" /&gt;</pre></div>
+
+
+
+<p><strong>Note:</strong> We’ve already defined the EngineeringResources property value elsewhere. You can substitute it with your own relative path as need be.</p>
+
+
+
+<p>Next up, add an item group that Visual Studio recognizes to add the DefaultStyle item to the property grid:</p>
+
+
+
+<p>
+
+  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:7999d807-b19f-4574-8ae1-4a7b929f9271" class="wlWriterEditableSmartContent"><pre class="xml" name="code">  &lt;!-- Add "DefaultStyle" as a Build Action in Visual Studio --&gt;
+
+  &lt;ItemGroup Condition="'$(BuildingInsideVisualStudio)'=='true'"&gt;
+
+    &lt;AvailableItemName Include="DefaultStyle" /&gt;
+
+  &lt;/ItemGroup&gt;</pre></div>
+
+</p>
+
+
+
+<p>Finally, we have two overridden (and custom) targets for merging the default styles, and for “touching” the default styles:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:497fc194-b9b6-4f29-9a74-ec232f9b7051" class="wlWriterEditableSmartContent"><pre class="xml" name="code">  &lt;!--
+
+  Merge the default styles of controls (only if any of the DefaultStyle files is
+
+  more recent than the project's generic.xaml file) before compilation
+
+  dependencies are processed.
+
+  --&gt;
+
+  &lt;PropertyGroup&gt;
+
+    &lt;PrepareResourcesDependsOn&gt;
+
+      MergeDefaultStyles;
+
+      $(PrepareResourcesDependsOn);
+
+    &lt;/PrepareResourcesDependsOn&gt;
+
+  &lt;/PropertyGroup&gt;
+
+  &lt;Target
+
+    Name="MergeDefaultStyles"
+
+    Inputs="@(DefaultStyle)"
+
+    Outputs="$(MSBuildProjectDirectory)\generic.xaml"&gt;
+
+    &lt;MergeDefaultStylesTask
+
+      DefaultStyles="@(DefaultStyle)"
+
+      ProjectDirectory="$(MSBuildProjectDirectory)" /&gt;
+
+  &lt;/Target&gt;
+
+  &lt;!--
+
+  Touch DefaultStyles on Rebuild to force generation of generic.xaml.
+
+  --&gt;
+
+  &lt;PropertyGroup&gt;
+
+    &lt;RebuildDependsOn&gt;
+
+      TouchDefaultStyles;
+
+      $(RebuildDependsOn);
+
+    &lt;/RebuildDependsOn&gt;
+
+  &lt;/PropertyGroup&gt;
+
+  &lt;Target Name="TouchDefaultStyles"&gt;
+
+    &lt;Touch Files="@(DefaultStyle)" ForceTouch="true" /&gt;
+
+  &lt;/Target&gt;</pre></div>
+
+
+
+<h3>Use the MergeDefaultStyles task in the project</h3>
+
+
+
+<p>Now, you can change the build actions of the appropriate control .Xaml files (that are resource dictionaries) to use this new task:</p>
+
+
+
+<p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2009/01/defaultstylebuildaction1.png"><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="DefaultStyleBuildAction[1]" border="0" alt="DefaultStyleBuildAction[1]" src="http://www.jeff.wilcox.name/wp-content/uploads/2009/01/defaultstylebuildaction1-thumb.png" width="222" height="240" /></a> </p>
+
+
+
+<p>When building, you should see the Generic.xaml file update! (Themes\generic.xaml should probably exist before using this task, btw).</p>
+
+
+
 <p>This code is offered through the <a href="http://www.opensource.org/licenses/ms-pl.html">Ms-PL license</a>, but no support from the Silverlight Toolkit is implied. Hope this helps you!</p>

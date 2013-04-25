@@ -14,54 +14,104 @@ imported_categories:
 imported_link_categories: []
 tags: []
 ---
-<p>Thanks to modular MSBuild tasks and components, you can actually build Silverlight 3 and Silverlight 4 applications on the same build machine, without having .NET 4 installed.</p>  <p>This is great for constrained TFS build environments, and although not supported in any way, this does allow you to edit and build simple Silverlight 4 apps created first for Silverlight 3, using Visual Studio 2008.</p>  <h4>Background</h4>  <p>On the Silverlight Toolkit team, we have a need to always have a previous version branch, and a new version, building together in a daily TFS Build. We do this by having the Silverlight 3 and Silverlight 4 SDKs, reference assemblies, and other resources checked into the source enlistment.</p>  <h4>Caveats</h4>  <p>This post is not intended for the general Silverlight developer: it is designed for build engineers and continuous integration fans that need to build both versions. Since the adoption rate of new Silverlight versions is typically very quick, the need to build previous versions diminishes very quickly in my opinion.</p>  <p>Important: this will be using the .NET 3.5 C# compiler, and not the C# 4 compiler. This means that you will not have the ability to build apps that use the new <em>dynamic </em>language feature.</p>  <p>Important note 2: this assumes you are starting with a Silverlight 3 class library or app, not one that you created in Visual Studio 2010. The project file formats in 2010 are updated to use MSBuild 4 and a few other differences, so this scenario (basically building SL3 project formats against the SL4 runtime) is not for everyone.</p>  <p>Important note 3: Visual Studio 2010 supports multi-targeting Silverlight, so you can create projects in 2010 that are 3 or 4 much easier – no need for any of these hacks if your build environment already has .NET 4.</p>  <p>This is based on a <a href="http://www.jeff.wilcox.name/2009/03/sxs-sl2-sl3-building/">previous post</a> about building Silverlight 2 and 3 together.</p>  <p>This method does not require a build machine to have Silverlight installed at all, nor any of its SDKs.</p>  <h2>Preparing your source enlistment</h2>  <p>You want to copy the various build assets for both Silverlight 3 and Silverlight 4 into the tree, in a folder such as ExternalTools\Silverlight\v3 and v4. Repeat these steps for each version of Silverlight (v3.0, v4.0 directories) you need to build:</p>  <ul>   <li>Create a directory to store the MsBuild assets for Silverlight, and copy in the files from %programfiles%MSBuild\Microsoft\Silverlight\v3.0.</li>    <li>Copy the “Reference Assemblies” directory from %programfiles%\Microsoft SDKs\Silverlight\v3.0\ into the tools directory. </li>    <li>Copy the “Libraries” directory from %programfiles%\Microsoft SDKs\Silverlight\v3.0\ into the directory.</li> </ul>  <p>You can then use relative paths in your projects or custom build targets to get things rolling.</p>  <h2>Customizing the &lt;Import /&gt; element in your projects</h2>  <p>Within your source enlistment, you must then update all Silverlight project files to instead reference the relative-path building scripts instead of those installed on the machine.</p>  <p>Even when building in Visual Studio 2008, the proper version will build.</p>  <p>On the Toolkit team, all VB and C# source projects within the enlistment reference a relative path, typically something like ..\..\Silverlight.CSharp.targets, instead of the standard Silverlight CSharp targets from the Silverlight MSBuild scripts.</p>  <p>Inside this relative path, it defines the properties. For Silverlight 3:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:ac281bf1-826d-4dbd-bad9-8750cce72616" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;Project
-  ToolsVersion="3.5"
-  DefaultTargets="Build"
-  xmlns="http://schemas.microsoft.com/developer/msbuild/2003"&gt;
-
-  &lt;PropertyGroup&gt;
-    &lt;!-- Define the ExternalTools property first --&gt;
-    &lt;SilverlightBuildResources&gt;$(ExternalTools)\Silverlight\v3.0\&lt;/SilverlightBuildResources&gt;
-
-    &lt;TargetFrameworkDirectory&gt;$(SilverlightBuildResources)Reference Assemblies\&lt;/TargetFrameworkDirectory&gt;
-    &lt;TargetFrameworkSDKDirectory&gt;$(SilverlightBuildResources)Libraries\Client\&lt;/TargetFrameworkSDKDirectory&gt;
-    &lt;SilverlightRuntimeVersion&gt;3.0.40217.0&lt;/SilverlightRuntimeVersion&gt;
-  &lt;/PropertyGroup&gt;
-  &lt;Import Project="$(SilverlightBuildResources)Microsoft.Silverlight.CSharp.targets"/&gt;
-&lt;/Project&gt;</pre></div>
-
-<p>And for Silverlight 4:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:c8990b1e-59ad-45a4-b7fe-84898f42a31f" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">&lt;Project
-  ToolsVersion="3.5"
-  DefaultTargets="Build"
-  xmlns="http://schemas.microsoft.com/developer/msbuild/2003"&gt;
-
-  &lt;PropertyGroup&gt;
-    &lt;!-- Define the ExternalTools property first --&gt;
-    &lt;SilverlightBuildResources&gt;$(ExternalTools)\Silverlight\v4.0\&lt;/SilverlightBuildResources&gt;
-
-    &lt;TargetFrameworkDirectory&gt;$(SilverlightBuildResources)Reference Assemblies\&lt;/TargetFrameworkDirectory&gt;
-    &lt;TargetFrameworkSDKDirectory&gt;$(SilverlightBuildResources)Libraries\Client\&lt;/TargetFrameworkSDKDirectory&gt;
-    &lt;SilverlightRuntimeVersion&gt;4.0&lt;/SilverlightRuntimeVersion&gt;
-  &lt;/PropertyGroup&gt;
-  &lt;Import Project="$(SilverlightBuildResources)Microsoft.Silverlight.CSharp.targets"/&gt;
-&lt;/Project&gt;</pre></div>
-
-<p>Note that we are only providing the major version here, this prevents having to update with each new build of Silverlight 4.</p>
-
-<h2>Adding Silverlight Toolkit support</h2>
-
-<p>To build apps that use the Silverlight Toolkit in a similar manner, just copy the Silverlight Toolkit binaries into the same client libraries folder of the SDK.</p>
-
-<h2>WCF RIA Services Note</h2>
-
-<p>There’s a hard-coded import statement that will import a single version of the WCF RIA Services if present on the machine.</p>
-
-<p>At the bottom of the Silverlight 4 file Microsoft.Silverlight.Common.targets, you will see this line:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:8b26dc04-7f02-4f26-bf58-d3fb45c62467" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\v4.0\Microsoft.Ria.Client.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\Silverlight\v4.0\Microsoft.Ria.Client.targets')"/&gt;</pre></div>
-
-<p>You may want to <strong>comment out or remove this line</strong> if this impacts your multi-version builds in any way.</p>
-
+<p>Thanks to modular MSBuild tasks and components, you can actually build Silverlight 3 and Silverlight 4 applications on the same build machine, without having .NET 4 installed.</p>  <p>This is great for constrained TFS build environments, and although not supported in any way, this does allow you to edit and build simple Silverlight 4 apps created first for Silverlight 3, using Visual Studio 2008.</p>  <h4>Background</h4>  <p>On the Silverlight Toolkit team, we have a need to always have a previous version branch, and a new version, building together in a daily TFS Build. We do this by having the Silverlight 3 and Silverlight 4 SDKs, reference assemblies, and other resources checked into the source enlistment.</p>  <h4>Caveats</h4>  <p>This post is not intended for the general Silverlight developer: it is designed for build engineers and continuous integration fans that need to build both versions. Since the adoption rate of new Silverlight versions is typically very quick, the need to build previous versions diminishes very quickly in my opinion.</p>  <p>Important: this will be using the .NET 3.5 C# compiler, and not the C# 4 compiler. This means that you will not have the ability to build apps that use the new <em>dynamic </em>language feature.</p>  <p>Important note 2: this assumes you are starting with a Silverlight 3 class library or app, not one that you created in Visual Studio 2010. The project file formats in 2010 are updated to use MSBuild 4 and a few other differences, so this scenario (basically building SL3 project formats against the SL4 runtime) is not for everyone.</p>  <p>Important note 3: Visual Studio 2010 supports multi-targeting Silverlight, so you can create projects in 2010 that are 3 or 4 much easier – no need for any of these hacks if your build environment already has .NET 4.</p>  <p>This is based on a <a href="http://www.jeff.wilcox.name/2009/03/sxs-sl2-sl3-building/">previous post</a> about building Silverlight 2 and 3 together.</p>  <p>This method does not require a build machine to have Silverlight installed at all, nor any of its SDKs.</p>  <h2>Preparing your source enlistment</h2>  <p>You want to copy the various build assets for both Silverlight 3 and Silverlight 4 into the tree, in a folder such as ExternalTools\Silverlight\v3 and v4. Repeat these steps for each version of Silverlight (v3.0, v4.0 directories) you need to build:</p>  <ul>   <li>Create a directory to store the MsBuild assets for Silverlight, and copy in the files from %programfiles%MSBuild\Microsoft\Silverlight\v3.0.</li>    <li>Copy the “Reference Assemblies” directory from %programfiles%\Microsoft SDKs\Silverlight\v3.0\ into the tools directory. </li>    <li>Copy the “Libraries” directory from %programfiles%\Microsoft SDKs\Silverlight\v3.0\ into the directory.</li> </ul>  <p>You can then use relative paths in your projects or custom build targets to get things rolling.</p>  <h2>Customizing the &lt;Import /&gt; element in your projects</h2>  <p>Within your source enlistment, you must then update all Silverlight project files to instead reference the relative-path building scripts instead of those installed on the machine.</p>  <p>Even when building in Visual Studio 2008, the proper version will build.</p>  <p>On the Toolkit team, all VB and C# source projects within the enlistment reference a relative path, typically something like ..\..\Silverlight.CSharp.targets, instead of the standard Silverlight CSharp targets from the Silverlight MSBuild scripts.</p>  <p>Inside this relative path, it defines the properties. For Silverlight 3:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:ac281bf1-826d-4dbd-bad9-8750cce72616" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;Project
+
+  ToolsVersion="3.5"
+
+  DefaultTargets="Build"
+
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003"&gt;
+
+
+
+  &lt;PropertyGroup&gt;
+
+    &lt;!-- Define the ExternalTools property first --&gt;
+
+    &lt;SilverlightBuildResources&gt;$(ExternalTools)\Silverlight\v3.0\&lt;/SilverlightBuildResources&gt;
+
+
+
+    &lt;TargetFrameworkDirectory&gt;$(SilverlightBuildResources)Reference Assemblies\&lt;/TargetFrameworkDirectory&gt;
+
+    &lt;TargetFrameworkSDKDirectory&gt;$(SilverlightBuildResources)Libraries\Client\&lt;/TargetFrameworkSDKDirectory&gt;
+
+    &lt;SilverlightRuntimeVersion&gt;3.0.40217.0&lt;/SilverlightRuntimeVersion&gt;
+
+  &lt;/PropertyGroup&gt;
+
+  &lt;Import Project="$(SilverlightBuildResources)Microsoft.Silverlight.CSharp.targets"/&gt;
+
+&lt;/Project&gt;</pre></div>
+
+
+
+<p>And for Silverlight 4:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:c8990b1e-59ad-45a4-b7fe-84898f42a31f" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">&lt;Project
+
+  ToolsVersion="3.5"
+
+  DefaultTargets="Build"
+
+  xmlns="http://schemas.microsoft.com/developer/msbuild/2003"&gt;
+
+
+
+  &lt;PropertyGroup&gt;
+
+    &lt;!-- Define the ExternalTools property first --&gt;
+
+    &lt;SilverlightBuildResources&gt;$(ExternalTools)\Silverlight\v4.0\&lt;/SilverlightBuildResources&gt;
+
+
+
+    &lt;TargetFrameworkDirectory&gt;$(SilverlightBuildResources)Reference Assemblies\&lt;/TargetFrameworkDirectory&gt;
+
+    &lt;TargetFrameworkSDKDirectory&gt;$(SilverlightBuildResources)Libraries\Client\&lt;/TargetFrameworkSDKDirectory&gt;
+
+    &lt;SilverlightRuntimeVersion&gt;4.0&lt;/SilverlightRuntimeVersion&gt;
+
+  &lt;/PropertyGroup&gt;
+
+  &lt;Import Project="$(SilverlightBuildResources)Microsoft.Silverlight.CSharp.targets"/&gt;
+
+&lt;/Project&gt;</pre></div>
+
+
+
+<p>Note that we are only providing the major version here, this prevents having to update with each new build of Silverlight 4.</p>
+
+
+
+<h2>Adding Silverlight Toolkit support</h2>
+
+
+
+<p>To build apps that use the Silverlight Toolkit in a similar manner, just copy the Silverlight Toolkit binaries into the same client libraries folder of the SDK.</p>
+
+
+
+<h2>WCF RIA Services Note</h2>
+
+
+
+<p>There’s a hard-coded import statement that will import a single version of the WCF RIA Services if present on the machine.</p>
+
+
+
+<p>At the bottom of the Silverlight 4 file Microsoft.Silverlight.Common.targets, you will see this line:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:8b26dc04-7f02-4f26-bf58-d3fb45c62467" class="wlWriterEditableSmartContent"><pre class="xml" name="code">&lt;Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\v4.0\Microsoft.Ria.Client.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\Silverlight\v4.0\Microsoft.Ria.Client.targets')"/&gt;</pre></div>
+
+
+
+<p>You may want to <strong>comment out or remove this line</strong> if this impacts your multi-version builds in any way.</p>
+
+
+
 <p>Hope this helps.</p>

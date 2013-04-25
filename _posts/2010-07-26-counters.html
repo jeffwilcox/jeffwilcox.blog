@@ -19,138 +19,272 @@ imported_categories:
 imported_link_categories: []
 tags: []
 ---
-<p>While developing Windows Phone applications, it’s good to have some simple but important performance tips and tricks in your back pocket. Here’s a quick reference to enabling frame rate counters plus an overview of what the values represent.</p>  <h3>Enable frame rate counters in code</h3>  <p>In your App.xaml.cs or MainPage.xaml.cs, in the constructor, set the host property to true for this diagnostic mode:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:378ddd5a-123a-41a2-a6ef-0f9fd6d5a856" class="wlWriterEditableSmartContent"><pre class="brush:c-sharp">Application.Current.Host.Settings.EnableFrameRateCounter = true;</pre></div>
-
-<h3>Make sure the System Tray is not visible</h3>
-
-<p>By default in the beta tools, the MainPage.xaml sets the system tray to be visible. When this happens, the frame rate counters are hidden by the operating system shell.</p>
-
-<h4>Method 1: XAML</h4>
-
-<p>The default page template includes an XMLNS declaration for “shell”, and has this in the phone application page constructor:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:dd7b0f4f-0bde-4d4b-ad6f-c8ab434439e4" class="wlWriterEditableSmartContent"><pre class="xml" name="code">shell:SystemTray.IsVisible="true"</pre></div>
-
-<p>Just change the IsVisible property to False:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:a0e29e6c-c60c-4e75-b7cf-4ed385579858" class="wlWriterEditableSmartContent"><pre class="xml" name="code">shell:SystemTray.IsVisible="false"</pre></div>
-
-<h4>Method 2: Code</h4>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:7dabaf74-49ed-4989-8fbb-fa60197a381f" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">Microsoft.Phone.Shell.SystemTray.IsVisible = false;</pre></div>
-
-<p>In a future release of the phone tools, this is actually going to be less of an issue, as the counters will actually be right-aligned on the screen instead.</p>
-
-<h3>Adding a simple check box to toggle the counters</h3>
-
-<p>A lot of app developers add a check box to debug builds that lets them toggle this sort of diagnostic display. In one of our ‘Scenarios’ test applications, we have a check box on the first page, and in XAML it connects the Checked and Unchecked events to this method.:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:4c41d953-1c3e-46ff-a26a-b90e550b4487" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">private void FrameRateCounters_Checked(object sender, RoutedEventArgs e)
-{
-    var checkbox = (CheckBox)sender;
-    var newValue = checkbox.IsChecked.GetValueOrDefault();
-
-    Application.Current.Host.Settings.EnableFrameRateCounter = newValue;
-    SystemTray.IsVisible = !newValue; // Hides frame rate counter otherwise
-}</pre></div>
-
-<h3>Enabling frame rate counters only on debug builds</h3>
-
-<p>You can also use conditional compilation to just have your debug builds display this information. Add this to your App.xaml.cs:</p>
-
-<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:0e8e0218-898c-4457-b710-69a38d76f8b5" class="wlWriterEditableSmartContent"><pre class="c-sharp" name="code">#if DEBUG
-    Application.Current.Host.Settings.EnableFrameRateCounter = true;
-    Microsoft.Phone.Shell.SystemTray.IsVisible = false;
-#endif</pre></div>
-
-<p>This assumes you remember to eventually ship your app on the marketplace with a release build <img style="border-bottom-style: none; border-right-style: none; border-top-style: none; border-left-style: none" class="wlEmoticon wlEmoticon-smile" alt="Smile" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/07/wlEmoticonsmile.png" />.</p>
-
-<h3>Accelerated graphics note: If you still don’t see a frame rate counter</h3>
-
-<p>The frame rate counter only appears when your system has a supported DirectX 10 graphics card that allows the Windows Phone emulator to use accelerated graphics.</p>
-
-<p>If you set the frame rate counter visibility to True, the system tray is hidden, and you still don’t’ see the counters, then unfortunately your system does not have a supported card for displaying this information.</p>
-
-<p>All Windows Phone devices will show the frame rate counter, so once phone hardware is more widely available, you’ll still have an option to test the performance of your apps.</p>
-
-<h3>Exploring the frame rate counter data</h3>
-
-<p>This has been covered countless times, but I figure if you’re [using your search engine of choice to find this] here that it doesn’t hurt to duplicate.</p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" class="wlDisabledImage" title="BetaCounters" border="0" alt="BetaCounters" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/07/BetaCounters.png" width="685" height="265" />
-
-  <br /><em>The Beta tools display frame counter information on the top of the page.</em></p>
-
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" class="wlDisabledImage" title="NewerCounters" border="0" alt="NewerCounters" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/07/NewerCounters.jpg" width="486" height="422" />
-
-  <br /><em>Shipping frame counter information is displayed on the right of the screen.</em></p>
-
-<p>So moving through the counters, we have the following.</p>
-
-<p><strong>Render Thread FPS:</strong> The number of frames per second that the independent simple animations and rendering thread is using. Keeping around 60 will provide a great experience, while a number of 30 fps will begin to show a poor experience to the end user.</p>
-
-<p>Under 30 fps this counter will turn red in post-beta builds.</p>
-
-<p><strong>User Interface Thread FPS:</strong> The number of fps that the primary user interface thread is experiencing. Property change notifications, data binding, primary managed code execution, and animations not handled on the render thread use this threads’ resources.</p>
-
-<p>Turns red when the count is at or below 15 fps.</p>
-
-<p><strong>Texture Memory Usage: </strong>A specialized memory counter indicating the video memory used for storing application textures.</p>
-
-<p><strong>Surface Counter: </strong>A count of the number of surfaces that are passed to the graphics chip.</p>
-
-<p><strong>Intermediate Texture Count:</strong> The number of intermediate textures created for compositing.</p>
-
-<p><strong>Screen Fill Rate:</strong> A metric representing the number of complete phone screens being painted each and every frame.</p>
-
-<p>This counter was not present in the Beta tools and is a new metric for post-Beta use.</p>
-
-<h3>Target frame rates for good performance</h3>
-
-<p>When testing on a Windows Phone device, here are key performance metrics to try for. Understand that the emulator (XDE) performance may not be indicative of actual device performance.</p>
-
-<p>Frame rate counters may be 0 when there is no animation being updated on the thread at any particular moment. You can add a very simple, continually animating and repeating, animation to your application during development &amp; testing if you want to ensure that there is always some frame rate value available.</p>
-
-<table border="0" cellspacing="0" cellpadding="4" width="641"><tbody>
-    <tr>
-      <td valign="top" width="171"><em>Counter</em></td>
-
-      <td valign="top" width="162"><em>Ideal Minimum</em></td>
-
-      <td valign="top" width="155"><em>Best Experience</em></td>
-
-      <td valign="top" width="151"><em>Theoretical Max</em></td>
-    </tr>
-
-    <tr>
-      <td valign="top" width="182">Render Thread</td>
-
-      <td valign="top" width="170">30 fps</td>
-
-      <td valign="top" width="162">60 fps</td>
-
-      <td valign="top" width="156">120 fps</td>
-    </tr>
-
-    <tr>
-      <td valign="top" width="184">UI Thread</td>
-
-      <td valign="top" width="173">15 fps</td>
-
-      <td valign="top" width="165">&gt; 15 fps</td>
-
-      <td valign="top" width="159">120 fps</td>
-    </tr>
-
-    <tr>
-      <td valign="top" width="183">Screen Fill Rate</td>
-
-      <td valign="top" width="173">1.0</td>
-
-      <td valign="top" width="167">&lt;= 2.0</td>
-
-      <td valign="top" width="161"><font color="#a5a5a5">N/A</font></td>
-    </tr>
-  </tbody></table>
-
+<p>While developing Windows Phone applications, it’s good to have some simple but important performance tips and tricks in your back pocket. Here’s a quick reference to enabling frame rate counters plus an overview of what the values represent.</p>  <h3>Enable frame rate counters in code</h3>  <p>In your App.xaml.cs or MainPage.xaml.cs, in the constructor, set the host property to true for this diagnostic mode:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:378ddd5a-123a-41a2-a6ef-0f9fd6d5a856" class="wlWriterEditableSmartContent"><pre class="brush:c-sharp">Application.Current.Host.Settings.EnableFrameRateCounter = true;</pre></div>
+
+
+
+<h3>Make sure the System Tray is not visible</h3>
+
+
+
+<p>By default in the beta tools, the MainPage.xaml sets the system tray to be visible. When this happens, the frame rate counters are hidden by the operating system shell.</p>
+
+
+
+<h4>Method 1: XAML</h4>
+
+
+
+<p>The default page template includes an XMLNS declaration for “shell”, and has this in the phone application page constructor:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:dd7b0f4f-0bde-4d4b-ad6f-c8ab434439e4" class="wlWriterEditableSmartContent"><pre class="xml" name="code">shell:SystemTray.IsVisible="true"</pre></div>
+
+
+
+<p>Just change the IsVisible property to False:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:a0e29e6c-c60c-4e75-b7cf-4ed385579858" class="wlWriterEditableSmartContent"><pre class="xml" name="code">shell:SystemTray.IsVisible="false"</pre></div>
+
+
+
+<h4>Method 2: Code</h4>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:7dabaf74-49ed-4989-8fbb-fa60197a381f" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">Microsoft.Phone.Shell.SystemTray.IsVisible = false;</pre></div>
+
+
+
+<p>In a future release of the phone tools, this is actually going to be less of an issue, as the counters will actually be right-aligned on the screen instead.</p>
+
+
+
+<h3>Adding a simple check box to toggle the counters</h3>
+
+
+
+<p>A lot of app developers add a check box to debug builds that lets them toggle this sort of diagnostic display. In one of our ‘Scenarios’ test applications, we have a check box on the first page, and in XAML it connects the Checked and Unchecked events to this method.:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:4c41d953-1c3e-46ff-a26a-b90e550b4487" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">private void FrameRateCounters_Checked(object sender, RoutedEventArgs e)
+
+{
+
+    var checkbox = (CheckBox)sender;
+
+    var newValue = checkbox.IsChecked.GetValueOrDefault();
+
+
+
+    Application.Current.Host.Settings.EnableFrameRateCounter = newValue;
+
+    SystemTray.IsVisible = !newValue; // Hides frame rate counter otherwise
+
+}</pre></div>
+
+
+
+<h3>Enabling frame rate counters only on debug builds</h3>
+
+
+
+<p>You can also use conditional compilation to just have your debug builds display this information. Add this to your App.xaml.cs:</p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:0e8e0218-898c-4457-b710-69a38d76f8b5" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">#if DEBUG
+
+    Application.Current.Host.Settings.EnableFrameRateCounter = true;
+
+    Microsoft.Phone.Shell.SystemTray.IsVisible = false;
+
+#endif</pre></div>
+
+
+
+<p>This assumes you remember to eventually ship your app on the marketplace with a release build <img style="border-bottom-style: none; border-right-style: none; border-top-style: none; border-left-style: none" class="wlEmoticon wlEmoticon-smile" alt="Smile" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/07/wlEmoticonsmile.png" />.</p>
+
+
+
+<h3>Accelerated graphics note: If you still don’t see a frame rate counter</h3>
+
+
+
+<p>The frame rate counter only appears when your system has a supported DirectX 10 graphics card that allows the Windows Phone emulator to use accelerated graphics.</p>
+
+
+
+<p>If you set the frame rate counter visibility to True, the system tray is hidden, and you still don’t’ see the counters, then unfortunately your system does not have a supported card for displaying this information.</p>
+
+
+
+<p>All Windows Phone devices will show the frame rate counter, so once phone hardware is more widely available, you’ll still have an option to test the performance of your apps.</p>
+
+
+
+<h3>Exploring the frame rate counter data</h3>
+
+
+
+<p>This has been covered countless times, but I figure if you’re [using your search engine of choice to find this] here that it doesn’t hurt to duplicate.</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" class="wlDisabledImage" title="BetaCounters" border="0" alt="BetaCounters" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/07/BetaCounters.png" width="685" height="265" />
+
+
+
+  <br /><em>The Beta tools display frame counter information on the top of the page.</em></p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" class="wlDisabledImage" title="NewerCounters" border="0" alt="NewerCounters" src="http://www.jeff.wilcox.name/wp-content/uploads/2010/07/NewerCounters.jpg" width="486" height="422" />
+
+
+
+  <br /><em>Shipping frame counter information is displayed on the right of the screen.</em></p>
+
+
+
+<p>So moving through the counters, we have the following.</p>
+
+
+
+<p><strong>Render Thread FPS:</strong> The number of frames per second that the independent simple animations and rendering thread is using. Keeping around 60 will provide a great experience, while a number of 30 fps will begin to show a poor experience to the end user.</p>
+
+
+
+<p>Under 30 fps this counter will turn red in post-beta builds.</p>
+
+
+
+<p><strong>User Interface Thread FPS:</strong> The number of fps that the primary user interface thread is experiencing. Property change notifications, data binding, primary managed code execution, and animations not handled on the render thread use this threads’ resources.</p>
+
+
+
+<p>Turns red when the count is at or below 15 fps.</p>
+
+
+
+<p><strong>Texture Memory Usage: </strong>A specialized memory counter indicating the video memory used for storing application textures.</p>
+
+
+
+<p><strong>Surface Counter: </strong>A count of the number of surfaces that are passed to the graphics chip.</p>
+
+
+
+<p><strong>Intermediate Texture Count:</strong> The number of intermediate textures created for compositing.</p>
+
+
+
+<p><strong>Screen Fill Rate:</strong> A metric representing the number of complete phone screens being painted each and every frame.</p>
+
+
+
+<p>This counter was not present in the Beta tools and is a new metric for post-Beta use.</p>
+
+
+
+<h3>Target frame rates for good performance</h3>
+
+
+
+<p>When testing on a Windows Phone device, here are key performance metrics to try for. Understand that the emulator (XDE) performance may not be indicative of actual device performance.</p>
+
+
+
+<p>Frame rate counters may be 0 when there is no animation being updated on the thread at any particular moment. You can add a very simple, continually animating and repeating, animation to your application during development &amp; testing if you want to ensure that there is always some frame rate value available.</p>
+
+
+
+<table border="0" cellspacing="0" cellpadding="4" width="641"><tbody>
+
+    <tr>
+
+      <td valign="top" width="171"><em>Counter</em></td>
+
+
+
+      <td valign="top" width="162"><em>Ideal Minimum</em></td>
+
+
+
+      <td valign="top" width="155"><em>Best Experience</em></td>
+
+
+
+      <td valign="top" width="151"><em>Theoretical Max</em></td>
+
+    </tr>
+
+
+
+    <tr>
+
+      <td valign="top" width="182">Render Thread</td>
+
+
+
+      <td valign="top" width="170">30 fps</td>
+
+
+
+      <td valign="top" width="162">60 fps</td>
+
+
+
+      <td valign="top" width="156">120 fps</td>
+
+    </tr>
+
+
+
+    <tr>
+
+      <td valign="top" width="184">UI Thread</td>
+
+
+
+      <td valign="top" width="173">15 fps</td>
+
+
+
+      <td valign="top" width="165">&gt; 15 fps</td>
+
+
+
+      <td valign="top" width="159">120 fps</td>
+
+    </tr>
+
+
+
+    <tr>
+
+      <td valign="top" width="183">Screen Fill Rate</td>
+
+
+
+      <td valign="top" width="173">1.0</td>
+
+
+
+      <td valign="top" width="167">&lt;= 2.0</td>
+
+
+
+      <td valign="top" width="161"><font color="#a5a5a5">N/A</font></td>
+
+    </tr>
+
+  </tbody></table>
+
+
+
 <p>Future posts will cover tips for improving the frame rate and application performance. Hope this helps.</p>

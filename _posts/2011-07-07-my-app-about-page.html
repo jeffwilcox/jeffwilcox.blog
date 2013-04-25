@@ -51,7 +51,7 @@ tags: []
 
 <p>In code behind, I’m then hooking up a few quick things…</p>
 
-<pre class="c-sharp" name="code">private void HyperlinkButton_Click(object sender, RoutedEventArgs e)
+<pre class="brush: c-sharp">private void HyperlinkButton_Click(object sender, RoutedEventArgs e)
 {
     string s = ((ButtonBase)sender).Tag as string;
 
@@ -66,7 +66,7 @@ tags: []
 
 <p>And the version that I pull in isn’t pretty code, but it’ll grab it from the manifest file. This can be done in the constructor or in the OnNavigatedTo event:</p>
 
-<pre class="c-sharp" name="code">Uri manifest = new Uri(&quot;WMAppManifest.xml&quot;, UriKind.Relative);
+<pre class="brush: c-sharp">Uri manifest = new Uri(&quot;WMAppManifest.xml&quot;, UriKind.Relative);
 var si = Application.GetResourceStream(manifest);
 if (si != null)
 {
@@ -145,7 +145,7 @@ else
 
 <p>This is probably way too code heavy, but hey it works. It uses the app’s GetResourceStream to load the LICENSE.txt from the installation directory. I also decided that when the code encounters a blank line, that the next will have full opacity (instead of 0.7), so it stands out. This helps designate ‘sections’ in the text.</p>
 
-<pre class="c-sharp" name="code">private void Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
+<pre class="brush: c-sharp">private void Pivot_SelectionChanged(object sender, SelectionChangedEventArgs e)
 {
     Pivot piv = (Pivot)sender;
     if (piv.SelectedIndex &gt; 0 &amp;&amp; _licenses == null)
@@ -240,7 +240,7 @@ else
 
 <p>Here is a version of the control; I’ve removed a few dependencies I had on other components I had build to support my projects. The control is a ContentControl and has no default style so it’s simple to get going.</p>
 
-<pre class="c-sharp" name="code">using System.Windows.Controls;
+<pre class="brush: c-sharp">using System.Windows.Controls;
 using System;
 using System.Windows;
 using System.Net;
