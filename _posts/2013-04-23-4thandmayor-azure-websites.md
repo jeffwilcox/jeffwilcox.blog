@@ -9,27 +9,27 @@ After several years of hosting the production web services and web site for my f
 
 Thanks to the magic of DNS, I actually had the application deployed both on Amazon and Microsoft's clouds using DNS round robin for a while, helping me make sure that I had a high level of confidence in the fault tolerance of my application. Fun stuff.
 
-![.]({{ site.cdn }}4thwazblog/vsPublish.png =700x469 "title")
+![Publishing a cloud service to Windows Azure.]({{ site.cdn }}4thwazblog/vsPublish.png =700x469 "The Publish dialog for Cloud Services in Visual Studio.")
 
-![.]({{ site.cdn }}4thwazblog/vsCscfg.png =700x240 "title")
+![Configuring the cloud service by providing information about the certificate chain.]({{ site.cdn }}4thwazblog/vsCscfg.png =700x240 "A look at the CSCFG configuration for the cloud service.")
 
-![.]({{ site.cdn }}4thwazblog/vsWebConfig.png =700x523 "title")
+![Setting up the redirection options in the web.config that the redirection service uses.]({{ site.cdn }}4thwazblog/vsWebConfig.png =700x523 "The web.config file for the reverse proxy.")
 
-![.]({{ site.cdn }}4thwazblog/cloudServicesUploadCertificate.png =496x348 "title")
+![Uploading a certificate in the Azure management portal.]({{ site.cdn }}4thwazblog/cloudServicesUploadCertificate.png =496x348 "Uploading a certificate in the Azure management portal.")
 
-![.]({{ site.cdn }}4thwazblog/cloudServicesCertificates.png =700x229 "title")
+![Viewing the certificates associated with a cloud service. This includes the certificate chain with intermediate certs.]({{ site.cdn }}4thwazblog/cloudServicesCertificates.png =700x229 "Viewing the certificates associated with a cloud service.")
 
-![.]({{ site.cdn }}4thwazblog/mongoConnectionInfoToolbar.png =405x60 "title")
+![The contextual menu for the store service, MongoLab. Connection Info reveals the connection string to connect to the MongoDB.]({{ site.cdn }}4thwazblog/mongoConnectionInfoToolbar.png =405x60 "The contextual menu for the store purchase.")
 
-![.]({{ site.cdn }}4thwazblog/mongoConnectionInfo.png =500x445 "title")
+![The connection string for the MongoLab shared MongoDB instance.]({{ site.cdn }}4thwazblog/mongoConnectionInfo.png =500x445 "Connection information for the store.")
 
-![.]({{ site.cdn }}4thwazblog/mongoPersonalize.png =700x456 "title")
+![Providing a name for the service.]({{ site.cdn }}4thwazblog/mongoPersonalize.png =700x456 "Naming the service.")
 
-![.]({{ site.cdn }}4thwazblog/mongoAddOn.png =700x457 "title")
+![Adding a MongoDB shared instance through the service that MongoLab offers.]({{ site.cdn }}4thwazblog/mongoAddOn.png =700x457 "Adding a MongoLab add-on.")
 
-![.]({{ site.cdn }}4thwazblog/csrRequest.png =700x490 "title")
+![Providing the certificate signing request.]({{ site.cdn }}4thwazblog/csrRequest.png =700x490 "Submitting the CSR request online to the certificate authority.")
 
-![.]({{ site.cdn }}4thwazblog/csrSummary.png =700x490 "title")
+![The process according to the CSR reseller web site.]({{ site.cdn }}4thwazblog/csrSummary.png =700x490 "A summary according to the CSR reseller w.r.t. the process.")
 
 SSL FTW
 =======
