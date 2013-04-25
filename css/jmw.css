@@ -8,7 +8,8 @@ body {
 }
 
 .navbar-inverse .navbar-inner {
-  background-color: #0072C6;
+  background-color: #595959;
+  /* background-color: #0072C6; */
 }
 
 code {
@@ -22,6 +23,7 @@ h3 {
 
 h1 {
     padding-bottom: 20px;
+    font-size: 24pt;
 }
 
 .nav-tabs > .active > a {
