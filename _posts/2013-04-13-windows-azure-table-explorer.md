@@ -56,7 +56,7 @@ The Node.js SDK is powerful, simple, and acts exactly like any Node.js module. Y
 
 All interactions with the table service are done through a simple table service instance that lets you query entities, insert entities, etc.
 
-<pre class="js" name="code">
+<pre class="brush: js">
 var azure = require('azure');
 var tableService = azure.createTableService();
 </pre>
@@ -121,7 +121,7 @@ To expose JSON-serving endpoints for my web app, I'm creating a small [Express](
 
 So for my Express JSON routes, I just expose 2 GET operations: getting the name of all the tables in my storage account, and then also one to work on returning a set of rows from a table. I then have a DELETE operation for removing rows from a table.
 
-<pre class="js" name="code">
+<pre class="brush: js">
 var   express = require('express')
     , app = module.exports = express()
     , queryTables = require('./json/queryTables')
@@ -153,7 +153,7 @@ This is easy to do since the Azure SDK will look for credentials using environme
 
 So these lines of code are the same when you use the environment variables:
 
-<pre class="js" name="code">
+<pre class="brush: js">
 var azure = require('azure');
 var tableService = azure.createTableService(); // implicitly use env variables
 
@@ -166,7 +166,7 @@ So to do this, whenever a request comes in for the `/json/*` routes of my applic
 
 Here's the Express middleware I am exposing. I am wrapping the createTableService call in a try/catch as the function will perform some basic validation, such as checking for a base64 access key - it will throw if these conditions are not met.
 
-<pre class="js" name="code">
+<pre class="brush: js">
 var azure = require('azure');
 
 module.exports = function getTableServiceInstance(req, res, next) {
@@ -189,7 +189,7 @@ module.exports = function getTableServiceInstance(req, res, next) {
 
 And then to plug this in to the routes, here is the routing source I am using with Express for my json endpoints:
 
-<pre class="js" name="code">
+<pre class="brush: js">
 var   express = require('express')
     , app = module.exports = express()
 
@@ -224,7 +224,7 @@ So the actual implementation is super quick:
 
 Here's the entire file for `routes/json/queryTables.js`:
 
-<pre class="js" name="code">
+<pre class="brush: js">
 var send = require('./send');
 
 module.exports = function queryTables (req, res, next) {
@@ -331,7 +331,7 @@ Once the page is ready, jQuery will let me go ahead and start writing code to ma
 
 I also hook up a global AJAX error event with jQuery. This will make it easy to at least display a message or show the credentials entry portion of the UI. Here's my AjaxError code.
 
-<pre class="js" name="code">
+<pre class="brush: js">
 $(document).ajaxError(function (event, request, settings) {
     ++ajaxErrorCount;
 
@@ -364,7 +364,7 @@ Listing all the tables in an account
 
 We've already looked at the code exposed in the `/json/table` endpoint to return all of the tables in my storage account. Let's wire that up in my application code.
 
-<pre class="js" name="code">
+<pre class="brush: js">
  var loadTablesList = function () {
     $.ajax({ 
     	url: "/json/table",
@@ -422,7 +422,7 @@ To actually show table results, I have a general function that is pretty horribl
 
 The function takes in the tableName, current page number, and the continuation token to use if we are requesting the next page:
 
-<pre class="js" name="code">
+<pre class="brush: js">
  function loadTable(tableName, page, continuation) {
     currentTableName = tableName;
 
@@ -463,7 +463,7 @@ In this scenarios, I want to make sure that the pagination UI in the app is upda
 
 A continuation token from the Node SDK is very simple:
 
-<pre class="js" name="code">
+<pre class="brush: js" >
 {
 	nextPartitionKey: "NEXT_PARTITION_KEY_HERE",
 	nextRowKey: "NEXT_ROW_KEY"
@@ -474,7 +474,7 @@ So in the pagination list of pages, each of the associated "pages" (a concept lo
 
 On the server side, this is what the code looks like for our `queryTable` JSON endpoint in Node.js. The code uses SELECT statement, plus optional TOP (# of max results to return) as well as optional starting Continuation Token. It then iterates through and returns this raw JSON data to the AJAX app:
 
-<pre class="js" name="code">
+<pre class="brush: js">
 var   send = require('./send')
     , azure = require('azure')
     , TableQuery = azure.TableQuery;
