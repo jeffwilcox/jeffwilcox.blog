@@ -5,7 +5,9 @@ title: Moving 4th & Mayor to Windows Azure Web Sites
 categories: [windows-azure, cloud, nodejs, 4thandmayor]
 tags: [windows-azure, 4thandmayor, nodejs, cloud, express, websites]
 ---
-After several years of hosting the production web services and web site for my foursquare application called 4th & Mayor with AWS, last month I finally was able to spend a little time to migrate most of the service over to Windows Azure. It has been several weeks and production traffic continues to do well. I wanted to write a little about the migration, mostly as an introduction to the Web Sites product that is in preview mode over in the Microsoft cloud world.
+After several years of hosting the production web services and web site for my foursquare application (4th & Mayor)[https://www.4thandmayor.com/]) with AWS, last month I finally was able to spend a little time to migrate most of the service over to Windows Azure. It has been several weeks and production traffic continues to do well, with no downtime. I'm hosting the core set of services using Windows Azure Web Sites
+
+ I wanted to write a little about the migration, mostly as an introduction to the Web Sites product that is in preview mode over in the Microsoft cloud world.
 
 Thanks to the magic of DNS, I actually had the application deployed both on Amazon and Microsoft's clouds using DNS round robin for a while, helping me make sure that I had a high level of confidence in the fault tolerance of my application. Fun stuff.
 
