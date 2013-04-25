@@ -20,7 +20,7 @@ imported_categories:
 imported_link_categories: []
 tags: []
 ---
-<p>To provide users the ability to copy permalinks or store other useful information in the clipboard, there aren&#8217;t many options for web developers today.&#160; There&#8217;s no APIs inside JavaScript to access the clipboard.&#160; Here&#8217;s a solution that will at least enable this from your Silverlight 2 app for most of your users.</p>  <h3>Internet Explorer-only Clipboard Access</h3>  <p>IE provides limited <a href="http://msdn.microsoft.com/en-us/library/ms536744(VS.85).aspx" target="_blank">clipboard support</a> in script. Using the interoperability features in Silverlight this data can be accessed.&#160; The user will be prompted to approve the clipboard access using this method.</p>  <p>Open <a href="http://media.jeff.wilcox.name/blog/sampleApps/beta1/ieClipboard/TestPage.html" target="_blank">IE Clipboard demo</a> (133k)     <br /><font color="#808080">Requires Silverlight 2 Beta 1</font></p>  <p></p>  <p>Here&#8217;s the static clipboard method I created to attempt to write to the clipboard.&#160; If the user denies the request, or the clipboard API is not available, an alert informs the user.&#160; A successful write to the clipboard does not result in any visual confirmation.</p>  <p><strong>Clipboard.cs</strong>:</p>  <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:db0442fc-7e67-4a2a-ae1f-9a75afa95f1f" style="padding-right: 0px; display: inline; padding-left: 0px; float: none; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">using System;
+<p>To provide users the ability to copy permalinks or store other useful information in the clipboard, there aren&#8217;t many options for web developers today.&#160; There&#8217;s no APIs inside JavaScript to access the clipboard.&#160; Here&#8217;s a solution that will at least enable this from your Silverlight 2 app for most of your users.</p>  <h3>Internet Explorer-only Clipboard Access</h3>  <p>IE provides limited <a href="http://msdn.microsoft.com/en-us/library/ms536744(VS.85).aspx" target="_blank">clipboard support</a> in script. Using the interoperability features in Silverlight this data can be accessed.&#160; The user will be prompted to approve the clipboard access using this method.</p>  <p>Open <a href="http://media.jeff.wilcox.name/blog/sampleApps/beta1/ieClipboard/TestPage.html" target="_blank">IE Clipboard demo</a> (133k)     <br /><font color="#808080">Requires Silverlight 2 Beta 1</font></p>  <p></p>  <p>Here&#8217;s the static clipboard method I created to attempt to write to the clipboard.&#160; If the user denies the request, or the clipboard API is not available, an alert informs the user.&#160; A successful write to the clipboard does not result in any visual confirmation.</p>  <p><strong>Clipboard.cs</strong>:</p>  <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:db0442fc-7e67-4a2a-ae1f-9a75afa95f1f" style="padding-right: 0px; display: inline; padding-left: 0px; float: none; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="brush: c-sharp">using System;
 using System.Windows.Browser;
 
 namespace ClipboardDemo
@@ -53,7 +53,7 @@ namespace ClipboardDemo
 
 <p>In the button event handler in my demo app, I simply call the static method to write to the clipboard:</p>
 
-<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:9aa0a396-6168-46aa-8356-bdaa97508207" style="padding-right: 0px; display: inline; padding-left: 0px; float: none; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">        private void Go_Click(object sender, RoutedEventArgs e)
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:9aa0a396-6168-46aa-8356-bdaa97508207" style="padding-right: 0px; display: inline; padding-left: 0px; float: none; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="brush: c-sharp">        private void Go_Click(object sender, RoutedEventArgs e)
         {
             Clipboard.SetText(ClipboardText.Text);
         }</pre></div>
@@ -80,7 +80,7 @@ namespace ClipboardDemo
 
 <p><strong>Clipboard.cs</strong>:</p>
 
-<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:72e1618b-d3bc-4ac1-afde-0a4cd084352a" style="padding-right: 0px; display: inline; padding-left: 0px; float: none; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">using System;
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:72e1618b-d3bc-4ac1-afde-0a4cd084352a" style="padding-right: 0px; display: inline; padding-left: 0px; float: none; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="brush: c-sharp">using System;
 using System.Windows.Browser;
 
 namespace ClipboardDemo

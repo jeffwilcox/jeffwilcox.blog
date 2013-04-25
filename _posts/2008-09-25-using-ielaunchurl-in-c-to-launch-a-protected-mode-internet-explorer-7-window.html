@@ -26,7 +26,7 @@ imported_categories:
 imported_link_categories: []
 tags: []
 ---
-<p>By popular demand, here's the C# equivalent of the C/C++ program I posted earlier today. As things work in the Windows native code world, the C# equivalent takes about 80 lines of code (vs 30). Might be the XML comments though.</p> <p>The main method to the program; if the URL is passed in as a parameter, it will be sent to IE.</p> <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:dcc98cba-b2a0-41bf-aa08-4916bf9d23bb" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">class Program
+<p>By popular demand, here's the C# equivalent of the C/C++ program I posted earlier today. As things work in the Windows native code world, the C# equivalent takes about 80 lines of code (vs 30). Might be the XML comments though.</p> <p>The main method to the program; if the URL is passed in as a parameter, it will be sent to IE.</p> <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:dcc98cba-b2a0-41bf-aa08-4916bf9d23bb" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="brush: c-sharp">class Program
 {
     static int Main(string[] args)
     {
@@ -41,7 +41,7 @@ tags: []
 <p>Here's the helper class and native methods that I came up with. The return value of LaunchInternetExplorer is the PID, or 0. If the machine is not running Windows Vista, then you'll receive a NotSupportedException.</p>
 <p><strong>ProtectedModeHelper.cs</strong></p>
 <p>
-<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:483e2c80-0320-4c32-a361-359e7e2e87b3" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">using System;
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:483e2c80-0320-4c32-a361-359e7e2e87b3" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="brush: c-sharp">using System;
 using System.Runtime.InteropServices;
 
 namespace YourNamespaceHere

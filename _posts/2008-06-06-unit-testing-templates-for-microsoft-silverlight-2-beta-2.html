@@ -41,48 +41,92 @@ tags:
   slug: visual-studio
   autoslug: visual-studio
 ---
-The unit test framework binaries that we released for Silverlight 2 Beta 1 work just fine with <a href="http://weblogs.asp.net/scottgu/archive/2008/06/06/silverlight-2-beta2-released.aspx">Silverlight 2 Beta 2, that was just released today</a>.  However with the updated project file format for Beta 2, I've gone ahead and prepared updated templates that you should download and install.  There's no need at this time to upgrade the actual test framework binaries.
-<h3>Introducing Visual Basic test project templates for Beta 2</h3>
-This was a big ask previously.  Today I'm providing both C# and VB project templates.
-<h3>Download updated Visual Studio test project templates for Beta 2</h3>
-To simplify adding test projects and classes to your .NET Silverlight applications and class libraries, these templates will quickly add a new test project and wire up the test framework so that you can right-click, set the StartUp project, and run the tests.
-
-<strong>Unit test project template for Silverlight 2 Beta 2</strong>
-
-C#: <a href="http://media.jeff.wilcox.name/blog/silverlight/beta2/unit_testing/templates/SilverlightTestProject_Beta2.zip">Download</a>
-VB: <a href="http://media.jeff.wilcox.name/blog/silverlight/beta2/unit_testing/templates/SilverlightTestProject_Beta2_VB.zip">Download</a>
-
-<small><em>To install</em>: save this file into your “%userprofile%\Documents\Visual Studio 2008\Templates\ProjectTemplates” directory</small>
-
-<strong>Test class item template for Silverlight 2 Beta 2</strong>
-
-C#: <a href="http://media.jeff.wilcox.name/blog/silverlight/beta2/unit_testing/templates/SilverlightTestClass_Beta2.zip">Download</a>
-VB: <a href="http://media.jeff.wilcox.name/blog/silverlight/beta2/unit_testing/templates/SilverlightTestClass_Beta2_VB.zip">Download</a>
-
-<small><em>To install</em>: save this into “%userprofile%\Documents\Visual Studio 2008\Templates\ItemTemplates”</small>
-<h3>Upgrading your existing Silverlight 2 unit test projects</h3>
-With the change to the Application::RootVisual property in Beta 2, the CreateTestPage return value needs to be cast to UIElement for updated test projects to compile.
-
-Here's how to update your existing C# test projects:
-<ol>
-	<li>Open your existing Silverlight unit test project application project in Visual Studio after installing Beta 2</li>
-	<li>Perform an upgrade when prompted by Visual Studio</li>
-	<li>Open the App.xaml.cs file</li>
-	<li>Navigate to the Application_Startup method</li>
-	<li>Modify the RootVisual line by inserting "(UIElement) " before the call to UnitTestSystem.CreateTestPage.</li>
-</ol>
-Here's what the updated Application_Startup line should look like:
-
-<p><pre name="code" class="c-sharp">private void Application_Startup(object sender, StartupEventArgs e)
-{
-    // Hook up and execute this test project
-    this.RootVisual = (UIElement)UnitTestSystem.CreateTestPage(this);
-}</pre></p>
-<h3>What's next</h3>
-Now that Beta 2's out there, on the test front you can expect in the coming weeks:
-<ul>
-	<li>Updated drop of the Microsoft.Silverlight.Testing binaries with a small set of bug fixes and updated features</li>
-	<li>Simple continuous integration support (Team Foundation Build and CruiseControl.NET)</li>
-	<li>Test run reporting and perhaps some other surprises</li>
-</ul>
+The unit test framework binaries that we released for Silverlight 2 Beta 1 work just fine with <a href="http://weblogs.asp.net/scottgu/archive/2008/06/06/silverlight-2-beta2-released.aspx">Silverlight 2 Beta 2, that was just released today</a>.  However with the updated project file format for Beta 2, I've gone ahead and prepared updated templates that you should download and install.  There's no need at this time to upgrade the actual test framework binaries.
+
+<h3>Introducing Visual Basic test project templates for Beta 2</h3>
+
+This was a big ask previously.  Today I'm providing both C# and VB project templates.
+
+<h3>Download updated Visual Studio test project templates for Beta 2</h3>
+
+To simplify adding test projects and classes to your .NET Silverlight applications and class libraries, these templates will quickly add a new test project and wire up the test framework so that you can right-click, set the StartUp project, and run the tests.
+
+
+
+<strong>Unit test project template for Silverlight 2 Beta 2</strong>
+
+
+
+C#: <a href="http://media.jeff.wilcox.name/blog/silverlight/beta2/unit_testing/templates/SilverlightTestProject_Beta2.zip">Download</a>
+
+VB: <a href="http://media.jeff.wilcox.name/blog/silverlight/beta2/unit_testing/templates/SilverlightTestProject_Beta2_VB.zip">Download</a>
+
+
+
+<small><em>To install</em>: save this file into your “%userprofile%\Documents\Visual Studio 2008\Templates\ProjectTemplates” directory</small>
+
+
+
+<strong>Test class item template for Silverlight 2 Beta 2</strong>
+
+
+
+C#: <a href="http://media.jeff.wilcox.name/blog/silverlight/beta2/unit_testing/templates/SilverlightTestClass_Beta2.zip">Download</a>
+
+VB: <a href="http://media.jeff.wilcox.name/blog/silverlight/beta2/unit_testing/templates/SilverlightTestClass_Beta2_VB.zip">Download</a>
+
+
+
+<small><em>To install</em>: save this into “%userprofile%\Documents\Visual Studio 2008\Templates\ItemTemplates”</small>
+
+<h3>Upgrading your existing Silverlight 2 unit test projects</h3>
+
+With the change to the Application::RootVisual property in Beta 2, the CreateTestPage return value needs to be cast to UIElement for updated test projects to compile.
+
+
+
+Here's how to update your existing C# test projects:
+
+<ol>
+
+	<li>Open your existing Silverlight unit test project application project in Visual Studio after installing Beta 2</li>
+
+	<li>Perform an upgrade when prompted by Visual Studio</li>
+
+	<li>Open the App.xaml.cs file</li>
+
+	<li>Navigate to the Application_Startup method</li>
+
+	<li>Modify the RootVisual line by inserting "(UIElement) " before the call to UnitTestSystem.CreateTestPage.</li>
+
+</ol>
+
+Here's what the updated Application_Startup line should look like:
+
+
+
+<p><pre class="brush: c-sharp">private void Application_Startup(object sender, StartupEventArgs e)
+
+{
+
+    // Hook up and execute this test project
+
+    this.RootVisual = (UIElement)UnitTestSystem.CreateTestPage(this);
+
+}</pre></p>
+
+<h3>What's next</h3>
+
+Now that Beta 2's out there, on the test front you can expect in the coming weeks:
+
+<ul>
+
+	<li>Updated drop of the Microsoft.Silverlight.Testing binaries with a small set of bug fixes and updated features</li>
+
+	<li>Simple continuous integration support (Team Foundation Build and CruiseControl.NET)</li>
+
+	<li>Test run reporting and perhaps some other surprises</li>
+
+</ul>
+
 Hope this helps!

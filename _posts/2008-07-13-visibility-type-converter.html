@@ -14,7 +14,7 @@ imported_categories:
 imported_link_categories: []
 tags: []
 ---
-<p>I received a question a few weeks ago from a customer who was trying to show and hide a button inside a data grid row.&nbsp; This developer had a boolean property exposed inside the data model that indicated whether an item was in stock; at that time, a "Buy" button should appear.</p> <p>By using a type converter and data binding, we can make this scenario work pretty easily.&nbsp; Here's the finished appearance that we're going for:</p> <p><img src="http://media.jeff.wilcox.name/blog/sampleApps/beta2/DataGridSample080713.png"/> </p> <p>The solution I recommended had these components:</p> <ul> <li>Create a value converter for <font color="#0000ff">bool</font> and System.Windows.<font color="#0000ff">Visibility</font>.&nbsp; (IValueConverter)  </li><li>Add the converter into the user control's resources.  </li><li>Use a DataGridTemplateColumn to define the optional button, and data bind the Visibility property of the button to the boolean data source property, specifying the converter.</li></ul> <h3>Defining the data</h3> <p>I'm sticking to a really simple data definition for binding.</p> <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:afbfc03d-f692-4d4e-8eee-e9cc6e16b3b9" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">using System;
+<p>I received a question a few weeks ago from a customer who was trying to show and hide a button inside a data grid row.&nbsp; This developer had a boolean property exposed inside the data model that indicated whether an item was in stock; at that time, a "Buy" button should appear.</p> <p>By using a type converter and data binding, we can make this scenario work pretty easily.&nbsp; Here's the finished appearance that we're going for:</p> <p><img src="http://media.jeff.wilcox.name/blog/sampleApps/beta2/DataGridSample080713.png"/> </p> <p>The solution I recommended had these components:</p> <ul> <li>Create a value converter for <font color="#0000ff">bool</font> and System.Windows.<font color="#0000ff">Visibility</font>.&nbsp; (IValueConverter)  </li><li>Add the converter into the user control's resources.  </li><li>Use a DataGridTemplateColumn to define the optional button, and data bind the Visibility property of the button to the boolean data source property, specifying the converter.</li></ul> <h3>Defining the data</h3> <p>I'm sticking to a really simple data definition for binding.</p> <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:afbfc03d-f692-4d4e-8eee-e9cc6e16b3b9" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="brush: c-sharp">using System;
 
 /// &lt;summary&gt;
 /// My awesome data model.
@@ -42,7 +42,7 @@ public class MyData
 </pre></div>
 <h3>Creating the value converter</h3>
 <p>Next, we need to create a converter to go between bool values and Visibility.&nbsp; Here's that:</p>
-<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:818bd1b6-3ef4-4be5-8183-80ad0f251cbd" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">using System;
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:818bd1b6-3ef4-4be5-8183-80ad0f251cbd" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="brush: c-sharp">using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
@@ -104,7 +104,7 @@ public class VisibilityConverter : IValueConverter
 &lt;/my:DataGrid&gt;
 </pre></div>
 <p>And finally, here's the sample data I used:</p>
-<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:a9cca89d-3a74-493b-8b2f-04ac2c5566da" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre name="code" class="c-sharp">List&lt;MyData&gt; sampleData = new List&lt;MyData&gt;
+<div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:a9cca89d-3a74-493b-8b2f-04ac2c5566da" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="brush: c-sharp">List&lt;MyData&gt; sampleData = new List&lt;MyData&gt;
 {
     new MyData
     {
