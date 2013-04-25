@@ -14,13 +14,13 @@ imported_categories:
 imported_link_categories: []
 tags: []
 ---
-<p>One thing that’s surprisingly hard to do on the Windows Phone is take screenshots of your application when it is running. Here’s a really simple solution that I coded up while working with some customers – you just give it an interval of time and it’ll take screenshots every few seconds, storing the resulting image as a JPEG in isolated storage.</p>  <p>This is useful for apps that need to be running on a real device, or if you need to capture transitions or difficult-to-reproduce actions.</p>  <h3>Using ScreenShots.cs</h3>  <p>Drop the code into your project, or use NuGet. Then, open up App.xaml.cs (where the performance counters and other debug viz tools are) and add this code to enable the screenshots:</p>  <pre class="csharp" name="code">ScreenShots.BeginTakingPictures();</pre>
+<p>One thing that’s surprisingly hard to do on the Windows Phone is take screenshots of your application when it is running. Here’s a really simple solution that I coded up while working with some customers – you just give it an interval of time and it’ll take screenshots every few seconds, storing the resulting image as a JPEG in isolated storage.</p>  <p>This is useful for apps that need to be running on a real device, or if you need to capture transitions or difficult-to-reproduce actions.</p>  <h3>Using ScreenShots.cs</h3>  <p>Drop the code into your project, or use NuGet. Then, open up App.xaml.cs (where the performance counters and other debug viz tools are) and add this code to enable the screenshots:</p>  <pre class="brush: c-sharp">ScreenShots.BeginTakingPictures();</pre>
 
 <p>Of course you could also add it just to a specific page.</p>
 
 <p>The default interval for captures is every 2 seconds, but you can optionally provide a value for that, too. For example, to take two pictures a second,</p>
 
-<pre class="csharp" name="code">ScreenShots.BeginTakingPictures(0.5);</pre>
+<pre class="brush: c-sharp">ScreenShots.BeginTakingPictures(0.5);</pre>
 
 <p>Reminder: don’t ship with this as you’ll fill your phone’s storage with captures! I’d recommend commenting out the code most of the time. You could also add screen shot capability in a hidden debug screen in your app, etc.</p>
 
@@ -54,7 +54,7 @@ tags: []
 
 <p>Or here’s the source:</p>
 
-<pre class="csharp" name="code">//
+<pre class="brush: c-sharp">//
 // Copyright (c) 2010-2011 Jeff Wilcox
 //
 // Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
