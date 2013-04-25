@@ -9,28 +9,6 @@ After several years of hosting the production web services and web site for my f
 
 Thanks to the magic of DNS, I actually had the application deployed both on Amazon and Microsoft's clouds using DNS round robin for a while, helping me make sure that I had a high level of confidence in the fault tolerance of my application. Fun stuff.
 
-![Publishing a cloud service to Windows Azure.]({{ site.cdn }}4thwazblog/vsPublish.png =700x469 "The Publish dialog for Cloud Services in Visual Studio.")
-
-![Configuring the cloud service by providing information about the certificate chain.]({{ site.cdn }}4thwazblog/vsCscfg.png =700x240 "A look at the CSCFG configuration for the cloud service.")
-
-![Setting up the redirection options in the web.config that the redirection service uses.]({{ site.cdn }}4thwazblog/vsWebConfig.png =700x523 "The web.config file for the reverse proxy.")
-
-![Uploading a certificate in the Azure management portal.]({{ site.cdn }}4thwazblog/cloudServicesUploadCertificate.png =496x348 "Uploading a certificate in the Azure management portal.")
-
-![Viewing the certificates associated with a cloud service. This includes the certificate chain with intermediate certs.]({{ site.cdn }}4thwazblog/cloudServicesCertificates.png =700x229 "Viewing the certificates associated with a cloud service.")
-
-![The contextual menu for the store service, MongoLab. Connection Info reveals the connection string to connect to the MongoDB.]({{ site.cdn }}4thwazblog/mongoConnectionInfoToolbar.png =405x60 "The contextual menu for the store purchase.")
-
-![The connection string for the MongoLab shared MongoDB instance.]({{ site.cdn }}4thwazblog/mongoConnectionInfo.png =500x445 "Connection information for the store.")
-
-![Providing a name for the service.]({{ site.cdn }}4thwazblog/mongoPersonalize.png =700x456 "Naming the service.")
-
-![Adding a MongoDB shared instance through the service that MongoLab offers.]({{ site.cdn }}4thwazblog/mongoAddOn.png =700x457 "Adding a MongoLab add-on.")
-
-![Providing the certificate signing request.]({{ site.cdn }}4thwazblog/csrRequest.png =700x490 "Submitting the CSR request online to the certificate authority.")
-
-![The process according to the CSR reseller web site.]({{ site.cdn }}4thwazblog/csrSummary.png =700x490 "A summary according to the CSR reseller w.r.t. the process.")
-
 SSL FTW
 =======
 
@@ -82,6 +60,33 @@ New Web Site...
 
 ![My application looks for an environment variable named MODE that then tells it which configuration files to use. This lets me use the same exact application source for dev, staging, and production environments, without worrying too much about the specifics of implementing such a system.]({{ site.cdn }}4thwazblog/stagingMode.png =700x400 "Setting up an app-specific environment variable.")
 
+Hosted MongoDB
+==============
+
+I use MongoDB for storing a lot of information about push notifications and app users. Mongo has been a great experience for me, and is relatively inexpensive: I use a third-party shared MongoDB hosting provider, [MongoLab.com](http://www.mongolab.com/). Previously I had a paid product (about $40 a month) in the AWS US-East-1 region.
+
+Windows Azure also has MongoLab and hosted Mongo support. MongoLab just makes things easy, you no longer have to worry about actually running the database (devops, etc.) and just use the connection info and let them manage the service.
+
+In Windows Azure, the MongoLab hosting service is available free (for a 500MB max MongoDB shared instance) - yup - $0.00 per month. Awesome.
+
+The Windows Azure Store is simple - just like creating any other service inside the management portal online, I just hit New, go to the Add-ons, and then find the MongoLab service.
+
+![Adding a MongoDB shared instance through the service that MongoLab offers.]({{ site.cdn }}4thwazblog/mongoAddOn.png =700x457 "Adding a MongoLab add-on.")
+
+You then get to provide a name for the service.
+
+![Providing a name for the service.]({{ site.cdn }}4thwazblog/mongoPersonalize.png =700x456 "Naming the service.")
+
+Once it is created (this took about 60 seconds for me when I recently tried), you highlight the service and the contextual toolbar at the bottom of the portal will update.
+
+![The contextual menu for the store service, MongoLab. Connection Info reveals the connection string to connect to the MongoDB.]({{ site.cdn }}4thwazblog/mongoConnectionInfoToolbar.png =405x60 "The contextual menu for the store purchase.")
+
+Just go ahead and hit Connection Info, and the connection string you will use is there. The connection is open to the web, so you can use the Mongo tools locally or from the cloud to copy and migrate, or backup, data.
+
+![The connection string for the MongoLab shared MongoDB instance.]({{ site.cdn }}4thwazblog/mongoConnectionInfo.png =500x445 "Connection information for the store.")
+
+So for my app, I just update my configuration JSON files and redeploy and boom, the free MongoDB instance is being used.
+
 Web Sites + Custom SSL Certs
 ============================
 
@@ -92,6 +97,71 @@ Reading through previous posts about the Web Sites preview functionality, in tim
 The complete post on ()[http://www.bradygaster.com/running-ssl-with-windows-azure-web-sites] is a good reference and you should follow that. This is just a short summary.
 
 For setting up the SSL reverse proxy with custom certificates I need to use my Windows workstation, Visual Studio 2012, and the Windows Azure SDK for Visual Studio. So, switching away from the Mac for this part.
+
+SSL Certificates
+----------------
+Most web developers have been through this dance a few times - I've used Comodo and other reseller-friendly certificate services in the past through GoDaddy and NameCheap.
+
+Most of the cheap certs are just fine and verify that you control the domain name in question. If you're looking for the fancy "green" security bar though, you'll need an EV cert and those typically actually have a much more involved verification process - for an LLC they will check records in D&B, perhaps require proof of a corporate bank account, look for legal documentation or business licenses, etc. So this isn't about that process.
+
+### Creating a signing request
+
+When you get a signing certificate, you never have to transmit the private key to the certificate authority - instead, you just send a .CSR file - a signing request.
+
+To generate this, just use OpenSSL.
+
+For 4th & Mayor, I moved this year from a standard certificate (for www.4thandmayor.com) to a wildcard certificate (`*.4thandmayor.com`, includes any subdomain) - this allows me to secure endpoints like `api.4thandmayor.com` and `staging.4thandmayor.com` as well. The wildcard cert did cost about $100 more for a year.
+
+Don't forget to renew and keep your deployed certs up-to-date ;-)
+
+> Fun Windows trick: if you have the Git Bash installed, just run it - `openssl` is available in the command prompt.
+
+So from a command prompt:
+
+`$ openssl req -nodes -newkey rsa:2048 -nodes -keyout 4thandmayor-wildcard.key -out 4thandmayor-wildcard.csr -subj "/C=US/ST=Washington/L=Seattle/O=Wilcox Digital, LLC/OU=Corporate/CN=*.4thandmayor.com"`
+
+It will then generate and save the `.key` file - save that - it is your private key - keep it safe, like Frodo.
+
+```
+Generating a 2048 bit RSA private key
+..................................................................+++
+.......................................+++
+writing new private key to '4thandmayor-wildcard.key'
+```
+
+![Providing the certificate signing request.]({{ site.cdn }}4thwazblog/csrRequest.png =700x490 "Submitting the CSR request online to the certificate authority.")
+
+At this point you'll just wait for the verification process and then be able to download the certificate and any needed intermediate chain to then install on your web servers or your cloud service.
+
+![The process according to the CSR reseller web site.]({{ site.cdn }}4thwazblog/csrSummary.png =700x490 "A summary according to the CSR reseller w.r.t. the process.")
+
+As I was making the request on my Mac (Windows may be different), I need to generate a .PFX file which contains the private key, certificate, any intermediate certs, and optionally a password to protect it all. Since my "EssentialSSL" branded certificate is actually built on the trust of a few intermediate Certificate Authorities and resellers, you need the full chain to effectively validate the cert in the end.
+
+### Creating a PFX/xxxxx
+
+I munge these things using OpenSSL. Note that these are the commands I used, but every CA is going to be a little different.
+
+Step One: combine all the intermediate chain certs into an intermediate file (these are all just text files, BTW)
+
+`$ cat AddTrustExternalCARoot.crt UTNAddTrustSGCCA.crt ComodoUTNSGCCA.crt EssentialSSLCA_2.crt > intermediates.crt`
+
+Next, to export the PFX file (actually PKCS12 format)... it will prompt you for a password, too.
+
+`$ openssl pkcs12 -export -in 4thandmayor-wildcard.crt -inkey 4thandmayor-wildcard.key -certfile intermediates.crt -out 4thandmayor-wildcard.pfx`
+
+Keep this file safe. Super safe. It has your private key, certificate, and everything in it. You'll upload it to Windows Azure soon.
+
+Cloud Service
+-------------
+![Publishing a cloud service to Windows Azure.]({{ site.cdn }}4thwazblog/vsPublish.png =700x469 "The Publish dialog for Cloud Services in Visual Studio.")
+
+![Configuring the cloud service by providing information about the certificate chain.]({{ site.cdn }}4thwazblog/vsCscfg.png =700x240 "A look at the CSCFG configuration for the cloud service.")
+
+![Setting up the redirection options in the web.config that the redirection service uses.]({{ site.cdn }}4thwazblog/vsWebConfig.png =700x523 "The web.config file for the reverse proxy.")
+
+![Uploading a certificate in the Azure management portal.]({{ site.cdn }}4thwazblog/cloudServicesUploadCertificate.png =496x348 "Uploading a certificate in the Azure management portal.")
+
+![Viewing the certificates associated with a cloud service. This includes the certificate chain with intermediate certs.]({{ site.cdn }}4thwazblog/cloudServicesCertificates.png =700x229 "Viewing the certificates associated with a cloud service.")
 
 DNS
 ===
