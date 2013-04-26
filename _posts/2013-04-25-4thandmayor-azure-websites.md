@@ -5,44 +5,101 @@ title: Moving 4th & Mayor to Windows Azure Web Sites
 categories: [windows-azure, cloud, nodejs, 4thandmayor]
 tags: [windows-azure, 4thandmayor, nodejs, cloud, express, websites]
 ---
-After several years of hosting the production web services and web site for my foursquare application (4th & Mayor)[https://www.4thandmayor.com/]) with AWS, last month I finally was able to spend a little time to migrate most of the service over to Windows Azure. It has been several weeks and production traffic continues to do well, with no downtime. I'm hosting the core set of services using Windows Azure Web Sites
+After several years of hosting the production web services and web site for my foursquare application [4th & Mayor](https://www.4thandmayor.com/) on AWS, last month I finally was able to spend a little time to migrate most of the service over to Windows Azure. It has been several weeks and production traffic continues to do great.
 
- I wanted to write a little about the migration, mostly as an introduction to the Web Sites product that is in preview mode over in the Microsoft cloud world.
+I'm hosting the core set of services using Windows Azure Web Sites (super easy to use and deploy). I wanted to write a little about the migration, mostly as an introduction to the Web Sites product that is in preview mode over in the Microsoft cloud world.
 
-Thanks to the magic of DNS, I actually had the application deployed both on Amazon and Microsoft's clouds using DNS round robin for a while, helping me make sure that I had a high level of confidence in the fault tolerance of my application. Fun stuff.
+Thanks to the magic of DNS, I actually had the application deployed both on Amazon and Microsoft's clouds using DNS round robin for a while, helping me make sure that I had a high level of confidence in the fault tolerance of my application.
+
+This post will focus on the higher level steps required, some workarounds I did for SSL, and less on the step-by-step and data migration challenges I faced. As the cloud backend for the app is written in Node.js, there was no real app porting or coding work required as much as configuring the infrastructure and deploying.
 
 SSL FTW
 =======
 
-My application makes connections to the cloud to work with API surface area that I expose for live tiles, push notification registration, and other services. I need these requests to be secured with HTTPS to protect information like push channel URIs, potential customer data, and other situations.
-
-I'd also like to be able to expose functionality on my web site for the app's marketing and users to do their own diagnostics work. This should also support SSL. Everything should be SSL today!
+My app makes connections to the cloud to work with API surface area that I expose for live tiles and push notification registration. These requests need to be secured with SSL. I also expose functionality on the web site for the app's marketing and user diagnostics.
 
 ![A screen capture of the web browser showing the key icon and graphics to show that the site has been served in a secure manner.]({{ site.cdn }}4thwazblog/4thandmayorSsl.png =700x100 "4thandmayor.com with SSL, site hosted by Windows Azure")
 
-Here's the kicker: Web Sites supports SSL using Microsoft's wildcard certs for `*.azurewebsites.net` - this is great and completely secure for a ton of applications today. In time, the service will support custom certificates for Web Sites.
+Here's the kicker: Web Sites supports SSL using Microsoft's wildcard certs for `*.azurewebsites.net` - great and secure for many apps today. In time, the service will support custom certificates for Web Sites via SNI. But today you cannot bring your own certs for it. My production app already uses my own custom certs.
 
-Brady Gaster has a really good solution for the interim here: (Running SSL with Windows Azure Web Sites Today)[http://www.bradygaster.com/running-ssl-with-windows-azure-web-sites] - this is what I have gone with, and though it is a little scary for about 5 minutes when you first read about this solution, it was pretty darn easy to setup and it has completely unblocked me.
+Brady Gaster has a really good solution and tutorial for the interim: [Running SSL with Windows Azure Web Sites Today](http://www.bradygaster.com/running-ssl-with-windows-azure-web-sites) - this is what I have gone with, and though it is a little scary sounding, it was easy to setup and has completely unblocked me.
 
-Production (4th & Mayor)[https://www.4thandmayor.com/] app and site traffic today is using SSL to communicate with the awesome Git-deployed goodness of (Windows Azure Web Sites)[http://www.windowsazure.com/en-us/home/scenarios/web-sites/]. Yes. Winning!
+Production [4th & Mayor](https://www.4thandmayor.com/) app and site traffic today is using SSL to communicate with the awesome Git-deployed goodness of (Windows Azure Web Sites)[http://www.windowsazure.com/en-us/home/scenarios/web-sites/]. Yes. Winning!
 
-Now let's talk about the background a little more before jumping into the "how".
+Background: my Node.js app
+==========================
 
-The background: my Node.js app
-==============================
-
-Implemented in Node.js, the web services and site for the app are super portable as a result: thanks to the nice Node.js support in Windows Azure, the actual application was easy to move with very little changes. I also use some secondary services like MongoDB hosting (provided by the MongoLab guys) and table/blob storage, and a nice thing of this infrastructure world is that I can move and migrate them as I please - it isn't all strongly coupled and is just a matter of identifying resources the right way and having the appropriate credentials available to my app, wherever it may live.
+Implemented in [Node.js](http://nodejs.org/), the web services and site for the app are super portable as a result: there is great support for Node on Windows and Windows Azure. I also use some secondary services like MongoDB hosting (provided by the MongoLab guys) and table/blob storage, and a nice thing of this infrastructure world is that I can move and migrate them as I please - it isn't all strongly coupled and is just a matter of identifying resources the right way and having the appropriate credentials available to my app, wherever it may live.
 
 I was using pure infrastructure services with AWS, and though I loved that level of control, with this migration I've moved to the nice deployment model that Azure Web Sites offers - reducing the complexity in scaling and provisioning new virtual machines as I used to do in AWS. Although not exactly the same, Amazon's Elastic Beanstalk product is pretty similar in some ways, FYI.
 
-> Full disclosure: I'm a development lead on the Windows Azure team and looked to this exercise to learn more about the tools, products and services that we offer. My application is a member of the most excellent [Microsoft BizSpark program](http://www.microsoft.com/bizspark/) which offers a nice set of free cloud services for the time being, helping me to control my app's CapEx.
+> Full disclosure: I'm a dev lead on the Windows Azure team and looked to this exercise to learn more about the tools, products and services that we offer. My application is a member of the [Microsoft BizSpark program](http://www.microsoft.com/bizspark/) which offers a nice set of cloud services, helping me to control my app's capex.
 
-New Web Site...
-===============
+Creating a new Azure Web Site
+=============================
+
+From the management portal, creating a new web site is easy; like anything else in Windows Azure, I just open up the "New" menu, pick Compute, and then Web Site.
 
 ![The Windows Azure management portal has an easy way to select New service, Compute, Web Site, to add a new site to a region and associate with a specific subscription.]({{ site.cdn }}4thwazblog/createWebSite.png =700x400 "Adding a new Web Site to Azure")
 
+The Dashboard
+-------------
+
+Once the site is created, you can open up its dashboard where you can get deployment information, monitor data transfer and other metrics, and perform configuration and administrative tasks.
+
+Here's the 4th & Mayor dashboard showing data from the last week - each day you can see clear ebb and flow as users enjoy my app.
+
 ![The portal dashboard view shows information about web endpoints, graphics and charts of recent data transfers, CPU use, and other metrics of interest.]({{ site.cdn }}4thwazblog/dashboard.png =700x411 "The dashboard view of a Windows Azure Web Sites app.")
+
+Configuring the source code deployment mechanism
+------------------------------------------------
+
+There are many ways to deploy code to an Azure Web Site:
+
+- Associating with Team Foundation Service
+- Associating the site with a CodePlex project
+- A GitHub private or public repo
+- Your Dropbox
+- Bitbucket Git/Mercurial repo
+- Any external Git or Mercurial repo
+- Push a local Git repo to the Web Site
+
+To make the association, from the dashboard for your new Web Site, touch 'Set up deployment from source control' and make your selection. It will then let you setup credentials for Git or authenticate with services like CodePlex or GitHub.com.
+
+![While setting up the deployment for a site, you can easily pick from a service like hosted Team Foundation Service, CodePlex, GitHub, Dropbox, Bitbucket, or a local Git repo on your machine.]({{ site.cdn }}4thwazblog/git.png =700x400 "Configuring a local git repo for site deployment.")
+
+For my app, I'm using *Local Git repository* - I generate a JSON file with configuration information that I need to deploy in secret to the app, and some other magical things, so I need to do some magic before pushing the site and service. This enables that workflow for me.
+
+Now, from a local repo, I can do a `git push azureproduction` or similar command to get my site updated in seconds.
+
+Using the Reserved web site mode
+--------------------------------
+
+The Free and Shared tiers of service for Windows Azure Web Sites are all great products; however, having a decent amount of traffic at times, I need to be able to scale and make sure that I have the right amount of resources available to my application. I'm using the Reserved web site mode which lets me actually associate a few complete virtual machine instances with all of my Web Sites in a region/subscription pair.
+
+If you go to the "SCALE" tab in the management portal, you can scale your site to the Reserved mode, and even set the number and size of VM instances to use in the Reserved mode.
+
+This lets me share my costs for dedicated VM hosting among all my web properties in a subscription, and also helps me make sure that my response times and available computing power are always there. My costs so far have been similar to those I had in AWS, though I have the benefit of being able to pool multiple sites on these instances, instead of before, when I would spin up a few EC2 instances and then have to pay for a load balancer (ELB) between the instances. Load balancing is included at no additional cost with Windows Azure Web Sites and Cloud Services, which is great.
+
+When I go and view all my Web Sites now, I can check and see that the 'Mode' column clearly shows Reserved.
+
+![All the Web Sites in the same region and with the same subscription will share the same virtual machine instances, load balancing across all instances.]({{ site.cdn }}4thwazblog/reservedSites.png =700x400 "Reserved Web Sites.")
+
+Scaling to multiple instances
+-----------------------------
+
+I prefer the standard Small instance types in Windows Azure right now - these are essentially single core VMs. Right now I'm using 3 small instances.
+
+This is all configured in the same area.
+
+![By moving to the Reserved web site model, all your Web Sites in a region under the same subscription can share the same deployed virtual machine instances.]({{ site.cdn }}4thwazblog/reservedScale.png =700x500 "Scaling your subscription's Web Sites to use a reserved model and set of instances of a specific size.")
+
+Setting environment variables, logging, etc.
+--------------------------------------------
+
+![Inside the Windows Azure management portal you can configure the app settings which become environment variables for the specific Web Site.]({{ site.cdn }}4thwazblog/productionNodeEnvironment.png =700x129 "Setting the NODE_ENV to production.")
+
+![My application looks for an environment variable named MODE that then tells it which configuration files to use. This lets me use the same exact application source for dev, staging, and production environments, without worrying too much about the specifics of implementing such a system.]({{ site.cdn }}4thwazblog/stagingMode.png =700x400 "Setting up an app-specific environment variable.")
 
 ![Using the standard Git command I am able to deploy my local code to the Windows Azure web site. Azure takes care then of making sure everything is setup for the Node.js application to be served live. The app experiences no downtime with the new deployment across all the reserved instances I have setup.]({{ site.cdn }}4thwazblog/deployedNodeApp.png =700x400 "Mac Terminal - Git deployment to a Web Site")
 
@@ -50,17 +107,6 @@ New Web Site...
 
 ![Endpoint monitoring is a preview feature available for both Cloud Services as well as Web Sites. It allows you to have data centers regularly check that your site is running and prove information on the response times for endpoints of interest.]({{ site.cdn }}4thwazblog/endpointMonitoring.png =700x190 "Configuring endpoint monitoring.")
 
-![While setting up the deployment for a site, you can easily pick from a service like hosted Team Foundation Service, CodePlex, GitHub, Dropbox, Bitbucket, or a local Git repo on your machine.]({{ site.cdn }}4thwazblog/git.png =700x400 "Configuring a local git repo for site deployment.")
-
-![Inside the Windows Azure management portal you can configure the app settings which become environment variables for the specific Web Site.]({{ site.cdn }}4thwazblog/productionNodeEnvironment.png =700x129 "Setting the NODE_ENV to production.")
-
-![By moving to the Reserved web site model, all your Web Sites in a region under the same subscription can share the same deployed virtual machine instances.]({{ site.cdn }}4thwazblog/reservedScale.png =700x500 "Scaling your subscription's Web Sites to use a reserved model and set of instances of a specific size.")
-
-![All the Web Sites in the same region and with the same subscription will share the same virtual machine instances, load balancing across all instances.]({{ site.cdn }}4thwazblog/reservedSites.png =700x400 "Reserved Web Sites.")
-
-![By scaling a cloud service beyond a single instance, I can be sure that my cloud service complies with the requirements to receive very high uptime in the Windows Azure cloud.]({{ site.cdn }}4thwazblog/scaleCloudService.png =700x264 "Scaling a Cloud Service.")
-
-![My application looks for an environment variable named MODE that then tells it which configuration files to use. This lets me use the same exact application source for dev, staging, and production environments, without worrying too much about the specifics of implementing such a system.]({{ site.cdn }}4thwazblog/stagingMode.png =700x400 "Setting up an app-specific environment variable.")
 
 Hosted MongoDB
 ==============
@@ -120,16 +166,18 @@ Don't forget to renew and keep your deployed certs up-to-date ;-)
 
 So from a command prompt:
 
-`$ openssl req -nodes -newkey rsa:2048 -nodes -keyout 4thandmayor-wildcard.key -out 4thandmayor-wildcard.csr -subj "/C=US/ST=Washington/L=Seattle/O=Wilcox Digital, LLC/OU=Corporate/CN=*.4thandmayor.com"`
+<pre class="brush: bash">
+$ openssl req -nodes -newkey rsa:2048 -nodes -keyout 4thandmayor-wildcard.key -out 4thandmayor-wildcard.csr -subj "/C=US/ST=Washington/L=Seattle/O=Wilcox Digital, LLC/OU=Corporate/CN=*.4thandmayor.com"
+</pre>
 
 It will then generate and save the `.key` file - save that - it is your private key - keep it safe, like Frodo.
 
-```
+<pre class="brush: bash">
 Generating a 2048 bit RSA private key
 ..................................................................+++
 .......................................+++
 writing new private key to '4thandmayor-wildcard.key'
-```
+</pre>
 
 ![Providing the certificate signing request.]({{ site.cdn }}4thwazblog/csrRequest.png =700x490 "Submitting the CSR request online to the certificate authority.")
 
@@ -164,6 +212,9 @@ Cloud Service
 ![Uploading a certificate in the Azure management portal.]({{ site.cdn }}4thwazblog/cloudServicesUploadCertificate.png =496x348 "Uploading a certificate in the Azure management portal.")
 
 ![Viewing the certificates associated with a cloud service. This includes the certificate chain with intermediate certs.]({{ site.cdn }}4thwazblog/cloudServicesCertificates.png =700x229 "Viewing the certificates associated with a cloud service.")
+
+![By scaling a cloud service beyond a single instance, I can be sure that my cloud service complies with the requirements to receive very high uptime in the Windows Azure cloud.]({{ site.cdn }}4thwazblog/scaleCloudService.png =700x264 "Scaling a Cloud Service.")
+
 
 DNS
 ===
