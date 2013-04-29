@@ -32,9 +32,7 @@ I can independently scale the Cloud Services (reverse proxy) and reserved Web Si
 
 Since both Windows Azure Web Sites and Cloud Services have built-in network load balancing (this is a difference from when I was with AWS and had to pay for and configure elastic load balancing separately), I get a nice value out of this configuration.
 
-> Full disclosure: I'm a software development lead on the Windows Azure team and looked to this exercise to learn more about the tools, products and services that we offer. My application is a member of the [Microsoft BizSpark program](http://www.microsoft.com/bizspark/) which offers a nice set of cloud services, helping me to control my app's capex.
-
-Background: m> Full disclosure: I'm a dev lead on the Windows Azure team and looked to this exercise to learn more about the tools, products and services that we offer. My application is a member of the [Microsoft BizSpark program](http://www.microsoft.com/bizspark/) which offers a nice set of cloud services, helping me to control my app's capex.
+> Full disclosure: I'm a software development lead on the Windows Azure team and looked to this exercise to learn more about the tools, products and services that we offer. My application is a member of the [Microsoft BizSpark program](http://www.microsoft.com/bizspark/) which offers a nice set of cloud services, too.
 
 My Node.js app backend & site
 =============================
