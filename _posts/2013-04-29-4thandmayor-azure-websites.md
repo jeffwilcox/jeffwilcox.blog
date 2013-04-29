@@ -34,16 +34,20 @@ Since both Windows Azure Web Sites and Cloud Services have built-in network load
 
 > Full disclosure: I'm a software development lead on the Windows Azure team and looked to this exercise to learn more about the tools, products and services that we offer. My application is a member of the [Microsoft BizSpark program](http://www.microsoft.com/bizspark/) which offers a nice set of cloud services, helping me to control my app's capex.
 
-Background: my Node.js app backend
-==================================
+Background: m> Full disclosure: I'm a dev lead on the Windows Azure team and looked to this exercise to learn more about the tools, products and services that we offer. My application is a member of the [Microsoft BizSpark program](http://www.microsoft.com/bizspark/) which offers a nice set of cloud services, helping me to control my app's capex.
+
+My Node.js app backend & site
+=============================
 
 Implemented in [Node.js](http://nodejs.org/), the web services and site for the app are super portable as a result: I'm glad there is great support for Node on Windows and Windows Azure. I also use some secondary services like MongoDB hosting (provided by the [MongoLab company](http://www.mongolab.com/)) and table/blob storage, and a nice thing of this infrastructure world is that I can move and migrate them as I please - it isn't all strongly coupled and is just a matter of identifying resources the right way and having the appropriate credentials available to my app, wherever it may live.
 
 If I were to create my app from scratch today I might consider using the [Mobile Services](http://www.windowsazure.com/en-us/home/scenarios/mobile-services/) product that Windows Azure has, but I really enjoy the level of control I get with my own implemented Node app, and the experience of using the tools and techniques common in the cloud world today is really valuable to me. It is quite portable to any cloud as a result, too - it is just JavaScript code at the end of the day.
 
-When hosted in the AWS cloud, I was using pure infrastructure services, and though I loved that level of control, keeping my VMs up-to-date just wasn't that fun. The huge benefit with this migration is that I've moved to the nice deployment model that Windows Azure Web Sites offers - reducing the complexity in scaling and provisioning new virtual machines as I used to do in AWS.
+When hosted in the AWS cloud, I was using pure infrastructure services, and though I loved that level of control, keeping my VMs up-to-date just wasn't that fun. The huge benefit with this migration is that I've moved to the nice deployment model that Windows Azure Web Sites offers - reducing the complexity in scaling and provisioning new virtual machines.
 
 Although not exactly the same as Web Sites, Amazon's Elastic Beanstalk product is pretty similar in some ways in terms of enabling a much better deployment model, FYI.
+
+> The source code to my simple Node backend is open on GitHub at [https://github.com/jeffwilcox/4th-cloud](https://github.com/jeffwilcox/4th-cloud).
 
 Creating a new Windows Azure Web Site
 =====================================
