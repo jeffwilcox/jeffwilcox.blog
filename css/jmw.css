@@ -26,6 +26,10 @@ h1 {
     font-size: 24pt;
 }
 
+h2 {
+  font-size: 18pt;
+}
+
 .nav-tabs > .active > a {
     background-color: #eee;
     color:  #333;
