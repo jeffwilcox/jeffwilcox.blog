@@ -176,9 +176,9 @@ Hosted MongoDB
 
 I use [MongoDB](http://www.mongodb.org/) for storing a lot of information about push notifications and app users. Mongo has been a great experience for me. Everyone has their own opinions on NoSQL but Mongo has been working great in production for me for years.
 
-I've found hosted Mongo to be relatively inexpensive yet super powerful: I use a third-party shared MongoDB hosting provider, [MongoLabs](http://www.mongolab.com/), so I don't have to worry about devops. In my previous AWS infrastructure setup, I had a paid product (about $40 a month) in the AWS US-East-1 region that I paid MongoLabs for directly. 
+I've found hosted Mongo to be relatively inexpensive yet super powerful: I use a third-party shared MongoDB hosting provider, [MongoLab](http://www.mongolab.com/), so I don't have to worry about devops. In my previous AWS infrastructure setup, I had a paid product (about $40 a month) in the AWS US-East-1 region that I paid MongoLab for directly. 
 
-Windows Azure also has MongoLab and hosted Mongo support. MongoLab just makes things easy, you no longer have to worry about actually running the database (devops, etc.) and just use the connection info and let them manage the service. The MongoLab hosting service is available free today (for a 500MB max MongoDB shared instance) - yup - $0.00 per month. Awesome. This is enough data for my needs.
+Windows Azure also has MongoLab and hosted Mongo support. MongoLab just makes things easy, you no longer have to worry about actually running the database (devops, etc.) and just use the connection info and let them manage the service. The MongoLab hosting service is available free today (for a 500MB max MongoDB shared instance) - yup - $0.00 per month. Awesome. This is enough capacity for my needs today and then some.
 
 The Windows Azure Store exposes 3rd party providers and resources like this to me and actually lets me use my existing Azure billing information if the product is paid - no need to setup a separate billing relationship like when I was using MongoLab + AWS. To use such a resource, just like creating any other service inside the management portal, I go to New, Add-ons, then find the MongoLab service under App Services.
 
