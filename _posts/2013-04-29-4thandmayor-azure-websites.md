@@ -52,23 +52,31 @@ Although not exactly the same as Web Sites, Amazon's Elastic Beanstalk product i
 Creating a new Windows Azure Web Site
 =====================================
 
-From the management portal, creating a new web site is easy; like anything else in Windows Azure, I just open up the "New" menu, pick Compute, and then Web Site.
+From the management portal, creating a new web site is easy:
+
+- Like anything else in Windows Azure, I just open up the "New" menu, pick Compute, and then Web Site.
+- I'm hosting my own app and don't need a starting place, so Quick Create is the way to go.
+- I provide the URL endpoint for the app
+- I select the region I'd like the app hosted in
+- I choose which Windows Azure subscription I would like to use for the service's billing.
 
 ![The Windows Azure management portal has an easy way to select New service, Compute, Web Site, to add a new site to a region and associate with a specific subscription.]({{ site.cdn }}4thwazblog/createWebSite.png =700x400 "Adding a new Web Site to Azure")
 
 The Dashboard
 -------------
 
-Once the site is created, you can open up its dashboard where you can get deployment information, monitor data transfer and other metrics, and perform configuration and administrative tasks.
+Once the site is created, clicking on it in the portal will bring up its dashboard display where you can get deployment info, monitor data transfer and various instance and site metrics, plus perform configuration & administrative tasks.
 
-Here's the 4th & Mayor dashboard showing data from the last week - each day you can see clear ebb and flow as users enjoy my app.
+Here's the 4th & Mayor dashboard showing a week of data - each day you can see clear ebb and flow.
 
 ![The portal dashboard view shows information about web endpoints, graphics and charts of recent data transfers, CPU use, and other metrics of interest.]({{ site.cdn }}4thwazblog/dashboard.png =700x411 "The dashboard view of a Windows Azure Web Sites app.")
 
 Configuring the source code deployment mechanism
 ------------------------------------------------
 
-There are many ways to deploy code to an Azure Web Site:
+To make the source control association for a site, from the dashboard, touch 'Set up deployment from source control' and make your selection. It will then let you setup credentials for Git or authenticate with services like CodePlex or GitHub.com.
+
+There are many ways to deploy code to an Azure Web Site - each time I open the deployment set-up window I smile:
 
 - Associating with Team Foundation Service
 - Associating the site with a CodePlex project
@@ -78,49 +86,96 @@ There are many ways to deploy code to an Azure Web Site:
 - Any external Git or Mercurial repo
 - Push a local Git repo to the Web Site
 
-To make the association, from the dashboard for your new Web Site, touch 'Set up deployment from source control' and make your selection. It will then let you setup credentials for Git or authenticate with services like CodePlex or GitHub.com.
-
 ![While setting up the deployment for a site, you can easily pick from a service like hosted Team Foundation Service, CodePlex, GitHub, Dropbox, Bitbucket, or a local Git repo on your machine.]({{ site.cdn }}4thwazblog/git.png =700x400 "Configuring a local git repo for site deployment.")
 
-For my app, I'm using *Local Git repository* - I generate a JSON file with configuration information that I need to deploy in secret to the app, and some other magical things, so I need to do some magic before pushing the site and service. This enables that workflow for me.
+For my app, I'm using *Local Git repository* - I do some magic w.r.t. generating a JSON file with configuration information that I need to deploy in secret to the app, so I need to do this magic before pushing the site and service. This enables a good workflow for me, but for other web sites I host, I often just have them deployed straight from my source control.
 
-Now, from a local repo, I can do a `git push azureproduction` or similar command to get my site updated in seconds.
+So now, from a local repo, I can do a `git push azureproduction` or similar command to get my site updated in seconds. The first time you configure local Git deployment, the management portal will help you setup some credentials to pushing, fyi. There are a lot of nice tutorials out there that go into detail if you need.
 
-Using the Reserved web site mode
---------------------------------
+Git deploying the service
+-------------------------
+Once configured, I setup the Git remotes inside my repo. The Azure portal should show you the command for this - but essentially you just issue a `git remote add` command to enable pushing to that endpoint.
+
+When you push to the Git endpoint in the Azure cloud, a service called "Kudu" picks up the changes and redeploys the application. You can find out more about Kudu at [David Ebbo's blog](http://blog.davidebbo.com/2012/06/introducing-open-source-engine-behind.html) - he is the architect of that product.
+
+When I push locally, the Git push command will echo back how the Web Site is being deployed. In this case, I see some useful information:
+
+- It knows which branch I want deployed
+- It recognizes that I am deploying a Node.js Web Site
+- It updates and installs any needed npm packages
+- It lets me know that the deployment is successful
+
+![Using the standard Git command I am able to deploy my local code to the Windows Azure web site. Azure takes care then of making sure everything is setup for the Node.js application to be served live. The app experiences no downtime with the new deployment across all the reserved instances I have setup.]({{ site.cdn }}4thwazblog/deployedNodeApp.png =700x400 "Mac Terminal - Git deployment to a Web Site")
+
+I can also view the status of my app's deployments from within the management experience online. Here is what it looks like during a deployment:
+
+![While the Git deployment is in progress, you will see live status updates inside the portal. You can also revert to previous deployments in the portal if need be.]({{ site.cdn }}4thwazblog/deploying.png =700x400 "Watching an active deployment in the management portal.")
+
+If something went wrong, the UI is available to help roll back to an earlier version in seconds, too.
+
+Using the paid Reserved web site mode
+-------------------------------------
 
 The Free and Shared tiers of service for Windows Azure Web Sites are all great products; however, having a decent amount of traffic at times, I need to be able to scale and make sure that I have the right amount of resources available to my application. I'm using the Reserved web site mode which lets me actually associate a few complete virtual machine instances with all of my Web Sites in a region/subscription pair.
 
 If you go to the "SCALE" tab in the management portal, you can scale your site to the Reserved mode, and even set the number and size of VM instances to use in the Reserved mode.
 
-This lets me share my costs for dedicated VM hosting among all my web properties in a subscription, and also helps me make sure that my response times and available computing power are always there. My costs so far have been similar to those I had in AWS, though I have the benefit of being able to pool multiple sites on these instances, instead of before, when I would spin up a few EC2 instances and then have to pay for a load balancer (ELB) between the instances. Load balancing is included at no additional cost with Windows Azure Web Sites and Cloud Services, which is great.
+This lets me share my costs for dedicated VM hosting among all my web properties in a subscription, and also helps me make sure that my response times and available computing power are always there. My costs so far have been similar to those I had in AWS, though I have the benefit of being able to pool multiple sites on these instances, instead of before, when I would spin up a few EC2 instances and then have to pay for a load balancer (ELB) between the instances.
 
-When I go and view all my Web Sites now, I can check and see that the 'Mode' column clearly shows Reserved.
+Load balancing is included at no additional cost with Windows Azure Web Sites and Cloud Services, which is great. Because of a workaround that I need to do for custom SSL today, however, I have similar costs as before since I am running a separate reverse proxy for encryption purposes. This cost will disappear once new functionality launches for web sites some day.
 
 ![All the Web Sites in the same region and with the same subscription will share the same virtual machine instances, load balancing across all instances.]({{ site.cdn }}4thwazblog/reservedSites.png =700x400 "Reserved Web Sites.")
+
+When I go and view all my Web Sites now, I can check and see that the 'Mode' column clearly shows Reserved.
 
 Scaling to multiple instances
 -----------------------------
 
-I prefer the standard Small instance types in Windows Azure right now - these are essentially single core VMs. Right now I'm using 3 small instances.
+I prefer the standard Small instance types in Windows Azure right now - these are essentially single core VMs. Right now I'm using 3 small instances. Since "Small" is the default unit for billing in the Azure world, it also is pretty straightforward for me to understand where my cloud spend is going with these units.
 
-This is all configured in the same area.
+Instance numbers for web sites is configured in the same area as the free/shared/reserved mode choice.
+
+Just slide the Instance Count bar to the right to ramp up the instances.
 
 ![By moving to the Reserved web site model, all your Web Sites in a region under the same subscription can share the same deployed virtual machine instances.]({{ site.cdn }}4thwazblog/reservedScale.png =700x500 "Scaling your subscription's Web Sites to use a reserved model and set of instances of a specific size.")
+
+Thanks to the underlying technical implementation of the Web Sites system, these scaling operations are often extremely quick and instantaneous - there are virtual machines standing by, more or less, for my scale.
+
+Though I keep this pretty solid today, scaling down and up is a great way to keep costs at an appropriate level, and one of the primary cloud benefits for developers.
+
+I get more traffic at night and weekends across the US (about half of my user base), and have thought about automating the scale up and down work on this schedule using the Windows Azure PowerShell or cross-platform command line tools for my Mac... but for now I am doing this by hand.
 
 Setting environment variables, logging, etc.
 --------------------------------------------
 
+It is very easy to set environment variables that will be exposed to your application hosted via Web Sites. On the Configuration tab in the management portal, you can add key/value string pairs that will be exposed - and these can be changed on the fly, too.
+
+A common configuration variable for Node.js apps is the `NODE_ENV` setting - when set to "production", the Express framework/module that exposes the web services & site will configure its error and diagnostics system in a way that will be efficient for production use.
+
+Simply add the key/value pair in the UI in a blank space and then press the Save button in the bottom menu for the site. It should update all the running instances pretty quickly.
+
 ![Inside the Windows Azure management portal you can configure the app settings which become environment variables for the specific Web Site.]({{ site.cdn }}4thwazblog/productionNodeEnvironment.png =700x129 "Setting the NODE_ENV to production.")
+
+My app also is designed to be run in one of 3 ways: dev, staging, and production; by setting a custom `MODE` environment variable, I then have the startup path for the app load the appropriate configuration file with cloud credentials and other data.
+
+I actually have several Windows Azure Web Sites running for the app: the production app, a staging app, etc. Since they are all nearly mirrors of one another, it is very easy to use this configuration system to control the runtime environment.
+
+Here you can see the configured values for my app in the management portal:
 
 ![My application looks for an environment variable named MODE that then tells it which configuration files to use. This lets me use the same exact application source for dev, staging, and production environments, without worrying too much about the specifics of implementing such a system.]({{ site.cdn }}4thwazblog/stagingMode.png =700x400 "Setting up an app-specific environment variable.")
 
-![Using the standard Git command I am able to deploy my local code to the Windows Azure web site. Azure takes care then of making sure everything is setup for the Node.js application to be served live. The app experiences no downtime with the new deployment across all the reserved instances I have setup.]({{ site.cdn }}4thwazblog/deployedNodeApp.png =700x400 "Mac Terminal - Git deployment to a Web Site")
+For logging, my app uses a common log provider that many Node apps use, with a custom adapter I wrote that stores this information in the Windows Azure table service. More on that another day & post.
 
-![While the Git deployment is in progress, you will see live status updates inside the portal. You can also revert to previous deployments in the portal if need be.]({{ site.cdn }}4thwazblog/deploying.png =700x400 "Watching an active deployment in the management portal.")
+Endpoint monitoring
+-------------------
+
+There is a preview feature in Web Sites called Endpoint Monitoring that lets you pick a few test data centers and a URL to your application. The service then periodically pings your URL, records the response time (or error if it cannot connect), and makes this info available in the portal.
+
+On the Configuration tab you just give the metric a name, URL, and pick a one or more locations and press Save.
 
 ![Endpoint monitoring is a preview feature available for both Cloud Services as well as Web Sites. It allows you to have data centers regularly check that your site is running and prove information on the response times for endpoints of interest.]({{ site.cdn }}4thwazblog/endpointMonitoring.png =700x190 "Configuring endpoint monitoring.")
 
+This, combined with the built-in diagnostics information the Web Sites gathers and shows for all sites and no cost, is a really nice alternative to Amazon CloudWatch metrics I believe.
 
 Hosted MongoDB
 ==============
