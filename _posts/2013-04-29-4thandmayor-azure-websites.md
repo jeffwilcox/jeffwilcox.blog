@@ -289,38 +289,109 @@ $ openssl pkcs12 -export -in 4thandmayor-wildcard.crt \
 
 Keep this file safe. Super safe. It has your private key, certificate, and everything in it. You'll upload it to Windows Azure soon.
 
-Cloud Service
--------------
-![Publishing a cloud service to Windows Azure.]({{ site.cdn }}4thwazblog/vsPublish.png =700x469 "The Publish dialog for Cloud Services in Visual Studio.")
+Cloud Services
+--------------
+OK so let's briefly look at where I am now:
 
-![Configuring the cloud service by providing information about the certificate chain.]({{ site.cdn }}4thwazblog/vsCscfg.png =700x240 "A look at the CSCFG configuration for the cloud service.")
+- I have a deployed Web Site that has my Node.js app running in the cloud. It is scaled using a reserved model, multiple VMs, and ready for traffic.
+- I am using a hosted MongoDB solution for some of my needs, powered by the Windows Azure Store
+- I've configured my application's connecting strings, settings, etc.
+- I am ready to be secure
+    - I have a private SSL key for my server
+    - I have received back my certificate that I purhcased from a CA reseller
+    - I have generated a PKCS12 PFX file to upload to my server/the cloud
 
-![Setting up the redirection options in the web.config that the redirection service uses.]({{ site.cdn }}4thwazblog/vsWebConfig.png =700x523 "The web.config file for the reverse proxy.")
+What's left?
+
+- Securing the site with my custom SSL certificate
+- Updating DNS entries and launching my service
+
+So again, the biggest functionality gap in the preview Web Sites feature for my needs here is that I just cannot use my custom domain SSL certificate without a workaround. The workaround is detailed in other posts, but is essentially a Web Role Cloud Service, which is the strongly managed, powerful application model that is a key Windows Azure service.
+
+You can find out more about Cloud Services and the compute application models that Windows Azure supports at [http://www.windowsazure.com/en-us/develop/net/fundamentals/compute/](http://www.windowsazure.com/en-us/develop/net/fundamentals/compute/).
+
+> Cloud Services provides Platform as a Service (PaaS). This technology is designed to support applications that are scalable, reliable, and cheap to operate. It’s also meant to free developers from worrying about managing the platform they’re using, letting them focus entirely on their applications. 
+
+Creating the cloud service
+==========================
+
+Like the other services, in the management portal I select New, Compute, and setup details like the Cloud Services endpoint.
+
+Once setup, I will know the DNS name (ending in `cloudapp.net`) and have a placeholder project that I can then upload and deploy staging and production packages to. The Visual Studio and PowerShell tools on Windows generate these deployment packages.
+
+Uploading my certificate
+========================
+
+The Certificates tab for the creatd Cloud Service is where I can go to view information about any certificates that are available to my app. In the app bar at the bottom of the page, I select *Upload*.
+
+Browsing my machine for my safely secured `.pfx` file, I also provide the password to decrypt the contents.
 
 ![Uploading a certificate in the Azure management portal.]({{ site.cdn }}4thwazblog/cloudServicesUploadCertificate.png =496x348 "Uploading a certificate in the Azure management portal.")
 
+After the certificate PFX bundle is uploaded, the Certificates area will show a table listing all the certificates that it was able to extract, including the Subject, Status, Thumbprint, and expiration information.
+
 ![Viewing the certificates associated with a cloud service. This includes the certificate chain with intermediate certs.]({{ site.cdn }}4thwazblog/cloudServicesCertificates.png =700x229 "Viewing the certificates associated with a cloud service.")
+
+I will use the thumbprint of these while configuring the cloud service in Visual Studio so that the proper URL endpoints use the right certificate, and also to provide the certificate chain for the cloud services hosting environment to use during SSL/TLS negotiation.
+
+Publishing the production Cloud Service
+=======================================
+
+The actual reverse proxy is detailed in Brady's post, it builds on a Microsoft IIS-built component called [Application Request Routing](http://www.iis.net/downloads/microsoft/application-request-routing). Once setup with the basics for deploying the ARR, etc., I need to configure the app specifics.
+
+ARR will essentially request the secure `4thandmayor.azurewebsites.net` content, re-encrypt it with my custom cert, and pass it along. It also will rewrite any URLs, cookies, etc. so that things work and appear properly.
+
+First, I update the ServiceConfiguration.Cloud.cscfg file. This essentially is a mapping between the service and how I want it configured both when using locally, or when deployed to the placeholder Cloud Service I've already setup.
+
+In the file I provide the thumbprints and helpful names I give to the certificates I will be referring to.
+
+![Configuring the cloud service by providing information about the certificate chain.]({{ site.cdn }}4thwazblog/vsCscfg.png =700x240 "A look at the CSCFG configuration for the cloud service.")
+
+Then, inside the Web.config file, I actually setup the routing rules that ARR understands for rewriting hostnames, cookies, etc. This uses regular expressions.
+
+![Setting up the redirection options in the web.config that the redirection service uses.]({{ site.cdn }}4thwazblog/vsWebConfig.png =700x523 "The web.config file for the reverse proxy.")
+
+Finally, I build the project, it does some basic configuration file checking, and then walk through the Publish Windows Azure Application dialogs in Visual Studio.
+
+![Publishing a cloud service to Windows Azure.]({{ site.cdn }}4thwazblog/vsPublish.png =700x469 "The Publish dialog for Cloud Services in Visual Studio.")
+
+I publish the service to the Production environment, configure a few things, and in 15-20 minutes or so the Cloud Service is published and live for me to do some testing with. Since I have not updated my DNS endpoints yet, I can test the app independently (even using a local `hosts` file for example) to see that things are behaving as I expect before I move production traffic over.
+
+Scaling my reverse proxy Cloud Service
+======================================
+
+Once my Cloud Service is deployed and I am happy with how it is routing and encrypting traffic between itself and my client machine, I want to get ready to do things for real.
+
+In the Scale section of the management experience, I bump the service up to 2 roles. I hit Save. This will provision and configure another machine in the cloud.
 
 ![By scaling a cloud service beyond a single instance, I can be sure that my cloud service complies with the requirements to receive very high uptime in the Windows Azure cloud.]({{ site.cdn }}4thwazblog/scaleCloudService.png =700x264 "Scaling a Cloud Service.")
 
+This is essential in the Windows Azure world to make sure that my app is available, since this is a single point of potential failure between all of my users and Web Sites (it sits between them). The Windows Azure SLA (review the legal details here [http://www.windowsazure.com/en-us/support/legal/sla/](http://www.windowsazure.com/en-us/support/legal/sla/)) essentially requires the 2 instances, allowing Azure itself to manage the platform as a service, install patches, etc. This also will make sure that I have the network bandwidth and computing power to host all my site information.
 
-DNS
-===
+Updating DNS
+------------
 
-I actually had the application deployed both on Amazon and Microsoft's clouds using DNS round robin for a while, helping me make sure that I had a high level of confidence in the fault tolerance of my application.
+Before April, I actually had the application deployed both on Amazon and Microsoft's clouds using DNS round robin for a while, helping me make sure that I had a high level of confidence in the fault tolerance of my application.
 
+Flipping DNS to move all of my traffic to just the `4thssl.cloudapp.net` endpoint is all that is left - that is the new Cloud Service that is running, sitting between my Windows Azure Web Site (which itself is load balanced with several virtual machines) and the end user.
 
-Flipping DNS is all that is left.
+I continue to use Route 53, Amazon's DNS product, and inside their service editor I'm able to update the CNAME entry for my `www.4thandmayor.com` endpoint to move to the new cloudapp.net service. I press Save Record Set, and within the TTL window, most clients will begin to have the service through Windows Azure instead of AWS.
 
 ![My DNS, hosted by Route 53, allows me to setup CNAMEs to direct traffic to cloud services or web sites as appropriate.]({{ site.cdn }}4thwazblog/route53.png =700x400 "Configuring Route 53 DNS.")
 
-Here we go!
+I kept the original EC2 instances and load balancer for my site running for a few days, monitoring traffic until I was sure that nearly all clients had the new DNS information.
+
+Then I went into the AWS portal and terminated a bunch of EC2 instances and deleted the load balancer.
+
+So, check it out - [https://www.4thandmayor.com/](https://www.4thandmayor.com/), now hosted securely, powered by the simple Web Sites product, and it is fast!
 
 ![A screen capture of the web browser showing the key icon and graphics to show that the site has been served in a secure manner.]({{ site.cdn }}4thwazblog/4thandmayorSsl.png =700x100 "4thandmayor.com with SSL, site hosted by Windows Azure")
 
-The Future
-==========
+In closing
+----------
 
-I keep hearing that someday we will have SNI SSL support in Windows Azure. That will make the second half of this post on "Web Sites + Custom SSL Certs" completely unncessary, and also this solution will be a lot more affordable: the need to host your own set of cloud services reverse proxies will no longer be there.
+The Cloud Services workaround, using ARR to provide my own effective load balancing, will some day not be required. According to posts and comments Scott Guthrie has made on his blog in the past, eventually Web Sites will support the SNI/SSL protocol so that I can just upload my cert to the Web Site and have Azure take care of the rest. That will be nice! This solution will be a lot more affordable: the need to host your own set of cloud services reverse proxies will no longer be there. Can't wait for that!
 
-Can't wait for that! In the meantime, if custom SSL + Web Sites was holding you back, I hope with this post and/or (Brady Gaster's)[http://www.bradygaster.com/running-ssl-with-windows-azure-web-sites], you will have the information you need to get unblocked.
+In the meantime, if custom SSL + Web Sites was holding you back, I hope with this post and (Brady Gaster's)[http://www.bradygaster.com/running-ssl-with-windows-azure-web-sites], you will have the information you need to get unblocked.
+
+I hope you appreciated this long look at some of this change, all said and done, writing this blog post took longer than migrating my production application from AWS to Windows Azure... maybe I need to learn to type a little faster?
