@@ -5,38 +5,48 @@ title: Moving 4th & Mayor to Windows Azure Web Sites
 categories: [windows-azure, cloud, nodejs, 4thandmayor]
 tags: [windows-azure, 4thandmayor, nodejs, cloud, express, websites]
 ---
-After several years of hosting the production web services and web site for my foursquare application [4th & Mayor](https://www.4thandmayor.com/) on AWS, last month I finally was able to spend a little time to migrate most of the service over to Windows Azure. It has been several weeks and production traffic continues to do great.
+After several years of hosting my mobile application's web server and services with Amazon Web Services (AWS), in April I moved my production services to Windows Azure, and it went really smoothly. Here I am sharing a guide through some of the highlights of this process, including how I went about migrating my Node.js backend to an HTTPS-secured site powered by Windows Azure Web Sites, Cloud Services, and the Windows Azure Store.
 
-I'm hosting the core set of services using Windows Azure Web Sites (super easy to use and deploy). I wanted to write a little about the migration, mostly as an introduction to the Web Sites product that is in preview mode over in the Microsoft cloud world.
+After planning for the migration in March and doing some testing over weekends, I migrated all the traffic for my foursquare application [4th & Mayor](https://www.4thandmayor.com/) to Windows Azure via a quick DNS update a few days into the month of April. It has continued running without a hitch. I'm not going to detail my data migration here, however, that is never fun.
 
-Thanks to the magic of DNS, I actually had the application deployed both on Amazon and Microsoft's clouds using DNS round robin for a while, helping me make sure that I had a high level of confidence in the fault tolerance of my application.
+As my cloud backend is implemented in [Node.js](http://nodejs.org/), there was no very little app coding work required other than updating my logging provider and configuring some new infrastructure connection strings.
 
-This post will focus on the higher level steps required, some workarounds I did for SSL, and less on the step-by-step and data migration challenges I faced. As the cloud backend for the app is written in Node.js, there was no real app porting or coding work required as much as configuring the infrastructure and deploying.
+SSL + Windows Azure Web Sites today
+===================================
 
-SSL FTW
-=======
-
-My app makes connections to the cloud to work with API surface area that I expose for live tiles and push notification registration. These requests need to be secured with SSL. I also expose functionality on the web site for the app's marketing and user diagnostics.
+My app makes connections to my cloud infrastructure to enable rich live tiles, push notification registration and processing, configuraton, and other future scenarios I hope to launch some day in future app updates. These requests need to be secured with SSL. I also expose some functionality on the web site for the app's marketing and user diagnostics.
 
 ![A screen capture of the web browser showing the key icon and graphics to show that the site has been served in a secure manner.]({{ site.cdn }}4thwazblog/4thandmayorSsl.png =700x100 "4thandmayor.com with SSL, site hosted by Windows Azure")
 
-Here's the kicker: Web Sites supports SSL using Microsoft's wildcard certs for `*.azurewebsites.net` - great and secure for many apps today. In time, the service will support custom certificates for Web Sites via SNI. But today you cannot bring your own certs for it. My production app already uses my own custom certs.
+Here's the kicker: the Windows Azure Web Sites preview product supports SSL using Microsoft's wildcard certificate for `*.azurewebsites.net` - great and secure for many apps today - but does not support a "bring your own certificate" model today. In time, the service will support custom certificates for Web Sites via SNI I've heard, but today you cannot bring your own certs like you might like to. Since my production app already uses my own custom certificates, moving my traffic to the Windows Azure endpoints isn't a great story for me, and I prefer to route my app traffic through DNS for my domain.
 
-Brady Gaster has a really good solution and tutorial for the interim: [Running SSL with Windows Azure Web Sites Today](http://www.bradygaster.com/running-ssl-with-windows-azure-web-sites) - this is what I have gone with, and though it is a little scary sounding, it was easy to setup and has completely unblocked me.
+Brady Gaster has a really good solution and tutorial for the interim: [Running SSL with Windows Azure Web Sites Today](http://www.bradygaster.com/running-ssl-with-windows-azure-web-sites) - this is what I have gone with, and though it is a little scary sounding at first, it was pretty easy to setup and has completely unblocked me. Check that out for the technical details and guide.
 
-Production [4th & Mayor](https://www.4thandmayor.com/) app and site traffic today is using SSL to communicate with the awesome Git-deployed goodness of (Windows Azure Web Sites)[http://www.windowsazure.com/en-us/home/scenarios/web-sites/]. Yes. Winning!
+Production [4th & Mayor](https://www.4thandmayor.com/) app and site traffic as of April 4, 2013 is using SSL to communicate with the awesome Git-deployed goodness of [Windows Azure Web Sites](http://www.windowsazure.com/en-us/home/scenarios/web-sites/). WINNING!
 
-Background: my Node.js app
-==========================
+Using Brady's guide, my services design for the core SSL traffic and Node.js app hosting is as follows:
 
-Implemented in [Node.js](http://nodejs.org/), the web services and site for the app are super portable as a result: there is great support for Node on Windows and Windows Azure. I also use some secondary services like MongoDB hosting (provided by the MongoLab guys) and table/blob storage, and a nice thing of this infrastructure world is that I can move and migrate them as I please - it isn't all strongly coupled and is just a matter of identifying resources the right way and having the appropriate credentials available to my app, wherever it may live.
+![A simple network map of the various Windows Azure services involved in hosting the secure web site.]({{ site.cdn }}4thwazblog/MyAzureNetworkMap.png =700x350 "4thandmayor.com with SSL, site hosted by Windows Azure")
 
-I was using pure infrastructure services with AWS, and though I loved that level of control, with this migration I've moved to the nice deployment model that Azure Web Sites offers - reducing the complexity in scaling and provisioning new virtual machines as I used to do in AWS. Although not exactly the same, Amazon's Elastic Beanstalk product is pretty similar in some ways, FYI.
+I can independently scale the Cloud Services (reverse proxy) and reserved Web Sites instances for the front end. Since I host a few other sites with my reserved region/subscription, I tend to keep more instances there for good response times across my network of sites.
 
-> Full disclosure: I'm a dev lead on the Windows Azure team and looked to this exercise to learn more about the tools, products and services that we offer. My application is a member of the [Microsoft BizSpark program](http://www.microsoft.com/bizspark/) which offers a nice set of cloud services, helping me to control my app's capex.
+Since both Windows Azure Web Sites and Cloud Services have built-in network load balancing (this is a difference from when I was with AWS and had to pay for and configure elastic load balancing separately), I get a nice value out of this configuration.
 
-Creating a new Azure Web Site
-=============================
+> Full disclosure: I'm a software development lead on the Windows Azure team and looked to this exercise to learn more about the tools, products and services that we offer. My application is a member of the [Microsoft BizSpark program](http://www.microsoft.com/bizspark/) which offers a nice set of cloud services, helping me to control my app's capex.
+
+Background: my Node.js app backend
+==================================
+
+Implemented in [Node.js](http://nodejs.org/), the web services and site for the app are super portable as a result: I'm glad there is great support for Node on Windows and Windows Azure. I also use some secondary services like MongoDB hosting (provided by the [MongoLab company](http://www.mongolab.com/)) and table/blob storage, and a nice thing of this infrastructure world is that I can move and migrate them as I please - it isn't all strongly coupled and is just a matter of identifying resources the right way and having the appropriate credentials available to my app, wherever it may live.
+
+If I were to create my app from scratch today I might consider using the [Mobile Services](http://www.windowsazure.com/en-us/home/scenarios/mobile-services/) product that Windows Azure has, but I really enjoy the level of control I get with my own implemented Node app, and the experience of using the tools and techniques common in the cloud world today is really valuable to me. It is quite portable to any cloud as a result, too - it is just JavaScript code at the end of the day.
+
+When hosted in the AWS cloud, I was using pure infrastructure services, and though I loved that level of control, keeping my VMs up-to-date just wasn't that fun. The huge benefit with this migration is that I've moved to the nice deployment model that Windows Azure Web Sites offers - reducing the complexity in scaling and provisioning new virtual machines as I used to do in AWS.
+
+Although not exactly the same as Web Sites, Amazon's Elastic Beanstalk product is pretty similar in some ways in terms of enabling a much better deployment model, FYI.
+
+Creating a new Windows Azure Web Site
+=====================================
 
 From the management portal, creating a new web site is easy; like anything else in Windows Azure, I just open up the "New" menu, pick Compute, and then Web Site.
 
@@ -218,6 +228,9 @@ Cloud Service
 
 DNS
 ===
+
+I actually had the application deployed both on Amazon and Microsoft's clouds using DNS round robin for a while, helping me make sure that I had a high level of confidence in the fault tolerance of my application.
+
 
 Flipping DNS is all that is left.
 
