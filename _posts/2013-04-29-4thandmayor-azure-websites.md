@@ -124,26 +124,22 @@ This lets me share my costs for dedicated VM hosting among all my web properties
 
 Load balancing is included at no additional cost with Windows Azure Web Sites and Cloud Services, which is great. Because of a workaround that I need to do for custom SSL today, however, I have similar costs as before since I am running a separate reverse proxy for encryption purposes. This cost will disappear once new functionality launches for web sites some day.
 
-![All the Web Sites in the same region and with the same subscription will share the same virtual machine instances, load balancing across all instances.]({{ site.cdn }}4thwazblog/reservedSites.png =700x400 "Reserved Web Sites.")
-
-When I go and view all my Web Sites now, I can check and see that the 'Mode' column clearly shows Reserved.
-
-Scaling to multiple instances
------------------------------
+Setting instance & mode scaling options
+---------------------------------------
 
 I prefer the standard Small instance types in Windows Azure right now - these are essentially single core VMs. Right now I'm using 3 small instances. Since "Small" is the default unit for billing in the Azure world, it also is pretty straightforward for me to understand where my cloud spend is going with these units.
 
-Instance numbers for web sites is configured in the same area as the free/shared/reserved mode choice.
-
-Just slide the Instance Count bar to the right to ramp up the instances.
+Instance numbers and scale mode for my Web Site is configured in Configuration tab for the app. Just slide the Instance Count bar to the right to ramp up the instances.
 
 ![By moving to the Reserved web site model, all your Web Sites in a region under the same subscription can share the same deployed virtual machine instances.]({{ site.cdn }}4thwazblog/reservedScale.png =700x500 "Scaling your subscription's Web Sites to use a reserved model and set of instances of a specific size.")
 
 Thanks to the underlying technical implementation of the Web Sites system, these scaling operations are often extremely quick and instantaneous - there are virtual machines standing by, more or less, for my scale.
 
-Though I keep this pretty solid today, scaling down and up is a great way to keep costs at an appropriate level, and one of the primary cloud benefits for developers.
-
 I get more traffic at night and weekends across the US (about half of my user base), and have thought about automating the scale up and down work on this schedule using the Windows Azure PowerShell or cross-platform command line tools for my Mac... but for now I am doing this by hand.
+
+![All the Web Sites in the same region and with the same subscription will share the same virtual machine instances, load balancing across all instances.]({{ site.cdn }}4thwazblog/reservedSites.png =700x400 "Reserved Web Sites.")
+
+When I go and view all my Web Sites now, I can check and see that the 'Mode' column clearly shows Reserved.
 
 Setting environment variables, logging, etc.
 --------------------------------------------
@@ -180,17 +176,19 @@ This, combined with the built-in diagnostics information the Web Sites gathers a
 Hosted MongoDB
 ==============
 
-I use MongoDB for storing a lot of information about push notifications and app users. Mongo has been a great experience for me, and is relatively inexpensive: I use a third-party shared MongoDB hosting provider, [MongoLab.com](http://www.mongolab.com/). Previously I had a paid product (about $40 a month) in the AWS US-East-1 region.
+I use [MongoDB](http://www.mongodb.org/) for storing a lot of information about push notifications and app users. Mongo has been a great experience for me. Everyone has their own opinions on NoSQL but Mongo has been working great in production for me for years.
 
-Windows Azure also has MongoLab and hosted Mongo support. MongoLab just makes things easy, you no longer have to worry about actually running the database (devops, etc.) and just use the connection info and let them manage the service.
+I've found hosted Mongo to be relatively inexpensive yet super powerful: I use a third-party shared MongoDB hosting provider, [MongoLabs](http://www.mongolab.com/), so I don't have to worry about devops. In my previous AWS infrastructure setup, I had a paid product (about $40 a month) in the AWS US-East-1 region that I paid MongoLabs for directly. 
 
-In Windows Azure, the MongoLab hosting service is available free (for a 500MB max MongoDB shared instance) - yup - $0.00 per month. Awesome.
+Windows Azure also has MongoLab and hosted Mongo support. MongoLab just makes things easy, you no longer have to worry about actually running the database (devops, etc.) and just use the connection info and let them manage the service. The MongoLab hosting service is available free today (for a 500MB max MongoDB shared instance) - yup - $0.00 per month. Awesome. This is enough data for my needs.
 
-The Windows Azure Store is simple - just like creating any other service inside the management portal online, I just hit New, go to the Add-ons, and then find the MongoLab service.
+The Windows Azure Store exposes 3rd party providers and resources like this to me and actually lets me use my existing Azure billing information if the product is paid - no need to setup a separate billing relationship like when I was using MongoLab + AWS. To use such a resource, just like creating any other service inside the management portal, I go to New, Add-ons, then find the MongoLab service under App Services.
 
 ![Adding a MongoDB shared instance through the service that MongoLab offers.]({{ site.cdn }}4thwazblog/mongoAddOn.png =700x457 "Adding a MongoLab add-on.")
 
-You then get to provide a name for the service.
+Then you can setup information about the service, read about what is included, functionality, configuring it, etc.
+
+For now I pick the Free plan, select the associated subscription and region, then give it a name.
 
 ![Providing a name for the service.]({{ site.cdn }}4thwazblog/mongoPersonalize.png =700x456 "Naming the service.")
 
@@ -202,44 +200,51 @@ Just go ahead and hit Connection Info, and the connection string you will use is
 
 ![The connection string for the MongoLab shared MongoDB instance.]({{ site.cdn }}4thwazblog/mongoConnectionInfo.png =500x445 "Connection information for the store.")
 
-So for my app, I just update my configuration JSON files and redeploy and boom, the free MongoDB instance is being used.
+So for my app, I just update my configuration JSON files with this connection string, and redeploy and boom, the free MongoDB instance is being used. *Yup I'm skipping the data migration headache issue right now*
 
-Web Sites + Custom SSL Certs
-============================
+Web Sites + my custom SSL certificate
+=====================================
 
-Today (April 2013), the Windows Azure Web Sites product supports SSL, but not the kind that I need in order to be backwards compatible with my existing production deployment on Amazon that uses my own SSL certificates for the `www.4thandmayor.com` virtual machines.
+Today (April 29, 2013), the Windows Azure Web Sites product supports SSL, but not the kind that I need in order to be backwards compatible with my existing production deployment on Amazon that uses my own SSL certificates for `www.4thandmayor.com` endpoints.
 
 Reading through previous posts about the Web Sites preview functionality, in time there will be support for SNI SSL, but this functionality is not available today.
 
-The complete post on ()[http://www.bradygaster.com/running-ssl-with-windows-azure-web-sites] is a good reference and you should follow that. This is just a short summary.
+The complete post at [http://www.bradygaster.com/running-ssl-with-windows-azure-web-sites](http://www.bradygaster.com/running-ssl-with-windows-azure-web-sites) is a good reference and you should follow that. This is just a short summary of some of the challenges/process.
 
-For setting up the SSL reverse proxy with custom certificates I need to use my Windows workstation, Visual Studio 2012, and the Windows Azure SDK for Visual Studio. So, switching away from the Mac for this part.
+For setting up the SSL reverse proxy with custom certificates I need to use my Windows workstation, Visual Studio 2012, and the Windows Azure SDK for Visual Studio today.
+
+So, switching away from the Mac for this part...
 
 SSL Certificates
 ----------------
 Most web developers have been through this dance a few times - I've used Comodo and other reseller-friendly certificate services in the past through GoDaddy and NameCheap.
 
-Most of the cheap certs are just fine and verify that you control the domain name in question. If you're looking for the fancy "green" security bar though, you'll need an EV cert and those typically actually have a much more involved verification process - for an LLC they will check records in D&B, perhaps require proof of a corporate bank account, look for legal documentation or business licenses, etc. So this isn't about that process.
+Most of the cheap certs are just fine and verify that you control the domain name in question. If you're looking for the fancy "green" security bar though, you'll need an EV cert and those typically actually have a much more involved verification process - for an LLC they will check records in D&B, perhaps require proof of a corporate bank account, look for legal documentation or business licenses, etc.
+
+I don't require EV/green trust bar so I'm not covering that process - I am just using a domain control-validated cert.
 
 ### Creating a signing request
 
 When you get a signing certificate, you never have to transmit the private key to the certificate authority - instead, you just send a .CSR file - a signing request.
 
-To generate this, just use OpenSSL.
-
-For 4th & Mayor, I moved this year from a standard certificate (for www.4thandmayor.com) to a wildcard certificate (`*.4thandmayor.com`, includes any subdomain) - this allows me to secure endpoints like `api.4thandmayor.com` and `staging.4thandmayor.com` as well. The wildcard cert did cost about $100 more for a year.
+To generate this, I'm most familiar with OpenSSL. For 4th & Mayor, I moved this year from a standard certificate (for just the `www.4thandmayor.com` URL) to a wildcard certificate (`*.4thandmayor.com`, includes any subdomain) - this allows me to secure endpoints like `api.4thandmayor.com` and `staging.4thandmayor.com` as well. The wildcard cert did cost about $100 more per year.
 
 Don't forget to renew and keep your deployed certs up-to-date ;-)
 
 > Fun Windows trick: if you have the Git Bash installed, just run it - `openssl` is available in the command prompt.
 
-So from a command prompt:
+So from a command prompt, follow the guidance from your CA for generating the CSR. You can use openssl's walkthrough question/answer format from a terminal or just provide the parameters all at once. For my request, it went something like this:
 
 <pre class="brush: bash">
-$ openssl req -nodes -newkey rsa:2048 -nodes -keyout 4thandmayor-wildcard.key -out 4thandmayor-wildcard.csr -subj "/C=US/ST=Washington/L=Seattle/O=Wilcox Digital, LLC/OU=Corporate/CN=*.4thandmayor.com"
+$ openssl req -nodes \
+    -newkey rsa:2048 \
+    -nodes \
+    -keyout 4thandmayor-wildcard.key \
+    -out 4thandmayor-wildcard.csr \
+    -subj "/C=US/ST=Washington/L=Seattle/O=Wilcox Digital, LLC/OU=Corporate/CN=*.4thandmayor.com"
 </pre>
 
-It will then generate and save the `.key` file - save that - it is your private key - keep it safe, like Frodo.
+It will then generate and save the `.key` file - save that - it is your private key - keep it safe, like Frodo would.
 
 <pre class="brush: bash">
 Generating a 2048 bit RSA private key
@@ -248,25 +253,39 @@ Generating a 2048 bit RSA private key
 writing new private key to '4thandmayor-wildcard.key'
 </pre>
 
+The .CSR file is just a text file with the appropriate headers and base64-encoded key; this is part of the PKCS #12 format specification.
+
+Just open, copy and drop the file into your SSL certificate order form as part of the checkout and ordering process. Most providers allow unlimited "re-keying" these days, in case you make a mistake, but do use care in these steps.
+
 ![Providing the certificate signing request.]({{ site.cdn }}4thwazblog/csrRequest.png =700x490 "Submitting the CSR request online to the certificate authority.")
 
-At this point you'll just wait for the verification process and then be able to download the certificate and any needed intermediate chain to then install on your web servers or your cloud service.
+At this point you'll just wait for the verification process and then be able to download the certificate and any needed intermediate chain to then install on your web servers or your cloud service. Most services send an e-mail with information about grabbing the chain once validated, approved and generated.
 
 ![The process according to the CSR reseller web site.]({{ site.cdn }}4thwazblog/csrSummary.png =700x490 "A summary according to the CSR reseller w.r.t. the process.")
 
-As I was making the request on my Mac (Windows may be different), I need to generate a .PFX file which contains the private key, certificate, any intermediate certs, and optionally a password to protect it all. Since my "EssentialSSL" branded certificate is actually built on the trust of a few intermediate Certificate Authorities and resellers, you need the full chain to effectively validate the cert in the end.
+### Creating a PKCS #12 PFX bundle
 
-### Creating a PFX/xxxxx
+As I was making the request on my Mac initially (Windows may be different), I needed to generate a single .PFX file which contains the private key, certificate, any intermediate certs, and ideally/optionally a password to protect it all.
 
-I munge these things using OpenSSL. Note that these are the commands I used, but every CA is going to be a little different.
+Since my EssentialSSL-branded certificate is actually built on the trust of a few intermediate CAs and resellers, you need the full chain to effectively validate the cert in the end. I munged these things using OpenSSL. Note that these are the commands I used, but every CA is going to be a little different depending on any intermediate certificate names, etc..
 
 Step One: combine all the intermediate chain certs into an intermediate file (these are all just text files, BTW)
 
-`$ cat AddTrustExternalCARoot.crt UTNAddTrustSGCCA.crt ComodoUTNSGCCA.crt EssentialSSLCA_2.crt > intermediates.crt`
+<pre class="brush: bash">
+$ cat AddTrustExternalCARoot.crt \
+      UTNAddTrustSGCCA.crt \
+      ComodoUTNSGCCA.crt \
+      EssentialSSLCA_2.crt > intermediates.crt
+</pre>
 
-Next, to export the PFX file (actually PKCS12 format)... it will prompt you for a password, too.
+Next, export/generate the PFX file... it will prompt you for a password, too. Provide a password.
 
-`$ openssl pkcs12 -export -in 4thandmayor-wildcard.crt -inkey 4thandmayor-wildcard.key -certfile intermediates.crt -out 4thandmayor-wildcard.pfx`
+<pre class="brush: bash">
+$ openssl pkcs12 -export -in 4thandmayor-wildcard.crt \
+    -inkey 4thandmayor-wildcard.key \
+    -certfile intermediates.crt \
+    -out 4thandmayor-wildcard.pfx
+</pre>
 
 Keep this file safe. Super safe. It has your private key, certificate, and everything in it. You'll upload it to Windows Azure soon.
 
