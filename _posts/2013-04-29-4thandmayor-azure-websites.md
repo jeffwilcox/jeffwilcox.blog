@@ -9,7 +9,7 @@ After several years of hosting my mobile application's web server and services w
 
 After planning for the migration in March and doing some testing over weekends, I migrated all the traffic for my foursquare application [4th & Mayor](https://www.4thandmayor.com/) to Windows Azure via a quick DNS update a few days into the month of April. It has continued running without a hitch. I'm not going to detail my data migration here, however, that is never fun.
 
-As my cloud backend is implemented in [Node.js](http://nodejs.org/), there was no very little app coding work required other than updating my logging provider and configuring some new infrastructure connection strings.
+As my cloud backend is implemented in [Node.js](http://nodejs.org/), there was not very little app coding work required other than updating my logging provider and configuring some new infrastructure connection strings.
 
 SSL + Windows Azure Web Sites today
 ===================================
