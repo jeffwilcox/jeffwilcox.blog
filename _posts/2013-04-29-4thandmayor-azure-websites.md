@@ -7,6 +7,8 @@ tags: [windows-azure, 4thandmayor, nodejs, cloud, express, websites]
 ---
 After several years of hosting my mobile application's web server and services with Amazon Web Services (AWS), in April I moved my production services to Windows Azure, and it went really smoothly. Here I am sharing a guide through some of the highlights of this process, including how I went about migrating my Node.js backend to an HTTPS-secured site powered by Windows Azure Web Sites, Cloud Services, and the Windows Azure Store.
 
+> Update 6/18/13: Windows Azure Web Sites now supports custom SSL certificates without the Cloud Services workarounds described in this post. The new post is up at [http://www.jeff.wilcox.name/2013/06/waz-web-sites-ssl/](http://www.jeff.wilcox.name/2013/06/waz-web-sites-ssl/).
+
 After planning for the migration in March and doing some testing over weekends, I migrated all the traffic for my foursquare application [4th & Mayor](https://www.4thandmayor.com/) to Windows Azure via a quick DNS update a few days into the month of April. It has continued running without a hitch. I'm not going to detail my data migration here, however, that is never fun.
 
 As my cloud backend is implemented in [Node.js](http://nodejs.org/), there was not very little app coding work required other than updating my logging provider and configuring some new infrastructure connection strings.
