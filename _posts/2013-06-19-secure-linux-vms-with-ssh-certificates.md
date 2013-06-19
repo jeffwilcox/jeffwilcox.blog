@@ -9,7 +9,7 @@ A fairly standard security best practice for cloud-connected Linux virtual machi
 
 This post briefly describes how to go about creating VMs in a more secure manner, and also what we're doing to make this easier from command line tools as well.
 
-# Tips for securing SSH
+# General tips for securing SSH
 
 Essentially a secure SSH connection is the window to any Linux virtual machine andmore fun than the Remote Desktop experience for Windows VMs (note: remote PowerShell is available and a good option these days, too).
 
@@ -102,17 +102,53 @@ Next, upload a certificate. This is the `.pem` file you generated above.
 
 ![Virtual machine configuration - this is where you specify key-only authentication for a new Linux VM.]({{ site.cdn }}vmssh/MachineAuthentication.png =700x503 "Virtual machine configuration - this is where you specify key-only authentication for a new Linux VM.")
 
+You can then hit Next, skip that page's options for simple VMs (but where you would create an availability group required for redundancy), then finish by pressing the finalize/check at the end of the wizard.
+
+The certificate will be added to the account, VM will now be provisioned, and then eventually the new VM will boot and be available.
+
+The operational status bar at the bottom of the portal will provide status; you can expand it for details of which step(s) that the portal is currently processing.
+
 ![The operational status bar at the bottom of the management portal will provide information about the provisioning of the virtual machine in Windows Azure.]({{ site.cdn }}vmssh/StatusBar.png =700x119 "The operational status bar at the bottom of the management portal will provide information about the provisioning of the virtual machine in Windows Azure.")
 
+Once the VM is up, you can explore its page within the portal.
+
+There is a quick glance pane on the right side that shows the SSH port that you can connect to, the DNS name, virtual IP, and other core values.
+
 ![The right pane of the management page for a VM will provide information about SSH endpoints, hostname, VIP, etc.]({{ site.cdn }}vmssh/QuickLook.png =247x608 "The right pane of the management page for a VM will provide information about SSH endpoints, hostname, VIP, etc.")
+
+Also keep an eye on the cores count. Each core is typically billed as 1 Small VM instance unit, with the exception of Extra Small (A0) types.
 
 ![Keep an eye on your cores.]({{ site.cdn }}vmssh/CoresView.png =651x135 "Keep an eye on your cores.")
 
 ## Connecting to a virtual machine
 
+To actually connect, you need an SSH client.
+
+* Linux: use `ssh`
+* Mac: use `ssh` in the Terminal app
+* Windows: use `ssh` within a [Git](http://git-scm.com/) Bash shell session -or- download and use [Putty](http://www.putty.org/)
+
+Simply SSH, providing various parameters:
+
+* `-p PORT`: the port to connect to, or 22 if using the default endpoint
+* `username@hostname`: the username you use at the cloud service DNS name. Alternatively you may use the `-l USERNAME` parameter.
+* `-i PRIVATE_KEY_FILE`: point to the `.pem` file. On Mac/Linux, make sure it is chmod'd to 0600 to connect
+
+So in this example I used this command:
+
+<pre class="brush: bash">
+ssh -i ./jeffwilcox.key jwilcox@cloudwebx.cloudapp.net -p22
+</pre>
+
 ![Using SSH to connect to your new VM.]({{ site.cdn }}vmssh/SSH.png =699x480 "Using SSH to connect to your new VM.")
 
+If you use Putty on Windows, you will need to do some conversion of your private key to be in a format that Putty enjoys.
+
+I just use Git these days.
+
 ![Using Git Bash and its built-in openssl to SSH into your new VM.]({{ site.cdn }}vmssh/GitBashSsh.png =700x178 "Using Git Bash and its built-in openssl to SSH into your new VM.")
+
+Anyone remember Cygwin?
 
 ## Consider creating a Virtual Network
 
