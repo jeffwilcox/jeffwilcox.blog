@@ -19,262 +19,520 @@ imported_categories:
 imported_link_categories: []
 tags: []
 ---
-<p>Let’s make our Windows Phone apps look great, ok?</p>  <p>I am not a designer. I am not a developer-designer. I am a developer and spend my days coding. But I love the concept of “metro” design and believe that it has the potential to bring a beautiful story to Windows Phone, and potentially millions of people. This is Microsoft moving beyond battleship grey buttons for its developer base, and all we need is just a little extra help to get there.</p>  <p>I don’t have a design background, my app is not the most beautiful app ever, but I’m fairly confident in what I would regard as a “80%-accurate” metro implementation. I’m trying to mimic the core Windows Phone operating system’s design, and in return users are getting a consistent interface, and one that respects their desires for how their phone should work.</p>  <p>Over time we can all work together to make all the apps beautiful by default, it doesn’t need to be a special exception to the rule.</p>  <p>If metro was inspired by transportation, just remember that there’s some awful looking transit out there. A few misaligned margins and your app’s going to look like a rusty bus. Just a little maintenance every time you create a page, check-in a page, or look over your app before submitting to the Windows Phone Marketplace will not only yield a good-looking app – but will probably get you some good recognition, too.</p>  <p><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="bus1" border="0" alt="bus1" src="http://www.jeff.wilcox.name/wp-content/uploads/2011/03/bus11.jpg" width="342" height="228" /><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="westminster1" border="0" alt="westminster1" src="http://www.jeff.wilcox.name/wp-content/uploads/2011/03/westminster11.jpg" width="342" height="228" />    <br /><em>What sort of transportation best defines your metro-inspired app? Is it clean, functional?</em></p>  <p>This is my first attempt to share just a few things that I’ve learned while developing a few Windows Phone applications, as I feel that developers just love rules, so maybe having suggested rules will help. We love to fight about code style guidelines, and this whole “metro-design-thing” is really just more of that. Please, let’s get some comments flowing on the topic, start a discussion, and I hope to revise this kind of thing and publish again. I started this list in December and am very happy to share it!</p>  <p>I’m talking about</p>  <ul>   <li>simplicity</li>    <li>ease of use</li>    <li>discoverability</li>    <li>conformance</li>    <li>the right alignment &amp; spacing</li>    <li>using the proper styles</li>    <li>other random tips and suggestions</li> </ul>  <p><a href="http://www.riagenic.com/">Scott Barnes</a> has previously covered a lot about <a href="http://www.riagenic.com/archives/493">the potential of metro for developers</a>, calling it the first real compromise between developers and designers. He goes on to say “Metro simply put feels like I am shoplifting design. It’s not a lot of work and the main focus I have is controlling myself from adding too many elements to the screen or keeping the typography unbalanced.”</p>  <p>I read that to mean “copy what the phone does! it is simple and works!” – I’m also focusing here just on the Windows Phone user interface, but it could apply more openly to other apps and platforms in some situations.</p>  <p>I created these tips while building <a href="http://www.4thandmayor.com/">4th &amp; Mayor</a>. It’s almost like a checklist, I s’pose. Originally ported from my OneNote notebook… and sorry, not enough visual examples.</p>  <h1>“Metro” rules for coders</h1>  <p>In no particular order…</p>  <h2>Metro 100</h2>  <h3>Resources and Styles exist for a reason</h3>  <p>The default Windows Phone styles exist to help you make your application fit in with the intended visual design and appeal of the Windows Phone. You should use styles with text, and consider using the static resources for margins, spacing, brushes, and more.</p>  <p>You’ll find the file with these special resources defined here on a 64-bit machine:</p>  <blockquote>   <p>C:\Program Files (x86)\Microsoft SDKs\Windows Phone\v7.0\Design\</p> </blockquote>  <h3>Understand what margins you get with styles</h3>  <p>Styles may bring in a margin. If you have a StackPanel with both a text block and a button, you should have:</p>  <ul>   <li>The TextBlock requires a style such as PhoneTextNormalStyle or PhoneTextSmallStyle</li>    <li>The button has no style (the default style is already appropriately setup for use in all phone apps)</li> </ul>  <p>If you do this properly,you will notice that the button and text are properly left-aligned.</p>  <p>If instead you just have a text block as-is, and a button, the text will be 12px to the left of the Button. That is not good at all! You want a visually straight line in your app on the left.</p>  <h2>Mind the gap: Alignment, spacing and margins</h2>  <h3>12px is the golden Windows Phone number</h3>  <p>Almost everything in the grid of the Windows Phone design system is pretty much 12px. Sometimes that means a margin of 12px, added to a container that is already left-aligned out by 12px, yielding a 24px actual visual amount of pixels – but it’s about 12px increments.</p>  <p>In some situations it may be appropriate to use 6px or 18px numbers (often when spacing text and other elements vertically), but try 12px first, it’s consistent and clear. The magic number of Windows Phone.</p>  <h3>Pages should align to the left, and a pivot header item should align down the left of the page</h3>  <p>Your page should have a nice, visually crisp line that is 24 pixels from the left of the device’s screen. It may be easiest to test for this while using the light theme on the phone. Pivot header items naturally should line up to the 24 pixel point, allowing for a quick and easy visual check. Don’t forget to check every single pivot item so that your UI is completely great.</p>  <p>Text that uses the proper styles should be aligned fine with other controls like the Button. Do not allow items to be indented by 12px, or back by 12px, the jagged line is not attractive and breaks the clean design line.</p>  <h3>ALIGNMENT IS KING</h3>  <p>Repeating… It is worth shouting out: alignment is one of the easiest ways to make your application look professional, easy to follow, and takes very little effort on the part of the developer. Align everything.</p>  <h3>Scrollbars are flush with the right of the device</h3>  <p>This means that often the margin of a ListBox may be “0,0,-12,0” – to offset the difference and allow the scroll viewer to be flush with the device. In some situations it may need to be –24px or 0px depending on the container and other situations.</p>  <h3>Text that does not fit should be clipped, flush to the right</h3>  <p>Unless you have a specific business reason to use ellipsis at the end of an item (which is not officially supported in Silverlight 3 and therefore the current Windows Phone release), just let content “clip” at the far right when it is longer than the device. Of course, wrapping has a place, so wrap if you don’t want the clip.</p>  <p>Don’t fade the “clip” at the end.</p>  <h2>Colors and brushes</h2>  <p>The static resources for colors and brushes exist for a reason, and should almost always be used.</p>  <h3>Avoid hard-coded colors</h3>  <p>Hard-coded colors introduce bugs and may affect marketplace ingestion in light or dark theme modes.</p>  <p>There are a few situations that may warrant a hard-coded background color when the color is the same in the light and dark themes, as well as a situation where a fixed foreground of white may be acceptable – in a long list selector’s group header, for example, when the background is the phone accent brush.</p>  <h3>Accent colors were built to be used and respected</h3>  <p>Respect your users. Honor their accent color choices by using that color for important user interface elements that indicate touchable elements, actionable information, headings, errors, etc.</p>  <h3>Use accents sparingly and mostly for emphasis</h3>  <p>Accent colors should be used to differentiate content but not to confuse the user. A good data-heavy example application is the people hub in the Windows Phone – open any person’s information up and see how it presents the headings and text for items such as phone numbers and e-mail addresses.</p>  <h3>Use the light theme often</h3>  <p>Dedicate at least one day a week to using your application, both in the emulator and on the device, in the light theme.</p>  <h3>Change accent colors as often as you change your t-shirt</h3>  <p>You want to make sure that you are using and respecting the user’s personalization choice for their device. They’ve made it yours, and now you have the option to make your app personal to them, too.</p>  <h3>Tread carefully with branding</h3>  <p>A brand and its coloring is important, but consider that not all users will want to have the brand’s colors and experience oozing from every corner of your application. A simple logo or small amount of contrast in the user interface, centered around the brand, may be enough – coupled with respecting a user’s phone light/dark theme and accent color choice.</p>  <h3>Beware the pains of light-only and inverse theming</h3>  <p>If you want to go for the light-forced experience like the Mail app, you might find that it’s a big challenge. Having to retemplate controls, templates, styles, and so on, it’s a big challenge, and easy to get wrong.</p>  <h2>Text</h2>  <p>Text is a super-important part of metro. Love text. And love Segoe WP!</p>  <h3>Always use a text style</h3>  <p>They exist for a reason. They give you the phone margins of 12px on the left horizontal, so you want that. Without it, you will have misaligned visuals.</p>  <p><a href="http://www.jeff.wilcox.name/wp-content/uploads/2011/03/PhoneTextStyles.png"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="PhoneTextStyles" border="0" alt="PhoneTextStyles" src="http://www.jeff.wilcox.name/wp-content/uploads/2011/03/PhoneTextStyles_thumb.png" width="685" height="140" /></a></p>  <p>So this is the <strong>GOOD</strong> text example:</p>  <blockquote>   <pre>&lt;TextBlock Text=&quot;Good Text&quot; Style=&quot;{StaticResource PhoneTextNormalStyle}&quot;/&gt;
-&lt;Button Content=&quot;text&quot;/&gt;</pre>
-</blockquote>
-
-<h3>Use PhoneTextNormalStyle often.</h3>
-
-<p>It’s a pretty easy-to-read style and should be the default for most UI.</p>
-
-<h3>Use PhoneTextLargeStyle occasionally.</h3>
-
-<p>It’s good to use for special visuals like groups, important instructions, and some UI features (such as loading text). Often this is combined with a PhoneAccentBrush on the foreground for even more visual distinction, especially if the item can be interacted with.</p>
-
-<h3>Use PhoneTextSmallStyle sparingly.</h3>
-
-<p>For small text, such as detailed info or legalease, it might be a good fit. Otherwise it is often too small for many users to easily read and digest.</p>
-
-<h3>Do not hard-code font size, font family, or other properties</h3>
-
-<p>You should not have hard-coded font sizes or families, unless you are using the static resources to make a specific change to text. (It is o.k. to reference the PhoneFontFamilySemiLight and PhoneFontFamilySemiBold resources, for example, but not to FontSize=”16.667”.</p>
-
-<h3>Do not use raw text blocks (without a style)</h3>
-
-<p>A text block without a style is a bug with the small exception of including a hard-coded margin of 12 on the left. It may be acceptable to achieve a desired look to have a margin such as “12,18,0,6”, for example, but in most situations this is easier to accomplish by using a style such as {StaticResource PhoneTextLargeStyle} and then just overriding the Margin value.</p>
-
-<h3>Text boxes and password boxes should be watermarked text boxes</h3>
-
-<p>Although not built into the phone, you will have a more beautiful UI if you use watermarked text boxes and password boxes instead of field labels and then the text box.</p>
-
-<h3>Evaluate every text block for its wrapping potential</h3>
-
-<p>Every single TextBlock instance needs to be evaluated for the need for wrapping content. Descriptions, important titles and place names, etc. should probably have a wrapping experience and not clip. Don’t forget to think about pivot titles, either, which may need a wrapping title.</p>
-
-<h3>Text boxes should tombstone nicely</h3>
-
-<p>Remember to tombstone the contents of a text box. You can do better by also storing selection information or other important properties. In some situations, you may even want a tombstoning text box to record its focus information, so that when the app activates again, you can even have the software keyboard open (text box focused).</p>
-
-<h2>Hyperlink Buttons</h2>
-
-<p>They can be difficult to touch accurately, especially the default template, and when in a big list of other hyperlink buttons. Be careful.</p>
-
-<h3>Double-check target names for web addresses</h3>
-
-<p>It can be very time-consuming to test every single hyperlink in an application for its behavior. To avoid unknown or unexpected crashes, if using an absolute URI (such as a web site or address), check that the TargetName is something such as “_self” or “_new” to enforce the browser opening.</p>
-
-<h3>Consider re-templating for additional touch target space</h3>
-
-<p>You may want to use negative margins or other tricks to give hyperlink buttons just a little extra space (such as 6px top and bottom) to still have a clear appearance but to allow for more touch target space.</p>
-
-<h2>Images</h2>
-
-<h3>Large image thumbnails look wonderful.</h3>
-
-<p>Instead of sticking with the small thumbnail experience often used in other platforms, think about having beautiful, large images within a wrap panel. You will have a nice-looking UI if you have 200x200px images, for example:</p>
-
-<p><img src="http://d2tz2ccf2zi8lx.cloudfront.net/media/si/4am_pics.png" /></p>
-
-<h3>Full-bleed images have a place</h3>
-
-<p>There are situations where a full-bleed photo, image, or user interface element is appropriate, will look great, and give users maximum screen real estate for the bleed item (item that goes to the edge of the device’s screen).</p>
-
-<p>For example, here is a static map that bleeds to the edge of the screen:</p>
-
-<p><img src="http://d2tz2ccf2zi8lx.cloudfront.net/media/si/4am1.png" /></p>
-
-<h3>Link images to a large image viewer</h3>
-
-<p>It is a nice courtesy to have image thumbnails actually be buttons that move to a full-screen photo/image exploration environment. Whether that environment just shows the picture (in any orientation), or goes above-and-beyond to also do pinch &amp; zoom, is an exercise left up for the bored developer.</p>
-
-<h2>Scrolling &amp; Touch</h2>
-
-<h3>Always check the light theme and look for your scroll bars</h3>
-
-<p>A very common mistake for developers who override the theme to be light (to mimic the behavior of the official Mail app for Windows Phone) is to not re-template the scroll bars throughout the application. This is difficult, as it may require retemplating scroll bars, scroll viewers, list boxes, and more.</p>
-
-<p>If you simply change a background color, and do not retemplate the scroll bar, you’ll usually see no scroll bar at all – it’s a white-colored object on top of a white background, and not so useful!</p>
-
-<h3>Scrollbars are flush with the right of the device</h3>
-
-<p>A repeat, but worth it: even the official Twitter app for the Windows Phone got this design nit-pic wrong, and scrolling feels disconnected as a result. The –12px margin is your friend.</p>
-
-<h3>You may have 6-12px too many at the top of a list</h3>
-
-<p>In some situations, your scrolling containers, items, or other elements may in fact be 6px or 12px too low. To ensure the proper alignment, touch the scroll viewer and move your first up just a very slight amount. Your object should immediately start to get clipped, indicating that it was properly positioned at the very top of your scroll viewer.</p>
-
-<p>You might need to use a negative top margin of -6px or –12px to fix this small thing.</p>
-
-<h3>Remember to pad the bottom of scroll viewers or ListBoxes</h3>
-
-<p>If you have item templates or others that do not include a bottom margin, it may be possible for your list to end with the very bottom of the content being flush against the bottom of the phone (or the application bar, or other visual underneath). This often is not a visually appealing thing, so you might need to add a bottom margin of 12px to the template or container.</p>
-
-<h3>Tombstone scroll viewers to be nice to your users</h3>
-
-<p>Users expect that if they leave your app, have scrolled down a list, and come back, that it is restored in the same position. It takes more work as a developer, but really shows off the polish your app can have.</p>
-
-<h3>Bounce the touch screen often</h3>
-
-<p>You should always be touching your screen. Even when nothing looks actionable. Almost everything needs to be contained in a ScrollViewer, even if it is a simple page. Here’s why:</p>
-
-<ul>
-  <li>Landscape pages are difficult and annoying if nothing scrolls!</li>
-
-  <li>If the software keyboard opens up, it will want to use the scroll viewer to adjust the viewport just right.</li>
-
-  <li>Many users expect the main content of any page to have an associated bounce effect.</li>
-
-  <li>Including a scroll viewer will make sure that landscape mode or re-using components in other amounts of screen real-estate will still yield a usable result.</li>
-</ul>
-
-<h2>System Tray</h2>
-
-
-
-<h3>Please have a system tray on most pages.</h3>
-
-<p>I personally expect to have the system tray available at almost any time. When I am running an app, I really do want to know the time, battery life, if I’m on 3G, etc. Please keep the system tray on pages that you create. Even if it means there’s a little visual glitch / gap at the top where you cannot control the color of the system tray. It’s worth it from a functionality standpoint, I believe.</p>
-
-<h2>Application Bar</h2>
-
-<h3>Favor 3 menu items in an application bar (or 5) if any</h3>
-
-<p>The application bar moves to a specific size depending on the number of menu items in it. If you have 4 items, it will show the size for 5 – so visually it may not look quite right. Try optimizing for 3 or 5 menu items if you can for the best, tightest look.</p>
-
-<h3>Consider making the app bar transparent on photo pages when there’s a menu of choices</h3>
-
-<p>There are situations where an Opacity=0 app bar is the right call, leaving just the ellipsis for the user to touch to get to menu items. If you don’t have any icons, consider it, but keep it consistent.</p>
-
-<h2>Every page in your app</h2>
-
-<p>Take the time to double-check every page, no matter how minor, so that you can ensure integrity in design and a consistent experience for your users. This is about XAML and not visual design as much.</p>
-
-<h3>Page Orientation</h3>
-
-<p>Be consistent, and consider allowing every single page in your app to be viewed in both Portrait and Landscape, with the exception of Pano.</p>
-
-<h3>Panorama pages should only use the Portrait orientation</h3>
-
-<p>Due to the large title font size of a panorama (hub), such experiences should only be contained within a Portrait-designated page.</p>
-
-<h3>Tilt Effect</h3>
-
-<p>Be consistent if using the tilt effect attached property by including it at the top of every page in the app.</p>
-
-<h3>Toolkit Transitions</h3>
-
-<p>If using the transitions from the Silverlight for Windows Phone Toolkit, remember to audit all of your pages for the transition service being set. By default no transition service data means no transitions for any page lacking this data.</p>
-
-<h3>Consistent XAML XML namespaces</h3>
-
-<p>For your own sanity, and that of your team, consider using a standard set of XMLNS names that you can include in the top of pages. Wavering or changing them per-page may yield to difficult to understand XAML when comparing across the app, or working with designers.</p>
-
-<h3>Avoid per-page progress bar experiences</h3>
-
-<p>It is often easier to have a single performance progress bar instance in the frame of the app, binding it to your data model’s loading events. This reduces the overhead of many progress bars, and is easier to hook up for automatic load detection and notification.</p>
-
-<h3>Avoid popups {a performance tip, not a design thing}</h3>
-
-<p>The popup control in Windows Phone can have negative performance implications, not allowing its members to be properly accelerated. Consider using a trick method where your frame contains an overlaying Grid instead of a Popup control.</p>
-
-<h2>Panorama / Hub Experiences</h2>
-
-<h3>Hubs should be like a magazine cover.</h3>
-
-<p>Keep it simple, engaging, users must click something to go to a sub-page.</p>
-
-<h3>Consider a pivot control instead.</h3>
-
-<p>Panorama is a “hot” and popular control to offer that hub experience in any app, but it can be overused. Consider whether a pivot control may be more appropriate.</p>
-
-<h3>Whitespace is wonderful.</h3>
-
-<p>Help the user to focus on just what is important. Do this by minimizing the number of things to distract them: less text, less crazy pictures, just a few simple things. It will go a long way.</p>
-
-<h3>Interactive controls don’t usually belong on a panorama page.</h3>
-
-<p>If you start seeing buttons, text boxes, password boxes, check boxes, or other multiple control types in a panorama item, re-think whether it’s a magazine <em>cover</em> at that point, and perhaps redesign your app’s experience.</p>
-
-<h3>Use at least 3 panorama items in a pano.</h3>
-
-<p>If you use only 2 panorama items, you will not get the appropriate visual mirroring, and may see visual glitches. 1 panorama item is not supported. So, start with 3, and try not to have many more than that at all.</p>
-
-<h2>Pivot Control and Pivot Items</h2>
-
-<h3>No more than 7 items please.</h3>
-
-<p>It’s a general guideline (I believe from the official UI guide) that 7 items is the max. But that doesn’t mean you should always use 7 pivot items in a pivot control!</p>
-
-<h3>Pivot item margins may need to be altered in some situations.</h3>
-
-<p>In some advanced scenarios, it is appropriate to set the pivot item margin values. Examples include edge-bleed images and multi-select controls on the Windows Phone (such as the Mail application). Building such a control is another challenge but it will be clipped if the pivot item is smaller than the edges.</p>
-
-<h3>Consider a new page instead of a new pivot item.</h3>
-
-<p>When adding a new item or data type to a pivot page, think long and hard about whether it’s an appropriate additional as yet another pivot item. For less-used data and information, perhaps a link to a new page with that content may be more appropriate. It will also yield better performance, having less in the visual tree, a quicker startup time, etc.</p>
-
-<h3>Always restore the right pivot item when tombstoning.</h3>
-
-<p>As a courtesy, a polished app should store the pivot item you were on and when you come back, make sure you’re looking at the same thing.</p>
-
-<h2>Using the correct language/wording for your users</h2>
-
-<p>You want to maintain a simple, friendly, friendly voice in your application. More is available in the <a href="http://go.microsoft.com/fwlink/?LinkID=183218">UI Design and Interaction Guide for Windows Phone 7</a>.</p>
-
-<h2>App polish</h2>
-
-<h3>You need a basic but slick about page.</h3>
-
-<p>All great apps should have an about page, to offer information about the developer (or company). Though the marketplace guidelines no longer require it, do consider offering support contact information, a feedback link, and links to privacy policies and other guidelines as appropriate.</p>
-
-<p>The about page should be easy to locate in your app, not hidden away too much.</p>
-
-<h3>Consider including legal notices.</h3>
-
-<p>Consider including the text of legal notices for components that you’re using in your application. This helps give credit to the components that make your application possible, credit the authors with a little pride, and helps protect your application as appropriate by complying with any license terms.</p>
-
-<h3>Message boxes: throttling</h3>
-
-<p>If you display a message box to your users (especially for errors or notices), consider using a throttling mechanism to limit the number of message boxes per minute that might appear.</p>
-
-<h3>Message boxes: consider custom buttons</h3>
-
-<p>Consider building your own message box look-alike to offer buttons with actionable text (such as “delete file” instead of “ok”).</p>
-
-<h3>Message boxes: consider a checkbox to stop the reminder type</h3>
-
-<p>If you add a reminder for your users to go to a meeting, or to review your app, or to purchase your trial app, consider adding a check-box to a custom message box-looking popup, allowing the user the stop the type of notification in the future. The flag is an easy true/false value to store in your app settings.</p>
-
-<h3>Phone numbers</h3>
-
-<p>Always display a phone number in a hyperlink button when possible, linking that action to make a phone call. You may need to extend or use custom helpers to get the right behavior.</p>
-
-<h3>Consider “random witty banter”</h3>
-
-<p>A fun experience app developers often use is that of “witty banter”: that is, friendly headings or text that often change randomly. For example, by having a library of sample text, you can offer watermarked text box that has a watermark that says “search for pizza”, and sometimes “search for Italian”, making the experience a little more fun, friendly, and engaging for the user.</p>
-
-<p>This also helps remove boredom: a user likes to see their apps come alive, and fixed, static text, is never that much fun.</p>
-
-<h2>Getting the reviews you deserve</h2>
-
-<p>I hope these tips help you. Often all people want to know is how to improve the perf of their apps, and though important, a lot of an app’s review is about perception as well, granted you have your functionality down pat. As of 3/24 my app is currently the #1 free app in the <a href="http://www.bing.com/browse?g=wp7&amp;qpvt=top+windows+phone+7+apps&amp;FORM=SGEWEB#toc=1">Windows Phone Marketplace by rating</a>, skyrocketing to the top – and those 5 stars often are attributed in reviews to some semblance of an emphasis on the metro design. Sample 5-stars:</p>
-
-<blockquote>
-  <p>“UI is well-designed!”</p>
-
-  <p>“Simply irresistible”</p>
-
-  <p>“Optimized for WP7, Metro UI, and fast”</p>
-
-  <p>“Excellent app very well done uses the metro design language beautifully :-)”</p>
-
-  <p>“Shows how easy and beautiful a WP7 app can be.”</p>
-
-  <p>“Simply, this is how WP7 apps should all look.”</p>
-
-  <p>“Wow, you’ve encouraged me to go out and look into building my own metro WP7 app!”</p>
-</blockquote>
-
-<p>This makes me think, we can all do so well. Enjoy the tips, I hope they are useful. And tell me when I’m wrong! Let’s get those 3-star apps up to 4-star, and so on, thanks to more consistent design. And remember to mind your margins – all 12px of it when appropriate for alignment.</p>
-
+<p>Let’s make our Windows Phone apps look great, ok?</p>  <p>I am not a designer. I am not a developer-designer. I am a developer and spend my days coding. But I love the concept of “metro” design and believe that it has the potential to bring a beautiful story to Windows Phone, and potentially millions of people. This is Microsoft moving beyond battleship grey buttons for its developer base, and all we need is just a little extra help to get there.</p>  <p>I don’t have a design background, my app is not the most beautiful app ever, but I’m fairly confident in what I would regard as a “80%-accurate” metro implementation. I’m trying to mimic the core Windows Phone operating system’s design, and in return users are getting a consistent interface, and one that respects their desires for how their phone should work.</p>  <p>Over time we can all work together to make all the apps beautiful by default, it doesn’t need to be a special exception to the rule.</p>  <p>If metro was inspired by transportation, just remember that there’s some awful looking transit out there. A few misaligned margins and your app’s going to look like a rusty bus. Just a little maintenance every time you create a page, check-in a page, or look over your app before submitting to the Windows Phone Marketplace will not only yield a good-looking app – but will probably get you some good recognition, too.</p>  <p><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="bus1" border="0" alt="bus1" src="http://az414997.vo.msecnd.net/wordpress/2011/03/bus11.jpg" width="342" height="228" /><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="westminster1" border="0" alt="westminster1" src="http://az414997.vo.msecnd.net/wordpress/2011/03/westminster11.jpg" width="342" height="228" />    <br /><em>What sort of transportation best defines your metro-inspired app? Is it clean, functional?</em></p>  <p>This is my first attempt to share just a few things that I’ve learned while developing a few Windows Phone applications, as I feel that developers just love rules, so maybe having suggested rules will help. We love to fight about code style guidelines, and this whole “metro-design-thing” is really just more of that. Please, let’s get some comments flowing on the topic, start a discussion, and I hope to revise this kind of thing and publish again. I started this list in December and am very happy to share it!</p>  <p>I’m talking about</p>  <ul>   <li>simplicity</li>    <li>ease of use</li>    <li>discoverability</li>    <li>conformance</li>    <li>the right alignment &amp; spacing</li>    <li>using the proper styles</li>    <li>other random tips and suggestions</li> </ul>  <p><a href="http://www.riagenic.com/">Scott Barnes</a> has previously covered a lot about <a href="http://www.riagenic.com/archives/493">the potential of metro for developers</a>, calling it the first real compromise between developers and designers. He goes on to say “Metro simply put feels like I am shoplifting design. It’s not a lot of work and the main focus I have is controlling myself from adding too many elements to the screen or keeping the typography unbalanced.”</p>  <p>I read that to mean “copy what the phone does! it is simple and works!” – I’m also focusing here just on the Windows Phone user interface, but it could apply more openly to other apps and platforms in some situations.</p>  <p>I created these tips while building <a href="http://www.4thandmayor.com/">4th &amp; Mayor</a>. It’s almost like a checklist, I s’pose. Originally ported from my OneNote notebook… and sorry, not enough visual examples.</p>  <h1>“Metro” rules for coders</h1>  <p>In no particular order…</p>  <h2>Metro 100</h2>  <h3>Resources and Styles exist for a reason</h3>  <p>The default Windows Phone styles exist to help you make your application fit in with the intended visual design and appeal of the Windows Phone. You should use styles with text, and consider using the static resources for margins, spacing, brushes, and more.</p>  <p>You’ll find the file with these special resources defined here on a 64-bit machine:</p>  <blockquote>   <p>C:\Program Files (x86)\Microsoft SDKs\Windows Phone\v7.0\Design\</p> </blockquote>  <h3>Understand what margins you get with styles</h3>  <p>Styles may bring in a margin. If you have a StackPanel with both a text block and a button, you should have:</p>  <ul>   <li>The TextBlock requires a style such as PhoneTextNormalStyle or PhoneTextSmallStyle</li>    <li>The button has no style (the default style is already appropriately setup for use in all phone apps)</li> </ul>  <p>If you do this properly,you will notice that the button and text are properly left-aligned.</p>  <p>If instead you just have a text block as-is, and a button, the text will be 12px to the left of the Button. That is not good at all! You want a visually straight line in your app on the left.</p>  <h2>Mind the gap: Alignment, spacing and margins</h2>  <h3>12px is the golden Windows Phone number</h3>  <p>Almost everything in the grid of the Windows Phone design system is pretty much 12px. Sometimes that means a margin of 12px, added to a container that is already left-aligned out by 12px, yielding a 24px actual visual amount of pixels – but it’s about 12px increments.</p>  <p>In some situations it may be appropriate to use 6px or 18px numbers (often when spacing text and other elements vertically), but try 12px first, it’s consistent and clear. The magic number of Windows Phone.</p>  <h3>Pages should align to the left, and a pivot header item should align down the left of the page</h3>  <p>Your page should have a nice, visually crisp line that is 24 pixels from the left of the device’s screen. It may be easiest to test for this while using the light theme on the phone. Pivot header items naturally should line up to the 24 pixel point, allowing for a quick and easy visual check. Don’t forget to check every single pivot item so that your UI is completely great.</p>  <p>Text that uses the proper styles should be aligned fine with other controls like the Button. Do not allow items to be indented by 12px, or back by 12px, the jagged line is not attractive and breaks the clean design line.</p>  <h3>ALIGNMENT IS KING</h3>  <p>Repeating… It is worth shouting out: alignment is one of the easiest ways to make your application look professional, easy to follow, and takes very little effort on the part of the developer. Align everything.</p>  <h3>Scrollbars are flush with the right of the device</h3>  <p>This means that often the margin of a ListBox may be “0,0,-12,0” – to offset the difference and allow the scroll viewer to be flush with the device. In some situations it may need to be –24px or 0px depending on the container and other situations.</p>  <h3>Text that does not fit should be clipped, flush to the right</h3>  <p>Unless you have a specific business reason to use ellipsis at the end of an item (which is not officially supported in Silverlight 3 and therefore the current Windows Phone release), just let content “clip” at the far right when it is longer than the device. Of course, wrapping has a place, so wrap if you don’t want the clip.</p>  <p>Don’t fade the “clip” at the end.</p>  <h2>Colors and brushes</h2>  <p>The static resources for colors and brushes exist for a reason, and should almost always be used.</p>  <h3>Avoid hard-coded colors</h3>  <p>Hard-coded colors introduce bugs and may affect marketplace ingestion in light or dark theme modes.</p>  <p>There are a few situations that may warrant a hard-coded background color when the color is the same in the light and dark themes, as well as a situation where a fixed foreground of white may be acceptable – in a long list selector’s group header, for example, when the background is the phone accent brush.</p>  <h3>Accent colors were built to be used and respected</h3>  <p>Respect your users. Honor their accent color choices by using that color for important user interface elements that indicate touchable elements, actionable information, headings, errors, etc.</p>  <h3>Use accents sparingly and mostly for emphasis</h3>  <p>Accent colors should be used to differentiate content but not to confuse the user. A good data-heavy example application is the people hub in the Windows Phone – open any person’s information up and see how it presents the headings and text for items such as phone numbers and e-mail addresses.</p>  <h3>Use the light theme often</h3>  <p>Dedicate at least one day a week to using your application, both in the emulator and on the device, in the light theme.</p>  <h3>Change accent colors as often as you change your t-shirt</h3>  <p>You want to make sure that you are using and respecting the user’s personalization choice for their device. They’ve made it yours, and now you have the option to make your app personal to them, too.</p>  <h3>Tread carefully with branding</h3>  <p>A brand and its coloring is important, but consider that not all users will want to have the brand’s colors and experience oozing from every corner of your application. A simple logo or small amount of contrast in the user interface, centered around the brand, may be enough – coupled with respecting a user’s phone light/dark theme and accent color choice.</p>  <h3>Beware the pains of light-only and inverse theming</h3>  <p>If you want to go for the light-forced experience like the Mail app, you might find that it’s a big challenge. Having to retemplate controls, templates, styles, and so on, it’s a big challenge, and easy to get wrong.</p>  <h2>Text</h2>  <p>Text is a super-important part of metro. Love text. And love Segoe WP!</p>  <h3>Always use a text style</h3>  <p>They exist for a reason. They give you the phone margins of 12px on the left horizontal, so you want that. Without it, you will have misaligned visuals.</p>  <p><a href="http://az414997.vo.msecnd.net/wordpress/2011/03/PhoneTextStyles.png"><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="PhoneTextStyles" border="0" alt="PhoneTextStyles" src="http://az414997.vo.msecnd.net/wordpress/2011/03/PhoneTextStyles_thumb.png" width="685" height="140" /></a></p>  <p>So this is the <strong>GOOD</strong> text example:</p>  <blockquote>   <pre>&lt;TextBlock Text=&quot;Good Text&quot; Style=&quot;{StaticResource PhoneTextNormalStyle}&quot;/&gt;
+
+&lt;Button Content=&quot;text&quot;/&gt;</pre>
+
+</blockquote>
+
+
+
+<h3>Use PhoneTextNormalStyle often.</h3>
+
+
+
+<p>It’s a pretty easy-to-read style and should be the default for most UI.</p>
+
+
+
+<h3>Use PhoneTextLargeStyle occasionally.</h3>
+
+
+
+<p>It’s good to use for special visuals like groups, important instructions, and some UI features (such as loading text). Often this is combined with a PhoneAccentBrush on the foreground for even more visual distinction, especially if the item can be interacted with.</p>
+
+
+
+<h3>Use PhoneTextSmallStyle sparingly.</h3>
+
+
+
+<p>For small text, such as detailed info or legalease, it might be a good fit. Otherwise it is often too small for many users to easily read and digest.</p>
+
+
+
+<h3>Do not hard-code font size, font family, or other properties</h3>
+
+
+
+<p>You should not have hard-coded font sizes or families, unless you are using the static resources to make a specific change to text. (It is o.k. to reference the PhoneFontFamilySemiLight and PhoneFontFamilySemiBold resources, for example, but not to FontSize=”16.667”.</p>
+
+
+
+<h3>Do not use raw text blocks (without a style)</h3>
+
+
+
+<p>A text block without a style is a bug with the small exception of including a hard-coded margin of 12 on the left. It may be acceptable to achieve a desired look to have a margin such as “12,18,0,6”, for example, but in most situations this is easier to accomplish by using a style such as {StaticResource PhoneTextLargeStyle} and then just overriding the Margin value.</p>
+
+
+
+<h3>Text boxes and password boxes should be watermarked text boxes</h3>
+
+
+
+<p>Although not built into the phone, you will have a more beautiful UI if you use watermarked text boxes and password boxes instead of field labels and then the text box.</p>
+
+
+
+<h3>Evaluate every text block for its wrapping potential</h3>
+
+
+
+<p>Every single TextBlock instance needs to be evaluated for the need for wrapping content. Descriptions, important titles and place names, etc. should probably have a wrapping experience and not clip. Don’t forget to think about pivot titles, either, which may need a wrapping title.</p>
+
+
+
+<h3>Text boxes should tombstone nicely</h3>
+
+
+
+<p>Remember to tombstone the contents of a text box. You can do better by also storing selection information or other important properties. In some situations, you may even want a tombstoning text box to record its focus information, so that when the app activates again, you can even have the software keyboard open (text box focused).</p>
+
+
+
+<h2>Hyperlink Buttons</h2>
+
+
+
+<p>They can be difficult to touch accurately, especially the default template, and when in a big list of other hyperlink buttons. Be careful.</p>
+
+
+
+<h3>Double-check target names for web addresses</h3>
+
+
+
+<p>It can be very time-consuming to test every single hyperlink in an application for its behavior. To avoid unknown or unexpected crashes, if using an absolute URI (such as a web site or address), check that the TargetName is something such as “_self” or “_new” to enforce the browser opening.</p>
+
+
+
+<h3>Consider re-templating for additional touch target space</h3>
+
+
+
+<p>You may want to use negative margins or other tricks to give hyperlink buttons just a little extra space (such as 6px top and bottom) to still have a clear appearance but to allow for more touch target space.</p>
+
+
+
+<h2>Images</h2>
+
+
+
+<h3>Large image thumbnails look wonderful.</h3>
+
+
+
+<p>Instead of sticking with the small thumbnail experience often used in other platforms, think about having beautiful, large images within a wrap panel. You will have a nice-looking UI if you have 200x200px images, for example:</p>
+
+
+
+<p><img src="http://d2tz2ccf2zi8lx.cloudfront.net/media/si/4am_pics.png" /></p>
+
+
+
+<h3>Full-bleed images have a place</h3>
+
+
+
+<p>There are situations where a full-bleed photo, image, or user interface element is appropriate, will look great, and give users maximum screen real estate for the bleed item (item that goes to the edge of the device’s screen).</p>
+
+
+
+<p>For example, here is a static map that bleeds to the edge of the screen:</p>
+
+
+
+<p><img src="http://d2tz2ccf2zi8lx.cloudfront.net/media/si/4am1.png" /></p>
+
+
+
+<h3>Link images to a large image viewer</h3>
+
+
+
+<p>It is a nice courtesy to have image thumbnails actually be buttons that move to a full-screen photo/image exploration environment. Whether that environment just shows the picture (in any orientation), or goes above-and-beyond to also do pinch &amp; zoom, is an exercise left up for the bored developer.</p>
+
+
+
+<h2>Scrolling &amp; Touch</h2>
+
+
+
+<h3>Always check the light theme and look for your scroll bars</h3>
+
+
+
+<p>A very common mistake for developers who override the theme to be light (to mimic the behavior of the official Mail app for Windows Phone) is to not re-template the scroll bars throughout the application. This is difficult, as it may require retemplating scroll bars, scroll viewers, list boxes, and more.</p>
+
+
+
+<p>If you simply change a background color, and do not retemplate the scroll bar, you’ll usually see no scroll bar at all – it’s a white-colored object on top of a white background, and not so useful!</p>
+
+
+
+<h3>Scrollbars are flush with the right of the device</h3>
+
+
+
+<p>A repeat, but worth it: even the official Twitter app for the Windows Phone got this design nit-pic wrong, and scrolling feels disconnected as a result. The –12px margin is your friend.</p>
+
+
+
+<h3>You may have 6-12px too many at the top of a list</h3>
+
+
+
+<p>In some situations, your scrolling containers, items, or other elements may in fact be 6px or 12px too low. To ensure the proper alignment, touch the scroll viewer and move your first up just a very slight amount. Your object should immediately start to get clipped, indicating that it was properly positioned at the very top of your scroll viewer.</p>
+
+
+
+<p>You might need to use a negative top margin of -6px or –12px to fix this small thing.</p>
+
+
+
+<h3>Remember to pad the bottom of scroll viewers or ListBoxes</h3>
+
+
+
+<p>If you have item templates or others that do not include a bottom margin, it may be possible for your list to end with the very bottom of the content being flush against the bottom of the phone (or the application bar, or other visual underneath). This often is not a visually appealing thing, so you might need to add a bottom margin of 12px to the template or container.</p>
+
+
+
+<h3>Tombstone scroll viewers to be nice to your users</h3>
+
+
+
+<p>Users expect that if they leave your app, have scrolled down a list, and come back, that it is restored in the same position. It takes more work as a developer, but really shows off the polish your app can have.</p>
+
+
+
+<h3>Bounce the touch screen often</h3>
+
+
+
+<p>You should always be touching your screen. Even when nothing looks actionable. Almost everything needs to be contained in a ScrollViewer, even if it is a simple page. Here’s why:</p>
+
+
+
+<ul>
+
+  <li>Landscape pages are difficult and annoying if nothing scrolls!</li>
+
+
+
+  <li>If the software keyboard opens up, it will want to use the scroll viewer to adjust the viewport just right.</li>
+
+
+
+  <li>Many users expect the main content of any page to have an associated bounce effect.</li>
+
+
+
+  <li>Including a scroll viewer will make sure that landscape mode or re-using components in other amounts of screen real-estate will still yield a usable result.</li>
+
+</ul>
+
+
+
+<h2>System Tray</h2>
+
+
+
+
+
+
+
+<h3>Please have a system tray on most pages.</h3>
+
+
+
+<p>I personally expect to have the system tray available at almost any time. When I am running an app, I really do want to know the time, battery life, if I’m on 3G, etc. Please keep the system tray on pages that you create. Even if it means there’s a little visual glitch / gap at the top where you cannot control the color of the system tray. It’s worth it from a functionality standpoint, I believe.</p>
+
+
+
+<h2>Application Bar</h2>
+
+
+
+<h3>Favor 3 menu items in an application bar (or 5) if any</h3>
+
+
+
+<p>The application bar moves to a specific size depending on the number of menu items in it. If you have 4 items, it will show the size for 5 – so visually it may not look quite right. Try optimizing for 3 or 5 menu items if you can for the best, tightest look.</p>
+
+
+
+<h3>Consider making the app bar transparent on photo pages when there’s a menu of choices</h3>
+
+
+
+<p>There are situations where an Opacity=0 app bar is the right call, leaving just the ellipsis for the user to touch to get to menu items. If you don’t have any icons, consider it, but keep it consistent.</p>
+
+
+
+<h2>Every page in your app</h2>
+
+
+
+<p>Take the time to double-check every page, no matter how minor, so that you can ensure integrity in design and a consistent experience for your users. This is about XAML and not visual design as much.</p>
+
+
+
+<h3>Page Orientation</h3>
+
+
+
+<p>Be consistent, and consider allowing every single page in your app to be viewed in both Portrait and Landscape, with the exception of Pano.</p>
+
+
+
+<h3>Panorama pages should only use the Portrait orientation</h3>
+
+
+
+<p>Due to the large title font size of a panorama (hub), such experiences should only be contained within a Portrait-designated page.</p>
+
+
+
+<h3>Tilt Effect</h3>
+
+
+
+<p>Be consistent if using the tilt effect attached property by including it at the top of every page in the app.</p>
+
+
+
+<h3>Toolkit Transitions</h3>
+
+
+
+<p>If using the transitions from the Silverlight for Windows Phone Toolkit, remember to audit all of your pages for the transition service being set. By default no transition service data means no transitions for any page lacking this data.</p>
+
+
+
+<h3>Consistent XAML XML namespaces</h3>
+
+
+
+<p>For your own sanity, and that of your team, consider using a standard set of XMLNS names that you can include in the top of pages. Wavering or changing them per-page may yield to difficult to understand XAML when comparing across the app, or working with designers.</p>
+
+
+
+<h3>Avoid per-page progress bar experiences</h3>
+
+
+
+<p>It is often easier to have a single performance progress bar instance in the frame of the app, binding it to your data model’s loading events. This reduces the overhead of many progress bars, and is easier to hook up for automatic load detection and notification.</p>
+
+
+
+<h3>Avoid popups {a performance tip, not a design thing}</h3>
+
+
+
+<p>The popup control in Windows Phone can have negative performance implications, not allowing its members to be properly accelerated. Consider using a trick method where your frame contains an overlaying Grid instead of a Popup control.</p>
+
+
+
+<h2>Panorama / Hub Experiences</h2>
+
+
+
+<h3>Hubs should be like a magazine cover.</h3>
+
+
+
+<p>Keep it simple, engaging, users must click something to go to a sub-page.</p>
+
+
+
+<h3>Consider a pivot control instead.</h3>
+
+
+
+<p>Panorama is a “hot” and popular control to offer that hub experience in any app, but it can be overused. Consider whether a pivot control may be more appropriate.</p>
+
+
+
+<h3>Whitespace is wonderful.</h3>
+
+
+
+<p>Help the user to focus on just what is important. Do this by minimizing the number of things to distract them: less text, less crazy pictures, just a few simple things. It will go a long way.</p>
+
+
+
+<h3>Interactive controls don’t usually belong on a panorama page.</h3>
+
+
+
+<p>If you start seeing buttons, text boxes, password boxes, check boxes, or other multiple control types in a panorama item, re-think whether it’s a magazine <em>cover</em> at that point, and perhaps redesign your app’s experience.</p>
+
+
+
+<h3>Use at least 3 panorama items in a pano.</h3>
+
+
+
+<p>If you use only 2 panorama items, you will not get the appropriate visual mirroring, and may see visual glitches. 1 panorama item is not supported. So, start with 3, and try not to have many more than that at all.</p>
+
+
+
+<h2>Pivot Control and Pivot Items</h2>
+
+
+
+<h3>No more than 7 items please.</h3>
+
+
+
+<p>It’s a general guideline (I believe from the official UI guide) that 7 items is the max. But that doesn’t mean you should always use 7 pivot items in a pivot control!</p>
+
+
+
+<h3>Pivot item margins may need to be altered in some situations.</h3>
+
+
+
+<p>In some advanced scenarios, it is appropriate to set the pivot item margin values. Examples include edge-bleed images and multi-select controls on the Windows Phone (such as the Mail application). Building such a control is another challenge but it will be clipped if the pivot item is smaller than the edges.</p>
+
+
+
+<h3>Consider a new page instead of a new pivot item.</h3>
+
+
+
+<p>When adding a new item or data type to a pivot page, think long and hard about whether it’s an appropriate additional as yet another pivot item. For less-used data and information, perhaps a link to a new page with that content may be more appropriate. It will also yield better performance, having less in the visual tree, a quicker startup time, etc.</p>
+
+
+
+<h3>Always restore the right pivot item when tombstoning.</h3>
+
+
+
+<p>As a courtesy, a polished app should store the pivot item you were on and when you come back, make sure you’re looking at the same thing.</p>
+
+
+
+<h2>Using the correct language/wording for your users</h2>
+
+
+
+<p>You want to maintain a simple, friendly, friendly voice in your application. More is available in the <a href="http://go.microsoft.com/fwlink/?LinkID=183218">UI Design and Interaction Guide for Windows Phone 7</a>.</p>
+
+
+
+<h2>App polish</h2>
+
+
+
+<h3>You need a basic but slick about page.</h3>
+
+
+
+<p>All great apps should have an about page, to offer information about the developer (or company). Though the marketplace guidelines no longer require it, do consider offering support contact information, a feedback link, and links to privacy policies and other guidelines as appropriate.</p>
+
+
+
+<p>The about page should be easy to locate in your app, not hidden away too much.</p>
+
+
+
+<h3>Consider including legal notices.</h3>
+
+
+
+<p>Consider including the text of legal notices for components that you’re using in your application. This helps give credit to the components that make your application possible, credit the authors with a little pride, and helps protect your application as appropriate by complying with any license terms.</p>
+
+
+
+<h3>Message boxes: throttling</h3>
+
+
+
+<p>If you display a message box to your users (especially for errors or notices), consider using a throttling mechanism to limit the number of message boxes per minute that might appear.</p>
+
+
+
+<h3>Message boxes: consider custom buttons</h3>
+
+
+
+<p>Consider building your own message box look-alike to offer buttons with actionable text (such as “delete file” instead of “ok”).</p>
+
+
+
+<h3>Message boxes: consider a checkbox to stop the reminder type</h3>
+
+
+
+<p>If you add a reminder for your users to go to a meeting, or to review your app, or to purchase your trial app, consider adding a check-box to a custom message box-looking popup, allowing the user the stop the type of notification in the future. The flag is an easy true/false value to store in your app settings.</p>
+
+
+
+<h3>Phone numbers</h3>
+
+
+
+<p>Always display a phone number in a hyperlink button when possible, linking that action to make a phone call. You may need to extend or use custom helpers to get the right behavior.</p>
+
+
+
+<h3>Consider “random witty banter”</h3>
+
+
+
+<p>A fun experience app developers often use is that of “witty banter”: that is, friendly headings or text that often change randomly. For example, by having a library of sample text, you can offer watermarked text box that has a watermark that says “search for pizza”, and sometimes “search for Italian”, making the experience a little more fun, friendly, and engaging for the user.</p>
+
+
+
+<p>This also helps remove boredom: a user likes to see their apps come alive, and fixed, static text, is never that much fun.</p>
+
+
+
+<h2>Getting the reviews you deserve</h2>
+
+
+
+<p>I hope these tips help you. Often all people want to know is how to improve the perf of their apps, and though important, a lot of an app’s review is about perception as well, granted you have your functionality down pat. As of 3/24 my app is currently the #1 free app in the <a href="http://www.bing.com/browse?g=wp7&amp;qpvt=top+windows+phone+7+apps&amp;FORM=SGEWEB#toc=1">Windows Phone Marketplace by rating</a>, skyrocketing to the top – and those 5 stars often are attributed in reviews to some semblance of an emphasis on the metro design. Sample 5-stars:</p>
+
+
+
+<blockquote>
+
+  <p>“UI is well-designed!”</p>
+
+
+
+  <p>“Simply irresistible”</p>
+
+
+
+  <p>“Optimized for WP7, Metro UI, and fast”</p>
+
+
+
+  <p>“Excellent app very well done uses the metro design language beautifully :-)”</p>
+
+
+
+  <p>“Shows how easy and beautiful a WP7 app can be.”</p>
+
+
+
+  <p>“Simply, this is how WP7 apps should all look.”</p>
+
+
+
+  <p>“Wow, you’ve encouraged me to go out and look into building my own metro WP7 app!”</p>
+
+</blockquote>
+
+
+
+<p>This makes me think, we can all do so well. Enjoy the tips, I hope they are useful. And tell me when I’m wrong! Let’s get those 3-star apps up to 4-star, and so on, thanks to more consistent design. And remember to mind your margins – all 12px of it when appropriate for alignment.</p>
+
+
+
 <p>Hope this helps. <em>Photo credits: </em><a href="http://www.flickr.com/photos/davidesimonetti/2493540940/"><em>Westminster Tube ‘06</em></a><em> by Davide Simonetti and <a href="http://www.flickr.com/photos/bmaas/126385859/">Old Bus</a> by Barry Maas.</em></p>

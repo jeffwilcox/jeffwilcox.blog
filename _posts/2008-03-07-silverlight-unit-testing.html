@@ -20,89 +20,174 @@ imported_link_categories:
   autoslug: favorite-blogs
 tags: []
 ---
-As announced during the MIX'08 keynote by Scott Guthrie, not only are we making available the <a href="http://www.jeff.wilcox.name/2008/03/05/silverlight-controls-source-code/">source code of the Silverlight controls</a>, but we're also releasing nearly 2,000 unit tests and a unit test framework for the Silverlight runtime.  This is a project I've been working on for some time now, so I'm planning on a series of in-depth tutorials about this exciting ability.  In the meantime, I'll send you towards some other links and a quick preview...
-
-It is my hope that this provides the ability for teams to do some level of test-driven development using Silverlight, and so I'm very interested in receiving your feedback on how it works.  We've had pretty good success using this framework for developing the managed Silverlight controls that were released in the <a href="http://www.microsoft.com/downloads/details.aspx?FamilyId=4E03409A-77F3-413F-B108-1243C243C4FE&amp;displaylang=en">Silverlight 2 Beta 1 SDK</a> at MIX.
-
-<strong>Exploring the control unit tests:</strong>
-<a href="http://blogs.msdn.com/sburke/archive/2008/03/05/silverlight-2-beta-1-controls-available-including-source-and-unit-tests.aspx">Shawn Burke gives an overview</a> of the control source code, unit tests and framework
-<em>3/20 Update</em>: I've also added a <a href="http://www.jeff.wilcox.name/2008/03/20/vid-silverlight-control-ut/">quick video post</a> with a screencast that shows the control tests running.
-
-<strong>Using the unit test framework:
-</strong>Coming soon :-), once I'm back from MIX'08 I'll get the tutorial posts off to a start - <a href="http://feeds.feedburner.com/JeffWilcox">subscribe to my feed</a>!
-
-<img src="http://media.jeff.wilcox.name/blog/mix08/SilverlightTesting.png" /> 
-<em>Microsoft.Silverlight.Testing running DataGrid control tests</em>
-<h3><strong>Built on the power of the Visual Studio Team Test unit test framework</strong></h3>
-If you've used the unit test framework built into the Visual Studio Team Test editions (now available with Visual Studio 2008 Professional as well), then you know just how easy and powerful the framework is. 
-
-You'll find that pretty much everything in the desktop unit test framework is available here when it comes to metadata and attributes.  There's no data-driven tests or advanced host attribute support, but we've also added some helpful attributes such as "Exclusive" attribute (that lives in the Microsoft.Silverlight.Testing namespace), since there's no Visual Studio integration with the framework.
-
-Hopefully this will also help you to get more familiar with the Visual Studio unit test framework so that you can use it for your desktop apps, since the metadata and assertion class knowledge transfers perfectly.
-
-If you're new to the unit test framework, check out the MSDN documentation on the Assert, StringAssert, and CollectionAssert classes, plus of course the attribute metadata.
-
-MSDN Library Documentation: <a href="http://msdn2.microsoft.com/en-us/library/microsoft.visualstudio.testtools.unittesting.aspx">Microsoft.VisualStudio.TestTools.UnitTesting</a>
-
-<img src="http://media.jeff.wilcox.name/blog/mix08/ShoppingTest.png" />
-<em>A sample testcase that uses the unit test framework's attributes; this particular test source code can run using Microsoft.Silverlight.Testing or the desktop Visual Studio Team Test unit test framework, if the references for the project are updated.</em>
-<h3><strong>Downloading the framework</strong></h3>
-To get started, <a href="http://www.microsoft.com/downloads/details.aspx?familyid=EA93DD89-3AF2-4ACB-9CF4-BFE01B3F02D4&amp;displaylang=en">download</a> the <a href="http://www.microsoft.com/downloads/details.aspx?familyid=EA93DD89-3AF2-4ACB-9CF4-BFE01B3F02D4&amp;displaylang=en">Silverlight 2 Beta 1 controls source code</a>.  Inside the self-extracted Zip file, there is a subdirectory called 'bin' that contains the three assemblies that make up the unit test framework:
-<table width="100%" cellPadding="2" cellSpacing="0" border="0">
-<tr>
-<td width="396" vAlign="top"><strong>Assembly</strong></td>
-<td width="485" vAlign="top"><strong>Purpose</strong></td>
-</tr>
-<tr>
-<td width="396" vAlign="top">Microsoft.Silverlight.Testing</td>
-<td width="485" vAlign="top">Unit test framework</td>
-</tr>
-<tr>
-<td width="396" vAlign="top">Microsoft.Silverlight.Testing.Framework</td>
-<td width="485" vAlign="top">Base classes and interfaces for test harnesses</td>
-</tr>
-<tr>
-<td width="396" vAlign="top">Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll</td>
-<td width="485" vAlign="top">Visual Studio Team Test metadata built against the Silverlight libraries</td>
-</tr>
-</table>
-These are typical Silverlight class library assemblies, so you can reference them in your projects like any other library.
-<h3><strong>Installing the framework</strong></h3>
-To make it easier to add the test framework assemblies as references' to your projects, I'd recommend copying the framework assemblies into the client libraries directory where the SDK installs the controls and other bits.
-
-To do this, simply copy the three into "%programfiles%\Microsoft SDKs\Silverlight\v2.0\Libraries\Client".  The next time you use Visual Studio's Add Reference window from within a Silverlight application project, you'll see the assemblies present:
-
-<a href="http://www.jeff.wilcox.name/wp-content/uploads/2008/03/add-reference-2.png"><img height="438" width="514" src="http://www.jeff.wilcox.name/wp-content/uploads/2008/03/add-reference-2-thumb.png" alt="Add Reference (2)" border="0" /></a>
-
-Please note that the unit test framework isn't part of the SDK, but this is a convenient place to store them.
-<h3><strong>Helpful C# test project templates</strong></h3>
-Although it's pretty easy to tie into the framework by adding a new Silverlight application project to your solution, that requires a few hookup details, such as removing Page.xaml.cs, updating the root visual, and some other magic.
-
-It's much easier to instead use these helpful Visual Studio 2008 project and item templates:
-<ul>
-	<li><a href="http://media.jeff.wilcox.name/blog/mix08/SilverlightTestProject.zip">SilverlightTestProject.zip</a> (project template, adds a test project Silverlight application to the solution)
-Copy this into your "%userprofile%\Documents\Visual Studio 2008\Templates\ProjectTemplates"</li>
-	<li><a href="http://media.jeff.wilcox.name/blog/mix08/SilverlightTestClass.zip">SilverlightTestClass.zip</a> (item template, adds a test class to your Silverlight test project)
-Copy this into your "%userprofile%\Documents\Visual Studio 2008\Templates\ItemTemplates"</li>
-</ul>
-<h3><strong>Using the C# test project templates</strong></h3>
-To create a new Silverlight test project, with your Silverlight application or class library open:
-<ul>
-	<li>Right-click on the solution</li>
-	<li>Select the Add-&gt;New Project menu item</li>
-	<li>Click on the root "Visual C#" project type node</li>
-	<li>Under "My Templates", select "Silverlight Test Project", and give your test project a name</li>
-</ul>
-<img src="http://media.jeff.wilcox.name/blog/mix08/NewProjectWithTemplate2.png" />
-
-There's a default test.cs file that you can use as a starting point, or to add additional test classes to your test project:
-<ul>
-	<li>Right-click on the test project</li>
-	<li>Select the Add-&gt;New Item menu option</li>
-	<li>Click on the root "Visual C#" category</li>
-	<li>Select "Silverlight Test Class" and provide a name for your new class</li>
-</ul>
-<img src="http://media.jeff.wilcox.name/blog/mix08/AddNewItemTemplate.png" />
-
-Hope you find this is pretty useful, let me know!
+As announced during the MIX'08 keynote by Scott Guthrie, not only are we making available the <a href="http://www.jeff.wilcox.name/2008/03/05/silverlight-controls-source-code/">source code of the Silverlight controls</a>, but we're also releasing nearly 2,000 unit tests and a unit test framework for the Silverlight runtime.  This is a project I've been working on for some time now, so I'm planning on a series of in-depth tutorials about this exciting ability.  In the meantime, I'll send you towards some other links and a quick preview...
+
+
+
+It is my hope that this provides the ability for teams to do some level of test-driven development using Silverlight, and so I'm very interested in receiving your feedback on how it works.  We've had pretty good success using this framework for developing the managed Silverlight controls that were released in the <a href="http://www.microsoft.com/downloads/details.aspx?FamilyId=4E03409A-77F3-413F-B108-1243C243C4FE&amp;displaylang=en">Silverlight 2 Beta 1 SDK</a> at MIX.
+
+
+
+<strong>Exploring the control unit tests:</strong>
+
+<a href="http://blogs.msdn.com/sburke/archive/2008/03/05/silverlight-2-beta-1-controls-available-including-source-and-unit-tests.aspx">Shawn Burke gives an overview</a> of the control source code, unit tests and framework
+
+<em>3/20 Update</em>: I've also added a <a href="http://www.jeff.wilcox.name/2008/03/20/vid-silverlight-control-ut/">quick video post</a> with a screencast that shows the control tests running.
+
+
+
+<strong>Using the unit test framework:
+
+</strong>Coming soon :-), once I'm back from MIX'08 I'll get the tutorial posts off to a start - <a href="http://feeds.feedburner.com/JeffWilcox">subscribe to my feed</a>!
+
+
+
+<img src="http://media.jeff.wilcox.name/blog/mix08/SilverlightTesting.png" /> 
+
+<em>Microsoft.Silverlight.Testing running DataGrid control tests</em>
+
+<h3><strong>Built on the power of the Visual Studio Team Test unit test framework</strong></h3>
+
+If you've used the unit test framework built into the Visual Studio Team Test editions (now available with Visual Studio 2008 Professional as well), then you know just how easy and powerful the framework is. 
+
+
+
+You'll find that pretty much everything in the desktop unit test framework is available here when it comes to metadata and attributes.  There's no data-driven tests or advanced host attribute support, but we've also added some helpful attributes such as "Exclusive" attribute (that lives in the Microsoft.Silverlight.Testing namespace), since there's no Visual Studio integration with the framework.
+
+
+
+Hopefully this will also help you to get more familiar with the Visual Studio unit test framework so that you can use it for your desktop apps, since the metadata and assertion class knowledge transfers perfectly.
+
+
+
+If you're new to the unit test framework, check out the MSDN documentation on the Assert, StringAssert, and CollectionAssert classes, plus of course the attribute metadata.
+
+
+
+MSDN Library Documentation: <a href="http://msdn2.microsoft.com/en-us/library/microsoft.visualstudio.testtools.unittesting.aspx">Microsoft.VisualStudio.TestTools.UnitTesting</a>
+
+
+
+<img src="http://media.jeff.wilcox.name/blog/mix08/ShoppingTest.png" />
+
+<em>A sample testcase that uses the unit test framework's attributes; this particular test source code can run using Microsoft.Silverlight.Testing or the desktop Visual Studio Team Test unit test framework, if the references for the project are updated.</em>
+
+<h3><strong>Downloading the framework</strong></h3>
+
+To get started, <a href="http://www.microsoft.com/downloads/details.aspx?familyid=EA93DD89-3AF2-4ACB-9CF4-BFE01B3F02D4&amp;displaylang=en">download</a> the <a href="http://www.microsoft.com/downloads/details.aspx?familyid=EA93DD89-3AF2-4ACB-9CF4-BFE01B3F02D4&amp;displaylang=en">Silverlight 2 Beta 1 controls source code</a>.  Inside the self-extracted Zip file, there is a subdirectory called 'bin' that contains the three assemblies that make up the unit test framework:
+
+<table width="100%" cellPadding="2" cellSpacing="0" border="0">
+
+<tr>
+
+<td width="396" vAlign="top"><strong>Assembly</strong></td>
+
+<td width="485" vAlign="top"><strong>Purpose</strong></td>
+
+</tr>
+
+<tr>
+
+<td width="396" vAlign="top">Microsoft.Silverlight.Testing</td>
+
+<td width="485" vAlign="top">Unit test framework</td>
+
+</tr>
+
+<tr>
+
+<td width="396" vAlign="top">Microsoft.Silverlight.Testing.Framework</td>
+
+<td width="485" vAlign="top">Base classes and interfaces for test harnesses</td>
+
+</tr>
+
+<tr>
+
+<td width="396" vAlign="top">Microsoft.VisualStudio.QualityTools.UnitTesting.Silverlight.dll</td>
+
+<td width="485" vAlign="top">Visual Studio Team Test metadata built against the Silverlight libraries</td>
+
+</tr>
+
+</table>
+
+These are typical Silverlight class library assemblies, so you can reference them in your projects like any other library.
+
+<h3><strong>Installing the framework</strong></h3>
+
+To make it easier to add the test framework assemblies as references' to your projects, I'd recommend copying the framework assemblies into the client libraries directory where the SDK installs the controls and other bits.
+
+
+
+To do this, simply copy the three into "%programfiles%\Microsoft SDKs\Silverlight\v2.0\Libraries\Client".  The next time you use Visual Studio's Add Reference window from within a Silverlight application project, you'll see the assemblies present:
+
+
+
+<a href="http://az414997.vo.msecnd.net/wordpress/2008/03/add-reference-2.png"><img height="438" width="514" src="http://az414997.vo.msecnd.net/wordpress/2008/03/add-reference-2-thumb.png" alt="Add Reference (2)" border="0" /></a>
+
+
+
+Please note that the unit test framework isn't part of the SDK, but this is a convenient place to store them.
+
+<h3><strong>Helpful C# test project templates</strong></h3>
+
+Although it's pretty easy to tie into the framework by adding a new Silverlight application project to your solution, that requires a few hookup details, such as removing Page.xaml.cs, updating the root visual, and some other magic.
+
+
+
+It's much easier to instead use these helpful Visual Studio 2008 project and item templates:
+
+<ul>
+
+	<li><a href="http://media.jeff.wilcox.name/blog/mix08/SilverlightTestProject.zip">SilverlightTestProject.zip</a> (project template, adds a test project Silverlight application to the solution)
+
+Copy this into your "%userprofile%\Documents\Visual Studio 2008\Templates\ProjectTemplates"</li>
+
+	<li><a href="http://media.jeff.wilcox.name/blog/mix08/SilverlightTestClass.zip">SilverlightTestClass.zip</a> (item template, adds a test class to your Silverlight test project)
+
+Copy this into your "%userprofile%\Documents\Visual Studio 2008\Templates\ItemTemplates"</li>
+
+</ul>
+
+<h3><strong>Using the C# test project templates</strong></h3>
+
+To create a new Silverlight test project, with your Silverlight application or class library open:
+
+<ul>
+
+	<li>Right-click on the solution</li>
+
+	<li>Select the Add-&gt;New Project menu item</li>
+
+	<li>Click on the root "Visual C#" project type node</li>
+
+	<li>Under "My Templates", select "Silverlight Test Project", and give your test project a name</li>
+
+</ul>
+
+<img src="http://media.jeff.wilcox.name/blog/mix08/NewProjectWithTemplate2.png" />
+
+
+
+There's a default test.cs file that you can use as a starting point, or to add additional test classes to your test project:
+
+<ul>
+
+	<li>Right-click on the test project</li>
+
+	<li>Select the Add-&gt;New Item menu option</li>
+
+	<li>Click on the root "Visual C#" category</li>
+
+	<li>Select "Silverlight Test Class" and provide a name for your new class</li>
+
+</ul>
+
+<img src="http://media.jeff.wilcox.name/blog/mix08/AddNewItemTemplate.png" />
+
+
+
+Hope you find this is pretty useful, let me know!
+
 Jeff
