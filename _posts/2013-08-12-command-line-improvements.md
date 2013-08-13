@@ -7,7 +7,7 @@ tags: [windows-azure, cloud, cli, command-line, tools]
 ---
 On the Windows Azure team, we're committed to providing great experiences for developers and infrastructure customers with a number of ways to manage your services.
 
-One of my favorite ways to administer my services is by using our `azure` command: our cross-platform command line interface (CLI) lets you manage virtual machines, storage accounts, mobile services and web site apps, and more, on any operating system - Windows, Mac OS X, and Linux.
+One of my favorite ways to administer my services is by using the `azure` command from a terminal: our cross-platform command line interface (CLI) lets you your manage virtual machines, storage accounts, mobile services and web site apps, and more, on any operating system - Windows, Mac OS X, and Linux.
 
 ![The Azure command running in the Terminal application.]({{ site.cdn }}summercli/AzureCommandTerminal.png =697x534 "The Azure command running in the Terminal application.")
 
@@ -353,36 +353,6 @@ help:      -h, --help  output usage information
 And then you can always append `-h` to a command to learn more about its options.
 
 <pre class="brush: bash">
-jwmac:~ jeffwilcox$ azure mobile table list -h
-help:    List mobile service tables
-help:
-help:    Usage: mobile table list [options] [servicename]
-help:
-help:    Options:
-help:      -h, --help               output usage information
-help:      -v, --verbose            use verbose output
-help:      --json                   use json output
-help:      -s, --subscription <id>  use the subscription id
-</pre>
-
-You can also refer to the documentation we have up on our GitHub page alongside the source code. [The README.md file](https://github.com/WindowsAzure/azure-sdk-tools-xplat/blob/master/README.md) is quite detailed, with information on many of the commands.
-
-The Windows Azure documentation has a nice detailed tutorial, [How to use the Windows Azure Command-Line Tools for Mac and Linux](http://www.windowsazure.com/en-us/manage/linux/other-resources/command-line-tools/).
-
-## JSON Support
-
-If you're interested in using the tool for scripting, queries and other commands can actually return JSON results about resources.
-
-Simply append `--json` to a command. You will often find more information in the JSON body than the formatted output may provide.
-
-For example, if I request to get my running virtual machines by the standard command prompt, this is what I will see:
-
-<pre class="brush: bash">
-</pre>
-
-And if I use the JSON parameter, I'll get more information - such as endpoints and attached virtual disks:
-
-<pre class="brush: bash">
 jwmac:~ jeffwilcox$ azure network vnet create -h
 help:    Create an Azure Virtual Network
 help:    
@@ -406,6 +376,124 @@ help:      -d, --dns-server-id <dns-id>    The name identifier of the DNS server
 help:      -s, --subscription <id>         use the subscription id
 </pre>
 
+You can also refer to the documentation we have up on our GitHub page alongside the source code. [The README.md file](https://github.com/WindowsAzure/azure-sdk-tools-xplat/blob/master/README.md) is quite detailed, with information on many of the commands.
+
+The Windows Azure documentation has a nice detailed tutorial, [How to use the Windows Azure Command-Line Tools for Mac and Linux](http://www.windowsazure.com/en-us/manage/linux/other-resources/command-line-tools/).
+
+## JSON Support
+
+If you're interested in using the tool for scripting, queries and other commands can actually return JSON results about resources - and often with more information.
+
+Here's what happens when I list my running VMs using `azure vm list` with no other parameters:
+
+<pre class="brush: bash">
+jwair:~ jeffwilcox$ azure vm list
+info:    Executing command vm list
++ Fetching VMs                                                                 
+data:    DNS Name                 VM Name       Status   
+data:    -----------------------  ------------  ---------
+data:    cloudmongo.cloudapp.net  MongoArbiter  ReadyRole
+data:    cloudmongo.cloudapp.net  MongoNode1    ReadyRole
+data:    cloudmongo.cloudapp.net  MongoNode2    ReadyRole
+info:    vm list command OK
+</pre>
+
+Simply append `--json` to a command. You will often find more information in the JSON body than the formatted output may provide.
+
+In this case,
+
+- Endpoint names and ports
+- Attached data disks
+- IP addresses
+
+<pre class="brush: bash">
+jwair:~ jeffwilcox$ azure vm list --json
+[
+  {
+    "DNSName": "cloudmongo.cloudapp.net",
+    "VMName": "MongoArbiter",
+    "IPAddress": "10.0.0.6",
+    "InstanceStatus": "ReadyRole",
+    "InstanceSize": "ExtraSmall",
+    "InstanceStateDetails": "",
+    "OSVersion": "",
+    "Image": "5112500ae3b842c8b9c604889f8753c3__OpenLogic-CentOS-63APR20130415",
+    "DataDisks": [],
+    "Network": {
+      "Endpoints": [
+        {
+          "LocalPort": "22",
+          "Name": "ssh",
+          "Port": "22003",
+          "Protocol": "tcp",
+          "Vip": "138.91.168.48"
+        }
+      ]
+    }
+  },
+  {
+    "DNSName": "cloudmongo.cloudapp.net",
+    "VMName": "MongoNode1",
+    "IPAddress": "10.0.0.4",
+    "InstanceStatus": "ReadyRole",
+    "InstanceSize": "Medium",
+    "InstanceStateDetails": "",
+    "OSVersion": "",
+    "Image": "5112500ae3b842c8b9c604889f8753c3__OpenLogic-CentOS-63APR20130415",
+    "DataDisks": [
+      {
+        "HostCaching": "None",
+        "DiskLabel": "cloudmongo-cloudmongo-MongoNode1-0",
+        "DiskName": "cloudmongo-MongoNode1-0-201308092256550858",
+        "LogicalDiskSizeInGB": "50",
+        "MediaLink": "https://california.blob.core.windows.net/vhds/MongoNode1Data.vhd"
+      }
+    ],
+    "Network": {
+      "Endpoints": [
+        {
+          "LocalPort": "22",
+          "Name": "ssh",
+          "Port": "22001",
+          "Protocol": "tcp",
+          "Vip": "138.91.168.48"
+        }
+      ]
+    }
+  },
+  {
+    "DNSName": "cloudmongo.cloudapp.net",
+    "VMName": "MongoNode2",
+    "IPAddress": "10.0.0.5",
+    "InstanceStatus": "ReadyRole",
+    "InstanceSize": "Small",
+    "InstanceStateDetails": "",
+    "OSVersion": "",
+    "Image": "5112500ae3b842c8b9c604889f8753c3__OpenLogic-CentOS-63APR20130415",
+    "DataDisks": [
+      {
+        "HostCaching": "None",
+        "DiskLabel": "cloudmongo-cloudmongo-MongoNode2-0",
+        "DiskName": "cloudmongo-MongoNode2-0-201308092257470631",
+        "LogicalDiskSizeInGB": "50",
+        "MediaLink": "https://california.blob.core.windows.net/vhds/MongoNode2Data.vhd"
+      }
+    ],
+    "Network": {
+      "Endpoints": [
+        {
+          "LocalPort": "22",
+          "Name": "ssh",
+          "Port": "22002",
+          "Protocol": "tcp",
+          "Vip": "138.91.168.48"
+        }
+      ]
+    }
+  }
+]
+</pre>
+
 So keep this in mind if you're looking for more information about a given request. Over time our team will be looking to add more information to the standard views as well.
 
 ## Verbose responses
@@ -414,7 +502,7 @@ If you want to really dig in to seeing the underlying requests and communication
 
 These "silly" verbose details will be prefixed with `silly:`.
 
-Here's a LONG example of listing virtual machines. Note that I've redacted some things such as certificate details and subscription specifics:
+Here's a LONG example of listing virtual machines. Note that I've redacted some things such as certificate details and subscription specifics; lots of JSON for sure.
 
 <pre class="brush: bash">
 jwmac:~ jeffwilcox$ azure vm list -vv
@@ -763,4 +851,4 @@ The PowerShell commandlets are open source, if you'd like to check them out now.
 - GitHub repo: https://github.com/WindowsAzure/azure-sdk-tools
 - More than 14 releases so far: https://github.com/WindowsAzure/azure-sdk-tools/releases
 
-Hope these tools help you - let us know; open issues on GitHub; interact with our team on Twitter; even contribute your own fixes to issues. We're open source and love sharing our hard work with you.
+Hope these tools help; let us know - we love sharing our work with you.
