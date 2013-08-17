@@ -5,9 +5,11 @@ title: Creating a MongoDB replica set cluster using Windows Azure Linux VMs and 
 categories: [windows-azure, cloud]
 tags: [windows-azure, cloud, cli, mongodb, command-line, tools]
 ---
-I love [MongoDB](http://www.mongodb.org/), the JSON-friendly NoSQL database by 10gen that just keeps ticking; I'm a long-time user and have attended the MongoDB Seattle conference a few years to learn about ideal deployment scenarios, tips and tricks.
+I love [MongoDB](http://www.mongodb.org/), the JSON-friendly NoSQL database by 10gen that just keeps ticking; I'm a long-time user and have attended the MongoDB Seattle conference for a few years learning about ideal deployment scenarios, tips and tricks, and interacting with the community.
 
 In this long post I'm going to setup a cloud-based MongoDB replica set cluster in California from my MacBook Air, sitting in a Seattle coffee shop, using the [cross-platform Command Line Interface (CLI) tools](http://www.jeff.wilcox.name/2013/08/command-line-improvements/) that [Windows Azure](http://www.windowsazure.com/) offers (and my team builds).
+
+With a simple bash script for initializing the nodes, I'm able to launch and go live with the cluster in the time it takes to enjoy an Americano, so let's get to it!
 
 ![Setting up a MongoDB replica set via Mac command line tools while in a Seattle coffee shop.]({{ site.cdn }}mongo/VoxxCoffee.png =700x263 "Coffee, Cloud, and a Mac - the Seattle classic.")
 
@@ -38,7 +40,68 @@ Although Windows Azure has published some great documentation on MongoDB; both r
 
 The easiest way to get going with MongoDB is actually by using the 3rd-party Store right inside the Windows Azure Management Portal, powered by MongoLab. It only takes a few seconds and today there is both a paid and free tier.
 
-XXX
+As a long-time MongoLab customer, I can say, their product is great!
+
+### Azure store
+
+Within the Management Portal, go to "Store", which will then open a sub-window with the offerings that great third parties have.
+
+![Management Portal - Azure Add-Ons]({{ site.cdn }}mongo/AzureStore.png =700x215 "Management Portal - Azure Add-Ons")
+
+In the window, find MongoLab listed under the App Services category.
+
+![Management Portal - Azure Add-Ons]({{ site.cdn }}mongo/StoreSelectAddOn.png =700x458 "Management Portal - Azure Add-Ons")
+
+The wizard will then let you step through the offering, selecting a plan, etc.
+
+![Management Portal - Azure Add-Ons]({{ site.cdn }}mongo/SelectMongoLabPlan.png =700x458 "Management Portal - Azure Add-Ons")
+
+After provisioning, you will then be able to see a page about the offering within the portal under "Add-Ons"
+
+![Management Portal - Azure Add-Ons]({{ site.cdn }}mongo/MongoLabExtraView.png =700x487 "Management Portal - Azure Add-Ons")
+
+You can go to the Connection Info area to get a MongoDB connection string, including the username and password for the service, here:
+
+![Management Portal - Azure Add-Ons]({{ site.cdn }}mongo/ConnectionInformation.png =700x201 "Management Portal - Azure Add-Ons")
+
+And if you touch Manage, you will go directly into a management interface that MongoLab provides, letting you work with data within your collections.
+
+![Management Portal - Azure Add-Ons]({{ site.cdn }}mongo/MongoLabManagement.png =700x441 "Management Portal - Azure Add-Ons")
+
+### Product offerings
+
+As of August it looks like they have 2 offerings/tiers available for Windows Azure Add-On customers; do check the store for the latest pricing and products.
+
+<table class="table">
+<thead>
+<tr>
+<th>Monthly Plan</th>
+<th>Database Storage</th>
+<th>Type</th>
+<th>Monthly Price</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sandbox</td>
+<td>0.5 GB</td>
+<td>Shared Single Instance</td>
+<td>Free (0 USD)</td>
+</tr>
+<tr>
+<td>Shared Cluster</td>
+<td>8 GB</td>
+<td>Shared Replica Set</td>
+<td>149 USD</td>
+</tr>
+</tbody>
+</table>
+
+They have more advanced offerings, including dedicated clusters, available for other cloud providers, but keeping things within the Windows Azure data centers is probably a good call to minimize data transfer costs outside the DC.
+
+### But our own replica set...
+
+So that's the easy option. Let's do MongoDB ourselves now... minus the nice management and backup services that the MongoLab folks provide.
 
 ## My own replica set via Linux compute VMs
 
@@ -100,13 +163,35 @@ Moving to Windows Azure
 
 MongoDB can be configured in many ways: a local instance running on your development machine, an Internet-connected virtual machine running a single instance, a "replica set" or master/slave configuration that backs up data for availability and security across many machines, or a shared configuration for high performance and tons of data.
 
-### Multi-node cluster
-
-x
-
 ### Single instance
 
-x
+For development and testing scenarios, running a single MongoDB instance is very straightforward and easy. You can even run such an instance on your local machine without the need to spin anything up in the cloud.
+
+Most of the MongoDB hosting providers offer very affordable single instance hosting, often on hardware or VMs that run multiple MongoDB server processes: effectively higher-density shared hosting.
+
+### Multi-node replica set cluster
+
+When it comes to data availability and redundancy, MongoDB's replica set concept is ideal. Unlike a single instance, these replica sets are built from multiple virtual machines and can either be shared among customers/uses (Mongo hosting scenario), or completely dedicated.
+
+You can learn about MongoDB through its own documentation:
+
+- [Introduction to MongoDB Replication](http://docs.mongodb.org/manual/core/replication-introduction/)
+- MongoDB's documentation provides a short overview of [replica set deployment architectures](http://docs.mongodb.org/manual/core/replica-set-architectures/)
+- [A full set of tutorials](http://docs.mongodb.org/manual/administration/replica-sets/)
+
+#### Nodes + Arbiter
+
+The traditional, cost-effective solution for a MongoDB cluster is to ensure that you have an odd number of voting MongoDB instances for your database - in order to elect a new Primary.
+
+This means most providers will spin up two dedicated VMs with nice specifications (good memory mostly), and then a very lightweight, inexpensive Arbiter role. The Arbiter can typically always be an Extra Small (A0)-sized instance, costing pennies an hour, while I recommend most people look at Medium and Large instances for the remaining nodes, depending on their requirements for memory.
+
+An Arbiter simply communicates with the nodes in the replica set, checking response times, uptime, etc., in order to select the best-weighted MongoDB primary if a primary goes down.
+
+For hosting providers such as MongoLab, they will actually take a single virtual machine and run many MongoDB processes on it, acting as Arbiters, to drive the cost down even further.
+
+#### 3x Nodes
+
+The most solid replica set implementation is to spin up a cluster of 3 identical, high-powered VMs, each of which could be an acting primary. Without an arbiter, but 3 nodes, it has enough communication and data potential to participate in MongoDB elections for a new primary if the need arrises, while client apps are able to connect to all 3 machines in the case that it needs to probe for the current primary.
 
 ### Understanding memory management and MongoDB
 
@@ -190,7 +275,56 @@ Availability Sets are XXX
 
 ### Single Instances and Maintainence
 
-![]({{ site.cdn }}mongo/SingleInstanceEmail.png =700x780 "")
+If you only run a single Virtual Machine in Windows Azure for a service, you actually won't be covered by the SLA, since it is likely that at some point the fabric running the data center will need to update the host operating system, replace old hardware, experience downtime that is scheduled, etc.
+
+In July, I was running a small VM doing some statistical analysis, and I received this mail from Windows Azure about my single-instance VM, and that it would experience some downtime (including a reboot):
+
+![A mail from Windows Azure about a single-instance VM.]({{ site.cdn }}mongo/SingleInstanceEmail.png =700x780 "A mail from Windows Azure about a single-instance VM.")
+
+So to make sure that you are SLA compatible and your app is quite available, you need to actually run multiple VMs together using an Availability Set - a group of machines together in a single cloud service - and this is done by using the same location/affinity group, and then making up a name to cluster the machines together for.
+
+If you look under the cloud service details, you'll see that Azure's fabric has assigned update and fault domains to these VMs to make sure that they will remain available during updates, etc. Here's what it looks like in my case (you can see this in the portal under 'Instances' for the service):
+
+<table class="table">
+<thead>
+<tr>
+<th>Name</th>
+<th>Status</th>
+<th>Role</th>
+<th>Size</th>
+<th>Update Domain</th>
+<th>Fault Domain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MongoArbiter</td>
+<td>Running</td>
+<td>MongoArbiter</td>
+<td>Extra Small</td>
+<td>2</td>
+<td>0</td>
+</tr>
+<tr>
+<td>MongoNode1</td>
+<td>Running</td>
+<td>MongoNode1</td>
+<td>Medium</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>MongoNode2</td>
+<td>Running</td>
+<td>MongoNode2</td>
+<td>Medium</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+If you look into fault and update domains in the Windows Azure documentation, you'll be able to learn more about the underlying concepts.
 
 ### Viewing an availability set
 
@@ -213,7 +347,9 @@ x
 
 ### Geo-redundancy
 
-x
+When it comes to the geo-redundancy features built in to Windows Azure, effectively we make sure with writes to distribute the information across the local region (there will be 3 confirmed writes to a set of storage servers before we return a successful write for local redundancy) - but with geo-redundancy, we'll also send this to another entire data center.
+
+So if your primary data center for a storage account is 
 
 ### VHDs and billing
 
