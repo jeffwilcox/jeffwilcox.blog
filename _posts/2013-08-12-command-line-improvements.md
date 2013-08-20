@@ -25,7 +25,7 @@ At the bottom of this post, I will provide additional info about the tool, such 
 
 - You can find the installation page at [http://www.windowsazure.com/downloads/](http://www.windowsazure.com/en-us/downloads/#cmd-line-tools).
 - We offer installers for Windows and Mac, and on Linux either a Node.js source tarball or the `npm` installation option.
-- Node.js developers can install the CLI by running `npm azure-cli -g` (depending on your setup, you may need to run w/`sudo`)
+- Node.js developers can install the CLI by running `npm install azure-cli` (depending on your setup, you may need to run w/`sudo`)
 
 # New features for Summer '13
 
@@ -835,7 +835,7 @@ jwmac:~ jeffwilcox$
 The x-plat CLI is open source.
 
 - Download and install for your OS: http://www.windowsazure.com/en-us/downloads/#cmd-line-tools
-- Node.js user? Install easily! `sudo npm install azure-cli -g`
+- Node.js user? Install easily! `sudo npm install azure-cli`
 - GitHub repo: https://github.com/WindowsAzure/azure-sdk-tools-xplat
 - More than 11 releases so far: https://github.com/WindowsAzure/azure-sdk-tools-xplat/releases
 
