@@ -5,15 +5,15 @@ title: Creating a MongoDB replica set cluster using Windows Azure Linux VMs and 
 categories: [windows-azure, cloud]
 tags: [windows-azure, cloud, cli, mongodb, command-line, tools]
 ---
-I love [MongoDB](http://www.mongodb.org/), the JSON-friendly NoSQL database by 10gen that just keeps ticking; I'm a long-time user and have attended the MongoDB Seattle conference for a few years learning about ideal deployment scenarios, tips and tricks, and interacting with the community.
+I love [MongoDB](http://www.mongodb.org/), the JSON-document friendly NoSQL database by 10gen that just keeps ticking; I'm a long-time user and have attended the MongoDB Seattle conference for a few years learning about ideal deployment scenarios, tips and tricks, and interacting with the community.
 
-In this long post I'm going to setup a cloud-based MongoDB replica set cluster in California from my MacBook Air, sitting in a Seattle coffee shop, using the [cross-platform Command Line Interface (CLI) tools](http://www.jeff.wilcox.name/2013/08/command-line-improvements/) that [Windows Azure](http://www.windowsazure.com/) offers (and my team builds).
+In this long post I'm going to talk about hosted MongoDB as well as single instance deployments, but primarily my focus is on setting up a cloud-based MongoDB replica set cluster in California from my Mac, sitting in a Seattle coffee shop, using the [cross-platform Command Line Interface (CLI) tools](http://www.jeff.wilcox.name/2013/08/command-line-improvements/) that [Windows Azure](http://www.windowsazure.com/) offers (and my team builds).
 
-With a simple bash script for initializing the nodes, I'm able to launch and go live with the cluster in the time it takes to enjoy an Americano, so let's get to it!
+With a simple bash script for initializing the instances, today I'm able to launch and go live with the cluster in the time it takes to enjoy an Americano, so let's get to it!
 
 ![Setting up a MongoDB replica set via Mac command line tools while in a Seattle coffee shop.]({{ site.cdn }}mongo/VoxxCoffee.png =700x263 "Coffee, Cloud, and a Mac - the Seattle classic.")
 
-I've been running a mobile app for foursquare users called [4th & Mayor](http://www.4thandmayor.com/) for a few years; the backend is powered by MongoDB: running first on AWS EC2, then hosted MongoDB via [MongoLab](http://www.mongolab.com), and today I'm now running my own replica set cluster using virtual machines in Windows Azure in a reliable, redundant, affordable environment that rocks.
+As an aside: I developed a mobile app for foursquare users called [4th & Mayor](http://www.4thandmayor.com/) a few years; the backend is powered by Node.js and MongoDB. I first ran it all on Amazon EC2, then moved the NoSQL tier to hosted MongoDB with [MongoLab](http://www.mongolab.com), and today I'm running my own replica set cluster using Linux virtual machines in Windows Azure. The cluster is reliable, redundant, affordable, and a great case study for me as I look over our cloud capabilities and developer tools.
 
 I'll be using these Windows Azure features & technologies in this post:
 
@@ -28,7 +28,7 @@ I'll be using these Windows Azure features & technologies in this post:
 - Windows Azure Command Line Interface (CLI) tool on a Mac
 - Windows Azure SDK for Node.js as part of a server node setup script
 
-> Disclaimer: I'm running my MongoDB cluster via my BizSpark subscription and it is working great for me. I'm sharing my experiences here; however, this is not the same as the official Windows Azure guidance on MongoDB that (links at the very bottom). Your experience may vary. No warranty. Etc etc. Hosted MongoDB solutions are probably the most worry-free way to experience NoSQL!
+> Disclaimer: I'm running my MongoDB cluster via my BizSpark subscription and it is working great for me. I'm sharing my experiences here; however, this is not the same as the official Windows Azure guidance on MongoDB that (links at the very bottom). Your experience may vary. No warranty. Etc etc. Hosted MongoDB solutions are probably the most worry-free way to experience NoSQL so do consider MongoLab!
 
 # Why Mongo / a replica set / multiple VM instances / etc.?
 
@@ -42,7 +42,7 @@ The easiest way to get going with MongoDB is actually by using the 3rd-party Sto
 
 As a long-time MongoLab customer, I can say, their product is great!
 
-### Azure store
+### Windows Azure store
 
 Within the Management Portal, go to "Store", which will then open a sub-window with the offerings that great third parties have.
 
@@ -70,7 +70,7 @@ And if you touch Manage, you will go directly into a management interface that M
 
 ### Product offerings
 
-As of August it looks like they have 2 offerings/tiers available for Windows Azure Add-On customers; do check the store for the latest pricing and products.
+MongoLab has 2 offerings available right now for Windows Azure Add-On customers. Do check the store for the latest pricing and products.
 
 <table class="table">
 <thead>
@@ -97,11 +97,13 @@ As of August it looks like they have 2 offerings/tiers available for Windows Azu
 </tbody>
 </table>
 
-They have more advanced offerings, including dedicated clusters, available for other cloud providers, but keeping things within the Windows Azure data centers is probably a good call to minimize data transfer costs outside the DC.
+MongoLab offers a shared, hosted replica set option, but not in all Windows Azure data centers according to [their post announcing the availability](http://blog.mongolab.com/2013/07/production-mongodb-replica-sets-now-available-on-windows-azure/), so if you're looking to have a replica set in Europe, for example, this post might help you run that yourself until they offer such an option/region combination.
 
-### But our own replica set...
+### On to our own replica set...
 
 So that's the easy option. Let's do MongoDB ourselves now... minus the nice management and backup services that the MongoLab folks provide.
+
+If things go down, there's only me to fix it, and I won't have the nice backup and monitoring that hosters provide for the value-add.
 
 ## My own replica set via Linux compute VMs
 
@@ -490,17 +492,208 @@ Now that we've covered all of the technical topics, some basics on MongoDB and a
 
 ## Architectural Design
 
-![]({{ site.cdn }}mongo/MongoAvailabilityMap.png =700x480 "")
+The design I'm using for production app use today supporting 300,000 clients is a pair of nodes and an arbiter for primary voting.
 
-## From the Terminal
+![The infrastructure design for my MongoDB replica set cluster in Windows Azure.]({{ site.cdn }}mongo/MongoAvailabilityMap.png =700x480 "The infrastructure design for my MongoDB replica set cluster in Windows Azure.")
+
+A slightly more robust architecture might involve additional "hidden" replica set members for backup in other regions or just using a 3rd primary node instead of an arbiter.
+
+## Preparing the infrastructure: Networks, compute, storage and disks
+
+Make sure you've installed the [Windows Azure Command Line Tools on your Mac](http://www.windowsazure.com/en-us/downloads/#cmd-line-tools). This will add an `azure` command to your path. (Node.js users: simply run `sudo npm install azure-cli` and the command will be globally installed).
+
+### Ensure you have credentials and management certs installed
+
+The first time you use the tool, you need to run `azure account import` to pull in management credentials for your account. If this is the first time, quickly set things up by following the [How to download and import publish settings](http://www.windowsazure.com/en-us/manage/linux/how-to-guides/command-line-tools/) section of the CLI tutorial.
+
+### Create an Affinity Group
 
 x
 
-## Preparing MongoDB
+<pre class="brush: bash">
+$ azure account affinity-group create \
+-l "West US" \
+-d "Web Services and MongoDB" \
+California
+</pre>
+
+### Create a Storage Account
 
 x
+
+<pre class="brush: bash">
+$ azure storage account create \
+--affinity-group California \
+--description "Disks for VMs and Mongo keys" \
+california
+</pre>
+
+#### Consider turning off geo-replication
+
+x
+
+<pre class="brush: bash">
+$ azure storage account update \
+--geoReplicationEnabled false \
+california
+</pre>
+
+#### Getting the storage account keys
+
+x
+
+<pre class="brush: bash">
+$ azure storage account keys list california --json
+</pre>
+
+### Create a Virtual Network
+
+x
+
+<pre class="brush: bash">
+$ bin/azure network vnet create \
+--subnet-name VMs \
+--affinity-group California \
+CaliforniaNetwork
+</pre>
+
+### Launch Compute
+
+x
+
+### Selecting the OS image
+
+<pre class="brush: bash">
+$ azure vm image list --json | grep OpenLogic # 5112500ae3b842c8b9c604889f8753c3__OpenLogic-CentOS-63APR20130415
+</pre>
+
+#### Create the initial Primary Node (Linux VM)
+
+x
+
+<pre class="brush: bash">
+$ bin/azure vm create \
+--affinity-group California \
+--availability-set MongoDB \
+--blob-url "http://california.blob.core.windows.net/vhds/mongonode1.vhd" \
+--vm-size medium \
+--vm-name MongoNode1 \
+--ssh 22001 \
+--ssh-cert ~/jeffwilcox.pem \
+--no-ssh-password \
+--virtual-network-name "CaliforniaNetwork" \
+--subnet-names "VMs" \
+cloudmongo \
+5112500ae3b842c8b9c604889f8753c3__OpenLogic-CentOS-63APR20130415 \
+jeffwilcox
+</pre>
+
+#### Create the initial Secondary Node
+
+x
+
+<pre class="brush: bash">
+$ azure vm create \
+--connect \
+--availability-set MongoDB \
+--blob-url "http://california.blob.core.windows.net/vhds/mongonode2.vhd" \
+--vm-size medium \
+--vm-name MongoNode2 \
+--ssh 22002 \
+--ssh-cert ~/jeffwilcox.pem \
+--no-ssh-password \
+--virtual-network-name "CaliforniaNetwork" \
+--subnet-names "VMs" \
+cloudmongo \
+5112500ae3b842c8b9c604889f8753c3__OpenLogic-CentOS-63APR20130415 \
+jeffwilcox</pre>
+
+#### Create the Arbiter *or* 3rd node
+
+x
+
+<pre class="brush: bash">
+$ azure vm create \
+--connect \
+--availability-set MongoDB \
+--blob-url "http://california.blob.core.windows.net/vhds/mongoarbiter.vhd" \
+--vm-size extrasmall \
+--vm-name MongoArbiter \
+--ssh 22003 \
+--ssh-cert ~/jeffwilcox.pem \
+--no-ssh-password \
+--virtual-network-name "CaliforniaNetwork" \
+--subnet-names "VMs" \
+cloudmongo \
+5112500ae3b842c8b9c604889f8753c3__OpenLogic-CentOS-63APR20130415 \
+jeffwilcox
+</pre>
+
+Now if you'd rather setup another data-storing node (more expensive cluster), instead fashion this command after the previous secondary instance command, matching the initial compute instance size, etc.
+
+### Create and attach data disks
+
+The non-arbiter nodes should use data disks to improve throughput, separate out persistent disk traffic for MongoDB vs the OS, etc.
+
+<pre class="brush: bash">
+$ azure vm disk attach-new \
+MongoNode1 50 https://california.blob.core.windows.net/vhds/MongoNode1-data.vhd
+$ azure vm disk attach-new \
+MongoNode2 50 https://california.blob.core.windows.net/vhds/MongoNode2-data.vhd
+</pre>
+
+### Add TCP network endpoints for MongoDB
+
+<pre class="brush: bash">
+$ azure vm endpoint create MongoNode1 27017 27017
+$ azure vm endpoint create MongoNode2 37017 27017
+</pre>
+
+The only scenario in which you don't need to setup these endpoints is if your application is located within the same virtual network as the MongoDB cluster.
+
+## Installing and Preparing MongoDB on your Virtual Machines
+
+x
+
+### What the script does
+
+x
+
+### How to use
+
+x
+
+### Source code
+
+The source for the Bash script is up on GitHub.
+
+XX LINKS
+
+No real warranty or support, sorry. I've had the script fail a few times at replica set initialization, I believe simple timing issues. The `/tmp` path will have log files and some simple scripts present if you need to diagnose issues.
 
 ## Creating databases and user accounts
+
+Now you should have a fully-functional MongoDB replica set. To use it in your applications, you will want to create at least one database, and ideally create separate app (user) accounts and administrative accounts for security.
+
+XXX
+
+## Configuring your applications
+
+xx
+
+## Other considerations
+
+There xxxx
+
+### RAID Data Disks
+
+x
+
+### Secondary Read
+
+x
+
+### Backups, other data centers, silent replica set participants
 
 x
 
@@ -509,6 +702,8 @@ x
 ![The various Windows Azure infrastructure services deployed for my MongoDB replica set.]({{ site.cdn }}mongo/DeployedServices.png =700x200 "The various Windows Azure infrastructure services deployed for my MongoDB replica set.")
 
 # Resources
+
+While preparing the post, I've found all of these resources very helpful. Maybe you will, too.
 
 ## From 10Gen/MongoDB
 
