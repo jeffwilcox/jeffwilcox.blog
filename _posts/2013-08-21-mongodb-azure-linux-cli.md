@@ -765,6 +765,8 @@ There's a lot of guidance for doing this manually both in the Windows Azure docu
 I've written a script that has been working great for me for initializing and bringing online MongoDB on top of CentOS Linux to save time. The script:
 
 - Partitions, formats and configures any attached data disks
+- Providing or entering a name for the replica set
+- Providing Windows Azure storage account name and key credentials
 - Installs helper utilities and software (Node.js, a Windows Azure storage service script)
 - Adds 10gen's official MongoDB rpm repos to the system
 - Installs any `yum` updates to the OS
@@ -811,6 +813,12 @@ db.testcollection.find();
 
 At this point you should be allset to deploy your applications, using the credentials created above, once you include and use the appropriate MongoDB connection string for the replica set.
 
+Here's my connection string for this app example:
+
+<pre class="brush: bash">
+mongodb://webapp1:webApp1PasswordGoesHere@cloudmongo.cloudapp.net:27017,cloudmongo.cloudapp.net:27018/myDatabase?replicaSet=rs0
+</pre>
+
 ## Other considerations
 
 There are plenty of other advanced issues that can come up with running a MongoDB in production, as well as scaling to very large databases and use cases. Your search engine of choice will help you find more information.
@@ -853,7 +861,7 @@ While preparing the post, I've found all of these resources very helpful. Maybe 
 
 ## From Windows Azure
 
-- [MongoDB and Web Site tutorial using a Mac](http://www.windowsazure.com/en-us/develop/nodejs/tutorials/website-with-mongodb-(mac)/)
+- [MongoDB and Web Site tutorial using a Mac](http://bit.ly/19HU8D8)
 
 ## Closing
 
