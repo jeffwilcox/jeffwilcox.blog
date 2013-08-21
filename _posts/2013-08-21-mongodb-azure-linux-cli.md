@@ -389,9 +389,9 @@ So the first 5 GB is $0.00, and then the next 15 GB will be at a cost for me of 
 <td>Outbound Data Transfer</td>
 <td>$ 1.80</td>
 </tr>
-<tr>
-<td>*TOTAL*</td>
-<td>*$ 190.31*</td>
+<tr class="info">
+<td><strong>TOTAL<strong></td>
+<td>$ 190.31</td>
 </tr>
 </tbody>
 </table>
@@ -689,7 +689,7 @@ $ bin/azure vm create \
 --subnet-names "VMs" \
 cloudmongo \
 5112500ae3b842c8b9c604889f8753c3__OpenLogic-CentOS-63APR20130415 \
-jeffwilcox
+mongouser
 </pre>
 
 #### Create the initial Secondary Node
@@ -710,7 +710,8 @@ $ azure vm create \
 --subnet-names "VMs" \
 cloudmongo \
 5112500ae3b842c8b9c604889f8753c3__OpenLogic-CentOS-63APR20130415 \
-jeffwilcox</pre>
+mongouser
+</pre>
 
 #### Create the Arbiter *or* 3rd node
 
@@ -730,38 +731,49 @@ $ azure vm create \
 --subnet-names "VMs" \
 cloudmongo \
 5112500ae3b842c8b9c604889f8753c3__OpenLogic-CentOS-63APR20130415 \
-jeffwilcox
+mongouser
 </pre>
 
 Now if you'd rather setup another data-storing node (more expensive cluster), instead fashion this command after the previous secondary instance command, matching the initial compute instance size, etc.
 
 ### Create and attach data disks
 
-The non-arbiter nodes should use data disks to improve throughput, separate out persistent disk traffic for MongoDB vs the OS, etc.
+The primary MongoDB instances (this excludes MongoArbiter) should use data disks to improve IOPS throughput and also not collide with the operating system files. By default the OS disk will use a read/write cache setting with the storage service, while an attached data disk will not have any local caching, leading to better consistency of data.
 
 <pre class="brush: bash">
 $ azure vm disk attach-new \
-MongoNode1 50 https://california.blob.core.windows.net/vhds/MongoNode1-data.vhd
+MongoNode1 60 https://california.blob.core.windows.net/vhds/MongoNode1-data.vhd
 $ azure vm disk attach-new \
-MongoNode2 50 https://california.blob.core.windows.net/vhds/MongoNode2-data.vhd
+MongoNode2 60 https://california.blob.core.windows.net/vhds/MongoNode2-data.vhd
 </pre>
 
 ### Add TCP network endpoints for MongoDB
 
+Next, we expose TCP endpoints to the MongoDB socket. I'm exposing the first node on the public port `27017` and the second on `27018`, and have no need to expose the arbiter. These will be exposed on the `cloudmongo.cloudapp.net` DNS name. Keep in mind that if the primary node fails, port `27018` (MongoNode2 VM) will be elected the primary node - so over time the roles may shift, an important reason that the connection string URIs for MongoDB include the list of machines participating in the replica set cluster.
+
 <pre class="brush: bash">
 $ azure vm endpoint create MongoNode1 27017 27017
-$ azure vm endpoint create MongoNode2 37017 27017
+$ azure vm endpoint create MongoNode2 27018 27017
 </pre>
 
-The only scenario in which you don't need to setup these endpoints is if your application is located within the same virtual network as the MongoDB cluster.
+The only scenario in which you don't need to setup these endpoints is if your application is located within the same virtual network as the MongoDB cluster. Keeping everything within the virtual network boundaries is ideal for very secure scenarios and applications.
 
 ## Installing and Preparing MongoDB on your Virtual Machines
 
-x
+There's a lot of guidance for doing this manually both in the Windows Azure documentation as well as the MongoDB tutorial pages.
 
-### What the script does
+I've written a script that has been working great for me for initializing and bringing online MongoDB on top of CentOS Linux to save time. The script:
 
-x
+- Partitions, formats and configures any attached data disks
+- Installs helper utilities and software (Node.js, a Windows Azure storage service script)
+- Adds 10gen's official MongoDB rpm repos to the system
+- Installs any `yum` updates to the OS
+- Installs the latest official MongoDB server build
+- Configures or joins a MongoDB replica set cluster
+- Generates and stores the MongoDB replica set private key in the cloud
+- Starts up and configures MongoDB
+- Configures the primary cluster administrator user
+- Allows you to view replica set status
 
 ### How to use
 
@@ -769,39 +781,63 @@ x
 
 ### Source code
 
-The source for the Bash script is up on GitHub.
+The source for the Bash script is up on GitHub: [https://github.com/jeffwilcox/waz-mongodb/blob/master/setupMongoNode.sh](setupMongoNode.sh at https://github.com/jeffwilcox/waz-mongodb/)
 
-XX LINKS
-
-No real warranty or support, sorry. I've had the script fail a few times at replica set initialization, I believe simple timing issues. The `/tmp` path will have log files and some simple scripts present if you need to diagnose issues.
+> No real warranty or support, sorry. I've had the script fail a few times at replica set initialization, I believe simple timing issues. The `/tmp` path will have log files and some simple scripts present if you need to diagnose issues.
 
 ## Creating databases and user accounts
 
 Now you should have a fully-functional MongoDB replica set. To use it in your applications, you will want to create at least one database, and ideally create separate app (user) accounts and administrative accounts for security.
 
-XXX
+Since the last step of the script asks if you would like to connect to the primary MongoDB node, I'd recommend using this as the time to prepare the initial database(s) and users. You can learn about this process by reading about [user privilege roles](http://docs.mongodb.org/manual/reference/user-privileges/) and the tutorial [add a user to a database](http://docs.mongodb.org/manual/tutorial/add-user-to-database/).
+
+Let's quickly create a database called "myDatabase" and a user that can only read and write data (but not actually administer the db), intended for use by a web site application. Here's what this looks like (assuming MongoNode1 is currently the primary):
+
+<pre class="brush: bash">
+$ mongo MongoNode1/admin -u clusteradmin -p
+use myDatabase;
+db.addUser({user:'webapp1', pwd:'webApp1PasswordGoesHere', roles:['readWrite']});
+</pre>
+
+You can then connect to the MongoDB shell directly as that new user:
+
+<pre class="brush: bash">
+$ mongo MongoNode1/myDatabase -u webapp1 -p
+db.testcollection.insert({'hello':'world'});
+db.testcollection.find();
+</pre>
 
 ## Configuring your applications
 
-xx
+At this point you should be allset to deploy your applications, using the credentials created above, once you include and use the appropriate MongoDB connection string for the replica set.
 
 ## Other considerations
 
-There xxxx
+There are plenty of other advanced issues that can come up with running a MongoDB in production, as well as scaling to very large databases and use cases. Your search engine of choice will help you find more information.
 
 ### RAID Data Disks
 
-x
+Larger VM instance sizes in Windows Azure support many data disk attachments. Some people report success using RAID10 data disk configurations on Linux to help keep high performance and availability with data disks, plus increase overall storage IOPS by splitting work and data across multiple attached drives.
+
+I haven't found the need for this yet myself, but understand that it is best practice for a number of cloud providers.
 
 ### Secondary Read
 
-x
+For high-performance application needs where immediate, up-to-date 'truth' reads are not as important, there are configuration settings for MongoDB clients that can be used to enable reading from secondary nodes.
+
+In this scenarios, the app may read from either node for data, but writes will still go to the primary.
+
+### Sharding
+
+MongoDB supports a horizontal partitioning and scaling technology called Sharding; it is designed for deploying very large databases supporting hundreds of millions of users. Foursquare, for example, uses such massive sharded databases.
 
 ### Backups, other data centers, silent replica set participants
 
-x
+It is also possible to configure additional members of a replica set that are "hidden", for purposes such as backing up data in other regions or data centers.
 
 ## Viewing the final Windows Azure infrastructure
+
+Here's what the deployed services look like when I open the management portal; you'll see everything denoted here.
 
 ![The various Windows Azure infrastructure services deployed for my MongoDB replica set.]({{ site.cdn }}mongo/DeployedServices.png =700x200 "The various Windows Azure infrastructure services deployed for my MongoDB replica set.")
 
@@ -811,16 +847,14 @@ While preparing the post, I've found all of these resources very helpful. Maybe 
 
 ## From 10Gen/MongoDB
 
-All resources: http://docs.mongodb.org/ecosystem/platforms/windows-azure/
-
-On Linux: http://docs.mongodb.org/ecosystem/tutorial/install-mongodb-on-linux-in-azure/
-
-On Windows: http://docs.mongodb.org/ecosystem/tutorial/install-mongodb-on-windows-azure/
+- [Collected Windows Azure resources](http://docs.mongodb.org/ecosystem/platforms/windows-azure/)
+- [MongoDB tutorial, Linux VMs](http://docs.mongodb.org/ecosystem/tutorial/install-mongodb-on-linux-in-azure/)
+- [MongoDB tutorial, Windows](http://docs.mongodb.org/ecosystem/tutorial/install-mongodb-on-windows-azure/)
 
 ## From Windows Azure
 
-http://www.windowsazure.com/en-us/develop/nodejs/tutorials/website-with-mongodb-(mac)/
+- [MongoDB and Web Site tutorial using a Mac](http://www.windowsazure.com/en-us/develop/nodejs/tutorials/website-with-mongodb-(mac)/)
 
 ## Closing
 
-Hope this helps, let me know. Feel free to fork my Gist with the setup script, interact with our team on Twitter, and let me know if things go well for you. We're open source and love sharing our hard work with you.
+Hope this helps, let me know. Feel free to fork my Git repo with the setup script, interact with our team on Twitter, and let me know if things go well for you. We're open source and love sharing our hard work with you.
