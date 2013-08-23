@@ -3,16 +3,28 @@
   <head>
     <meta charset="utf-8">
     <title>{% if page.title %}{{ page.title }} - Jeff Wilcox{% else %}Jeff Wilcox{% endif %}</title>
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <meta name="description" content="{{ page.description }}">
     <meta name="author" content="Jeff Wilcox">
+    
     <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <script src="../assets/js/respond.min.js"></script>
+<![endif]-->
+
     <!--     <link rel="shortcut icon" href="//az83882.vo.msecnd.net/favicon.ico">     -->
     <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+    
     <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    
     <link href="/css/jmw.css" rel="stylesheet"/>
+
     <link type="text/css" rel="stylesheet" href="{{ site.cdn }}syntax/styles/shCore.css"/>
     <link type="text/css" rel="stylesheet" href="{{ site.cdn }}syntax/styles/shThemeDefault.css"/>
   </head>
@@ -30,6 +42,7 @@
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
 <script src="//js/bootstrap.min.js"></script>
+
 <script src="{{ site.cdn }}syntax/scripts/shCore.js" type="text/javascript"></script>
 <script src="{{ site.cdn }}syntax/scripts/shAutoloader.js" type="text/javascript"></script>
 <script type="text/javascript">
@@ -46,7 +59,7 @@ SyntaxHighlighter.autoloader.apply(null, stxpath(
   'c# c-sharp csharp      @shBrushCSharp.js',
   'js jscript javascript  @shBrushJScript.js',
   'text plain             @shBrushPlain.js',
-   'php                    @shBrushPhp.js',
+  'php                    @shBrushPhp.js',
   'py python              @shBrushPython.js',
   'ruby rails ror rb      @shBrushRuby.js',
   'vb vbnet               @shBrushVb.js',  
