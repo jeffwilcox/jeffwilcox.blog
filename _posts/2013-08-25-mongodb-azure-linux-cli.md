@@ -1,7 +1,7 @@
 ---
 layout: post
 comments: true
-title: Creating a MongoDB replica set cluster powered by Linux VMs on Windows Azure
+title: Creating a MongoDB replica set cluster w/Windows Azure Linux VMs
 categories: [windows-azure, cloud]
 tags: [windows-azure, cloud, cli, mongodb, command-line, tools, linux, centos, nosql]
 ---
