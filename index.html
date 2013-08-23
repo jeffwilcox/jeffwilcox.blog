@@ -1,20 +1,52 @@
 ---
-layout: page
+layout: containerlesspage
 ---
 
-<div id="container">
-	<h1>Jeff Wilcox</h1>
-	{% include full-bio.html %}
+<div class="jumbotron" style="margin-top:-20px">
+	<div class="container">
+		<h1>
+			Jeff Wilcox
+		</h1>
+		<p>
+			Software Developer. Seattle, WA, USA.
+		</p>
+	</div>
 </div>
 
-<div id="home">
-  <h2>Recent Posts</h2>
-  <ul class="posts">
-    {% for post in site.posts limit: 7 %}
-      <li><span>{{ post.date | date_to_string }}</span> &raquo; <a href="{{ post.url }}">{{ post.title }}</a></li>
-    {% endfor %}
-  </ul>
+<div class="container">
+	<div class="row">
+		<div class="col-md-7">
 
-  <p><a href="/posts/">&raquo; All posts</a></p>
+			<div id="home">
+			  <h2>Recent Posts</h2>
+			  <ul class="posts list-unstyled">
+			    {% for post in site.posts limit: 6 %}
+			      <li><span><small>{{ post.date | date_to_string }}</small></span> &raquo;<br /><a href="{{ post.url }}">{{ post.title }}</a></li>
+			    {% endfor %}
+			  </ul>
+			  <p><a href="/posts/">&raquo; Full list of posts</a></p>
+			</div>
 
+		</div>
+
+		<div class="col-md-5">
+			<h3>
+				Windows Azure Developer Experience
+			</h3>
+			<p>At Microsoft, Jeff runs the Windows Azure SDK development team that focuses 
+				on open source SDKs, frameworks and tools. Since 2005, Jeff has worked on 
+				several startup projects at the company shipping Silverlight and also 
+				the UI framework for Windows Phone.
+			</p>
+
+			<h3>
+				4th &amp; Mayor
+			</h3>
+			<p>Jeff is the developer of 4th &amp; Mayor, the #1 top-rated social app on the 
+				Windows Phone Store. The app's user experience is backed by cloud services 
+				in Node.js running on both AWS and Windows Azure.
+			</p>
+		</div>
+		
+	</div>
 </div>
