@@ -1,19 +1,17 @@
 ---
 layout: post
 comments: true
-title: Creating a MongoDB replica set cluster using Windows Azure Linux VMs
+title: Creating a MongoDB replica set cluster powered by Linux VMs on Windows Azure
 categories: [windows-azure, cloud]
 tags: [windows-azure, cloud, cli, mongodb, command-line, tools, linux, centos, nosql]
 ---
-I love [MongoDB](http://www.mongodb.org/), the JSON-document friendly NoSQL database by 10gen that just keeps ticking; I'm a long-time user and have attended the MongoDB Seattle conference for a few years learning about ideal deployment scenarios, tips and tricks, and interacting with the community.
+I love [MongoDB](http://www.mongodb.org/), a favorite NoSQL document database by 10gen that just keeps ticking. I've been using it in my production app for several years, having used hosted MongoDB solutions and also run my own replica set clusters in both AWS and Windows Azure. Today I'm going to talk primarily about creating a MongoDB replica set cluster in Microsoft's cloud, but I'll also touch on hosted and single-instance deployments.
 
-In this long post I'm going to talk about hosted MongoDB as well as single instance deployments, but primarily my focus is on setting up a cloud-based MongoDB replica set cluster in California from my Mac, sitting in a Seattle coffee shop, using the [cross-platform Command Line Interface (CLI) tools](http://www.jeff.wilcox.name/2013/08/command-line-improvements/) that [Windows Azure](http://www.windowsazure.com/) offers (and my team builds).
+This is the first of 3 short posts about creating a replica set with Linux Virtual Machines in Azure. The next posts will focus on doing the same with either the Windows Azure Management Portal via your web browser, and then another on using Windows with our PowerShell commandlets. My goal is to spin up a new cluster in our California data center while sitting at a nice coffee shop here in Seattle, typing away in the Mac Terminal app, using the [cross-platform Command Line Interface (CLI) tools](http://www.jeff.wilcox.name/2013/08/command-line-improvements/) that my team in [Windows Azure](http://www.windowsazure.com/) builds.
 
-With a simple bash script for initializing the instances, today I'm able to launch and go live with the cluster in the time it takes to enjoy an Americano, so let's get to it!
+Combined with a simple bash script I've authored for initializing MongoDB instances, I'm able to launch and go live with a cluster in the time it takes to enjoy an Americano. Let's get to it!
 
 ![Setting up a MongoDB replica set via Mac command line tools while in a Seattle coffee shop.]({{ site.cdn }}mongo/VoxxCoffee.png =700x263 "Coffee, Cloud, and a Mac - the Seattle classic.")
-
-As an aside: I developed a mobile app for foursquare users called [4th & Mayor](http://www.4thandmayor.com/) a few years; the backend is powered by Node.js and MongoDB. I first ran it all on Amazon EC2, then moved the NoSQL tier to hosted MongoDB with [MongoLab](http://www.mongolab.com), and today I'm running my own replica set cluster using Linux virtual machines in Windows Azure. The cluster is reliable, redundant, affordable, and a great case study for me as I look over our cloud capabilities and developer tools.
 
 I'll be using these Windows Azure features & technologies in this post:
 
@@ -30,135 +28,18 @@ I'll be using these Windows Azure features & technologies in this post:
 
 > Disclaimer: I'm running my MongoDB cluster via my BizSpark subscription and it is working great for me. I'm sharing my experiences here; however, this is not the same as the official Windows Azure guidance on MongoDB that (links at the very bottom). Your experience may vary. No warranty. Etc etc. Hosted MongoDB solutions are probably the most worry-free way to experience NoSQL so do consider MongoLab!
 
-# Why Mongo / a replica set / multiple VM instances / etc.?
+# App Background & my MongoDB History
 
-I feel like NoSQL and MongoDB specifically are entertaining "nerd religion" topics, but I've attended the Mongo Seattle conference in Seattle for the past 2 years learning about modern best practices, running MongoDB in the cloud (I'm excited to go again this year on Nov. 5th), and it is clear that there is a very passionate group of developers and companies using MongoDB for important production work.
+My mobile app for foursquare users is called [4th & Mayor](http://www.4thandmayor.com/). To create great experiences for my users, I have a backend that generates live tiles for Windows Phones, store preferences, and manages a sophisticated worker queue for the application. This backend is powered by Node.js and MongoDB. I first ran it all on Amazon EC2, over time moved the data tier to hosted MongoDB via [MongoLab](http://www.mongolab.com), and today I'm running my own replica set cluster using Linux virtual machines in Windows Azure. My production cluster is reliable, with great uptime, and is also affordable, cheaper than a hosted, dedicated cluster.
 
-Although Windows Azure has published some great documentation on MongoDB; both running single instance Mongo (Linux), Mongo on Windows (via roles), and via 3rd-party MongoDB hosting providers.
+Interestingly, Foursquare actually uses MongoDB very extensively as well. [Wikipedia](http://en.wikipedia.org/wiki/MongoDB) notes other large users, including eBay, MetLife, Foursquare, MTV Networks.
 
-## MongoLab and the Windows Azure Store
+Having attended the MongoDB Seattle conference for the past few years learning about modern best practices, including running MongoDB in other cloud providers, this is an area very close to me. 
+Although Windows Azure has published some great docs on MongoDB, I felt a need to go in a different direction with a little more automation. I've also found very little replica set guidance for Azure.
 
-The easiest way to get going with MongoDB is actually by using the 3rd-party Store right inside the Windows Azure Management Portal, powered by MongoLab. It only takes a few seconds and today there is both a paid and free tier.
+Deploying and managing MongoDB replica sets makes for a a great case study and functional test for me as a development lead, looking to validate the cloud capabilities that Windows Azure has, along with the development tools and libraries that we ship.
 
-As a long-time MongoLab customer, I can say, their product is great!
-
-### Windows Azure store
-
-Within the Management Portal, go to "Store", which will then open a sub-window with the offerings that great third parties have.
-
-![Management Portal - Azure Add-Ons]({{ site.cdn }}mongo/AzureStore.png =700x215 "Management Portal - Azure Add-Ons")
-
-In the window, find MongoLab listed under the App Services category.
-
-![Management Portal - Azure Add-Ons]({{ site.cdn }}mongo/StoreSelectAddOn.png =700x458 "Management Portal - Azure Add-Ons")
-
-The wizard will then let you step through the offering, selecting a plan, etc.
-
-![Management Portal - Azure Add-Ons]({{ site.cdn }}mongo/SelectMongoLabPlan.png =700x458 "Management Portal - Azure Add-Ons")
-
-After provisioning, you will then be able to see a page about the offering within the portal under "Add-Ons"
-
-![Management Portal - Azure Add-Ons]({{ site.cdn }}mongo/MongoLabExtraView.png =700x487 "Management Portal - Azure Add-Ons")
-
-You can go to the Connection Info area to get a MongoDB connection string, including the username and password for the service, here:
-
-![Management Portal - Azure Add-Ons]({{ site.cdn }}mongo/ConnectionInformation.png =700x201 "Management Portal - Azure Add-Ons")
-
-And if you touch Manage, you will go directly into a management interface that MongoLab provides, letting you work with data within your collections.
-
-![Management Portal - Azure Add-Ons]({{ site.cdn }}mongo/MongoLabManagement.png =700x441 "Management Portal - Azure Add-Ons")
-
-### Product offerings
-
-MongoLab has 2 offerings available right now for Windows Azure Add-On customers. Do check the store for the latest pricing and products.
-
-<table class="table">
-<thead>
-<tr>
-<th>Monthly Plan</th>
-<th>Database Storage</th>
-<th>Type</th>
-<th>Monthly Price</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Sandbox</td>
-<td>0.5 GB</td>
-<td>Shared Single Instance</td>
-<td>Free (0 USD)</td>
-</tr>
-<tr>
-<td>Shared Cluster</td>
-<td>8 GB</td>
-<td>Shared Replica Set</td>
-<td>149 USD</td>
-</tr>
-</tbody>
-</table>
-
-MongoLab offers a shared, hosted replica set option, but not in all Windows Azure data centers according to [their post announcing the availability](http://blog.mongolab.com/2013/07/production-mongodb-replica-sets-now-available-on-windows-azure/), so if you're looking to have a replica set in Europe, for example, this post might help you run that yourself until they offer such an option/region combination.
-
-### On to our own replica set...
-
-So that's the easy option. Let's do MongoDB ourselves now... minus the nice management and backup services that the MongoLab folks provide.
-
-If things go down, there's only me to fix it, and I won't have the nice backup and monitoring that hosters provide for the value-add.
-
-## Replica set built from Linux VMs
-
-Ideal MongoDB deployments are spread across a few independent compute nodes. MongoDB takes care of replicating writes and other information across the nodes, monitoring for health, and a unique election system for determining the active primary node for writes.
-
-Running a multi-instance VM cluster is important for a production app - dev/test/staging scenarios can use a single instance often, but production instances should be backed by the Windows Azure service-level agreement (SLA). In order to be eligible for the 99.95% SLA for infrastructure virtual machines in Windows Azure, I need to make sure to actually have multi-instance VMs running my app, coupled with an Availability Set - so a replica set.
-
-Clients actively target the number of nodes via connection strings, able to locate and speak with the current primary node. The primary node may shift over time as operating system updates happen, virtual machines restart or go down, or data centers have problems.
-
-I've selected a decently-redundant solution: I'm only using a single data center and single geography for my underlying storage, but I should not actually experience data loss, only mild downtime, if things really go bad. This matches a highly-available, high performance design for my app that should rock.
-
-## Mac tooling
-
-This post started from my initial investigations into running a cluster on Windows Azure VMs via available methods:
-
-- Windows-based PowerShell scripts
-- Windows Azure Management Portal
-- Cross-platform command line interface (CLI) for Mac/Linux/Windows
-
-This specific first post is targeted on using a Mac, but I'll follow up with posts on the other methods soon enough.
-
-I will say this was a great way to stress the tools: I'm using a majority of the Virtual Machine feature surface area and was able to open some solid issues along the way.
-
-The July and August releases of the cross-platform command line tools ([my overview post here](http://www.jeff.wilcox.name/2013/08/command-line-improvements/); [download the tools here](http://www.windowsazure.com/en-us/downloads/#cmd-line-tools)) include new features around Virtual Networks to enable some scenarios here, as well as Availability Set and password-less VM functionality for Virtual Machine operations.
-
-# The Windows Azure Command Line Interface (CLI)
-
-There are a lot of great ways that Windows Azure lets you work with your services. We officially have:
-
-- The Windows Azure Management Portal online
-- Visual Studio with the Windows Azure SDK
-- PowerShell commandlets for Windows
-- The cross-platform Command Line Interface / Tool (CLI) for Windows, Mac, and Linux (powered by Node.js)
-- Client libraries for many languages, including .NET, Java, Python, Ruby, PHP, and others.
-
-A lot of people get started with infrastructure and VMs using the portal; I find myself toting my notebook all over town though and really love that the x-plat command line tools allow me to use the easy `azure` command from your favorite terminal.
-
-![The Azure command running in the Terminal application.]({{ site.cdn }}summercli/AzureCommandTerminal.png =697x534 "The Azure command running in the Terminal application.")
-
-Did I mention almost everything is open source and on GitHub at [https://www.github.com/WindowsAzure/](https://www.github.com/WindowsAzure/)?
-
-The Node.js source code for the command line tools is in the repo at [https://github.com/WindowsAzure/azure-sdk-tools-xplat](https://github.com/WindowsAzure/azure-sdk-tools-xplat) - though it also takes a dependency on our Node.js SDK which is at [https://github.com/WindowsAzure/azure-sdk-for-node](https://github.com/WindowsAzure/azure-sdk-for-node).
-
-# MongoDB
-
-MongoDB is a "NoSQL" document database. It is open source and implemented in native code. You can find out plenty at [http://www.mongodb.org/](http://mongodb.org/), but key features include:
-
-- Document-oriented storage: JSON-style docs with dynamic schemas
-- Index support on any attribute
-- Replication and high availability through replica sets
-- Advanced sharding support for horizontal scaling
-- Querying, including geo-location query support
-- Map/Reduce support
-
-MongoDB was first released in 2009, production-ready since 2010, and today is used by major apps and companies; according to [Wikipedia](http://en.wikipedia.org/wiki/MongoDB), these customers include eBay, MetLife, Foursquare, MTV Networks, and others.
+# MongoDB Basics
 
 ## Mongo Configurations
 
@@ -193,6 +74,113 @@ For hosting providers such as MongoLab, they will actually take a single virtual
 #### 3x Nodes
 
 The most solid replica set implementation is to spin up a cluster of 3 identical, high-powered VMs, each of which could be an acting primary. Without an arbiter, but 3 nodes, it has enough communication and data potential to participate in MongoDB elections for a new primary if the need arrises, while client apps are able to connect to all 3 machines in the case that it needs to probe for the current primary.
+
+# MongoLab and the Windows Azure Store
+
+The easiest way to get going with MongoDB is actually by using the 3rd-party Store right inside the Windows Azure Management Portal, powered by MongoLab. It only takes a few seconds and today there is both a paid and free tier.
+
+As a long-time MongoLab customer, I can say, their product is great!
+
+## Windows Azure Store
+
+Within the Management Portal, go to "Store", which will then open a sub-window with the offerings that great third parties have.
+
+![Management Portal - Azure Add-Ons]({{ site.cdn }}mongo/AzureStore.png =700x215 "Management Portal - Azure Add-Ons")
+
+In the window, find MongoLab listed under the App Services category.
+
+![Management Portal - Azure Add-Ons]({{ site.cdn }}mongo/StoreSelectAddOn.png =700x458 "Management Portal - Azure Add-Ons")
+
+The wizard will then let you step through the offering, selecting a plan, etc.
+
+![Management Portal - Azure Add-Ons]({{ site.cdn }}mongo/SelectMongoLabPlan.png =700x458 "Management Portal - Azure Add-Ons")
+
+After provisioning, you will then be able to see a page about the offering within the portal under "Add-Ons"
+
+![Management Portal - Azure Add-Ons]({{ site.cdn }}mongo/MongoLabExtraView.png =700x487 "Management Portal - Azure Add-Ons")
+
+You can go to the Connection Info area to get a MongoDB connection string, including the username and password for the service, here:
+
+![Management Portal - Azure Add-Ons]({{ site.cdn }}mongo/ConnectionInformation.png =700x201 "Management Portal - Azure Add-Ons")
+
+And if you touch Manage, you will go directly into a management interface that MongoLab provides, letting you work with data within your collections.
+
+![Management Portal - Azure Add-Ons]({{ site.cdn }}mongo/MongoLabManagement.png =700x441 "Management Portal - Azure Add-Ons")
+
+## MongoLab product offerings
+
+MongoLab has 2 offerings available right now for Windows Azure Add-On customers. Do check the store for the latest pricing and products.
+
+<table class="table">
+<thead>
+<tr>
+<th>Monthly Plan</th>
+<th>Database Storage</th>
+<th>Type</th>
+<th>Monthly Price</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sandbox</td>
+<td>0.5 GB</td>
+<td>Shared Single Instance</td>
+<td>Free (0 USD)</td>
+</tr>
+<tr>
+<td>Shared Cluster</td>
+<td>8 GB</td>
+<td>Shared Replica Set</td>
+<td>149 USD</td>
+</tr>
+</tbody>
+</table>
+
+MongoLab offers a shared, hosted replica set option, but not in all Windows Azure data centers according to [their post announcing the availability](http://blog.mongolab.com/2013/07/production-mongodb-replica-sets-now-available-on-windows-azure/), so if you're looking to have a replica set in Europe, for example, this post might help you run that yourself until they offer such an option/region combination.
+
+# Replica set built from Linux VMs
+
+Ideal MongoDB deployments are spread across a few independent compute nodes. MongoDB takes care of replicating writes and other information across the nodes, monitoring for health, and a unique election system for determining the active primary node for writes.
+
+Running a multi-instance VM cluster is important for a production app - dev/test/staging scenarios can use a single instance often, but production instances should be backed by the Windows Azure service-level agreement (SLA). In order to be eligible for the 99.95% SLA for infrastructure virtual machines in Windows Azure, I need to make sure to actually have multi-instance VMs running my app, coupled with an Availability Set - so a replica set.
+
+Clients actively target the number of nodes via connection strings, able to locate and speak with the current primary node. The primary node may shift over time as operating system updates happen, virtual machines restart or go down, or data centers have problems.
+
+I've selected a decently-redundant solution: I'm only using a single data center and single geography for my underlying storage, but I should not actually experience data loss, only mild downtime, if things really go bad. This matches a highly-available, high performance design for my app that should rock.
+
+## Mac tooling
+
+This post started from my initial investigations into running a cluster on Windows Azure VMs via available methods:
+
+- Windows-based PowerShell scripts
+- Windows Azure Management Portal
+- Cross-platform command line interface (CLI) for Mac/Linux/Windows
+
+This specific first post is targeted on using a Mac, but I'll follow up with posts on the other methods soon enough.
+
+I will say this was a great way to stress the tools: I'm using a majority of the Virtual Machine feature surface area and was able to open some solid issues along the way.
+
+The July and August releases of the cross-platform command line tools ([my overview post here](http://www.jeff.wilcox.name/2013/08/command-line-improvements/); [download the tools here](http://www.windowsazure.com/en-us/downloads/#cmd-line-tools)) include new features around Virtual Networks to enable some scenarios here, as well as Availability Set and password-less VM functionality for Virtual Machine operations.
+
+## The Windows Azure Command Line Interface (CLI)
+
+There are a lot of great ways that Windows Azure lets you work with your services. We officially have:
+
+- The Windows Azure Management Portal online
+- Visual Studio with the Windows Azure SDK
+- PowerShell commandlets for Windows
+- The cross-platform Command Line Interface / Tool (CLI) for Windows, Mac, and Linux (powered by Node.js)
+- Client libraries for many languages, including .NET, Java, Python, Ruby, PHP, and others.
+
+A lot of people get started with infrastructure and VMs using the portal; I find myself toting my notebook all over town though and really love that the x-plat command line tools allow me to use the easy `azure` command from your favorite terminal.
+
+![The Azure command running in the Terminal application.]({{ site.cdn }}summercli/AzureCommandTerminal.png =697x534 "The Azure command running in the Terminal application.")
+
+Did I mention almost everything is open source and on GitHub at [https://www.github.com/WindowsAzure/](https://www.github.com/WindowsAzure/)?
+
+The Node.js source code for the command line tools is in the repo at [https://github.com/WindowsAzure/azure-sdk-tools-xplat](https://github.com/WindowsAzure/azure-sdk-tools-xplat) - though it also takes a dependency on our Node.js SDK which is at [https://github.com/WindowsAzure/azure-sdk-for-node](https://github.com/WindowsAzure/azure-sdk-for-node).
+
+# MongoDB
 
 ### Understanding memory management and MongoDB
 
@@ -286,127 +274,6 @@ When it comes to MongoDB running on Windows Azure, there have been a lot of diff
 I believe that multiple-node (+arbiter) configurations running on CentOS Linux VMs are the most common deployment mechanism for MongoDB replica set installations in the industry, so I prefer these for my production environment when compared to some of the earlier guidance for MongoDB on Azure, such as using [cloud service worker roles](http://docs.mongodb.org/ecosystem/tutorial/deploy-mongodb-worker-roles-in-azure/) to deploy MongoDB.
 
 Direct guidance is available for running Linux VMs with MongoDB within the MongoDB tutorial titled [Install MongoDB on Linunx on Azure](http://docs.mongodb.org/ecosystem/tutorial/install-mongodb-on-linux-in-azure/). This post, and associated scripts, build on this.
-
-### Estimating compute costs
-
-The cost of running a MongoDB cluster is variable, depending on data transfer costs, data disk sizes, storage transaction costs, compute instance size and uptime, as well as data disk cache settings. I recommend experimenting with dev/test replica set clusters on an MSDN account for some time before eventually using a production subscription to create the cluster you're happy with in terms of performance, cost, and capacity.
-
-Let's do some estimation in the back-of-the-napkin sort of way. No warranty on this one!
-
-#### Compute
-
-For a MongoDB replica set cluster in the traditional 2xNode + 1xArbiter configuration, I'd like to consider:
-
-- Primary MongoDB Node: Medium Linux Virtual Machine ($0.12/hour)
-- Secondary MongoDB Node: Medium Linux Virtual Machine ($0.12/hour)
-- MongoDB Arbiter: Extra Small Linux VM ($0.02/hour)
-
-The total hourly raw compute cost is therefore $0.26, at a monthly rate of $187.20. This is the base *compute* component of running the service.
-
-#### Storage
-
-For storage, we are going to be storing the VHD operating system disks for the 3 virtual machines; the OS disk cost is variable somewhat, depending on whether the entire allocated space is actually used. A0 allocates a 20 GB data disk, A1 70 GB, and A2 135 GB - but if you're only using 2 GB, then the cost is much lower as the sparse VHD has not actually been "expanded".
-
-Here's the use on one of my production MongoDB nodes that has been running for a few months:
-
-<pre class="brush: bash">
-[jeffwilcox@MongoNode1 ~]$ df -h
-Filesystem            Size  Used Avail Use% Mounted on
-/dev/sda1              29G  2.0G   26G   8% /
-tmpfs                 776M     0  776M   0% /dev/shm
-/dev/sdc1              40G  6.0G   32G  16% /mnt/data
-/dev/sdb1              69G  180M   66G   1% /mnt/resource
-</pre>
-
-So what I see for my production cluster is:
-
-- 2.0 GB disk use for the operating system and MongoDB software
-- 6.0 GB disk use for the MongoDB journal, log, and database storage (this is probably going to be a minimum of 4 GB and a maximum of the drive space for large cluster deployments full of data)
-
-So each non-arbiter node is going to use in this model 8 GB per month of storage, while the arbiter will use 2 GB, for a monthly cost of the simple replica set cluster of 18 GB. Local redundant storage would then cost $0.07 per GB = $1.26, while geo-redundant would cost $1.71 per month.
-
-As far as storage transactions, I'm not seeing a ton of charges here, but understand that OS page files, software updates, log files, security mechanisms, will all use transactions over time. I have not found this to be a large cost per virtual machine enough to really understand it much, but it is documented as to how large writes are, etc. If we have disk write and read caching off for attached disks (my recommendation), you'll see a storage transaction for any written data, fyi.
-
-For our estimate, let's say 500,000 transactions per month, for a cost of $0.05. I just made this number up.
-
-### Virtual Network
-
-No cost for having VMs within a virtual network communicating with one another.
-
-### Affinity Groups
-
-No cost.
-
-### Data Transfer
-
-If your application is hosted entirely within the Virtual Network: No cost.
-
-If your application has Internet endpoints exposed and is being used by other services, or by a site such as a Windows Azure Web Site, outbound data is charged as follows... I'm assuming for now that we're talking on a small enough scale to not go over the 10 TB amount, but other prices are listed on the [Data Transfer Pricing Details Page](http://www.windowsazure.com/en-us/pricing/details/data-transfers/) on the Windows Azure web site.
-
-<table class="table">
-<thead>
-<tr>
-<th>Outbound Data Transfer</th>
-<th>Cost</th>
-<th>Zone 2 Cost (East Asia and Southeast Asia)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>First 5 GB / Month</td>
-<td>Free</td>
-<td>Free</td>
-</tr>
-<tr>
-<td>5 GB - 10 TB</td>
-<td>$0.12 per GB</td>
-<td>$0.19 per GB</td>
-</tr>
-</tbody>
-</table>
-
-For my app, I'm located in West US, and really am not causing too heavy of traffic to hit my service over the Internet, so I'm going to assume 20 GB a month of data transfer for this exercise, though my current data across all instances is showing that for my MongoDB cluster I'm probably only doing about 10 GB today.
-
-So the first 5 GB is $0.00, and then the next 15 GB will be at a cost for me of $0.12/GB, for a total cost for the month of $1.80.
-
-#### Total Monthly
-
-<table class="table">
-<tbody>
-<tr>
-<td>Compute (2x Medium, 1x Extra Small)</td>
-<td>$ 187.20</td>
-</tr>
-<tr>
-<td>Storage Space (Local Redundancy)</td>
-<td>$ 1.26</td>
-</tr>
-<tr>
-<td>Storage Transactions</td>
-<td>$ 0.05</td>
-</tr>
-<tr>
-<td>Outbound Data Transfer</td>
-<td>$ 1.80</td>
-</tr>
-<tr class="info">
-<td><strong>TOTAL<strong></td>
-<td>$ 190.31</td>
-</tr>
-</tbody>
-</table>
-
-#### Cost-savings opportunity
-
-To save a little money, if you intend on really monitoring your service and only using a secondary node in the rare situation that OS updates or other downtime affect things, you might be able to get away with a Medium Primary, Small Secondary, and Extra Small Arbiter.
-
-#### Comparing compute costs
-
-This is effectively my cost today for running my MongoDB cluster, including its various components; however, to do a price comparison with MongoLab, I'd allocate up to 60 GB of data storage - 70 GB with journal space, etc. - which would increase storage space costs to about $10.22/month vs $1.26.
-
-A comparable MongoDB dedicated plan running in the Amazon cloud, according to the [MongoLab Plans and Pricing](https://mongolab.com/products/pricing/) page, would be the "X-Small" (3.7 GB memory) with standard monthly storage (60 GB of usable storage), and they charge $400/month for this service.
-
-Keep in mind that this price would include service, support, backups, and a lot of other hidden costs beyond this.
 
 ### Thinking about backups
 
