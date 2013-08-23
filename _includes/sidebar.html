@@ -1,14 +1,16 @@
-	<p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeff.jpg) no-repeat center"></p>
+	<p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat center"></p>
 	{% include short-bio.html %}
 	{% include follow-jeffwilcox.html %}
 
+
+	{% if page.categories %}
+	<div  style="margin-top: 24px">
 	<small>
+	{% for xcat in page.categories %}
+
+	{% if xcat == 'windows-azure'  %}
 
 	<h4>Windows Azure Developer Experience</h4>
-	<p>
-		Jeff is a Principal Development Lead on the Developer Experience team for Microsoft's cloud. 
-		Jeff's dev team ships command line tools for Mac, Linux, and Windows, plus SDKs for services in Node.js, Java, .NET, PHP, Ruby, Python, and more.
-	</p>
 	<ul class="unstyled">
 		<li><a href="http://windowsazure.github.io/">&raquo; Windows Azure open source</a></li>
 		<li><a href="http://www.github.com/windowsazure/">&raquo; Source code on GitHub</a></li>
@@ -16,13 +18,20 @@
 		<li><a href="http://www.windowsazure.com/en-us/documentation/">&raquo; Windows Azure docs</a></li>
 	</ul>
 
+	{% endif %}
+
+	{% if xcat == '4thandmayor'  %}
 	<h4>4th &amp; Mayor</h4>
-	{% include 4thandmayor-bio.html %}
 	<ul class="unstyled">
 		<li><a href="http://www.4thandmayor.com/">&raquo; 4th &amp; Mayor site</a></li>
 		<li><a href="http://www.windowsphone.com/en-us/store/app/4th-mayor/c7d13b8d-9951-e011-854c-00237de2db9e">&raquo; Download the app</a></li>
-		<li><a href="http://www.github.com/jeffwilcox/">&raquo; My GitHub</a></li>
+		<li><a href="http://www.github.com/jeffwilcox/">&raquo; Jeff on GitHub</a></li>
 		<li><a href="http://www.github.com/jeffwilcox/mpns">&raquo; MPNS Node.js module</a></li>
 	</ul>
-
+	{% endif %}
+	
+	
+	{% endfor %}
 	</small>
+	</div>
+	{% endif %}
