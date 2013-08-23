@@ -75,6 +75,14 @@ For hosting providers such as MongoLab, they will actually take a single virtual
 
 The most solid replica set implementation is to spin up a cluster of 3 identical, high-powered VMs, each of which could be an acting primary. Without an arbiter, but 3 nodes, it has enough communication and data potential to participate in MongoDB elections for a new primary if the need arrises, while client apps are able to connect to all 3 machines in the case that it needs to probe for the current primary.
 
+## Architectural Design
+
+The design I'm using for production app use today supporting 300,000 clients is a pair of nodes and an arbiter for primary voting.
+
+![The infrastructure design for my MongoDB replica set cluster in Windows Azure.]({{ site.cdn }}mongo/MongoAvailabilityMap.png =700x480 "The infrastructure design for my MongoDB replica set cluster in Windows Azure.")
+
+A slightly more robust architecture might involve additional "hidden" replica set members for backup in other regions or just using a 3rd primary node instead of an arbiter.
+
 # MongoLab and the Windows Azure Store
 
 The easiest way to get going with MongoDB is actually by using the 3rd-party Store right inside the Windows Azure Management Portal, powered by MongoLab. It only takes a few seconds and today there is both a paid and free tier.
@@ -275,10 +283,6 @@ I believe that multiple-node (+arbiter) configurations running on CentOS Linux V
 
 Direct guidance is available for running Linux VMs with MongoDB within the MongoDB tutorial titled [Install MongoDB on Linunx on Azure](http://docs.mongodb.org/ecosystem/tutorial/install-mongodb-on-linux-in-azure/). This post, and associated scripts, build on this.
 
-### Thinking about backups
-
-I'm avoiding the issue of data backups, but `cron` jobs or other services can be used to do some level of backup; this is a whole different topic and beyond the scope of this post. With MongoLab, at least they have your back!
-
 # Windows Azure Virtual Machines
 
 Infrastructure virtual machines from Windows Azure, running Linux (CentOS is my preference), are an awesome and powerful way to bring applications and services such as MongoDB online.
@@ -420,54 +424,11 @@ If you look under the cloud service details, you'll see that Azure's fabric has 
 
 If you look into fault and update domains in the Windows Azure documentation, you'll be able to learn more about the underlying concepts.
 
-### Viewing an availability set
-
-When you have a multi-instance VM setup in Windows Azure, you will see that the Cloud Service (the DNS endpoint - cloudapp.net - for the service) will have multiple virtual machines listed within its properties, showing the availability set:
-
-![]({{ site.cdn }}mongo/AvailabilitySet.png =700x290 "")
-
-
-## Virtual Networks
-
-x
-
-## VM Endpoints
-
-x
-
-## Storage Accounts
-
-x
-
 ### Geo-redundancy
 
 When it comes to the geo-redundancy features built in to Windows Azure, effectively we make sure with writes to distribute the information across the local region (there will be 3 confirmed writes to a set of storage servers before we return a successful write for local redundancy) - but with geo-redundancy, we'll also send this to another entire data center.
 
-So if your primary data center for a storage account is 
-
-### VHDs and billing
-
-x
-
-### Storing blobs in the cloud
-
-x
-
-## Data Disks
-
-x
-
-# Creating a MongoDB replica set in Windows Azure
-
-Now that we've covered all of the technical topics, some basics on MongoDB and architecture, we're ready to use the x-plat CLI to actually get out infrastructure in place.
-
-## Architectural Design
-
-The design I'm using for production app use today supporting 300,000 clients is a pair of nodes and an arbiter for primary voting.
-
-![The infrastructure design for my MongoDB replica set cluster in Windows Azure.]({{ site.cdn }}mongo/MongoAvailabilityMap.png =700x480 "The infrastructure design for my MongoDB replica set cluster in Windows Azure.")
-
-A slightly more robust architecture might involve additional "hidden" replica set members for backup in other regions or just using a 3rd primary node instead of an arbiter.
+XXX
 
 ## Preparing the infrastructure: Networks, compute, storage and disks
 

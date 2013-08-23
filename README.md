@@ -2,6 +2,10 @@
 
 It is transformed using [Jekyll](http://github.com/mojombo/jekyll) into a static site.
 
+# Hosting
+
+At this time, the blog itself lives at [http://www.jeff.wilcox.name/](http://www.jeff.wilcox.name/) and is hosted on the S3 platform.
+
 # License
 
 The following directories and their contents are Copyright Jeff Wilcox. You may not reuse anything therein without my permission:
