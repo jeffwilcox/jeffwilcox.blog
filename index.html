@@ -18,10 +18,10 @@ layout: containerlesspage
 		<div class="col-md-7">
 
 			<div id="home">
-			  <h2>Recent Posts</h2>
+			  <h2>My Recent Posts</h2>
 			  <ul class="posts list-unstyled">
-			    {% for post in site.posts limit: 6 %}
-			      <li><span><small>{{ post.date | date_to_string }}</small></span> &raquo;<br /><a href="{{ post.url }}">{{ post.title }}</a></li>
+			    {% for post in site.posts limit: 12 %}
+			      <li><a href="{{ post.url }}">{{ post.title }}</a> &nbsp; <span><small class="text-muted">{{ post.date | date_to_string }}</small></span></li>
 			    {% endfor %}
 			  </ul>
 			  <p><a href="/posts/">&raquo; Full list of posts</a></p>
@@ -30,22 +30,37 @@ layout: containerlesspage
 		</div>
 
 		<div class="col-md-5">
-			<h3>
-				Windows Azure Developer Experience
+			<h3 style="vertical-align: text-top">
+				<img src="img/home-windowsazure.png" style="width: 70px; height: 70px" />
+				Azure Developer Experience
 			</h3>
-			<p>At Microsoft, Jeff runs the Windows Azure SDK development team that focuses 
-				on open source SDKs, frameworks and tools. Since 2005, Jeff has worked on 
-				several startup projects at the company shipping Silverlight and also 
-				the UI framework for Windows Phone.
+			<p>At Microsoft, I run the Windows Azure SDK development team that focuses 
+				on open source SDKs, frameworks and tools. I've worked on several startup projects at the 
+				company, shipping Silverlight and also the user interface framework for Windows Phone
+				applications.
 			</p>
 
+			<ul class="list-unstyled">
+				<li><a href="http://windowsazure.github.io/">&raquo; About Windows Azure open source</a></li>
+				<li><a href="http://www.github.com/windowsazure/">&raquo; Source code on GitHub</a></li>
+			</ul>
+
 			<h3>
+				<img src="img/home-4thandmayor.png" style="width: 70px; height: 70px" />
 				4th &amp; Mayor
 			</h3>
-			<p>Jeff is the developer of 4th &amp; Mayor, the #1 top-rated social app on the 
-				Windows Phone Store. The app's user experience is backed by cloud services 
-				in Node.js running on both AWS and Windows Azure.
-			</p>
+			
+			<p>I'm the developer of <a href="http://www.4thandmayor.com/">4th &amp; Mayor</a>, the 
+			#1 top-rated social app on the Windows Phone Store. The app's user experience is backed by cloud services 
+			implemented in Node.js &amp; running on both Amazon and Microsoft clouds.</p>
+
+			<ul class="list-unstyled">
+				<li><a href="http://www.4thandmayor.com/">&raquo; 4th &amp; Mayor site</a></li>
+				<li><a href="http://www.windowsphone.com/en-us/store/app/4th-mayor/c7d13b8d-9951-e011-854c-00237de2db9e">&raquo; Download for Windows Phone</a></li>
+				<li><a href="http://www.github.com/jeffwilcox/">&raquo; Select source code on GitHub</a></li>
+				<li><a href="http://www.github.com/jeffwilcox/mpns">&raquo; MPNS Node.js module</a></li>
+			</ul>
+
 		</div>
 		
 	</div>

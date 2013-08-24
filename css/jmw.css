@@ -12,7 +12,7 @@ body {
   border-color: #595959;
 }
 
-code {
+code, pre {
     color: #333;
 }
 
