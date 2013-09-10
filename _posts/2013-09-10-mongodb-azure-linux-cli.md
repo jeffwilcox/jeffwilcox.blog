@@ -5,11 +5,11 @@ title: Creating a MongoDB replica set cluster w/Windows Azure Linux VMs
 categories: [windows-azure, cloud]
 tags: [windows-azure, cloud, cli, mongodb, command-line, tools, linux, centos, nosql]
 ---
-I love [MongoDB](http://www.mongodb.org/), a favorite NoSQL document database by MongoDB, Inc. that just keeps ticking. I've been using it in my production app for several years, having used hosted MongoDB solutions and also run my own replica set clusters in both AWS and Windows Azure. Today I'm going to talk primarily about creating a MongoDB replica set cluster in Microsoft's cloud, but I'll also touch on hosted and single-instance deployments.
+I love [MongoDB](http://www.mongodb.org/). I've been using it as the NoSQL solution in my production phone app for several years now. I've used hosted MongoDB solutions and also run my own replica set clusters in both AWS and Windows Azure. In this post today I'm going to demonstrate creating a full-blown MongoDB replica set cluster in Microsoft's cloud... but I'll also touch on hosted and single-instance deployments.
 
-This is the first of 3 short posts about creating a replica set with Linux Virtual Machines in Azure. The next posts will focus on doing the same with either the Windows Azure Management Portal via your web browser, and then another on using Windows with our PowerShell commandlets. My goal is to spin up a new cluster in our California data center while sitting at a nice coffee shop here in Seattle, typing away in the Mac Terminal app, using the [cross-platform Command Line Interface (CLI) tools](http://www.jeff.wilcox.name/2013/08/command-line-improvements/) that my team in [Windows Azure](http://www.windowsazure.com/) builds.
+Let's spin up a new cluster in a California data center. I'm going to do this while sitting at a nice coffee shop in Seattle full of Macs for the proper atmosphere. I'll be using the Terminal app, the [cross-platform Command Line Interface (CLI) tools for Windows Azure](http://www.jeff.wilcox.name/2013/08/command-line-improvements/), and in future posts I'll cover the same from Windows PowerShell and from the web-based management portal, too. My dev team on the [Windows Azure Developer Experience team](http://windowsazure.github.io/) builds the CLI.
 
-Combined with a simple bash script I've authored for initializing MongoDB instances, I'm able to launch and go live with a cluster in the time it takes to enjoy an Americano. Let's get to it!
+Combined with a simple bash script for bringing online individual MongoDB nodes, I should be able to launch and go live with a cluster in the time it takes to enjoy an Americano.
 
 ![Setting up a MongoDB replica set via Mac command line tools while in a Seattle coffee shop.]({{ site.cdn }}mongo/VoxxCoffee.png =700x263 "Coffee, Cloud, and a Mac - the Seattle classic.")
 
@@ -26,18 +26,20 @@ I'll be using these Windows Azure features & technologies in this post:
 - Windows Azure Command Line Interface (CLI) tool on a Mac
 - Windows Azure SDK for Node.js as part of a server node setup script
 
-> Disclaimer: I'm running my MongoDB cluster via my BizSpark subscription and it is working great for me. I'm sharing my experiences here; however, this is not the same as the official Windows Azure guidance on MongoDB that (links at the very bottom). Your experience may vary. No warranty. Etc etc. Hosted MongoDB solutions are probably the most worry-free way to experience NoSQL so do consider MongoLab!
+> Disclaimer: I'm sharing my own experience here, but this isn't official guidance. Consider all facets of your environment, requirements, security, etc., before deploying a production replica set. For the easiest MongoDB experience, why not just consider using MongoLab's hosted solutions?
 
 # App Background & my MongoDB History
 
-My mobile app for foursquare users is called [4th & Mayor](http://www.4thandmayor.com/). To create great experiences for my users, I have a backend that generates live tiles for Windows Phones, store preferences, and manages a sophisticated worker queue for the application. This backend is powered by Node.js and MongoDB. I first ran it all on Amazon EC2, over time moved the data tier to hosted MongoDB via [MongoLab](http://www.mongolab.com), and today I'm running my own replica set cluster using Linux virtual machines in Windows Azure. My production cluster is reliable, with great uptime, and is also affordable, cheaper than a hosted, dedicated cluster.
+My mobile app is a foursquare client called [4th & Mayor](http://www.4thandmayor.com/). To create great experiences for my users, I have a backend that generates Windows Phone live tiles, stores preferences, plus runs a worker queue for tasks and processing.
 
-Interestingly, Foursquare actually uses MongoDB very extensively as well. [Wikipedia](http://en.wikipedia.org/wiki/MongoDB) notes other large users, including eBay, MetLife, Foursquare, MTV Networks.
+The backend is powered by Node.js and MongoDB. I first ran it all on Amazon EC2, over time moved the data tier to hosted MongoDB via [MongoLab](http://www.mongolab.com), and today I'm running my own replica set cluster using Linux virtual machines in Windows Azure. My production cluster is reliable, with great uptime, and is also affordable, cheaper than a hosted, dedicated cluster. For hosting web services, the app's web site, both HTTP and custom HTTPS, I use Windows Azure Web Sites with its nice, affordable Node.js hosting.
+
+Foursquare actually uses MongoDB very extensively as well. [Wikipedia](http://en.wikipedia.org/wiki/MongoDB) notes other large users, including eBay, MetLife, Foursquare, MTV Networks.
 
 Having attended the MongoDB Seattle conference for the past few years learning about modern best practices, including running MongoDB in other cloud providers, this is an area very close to me. 
 Although Windows Azure has published some great docs on MongoDB, I felt a need to go in a different direction with a little more automation. I've also found very little replica set guidance for Azure.
 
-Deploying and managing MongoDB replica sets makes for a a great case study and functional test for me as a development lead, looking to validate the cloud capabilities that Windows Azure has, along with the development tools and libraries that we ship.
+Deploying and managing MongoDB replica sets makes for a a great case study and functional test for me as a development lead, looking to validate the cloud capabilities that Windows Azure has, along with the development tools and libraries that we ship. (Run into issues? Please [open issues in our GitHub repo](https://github.com/WindowsAzure/azure-sdk-tools-xplat/issues).)
 
 # MongoDB Basics
 
