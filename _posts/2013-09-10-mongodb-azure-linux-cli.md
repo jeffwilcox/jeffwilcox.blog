@@ -45,7 +45,13 @@ Deploying and managing MongoDB replica sets makes for a a great case study and f
 
 ## Mongo Configurations
 
-MongoDB can be configured in many ways: a local instance running on your development machine, a cloud-connected virtual machine running a single instance, a "replica set" or master/slave configuration that backs up data for availability and security across many machines, or a shared configuration for high performance and tons of data.
+MongoDB can be configured in many ways:
+
+- a local instance running on your development machine,
+- a cloud-connected virtual machine running a single instance,
+- a "replica set" cluster of nodes that back up and distribute copies of data across many machines
+- a master/slave configuration (no longer recommended by MongoDB)
+- a "sharded" configuration for partitioning, extreme performance and availability across many, many, many machines
 
 ### Single instance
 
@@ -55,41 +61,63 @@ Most of the MongoDB hosting providers offer very affordable single instance host
 
 ### Multi-node replica set cluster
 
-When it comes to data availability and redundancy, MongoDB's replica set concept is ideal. Unlike a single instance, these replica sets are built from multiple virtual machines and can either be shared among customers/uses (Mongo hosting scenario), or completely dedicated.
+When it comes to data availability and redundancy, MongoDB's replica set concept is ideal for the cloud. Unlike a single instance, these replica sets are built from multiple virtual machines. The MongoDB node deployments can be dedicated to a single project, customer, or shared among multiple customers.
 
-You can learn about MongoDB through via its documentation:
+You can learn about MongoDB replication through the extensive online documentation:
 
 - [Introduction to MongoDB Replication](http://docs.mongodb.org/manual/core/replication-introduction/)
 - MongoDB's documentation provides a short overview of [replica set deployment architectures](http://docs.mongodb.org/manual/core/replica-set-architectures/)
 - [A full set of tutorials](http://docs.mongodb.org/manual/administration/replica-sets/)
 
-#### Nodes + Arbiter
+#### About MongoDB Elections
 
-The traditional, cost-effective solution for a MongoDB cluster is to ensure that you have an odd number of voting MongoDB instances for your database - in order to elect a new Primary.
-
-This means most providers will spin up two dedicated VMs with nice specifications (good memory mostly), and then a very lightweight, inexpensive Arbiter role. The Arbiter can typically always be an Extra Small (A0)-sized instance, costing pennies an hour, while I recommend most people look at Medium and Large instances for the remaining nodes, depending on their requirements for memory.
-
-An Arbiter simply communicates with the nodes in the replica set, checking response times, uptime, etc., in order to select the best-weighted MongoDB primary if a primary goes down.
-
-For hosting providers such as MongoLab, they will actually take a single virtual machine and run many MongoDB processes on it, acting as Arbiters, to drive the cost down even further.
+MongoDB clusters have a voting mechanism for determining the current "primary" node that should accept writes on behalf of all the nodes. Keeping voting fair, this means that you need to avoid ties, and so you'll need to deploy an odd number of nodes - 3 nodes, for example.
 
 #### 3x Nodes
 
-The most solid replica set implementation is to spin up a cluster of 3 identical, high-powered VMs, each of which could be an acting primary. Without an arbiter, but 3 nodes, it has enough communication and data potential to participate in MongoDB elections for a new primary if the need arrises, while client apps are able to connect to all 3 machines in the case that it needs to probe for the current primary.
+The most "solid" replica set implementation is to spin up a cluster of 3 identical, high-powered VMs, each of which could be an acting primary.
+
+Having an odd number of nodes (3), the nodes can break ties and so properly elect a primary if an instance goes down for maintainence or has problems in the data center.
+
+There are also performance optimizaitons available in this configuration: it is possible to configure client apps to read from any node in the cluster (but still write to the currently elected Primary) - if an eventually consistent, read-heavy application service is OK for your needs.
+
+#### Introducing the Arbiter
+
+Each typical Node in a cluster can be expensive:
+
+- Powerful compute
+- Large attached disks to hold data
+- Memory to keep important, frequently-accessed data available and cached
+
+It turns out that a very common, affordable alternative to running three dedicated MongoDB nodes is to have *two* dedicated nodes and then a very cheap, lightweight voting node that does not store data. In the MongoDB world, this is called an "arbiter" node.
+
+A arbiter can, and should:
+
+- Run on super cheap VMs such as Azure's "Extra Small" (A0) VM instance size
+- Have no attached disks and no copies of the MongoDB data
+- Cost pennies an hour, letting you spend your compute and storage money on more powerful main nodes
+
+The arbiter then communicates with the other members of the cluster, checks for health measures, and then participates in elections when a vote is needed for a new primary.
+
+The arbiter VM could in theory even play the part of Arbiter for multiple MongoDB clusters to further drive down cost.
+
+#### 2x Nodes + an Arbiter
+
+So the most popular MongoDB replica set solution is to have 2 (or an even number) powerful nodes. Good compute SKUs, high memory, attached data disks for storing data and maintaining high IOPS, etc.
 
 ## Architectural Design
 
-The design I'm using for production app use today supporting 300,000 clients is a pair of nodes and an arbiter for primary voting.
+The design I'm using for production app use today supporting 300,000 clients is a pair of nodes and an arbiter for primary voting. (2 powerful nodes, 1 cheap arbiter)
 
 ![The infrastructure design for my MongoDB replica set cluster in Windows Azure.]({{ site.cdn }}mongo/MongoAvailabilityMap.png =700x480 "The infrastructure design for my MongoDB replica set cluster in Windows Azure.")
 
-A slightly more robust architecture might involve additional "hidden" replica set members for backup in other regions or just using a 3rd primary node instead of an arbiter.
+A slightly more robust architecture might involve additional "hidden" replica set members for backup in other regions or just using a 3rd primary node instead of an arbiter, but you can read about those elsewhere on the Internets.
 
 # MongoLab and the Windows Azure Store
 
 The easiest way to get going with MongoDB is actually by using the 3rd-party Store right inside the Windows Azure Management Portal, powered by MongoLab. It only takes a few seconds and today there is both a paid and free tier.
 
-As a long-time MongoLab customer, I can say, their product is great!
+As a long-time MongoLab customer, I can say, their product is great, and as of this summer, they're offering more and more solutions inside Windows Azure data centers.
 
 ## Windows Azure Store
 
