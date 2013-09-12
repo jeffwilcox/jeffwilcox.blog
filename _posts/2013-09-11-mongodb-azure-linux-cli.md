@@ -115,7 +115,7 @@ A slightly more robust architecture might involve additional "hidden" replica se
 
 # MongoLab and the Windows Azure Store
 
-The easiest way to get going with MongoDB is actually by using the 3rd-party Store right inside the Windows Azure Management Portal, powered by MongoLab. It only takes a few seconds and today there is both a paid and free tier.
+The easiest way to get going with MongoDB is actually by using the 3rd-party store right inside Windows Azure: hosted MongoDB offered by MongoLab. It only takes a few seconds and today there is both a paid and free tier.
 
 As a long-time MongoLab customer, I can say, their product is great, and as of this summer, they're offering more and more solutions inside Windows Azure data centers.
 
@@ -174,72 +174,38 @@ MongoLab has 2 offerings available right now for Windows Azure Add-On customers.
 </tbody>
 </table>
 
-MongoLab offers a shared, hosted replica set option, but not in all Windows Azure data centers according to [their post announcing the availability](http://blog.mongolab.com/2013/07/production-mongodb-replica-sets-now-available-on-windows-azure/), so if you're looking to have a replica set in Europe, for example, this post might help you run that yourself until they offer such an option/region combination.
+MongoLab offers a shared, hosted replica set option, but not in all Windows Azure data centers according to [their July post announcing the availability](http://blog.mongolab.com/2013/07/production-mongodb-replica-sets-now-available-on-windows-azure/), so if you're looking to have a replica set in Europe, for example, this post might help you run that yourself until they offer such an option/region combination.
 
 # Replica set built from Linux VMs
 
-Ideal MongoDB deployments are spread across a few independent compute nodes. MongoDB takes care of replicating writes and other information across the nodes, monitoring for health, and a unique election system for determining the active primary node for writes.
+OK so MongoLab is the easy, smart, managed option. Got it?
 
-Running a multi-instance VM cluster is important for a production app - dev/test/staging scenarios can use a single instance often, but production instances should be backed by the Windows Azure service-level agreement (SLA). In order to be eligible for the 99.95% SLA for infrastructure virtual machines in Windows Azure, I need to make sure to actually have multi-instance VMs running my app, coupled with an Availability Set - so a replica set.
+If you'd like a very fast, redundant, high capacity solution of your own, you'll need to build out a MongoDB cluster from a set of virtual machines. These are deployed across many instances for redundancy. MongoDB takes care of replicating writes and other information across the nodes, monitoring for health, and electing the primary node.
 
-Clients actively target the number of nodes via connection strings, able to locate and speak with the current primary node. The primary node may shift over time as operating system updates happen, virtual machines restart or go down, or data centers have problems.
+Running a multi-instance VM cluster is important for any production app - you can do your dev/test/staging work often with a single instance, but production instances ideally should be backed by the Windows Azure service-level agreement (SLA), which means at least two virtual machine instances. (Azure might take a VM down briefly to install an OS update on the physical machine or do network maint. work)
 
-I've selected a decently-redundant solution: I'm only using a single data center and single geography for my underlying storage, but I should not actually experience data loss, only mild downtime, if things really go bad. This matches a highly-available, high performance design for my app that should rock.
+> In order to be eligible for the 99.95% SLA for infrastructure virtual machines in Windows Azure, I need to make sure to actually have multi-instance VMs running my app, coupled with an Availability Set. I can then build the replica set of these instances.
 
-## Mac tooling
+Clients actively target all the nodes via connection strings listing the members; when a client connects to Mongo, it locates and then targets the current primary node. The primary node may shift over time as operating system updates happen, virtual machines restart or go down, or data centers have problems.
 
-This post started from my initial investigations into running a cluster on Windows Azure VMs via available methods:
+## Understanding memory management and MongoDB
 
-- Windows-based PowerShell scripts
-- Windows Azure Management Portal
-- Cross-platform command line interface (CLI) for Mac/Linux/Windows
+MongoDB is very efficient with memory and [uses operating system-level memory mapped files](http://docs.mongodb.org/manual/faq/storage/). Therefore you'll always want to run 64-bit instances (as all things are in Windows Azure)
 
-This specific first post is targeted on using a Mac, but I'll follow up with posts on the other methods soon enough.
-
-I will say this was a great way to stress the tools: I'm using a majority of the Virtual Machine feature surface area and was able to open some solid issues along the way.
-
-The July and August releases of the cross-platform command line tools ([my overview post here](http://www.jeff.wilcox.name/2013/08/command-line-improvements/); [download the tools here](http://www.windowsazure.com/en-us/downloads/#cmd-line-tools)) include new features around Virtual Networks to enable some scenarios here, as well as Availability Set and password-less VM functionality for Virtual Machine operations.
-
-## The Windows Azure Command Line Interface (CLI)
-
-There are a lot of great ways that Windows Azure lets you work with your services. We officially have:
-
-- The Windows Azure Management Portal online
-- Visual Studio with the Windows Azure SDK
-- PowerShell commandlets for Windows
-- The cross-platform Command Line Interface / Tool (CLI) for Windows, Mac, and Linux (powered by Node.js)
-- Client libraries for many languages, including .NET, Java, Python, Ruby, PHP, and others.
-
-A lot of people get started with infrastructure and VMs using the portal; I find myself toting my notebook all over town though and really love that the x-plat command line tools allow me to use the easy `azure` command from your favorite terminal.
-
-![The Azure command running in the Terminal application.]({{ site.cdn }}summercli/AzureCommandTerminal.png =697x534 "The Azure command running in the Terminal application.")
-
-Did I mention almost everything is open source and on GitHub at [https://www.github.com/WindowsAzure/](https://www.github.com/WindowsAzure/)?
-
-The Node.js source code for the command line tools is in the repo at [https://github.com/WindowsAzure/azure-sdk-tools-xplat](https://github.com/WindowsAzure/azure-sdk-tools-xplat) - though it also takes a dependency on our Node.js SDK which is at [https://github.com/WindowsAzure/azure-sdk-for-node](https://github.com/WindowsAzure/azure-sdk-for-node).
-
-# MongoDB
-
-### Understanding memory management and MongoDB
-
-MongoDB is very efficient with memory and uses [operating system-level memory mapped files](http://docs.mongodb.org/manual/faq/storage/).
-
-As a result, the intended working set of your data (that is regularly used in computations, reductions, etc.) is the primary dictator of how much memory you should allocate via instance size selection. If you intend on regular scans across sets of data, you'll need to take that into account.
-
-Also, 64-bit is a must for MongoDB in order to effectively allow for memory mapping.
+So the intended working set of your data (regularly used in computations, scans) is the primary driver for how much memory you should allocate when selecting an instance size.
 
 For my production application use, I maintain several collections of data:
 
 - User and friend documents
 - Push notification queue
-- Metadata storage
+- Metadata & settings store
 - Web site session store (for Node.js + Express)
 
 Since only the user, friend, and push queue documents are regularly used heavily (plus a small subset of the active sessions), I've found that this data represents about 1.5 GB of my 3 GB of data. The size of my data doesn't grow too much month-to-month.
 
-This means that the 1.7 GB afforded to me by a Small instance size is often enough. You can always scale up or down your instance sizes with Windows Azure VMs.
+This means that the 1.7 GB afforded to me by a Small instance size is often enough. You can always scale up or down your instance sizes with Windows Azure VMs and MongoDB: changing size would trigger a reboot and may elect a new primary, but the data will remain.
 
-### Linux and MongoDB
+## Linux and MongoDB
 
 Every year at the MongoDB Seattle Conference (and other conferences held around the world by MongoDB), there have been great sessions by real engineers using and running replica sets in the real world. Key applications out there like [foursquare](https://foursquare.com) are powered by MongoDB and using powerful features such as the geo-spatial query features.
 
@@ -247,15 +213,14 @@ I've found the AWS-targeted guidance in the past about Linux and MongoDB to be v
 
 The short list of things that I prefer to have setup:
 
-- Data drives should be separate from the OS drive
+- CentOS rocks ;-) use it!
+- Data drives should be separate from the OS drive. RAID10 if you really want to, but that's beyond the scope of this today.
 - Data drives should be formatted with extfs4
-- The file system on data drives need not record access times (atime)
+- The file system on data drives need not record access times (no atime)
 
 ## MongoDB Clusters and Applications
 
-When you run a MongoDB replica set, you are actually running a system of slightly independent nodes that may or may not be available during maint., OS updates, etc.
-
-From an application standpoint, this means that connecting to a replica set is dependent on support in the MongoDB driver for the language/framework you are using. Over time things have improved as the MongoDB team has worked with open source library authors to get some consistency in the connection string and configuration situation.
+Your app will connect to your cluster deployment through the list of nodes to find the primary. Clients take care of figuring out the specifics.
 
 ### Connection strings
 
@@ -275,29 +240,27 @@ You might have a URI in these cases that looks like this:
 mongodb://username:password@MongoNode1,MongoNode2/databaseName
 </pre>
 
-I recommend always having your MongoDB cluster running within a virtual network - performance for replication is actually faster and all that chatty replication information is kept within the data center.
+You should run your cluster within a Virtual Network. Replication will then happen within that network boundary, at no cost within the data center, and the response times and replication speed will be improved.
 
 #### As Internet-accessible endpoints
 
-Most applications will probably need to find a way to expose the replica set VMs to the Internet. You can further configure machine firewalls via iptables if needed.
+Most applications will probably need to find a way to use the replica set VMs over the Internet. You can configure machine firewalls via iptables if needed.
 
-If you're using:
+Today, if you're using these app models, you'll need to expose it to the net:
 
-- Web Sites
+- Windows Azure Web Sites
 - Other cloud providers
 - Connecting from outside a virtual network
 
-Then you should use the Internet cloud service endpoints.
-
 Providers such as MongoLab expose their MongoDB servers to the public Internet more or less without too much trouble, so as long as you follow security best practices, this isn't too hazardous.
 
-I expose endpoints for the cluster somewhat as a chain of incremental ports: MongoNode1 exposes 27017 (MongoDB default), MongoNode2 is 27018, etc.
-
-So my MongoDB URI will look more like this:
+I expose endpoints for the cluster as a chain of incremental ports: MongoNode1 exposes 27017 (MongoDB default), MongoNode2 is 27018. So my MongoDB URI will look more like this:
 
 <pre class="brush: bash">
 mongodb://username:password@cloudmongo.cloudapp.net:27017,cloudmongo.cloudapp.net:27018/databaseName
 </pre>
+
+Note that the connection string doesn't include the arbiter, since it won't actually store a replicated data set or be available ever as a primary to your app.
 
 ### Testing replica sets and clients
 
@@ -307,11 +270,7 @@ MongoLab actually provides an epic service to the community, they have a self-fa
 
 ## MongoDB on Windows Azure
 
-When it comes to MongoDB running on Windows Azure, there have been a lot of different recommendations over the years as new services have launched. The general availability of Virtual Machines has changed this once again.
-
-I believe that multiple-node (+arbiter) configurations running on CentOS Linux VMs are the most common deployment mechanism for MongoDB replica set installations in the industry, so I prefer these for my production environment when compared to some of the earlier guidance for MongoDB on Azure, such as using [cloud service worker roles](http://docs.mongodb.org/ecosystem/tutorial/deploy-mongodb-worker-roles-in-azure/) to deploy MongoDB.
-
-Direct guidance is available for running Linux VMs with MongoDB within the MongoDB tutorial titled [Install MongoDB on Linunx on Azure](http://docs.mongodb.org/ecosystem/tutorial/install-mongodb-on-linux-in-azure/). This post, and associated scripts, build on this.
+Original Linux VM guidance for Azure is available here: [Install MongoDB on Linunx on Azure](http://docs.mongodb.org/ecosystem/tutorial/install-mongodb-on-linux-in-azure/). This post, and associated scripts, build on this reference documentation, with some slight changes, such as extfs4 instead of extfs3.
 
 # Windows Azure Virtual Machines
 
@@ -321,7 +280,7 @@ Infrastructure virtual machines from Windows Azure, running Linux (CentOS is my 
 
 As previously covered, memory mapped files and MongoDB mean that the common working set of data that your application is using is a key driver for picking an instance size for your primary and secondary nodes.
 
-Arbiters can always be Extra Small size.
+Arbiters can always be Extra Small (A0) size.
 
 The current table of [Windows Azure instance sizes is online](http://msdn.microsoft.com/en-us/library/windowsazure/dn197896.aspx), along with current [Virtual Machine pricing details](http://www.windowsazure.com/en-us/pricing/details/virtual-machines/#service-non-windows. Make sure to look at the Linux pricing (it is slightly cheaper than Windows right now).
 
@@ -384,28 +343,23 @@ As of August 2013, here are the instance sizes that we offer in Windows Azure. N
 </tbody>
 </table>
 
-
 ## Linux images
 
-x
+Many people use Ubuntu, but I prefer CentOS. The scripts I've created here use `yum` as the package manager.
 
 ## Password-less Linux VMs
 
-x
+Previously I provided guidance on creating VMs that use public/private key pairs for authentication. Please refer to [my post about this using the CLI](http://www.jeff.wilcox.name/2013/06/secure-linux-vms-with-ssh-certificates/). I recommend not having password-accessible virtual machines in any scenario.
 
 ## Affinity Groups
 
-x
+We will use a Windows Azure affinity group. This groups a lot of things in nearby racks: storage, network, compute resources, etc.
 
-## Availability Sets / IaaS VM SLA
-
-Availability Sets are XXX
-
-### Single Instances and Maintainence
+## Single Instances and Maintainence
 
 If you only run a single Virtual Machine in Windows Azure for a service, you actually won't be covered by the SLA, since it is likely that at some point the fabric running the data center will need to update the host operating system, replace old hardware, experience downtime that is scheduled, etc.
 
-In July, I was running a small VM doing some statistical analysis, and I received this mail from Windows Azure about my single-instance VM, and that it would experience some downtime (including a reboot):
+In July, I was running a small VM doing some statistical analysis, and I received this mail from Windows Azure about my single-instance VM, and that it would experience some downtime (including a reboot). I received emails before and after the work:
 
 ![A mail from Windows Azure about a single-instance VM.]({{ site.cdn }}mongo/SingleInstanceEmail.png =700x780 "A mail from Windows Azure about a single-instance VM.")
 
@@ -454,23 +408,25 @@ If you look under the cloud service details, you'll see that Azure's fabric has 
 
 If you look into fault and update domains in the Windows Azure documentation, you'll be able to learn more about the underlying concepts.
 
-### Geo-redundancy
+## Geo-redundancy + Storage
 
 When it comes to the geo-redundancy features built in to Windows Azure, effectively we make sure with writes to distribute the information across the local region (there will be 3 confirmed writes to a set of storage servers before we return a successful write for local redundancy) - but with geo-redundancy, we'll also send this to another entire data center.
 
-XXX
+If you want to do any kind of RAID configuration, you won't want georedundancy, because it isn't guaranteed. I disable geo replication.
 
-## Preparing the infrastructure: Networks, compute, storage and disks
+# Preparing the infrastructure: Networks, compute, storage and disks
 
 Make sure you've installed the [Windows Azure Command Line Tools on your Mac](http://www.windowsazure.com/en-us/downloads/#cmd-line-tools). This will add an `azure` command to your path. (Node.js users: simply run `sudo npm install azure-cli` and the command will be globally installed).
 
-### Ensure you have credentials and management certs installed
+LET'S DO THIS!
+
+## Ensure you have credentials and management certs installed
 
 The first time you use the tool, you need to run `azure account import` to pull in management credentials for your account. If this is the first time, quickly set things up by following the [How to download and import publish settings](http://www.windowsazure.com/en-us/manage/linux/how-to-guides/command-line-tools/) section of the CLI tutorial.
 
-### Create an Affinity Group
+## Create an Affinity Group
 
-x
+This will be a service management group for storage, virtual networks, etc. I'm going to give it a name: California. And it will be located in the US West data center.
 
 <pre class="brush: bash">
 $ azure account affinity-group create \
@@ -479,9 +435,15 @@ $ azure account affinity-group create \
 California
 </pre>
 
-### Create a Storage Account
+From this point on, I won't provide locations to any commands: an affinity group is a much better container than a data center.
 
-x
+## Create a Storage Account
+
+I need to store some things in blob storage:
+
+- VM VHDs storing the operating system
+- VM VHD attached disks storing my MongoDB data for each node
+- My cluster key, used for authenticating my nodes
 
 <pre class="brush: bash">
 $ azure storage account create \
@@ -490,9 +452,11 @@ $ azure storage account create \
 california
 </pre>
 
-#### Consider turning off geo-replication
+Note that this storage account will be in the West US, but I'm just including the affinity group name: the affinity group is set to that data center location already.
 
-x
+### Consider turning off geo-replication
+
+Now the default storage account includes geo replication. I prefer not to for my VM VHDs, though everyone has their own opinion. If you want to do any kind of RAID distribution, you need to turn this off.
 
 <pre class="brush: bash">
 $ azure storage account update \
@@ -500,17 +464,19 @@ $ azure storage account update \
 california
 </pre>
 
-#### Getting the storage account keys
+### Getting the storage account keys
 
-x
+We will use the keys at some point with the script for working with the cluster authentication key:
 
 <pre class="brush: bash">
 $ azure storage account keys list california --json
 </pre>
 
-### Create a Virtual Network
+Just copy the primary key into your clipboard for now.
 
-x
+## Create a Virtual Network
+
+Inside the affinity group, I create the virtual network.
 
 <pre class="brush: bash">
 $ bin/azure network vnet create \
@@ -519,7 +485,7 @@ $ bin/azure network vnet create \
 CaliforniaNetwork
 </pre>
 
-### Launch Compute
+## Launch Compute
 
 x
 
@@ -529,7 +495,7 @@ x
 $ azure vm image list --json | grep OpenLogic # 5112500ae3b842c8b9c604889f8753c3__OpenLogic-CentOS-63APR20130415
 </pre>
 
-#### Create the initial Primary Node (Linux VM)
+### Create the initial Primary Node (Linux VM)
 
 x
 
@@ -550,7 +516,7 @@ cloudmongo \
 mongouser
 </pre>
 
-#### Create the initial Secondary Node
+### Create the initial Secondary Node
 
 x
 
@@ -571,7 +537,7 @@ cloudmongo \
 mongouser
 </pre>
 
-#### Create the Arbiter *or* 3rd node
+### Create the Arbiter *or* 3rd node
 
 x
 
@@ -594,7 +560,7 @@ mongouser
 
 Now if you'd rather setup another data-storing node (more expensive cluster), instead fashion this command after the previous secondary instance command, matching the initial compute instance size, etc.
 
-### Create and attach data disks
+## Create and attach data disks
 
 The primary MongoDB instances (this excludes MongoArbiter) should use data disks to improve IOPS throughput and also not collide with the operating system files. By default the OS disk will use a read/write cache setting with the storage service, while an attached data disk will not have any local caching, leading to better consistency of data.
 
@@ -605,7 +571,7 @@ $ azure vm disk attach-new \
 MongoNode2 60 https://california.blob.core.windows.net/vhds/MongoNode2-data.vhd
 </pre>
 
-### Add TCP network endpoints for MongoDB
+## Add TCP network endpoints for MongoDB
 
 Next, we expose TCP endpoints to the MongoDB socket. I'm exposing the first node on the public port `27017` and the second on `27018`, and have no need to expose the arbiter. These will be exposed on the `cloudmongo.cloudapp.net` DNS name. Keep in mind that if the primary node fails, port `27018` (MongoNode2 VM) will be elected the primary node - so over time the roles may shift, an important reason that the connection string URIs for MongoDB include the list of machines participating in the replica set cluster.
 
