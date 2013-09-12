@@ -91,7 +91,7 @@ Each typical Node in a cluster can be expensive:
 
 It turns out that a very common, affordable alternative to running three dedicated MongoDB nodes is to have *two* dedicated nodes and then a very cheap, lightweight voting node that does not store data. In the MongoDB world, this is called an "arbiter" node.
 
-A arbiter can, and should:
+An arbiter can, and should:
 
 - Run on super cheap VMs such as Azure's "Extra Small" (A0) VM instance size
 - Have no attached disks and no copies of the MongoDB data
@@ -487,17 +487,32 @@ CaliforniaNetwork
 
 ## Launch Compute
 
-x
+Time to create some virtual machines.
 
 ### Selecting the OS image
 
+I want to use CentOS, offered as images created by OpenLogic.
+
+I'll grep the standard image list to get OpenLogic's current image for CentOS:
+
 <pre class="brush: bash">
-$ azure vm image list --json | grep OpenLogic # 5112500ae3b842c8b9c604889f8753c3__OpenLogic-CentOS-63APR20130415
+$ azure vm image list --json | grep OpenLogic
 </pre>
+
+Today this returns `5112500ae3b842c8b9c604889f8753c3__OpenLogic-CentOS-63APR20130415`. Keep that handy.
 
 ### Create the initial Primary Node (Linux VM)
 
-x
+Now to create the primary VM in Azure:
+
+- My affinity group, California
+- A new availability set, MongoDB
+- Specifying a blob URL for the OS VHD
+- Medium size instance - lots of RAM
+- Password-less VM, with a cert, etc.
+- A virtual network we created, including the subnet
+- The cloud service name, `cloudmongo`, for `cloudmongo.cloudapp.net`
+- The username for the main user
 
 <pre class="brush: bash">
 $ bin/azure vm create \
@@ -518,7 +533,11 @@ mongouser
 
 ### Create the initial Secondary Node
 
-x
+Almost the same command, except:
+
+- Connecting to an existing cloud service, `cloudmongo`
+- Different SSH port
+- Same size, Medium instance
 
 <pre class="brush: bash">
 $ azure vm create \
@@ -539,7 +558,10 @@ mongouser
 
 ### Create the Arbiter *or* 3rd node
 
-x
+This is the lightweight guy.
+
+- Connect to an existing service
+- Extra small instance size
 
 <pre class="brush: bash">
 $ azure vm create \
@@ -563,6 +585,8 @@ Now if you'd rather setup another data-storing node (more expensive cluster), in
 ## Create and attach data disks
 
 The primary MongoDB instances (this excludes MongoArbiter) should use data disks to improve IOPS throughput and also not collide with the operating system files. By default the OS disk will use a read/write cache setting with the storage service, while an attached data disk will not have any local caching, leading to better consistency of data.
+
+This is easy: `attach-new` adds an empty disk. We then need to partition and format these extra disks.
 
 <pre class="brush: bash">
 $ azure vm disk attach-new \
@@ -601,9 +625,24 @@ I've written a script that has been working great for me for initializing and br
 - Configures the primary cluster administrator user
 - Allows you to view replica set status
 
+This script is open source and located at [https://github.com/jeffwilcox/waz-mongodb](https://github.com/jeffwilcox/waz-mongodb). It is named `setupMongoNode.sh`.
+
 ### How to use
 
-x
+Easy. Run it!
+
+<pre class="brush: bash">
+wget https://github.com/jeffwilcox/waz-mongodb/blob/master/setupMongoNode.sh && chmod a+x ./setupMongoNode.sh && ./setupMongoNode.sh
+</pre>
+
+As the script runs, it will ask you questions:
+
+- Is this the first primary node, or is it another node being added to the cluster?
+- Is this an arbiter?
+- Will you be using a data disk?
+- What are the Azure storage account credentials?
+- What will you name the replicaset?
+- What password do you want for the replicaset administrator?
 
 ### Source code
 
