@@ -518,14 +518,14 @@ Now to create the primary VM in Azure:
 $ bin/azure vm create \
 --affinity-group California \
 --availability-set MongoDB \
---blob-url "http://california.blob.core.windows.net/vhds/mongonode1.vhd" \
+--blob-url http://california.blob.core.windows.net/vhds/mongonode1.vhd \
 --vm-size medium \
 --vm-name MongoNode1 \
 --ssh 22001 \
---ssh-cert ~/jeffwilcox.pem \
+--ssh-cert ./mongouser.pem \
 --no-ssh-password \
---virtual-network-name "CaliforniaNetwork" \
---subnet-names "VMs" \
+--virtual-network-name CaliforniaNetwork \
+--subnet-names VMs \
 cloudmongo \
 5112500ae3b842c8b9c604889f8753c3__OpenLogic-CentOS-63APR20130415 \
 mongouser
@@ -543,14 +543,14 @@ Almost the same command, except:
 $ azure vm create \
 --connect \
 --availability-set MongoDB \
---blob-url "http://california.blob.core.windows.net/vhds/mongonode2.vhd" \
+--blob-url http://california.blob.core.windows.net/vhds/mongonode2.vhd \
 --vm-size medium \
 --vm-name MongoNode2 \
 --ssh 22002 \
---ssh-cert ~/jeffwilcox.pem \
+--ssh-cert ./mongouser.pem \
 --no-ssh-password \
---virtual-network-name "CaliforniaNetwork" \
---subnet-names "VMs" \
+--virtual-network-name CaliforniaNetwork \
+--subnet-names VMs \
 cloudmongo \
 5112500ae3b842c8b9c604889f8753c3__OpenLogic-CentOS-63APR20130415 \
 mongouser
@@ -567,14 +567,14 @@ This is the lightweight guy.
 $ azure vm create \
 --connect \
 --availability-set MongoDB \
---blob-url "http://california.blob.core.windows.net/vhds/mongoarbiter.vhd" \
+--blob-url http://california.blob.core.windows.net/vhds/mongoarbiter.vhd \
 --vm-size extrasmall \
 --vm-name MongoArbiter \
 --ssh 22003 \
---ssh-cert ~/jeffwilcox.pem \
+--ssh-cert ./mongouser.pem \
 --no-ssh-password \
---virtual-network-name "CaliforniaNetwork" \
---subnet-names "VMs" \
+--virtual-network-name CaliforniaNetwork \
+--subnet-names VMs \
 cloudmongo \
 5112500ae3b842c8b9c604889f8753c3__OpenLogic-CentOS-63APR20130415 \
 mongouser
@@ -603,6 +603,8 @@ Next, we expose TCP endpoints to the MongoDB socket. I'm exposing the first node
 $ azure vm endpoint create MongoNode1 27017 27017
 $ azure vm endpoint create MongoNode2 27018 27017
 </pre>
+
+> Note: Our 0.7.1 CLI release has a bug here. So... we're fixing that. Like soon. So... sorry. The fix is in the dev branch.
 
 The only scenario in which you don't need to setup these endpoints is if your application is located within the same virtual network as the MongoDB cluster. Keeping everything within the virtual network boundaries is ideal for very secure scenarios and applications.
 

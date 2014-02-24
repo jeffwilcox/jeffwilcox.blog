@@ -20,7 +20,7 @@ layout: containerlesspage
 			<div id="home">
 			  <h2>My Recent Posts</h2>
 			  <ul class="posts list-unstyled">
-			    {% for post in site.posts limit: 12 %}
+			    {% for post in site.posts limit: 20 %}
 			      <li><a href="{{ post.url }}">{{ post.title }}</a> &nbsp; <span><small class="text-muted">{{ post.date | date_to_string }}</small></span></li>
 			    {% endfor %}
 			  </ul>
@@ -34,14 +34,21 @@ layout: containerlesspage
 				<img src="img/home-windowsazure.png" style="width: 70px; height: 70px" />
 				Azure Developer Experience
 			</h3>
-			<p>At Microsoft, I run the Windows Azure SDK development team that focuses 
-				on open source SDKs, frameworks and tools. I've worked on several startup projects at the 
-				company, shipping Silverlight and also the user interface framework for Windows Phone
-				applications.
+			<p>
+				I'm a Principal Staff Architect on the Azure team at Microsoft, involved with many of our 
+				cloud projects within the development engineering organization. Previously I helped define 
+				a modern direction for the cross-platform, many-language Azure SDKs by running the Azure SDK 
+				dev	team.
+			</p>
+
+			<p>
+				Since 2005 I've worked on several startup projects at Microsoft, including shipping 
+				many releases of the XAML runtime (Silverlight plug-in and Windows Phone OS).
 			</p>
 
 			<ul class="list-unstyled">
-				<li><a href="http://windowsazure.github.io/">&raquo; About Windows Azure open source</a></li>
+				<li><a href="http://www.github.com/jeffwilcox/">&raquo; My GitHub profile</a></li>
+				<li><a href="http://windowsazure.github.io/">&raquo; About Azure open source</a></li>
 				<li><a href="http://www.github.com/windowsazure/">&raquo; Source code on GitHub</a></li>
 			</ul>
 
