@@ -20,7 +20,7 @@ layout: containerlesspage
 			<div id="home">
 			  <h2>My Recent Posts</h2>
 			  <ul class="posts list-unstyled">
-			    {% for post in site.posts limit: 20 %}
+			    {% for post in site.posts limit: 16 %}
 			      <li><a href="{{ post.url }}">{{ post.title }}</a> &nbsp; <span><small class="text-muted">{{ post.date | date_to_string }}</small></span></li>
 			    {% endfor %}
 			  </ul>

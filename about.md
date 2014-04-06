@@ -24,9 +24,9 @@ I've worked on these products and projects:
 - Windows Phone 8
 - Windows Azure SDKs (open source)
 - Windows Azure Command Line Tools (open source, cross-platform)
-- Windows Azure Development
+- Microsoft Azure Development Staff
 
-Today I work on the Azure team on special assignment as a Principal Staff Architect and Technical Assistant to the CVP of Development. We're a different Microsoft: we often ship and develop our code in the open on GitHub.
+Today I work on the Azure team on special assignment as a Principal SDE Architect and Technical Assistant to the CVP of Development. We're a different Microsoft: we often ship and develop our code in the open on GitHub.
 
 I am also the developer of 4th &amp; Mayor, the top-rated social application on the Windows Phone Store, designed as a simple, crisp and easy third party client for the foursquare service.
 
