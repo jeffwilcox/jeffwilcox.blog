@@ -235,11 +235,6 @@ namespace System.ComponentModel
         /// &lt;param name="propertyName"&gt;The property name.&lt;/param&gt;
         protected void NotifyPropertyChanged(string propertyName)
         {
-            if (string.IsNullOrEmpty(propertyName))
-            {
-                throw new ArgumentException("PropertyName cannot be empty or null.");
-            }
-
             PropertyChangedEventHandler handler = PropertyChanged;
             if (handler != null)
             {
@@ -293,3 +288,5 @@ namespace System.ComponentModel
 </ul>
 
 <p>Hope this helps. Let me know what you think.</p>
+
+<p><em>Updated 8/6/2014: Thanks to Mark Bishop at Microsoft for suggesting a fix; null/empty property names are accepted <a href="http://msdn.microsoft.com/en-us/library/system.componentmodel.propertychangedeventargs.propertyname(v=vs.110).aspx">per msdn</a>.</em></p>
