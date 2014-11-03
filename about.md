@@ -5,10 +5,20 @@ permalink: /about/
 ---
 # Hi.
 
-I'm a software developer "and whatever it takes" at Microsoft.
+Jeff Wilcox is a principal software engineer "and whatever it takes" at Microsoft, 
+currently working on the Azure team (Microsoft's public cloud).
 
-I've been at MSFT since I graduated from the University of Michigan and have had unique opportunities at Microsoft to help work on shipping several products from start through maturity, including Silverlight (a plug-in application platform for browsers) and the Windows Phone. Many of my projects have been open source and cross-platform.
+He specializes in cross-platform software development and helping Microsoft better 
+embrace open source technologies and the OSS ecosystem. Previously, Jeff worked on 
+several Microsoft platforms and technologies spanning desktop and browser client, 
+phone, and server.
 
+He holds a BS in Computer Science from the University of Michigan, Ann Arbor.
+
+Jeff lives in Seattle, WA and is also the independent developer of 4th & Mayor, the 
+top-rated social app on the Windows Phone store, with over half a million users.
+
+<!--
 I've worked on these products and projects:
 
 - ASP.NET 2.0
@@ -25,17 +35,13 @@ I've worked on these products and projects:
 - Windows Azure SDKs (open source)
 - Windows Azure Command Line Tools (open source, cross-platform)
 - Microsoft Azure Development Staff
-
-Today I work on the Azure team on special assignment as a Principal SDE Architect and Technical Assistant to the CVP of Development. We're a different Microsoft: we often ship and develop our code in the open on GitHub.
-
-I am also the developer of 4th &amp; Mayor, the top-rated social application on the Windows Phone Store, designed as a simple, crisp and easy third party client for the foursquare service.
+-->
 
 ## Resume
 
 For a detailed look at my expertise, skills and previous team projects, please review my [LinkedIn profile - 
 Jeff Wilcox](http://linkedin.com/in/jeffreywilcox).
 
-## Across the Internet
+## Twitter
 
 Twitter: [@jeffwilcox](https://twitter.com/jeffwilcox)
-Flickr: [jeffwilcox](http://www.flickr.com/photos/jeffwilcox)

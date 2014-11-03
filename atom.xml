@@ -11,7 +11,7 @@ layout: nil
  <id>http://www.jeff.wilcox.name/</id>
  <author>
    <name>Jeff Wilcox</name>
-   <email>jwgithub@gmail.com</email>
+   <email>jwgithub@outlook.com</email>
  </author>
 
  {% for post in site.posts limit:5 %}
