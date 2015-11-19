@@ -33,3 +33,20 @@
 	</small>
 	</div>
 	{% endif %}
+    
+    <div id="toc" class="wiki-sidebar"></div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '',
+            headers: '.blogcontent h1, .blogcontent h2',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>

@@ -8,6 +8,9 @@ description: "The blog of Jeff Wilcox: Windows Phone, Windows Azure, Microsoft a
 root_desc: "Jeff Wilcox is a Principal Software Development Engineer at Microsoft."
 
 markdown: rdiscount
+rdiscount:
+    extensions:
+        - generate_toc
 pygments: false
 
 # Conforms to the same original WordPress format that I was using.
