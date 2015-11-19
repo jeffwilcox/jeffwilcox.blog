@@ -113,7 +113,8 @@ h2 + .row {
 }
 @media (min-width: 768px) {
   .wiki-sidebar {
-    padding-left: 20px;
+/*    padding-left: 20px;*/
+    padding-left: 0;
   }
 }
 

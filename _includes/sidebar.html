@@ -7,7 +7,7 @@
 	<small>
 	{% for xcat in page.categories %}
 
-	{% if xcat == 'windows-azure'  %}
+	{% if xcat == 'temporarily-removing-windows-azure'  %}
 
 	<h4>Microsoft Azure</h4>
 	<ul class="list-unstyled">
@@ -34,7 +34,8 @@
 	</div>
 	{% endif %}
     
-    <div id="toc" class="wiki-sidebar"></div>
+    <div id="toc" class="wiki-sidebar">
+    </div>
     <script type="text/javascript">
     $(document).ready(function() {
         $('#toc').toc({
@@ -44,7 +45,7 @@
             extraListGoo: ' class="nav wiki-sidenav"',
             extraListGoo2: ' class="nav"',
             showSpeed: 0,
-            title: '',
+            title: '<h4>Post Contents</h4>',
             headers: '.blogcontent h1, .blogcontent h2',
         });
         $('body').scrollspy('refresh');
