@@ -33,19 +33,13 @@
       return $(this).attr('id') || $(this).id;
       //return this.id;
     }), output = $(this);
-    console.log('hl: ' + headers.length);
-    console.log('mh: ' + settings.minimumHeaders);
-    console.log('ol: ' + output.length);
-
     if (!headers.length || headers.length < settings.minimumHeaders || !output.length) {
       //$(this).hide();
       return;
     }
-
     if (0 === settings.showSpeed) {
       settings.showEffect = 'none';
     }
-
     var render = {
       show: function() { output.hide().html(html).show(settings.showSpeed); },
       slideDown: function() { output.hide().html(html).slideDown(settings.showSpeed); },
@@ -56,7 +50,7 @@
     var get_level = function(ele) { return parseInt(ele.nodeName.replace("H", ""), 10); }
     var highest_level = headers.map(function(_, ele) { return get_level(ele); }).get().sort()[0];
     var return_to_top = '<i class="icon-arrow-up back-to-top"> </i>';
-
+    var itemCount = 0;
     var level = get_level(headers[0]),
       this_level,
       html = settings.title + " <"+settings.listType + settings.extraListGoo + ">";
@@ -71,6 +65,11 @@
       if (!settings.noBackToTopLinks && this_level === highest_level) {
         $(header).addClass('top-level-header').after(return_to_top);
       }
+        itemCount++;
+        if (itemCount == 1 && settings.firstItemHtml) {
+            html += settings.firstItemHtml;
+        }
+
       if (this_level === level) // same level as before; same indenting
         html += "<li><a href='#" + fixedEncodeURIComponent(header.id) + "'>" + header.innerHTML + "</a>";
       else if (this_level <= level){ // higher level than before; end parent ol
@@ -94,7 +93,9 @@
         window.location.hash = '';
       });
     }
-
+    if (settings.footer) {
+        html += settings.footer;
+    } 
     render[settings.showEffect]();
   };
 })(jQuery);

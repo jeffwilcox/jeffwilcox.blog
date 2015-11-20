@@ -3,13 +3,34 @@
 
 body {
     padding-bottom: 40px;
-    /* padding-top: 70px; */
-    /* padding-top: 90px; */
+}
+
+.navbar-inverse {
+  border-color: #595959;
 }
 
 .navbar-inverse .navbar-inner {
   background-color: #595959;
   border-color: #595959;
+}
+
+.navbar-inverse .navbar-nav > li > a:hover {
+  background-color: #000;
+}
+
+.btn-muted {
+  color:#333;
+  background-color: #bbb;
+  border-color: #bbb;
+}
+.btn-muted:hover,
+.btn-muted:focus,
+.btn-muted:active,
+.btn-muted.active,
+.open > .dropdown-toggle.btn-default {
+  color: #000;
+  background-color: #999;
+  border-color: #999;
 }
 
 code, pre {
