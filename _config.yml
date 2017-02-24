@@ -12,7 +12,9 @@ markdown: rdiscount
 rdiscount:
     extensions:
         - generate_toc
-pygments: false
+#pygments: false
+
+highlighter: rouge
 
 # Conforms to the same original WordPress format that I was using.
 permalink:	/:year/:month/:title/
