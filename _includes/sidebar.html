@@ -6,6 +6,13 @@
        <div style="margin-top: 24px">
            <!-- small -->
                {% for xcat in page.categories %}
+                   {% if xcat == 'open-source'  %}
+                        <h4>Microsoft Open Source</h4>
+                        <ul class="list">
+                            <li><a href="https://github.com/Microsoft">Microsoft on GitHub</a></li>
+                            <li><a href="https://opensource.microsoft.com">opensource.microsoft.com</a></li>
+                        </ul>
+                   {% endif %}
                    {% if xcat == 'windows-azure'  %}
                         <h4>Microsoft Azure</h4>
                         <ul class="list">
