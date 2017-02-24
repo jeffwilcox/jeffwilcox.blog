@@ -1,10 +1,10 @@
 # Source of the blog of Jeff Wilcox
 
-It is transformed using [Jekyll](http://github.com/mojombo/jekyll) into a static site.
+It is transformed using [Jekyll](https://github.com/mojombo/jekyll) into a static site.
 
 # Hosting
 
-At this time, the blog itself lives at [http://www.jeff.wilcox.name/](http://www.jeff.wilcox.name/) and is 
+At this time, the blog itself lives at [https://www.jeff.wilcox.name/](https://www.jeff.wilcox.name/) and is 
 hosted in storage.
 
 # License
