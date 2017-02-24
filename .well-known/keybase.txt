@@ -1,0 +1,54 @@
+==================================================================
+https://keybase.io/jeffwilcox
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://www.jeff.wilcox.name
+  * I am jeffwilcox (https://keybase.io/jeffwilcox) on keybase.
+  * I have a public key ASBuEKl7kirZR3CekzozA9tkXJY4hr4oL_qrANuKEU5iMAo
+
+To do so, I am signing this object:
+
+{
+    "body": {
+        "key": {
+            "eldest_kid": "01207e31894d3f4ffb078f8fbf7c356db60c886d6b014d0af53c7f7469c1fad9a5f50a",
+            "host": "keybase.io",
+            "kid": "01206e10a97b922ad947709e933a3303db645c963886be282ffaab00db8a114e62300a",
+            "uid": "c3ffb540c4a2cb9ab333904cd016c019",
+            "username": "jeffwilcox"
+        },
+        "service": {
+            "hostname": "www.jeff.wilcox.name",
+            "protocol": "https:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+    },
+    "client": {
+        "name": "keybase.io go client",
+        "version": "1.0.18"
+    },
+    "ctime": 1487897450,
+    "expire_in": 504576000,
+    "merkle_root": {
+        "ctime": 1487897435,
+        "hash": "163917b74618511d9a07f59769363139645441ddb67adcb3554f0c0c7fdbffecd9ee686b61b44d2e75e9b25920e3729a0fe6bd4ce42a15cc2f3a6352472db9b3",
+        "seqno": 918935
+    },
+    "prev": "83bca9bc22b458186c94e977da7eacd148de89fe0e038b307c7a94f66a53b504",
+    "seqno": 19,
+    "tag": "signature"
+}
+
+which yields the signature:
+
+hKRib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEgbhCpe5Iq2UdwnpM6MwPbZFyWOIa+KC/6qwDbihFOYjAKp3BheWxvYWTFAv97ImJvZHkiOnsia2V5Ijp7ImVsZGVzdF9raWQiOiIwMTIwN2UzMTg5NGQzZjRmZmIwNzhmOGZiZjdjMzU2ZGI2MGM4ODZkNmIwMTRkMGFmNTNjN2Y3NDY5YzFmYWQ5YTVmNTBhIiwiaG9zdCI6ImtleWJhc2UuaW8iLCJraWQiOiIwMTIwNmUxMGE5N2I5MjJhZDk0NzcwOWU5MzNhMzMwM2RiNjQ1Yzk2Mzg4NmJlMjgyZmZhYWIwMGRiOGExMTRlNjIzMDBhIiwidWlkIjoiYzNmZmI1NDBjNGEyY2I5YWIzMzM5MDRjZDAxNmMwMTkiLCJ1c2VybmFtZSI6ImplZmZ3aWxjb3gifSwic2VydmljZSI6eyJob3N0bmFtZSI6Ind3dy5qZWZmLndpbGNveC5uYW1lIiwicHJvdG9jb2wiOiJodHRwczoifSwidHlwZSI6IndlYl9zZXJ2aWNlX2JpbmRpbmciLCJ2ZXJzaW9uIjoxfSwiY2xpZW50Ijp7Im5hbWUiOiJrZXliYXNlLmlvIGdvIGNsaWVudCIsInZlcnNpb24iOiIxLjAuMTgifSwiY3RpbWUiOjE0ODc4OTc0NTAsImV4cGlyZV9pbiI6NTA0NTc2MDAwLCJtZXJrbGVfcm9vdCI6eyJjdGltZSI6MTQ4Nzg5NzQzNSwiaGFzaCI6IjE2MzkxN2I3NDYxODUxMWQ5YTA3ZjU5NzY5MzYzMTM5NjQ1NDQxZGRiNjdhZGNiMzU1NGYwYzBjN2ZkYmZmZWNkOWVlNjg2YjYxYjQ0ZDJlNzVlOWIyNTkyMGUzNzI5YTBmZTZiZDRjZTQyYTE1Y2MyZjNhNjM1MjQ3MmRiOWIzIiwic2Vxbm8iOjkxODkzNX0sInByZXYiOiI4M2JjYTliYzIyYjQ1ODE4NmM5NGU5NzdkYTdlYWNkMTQ4ZGU4OWZlMGUwMzhiMzA3YzdhOTRmNjZhNTNiNTA0Iiwic2Vxbm8iOjE5LCJ0YWciOiJzaWduYXR1cmUifaNzaWfEQLQlROqM8J+ZmajbEQrrfFURrmCxj7QEh5m4wc1WqTqwL9p6T/4bLFUMBQ184yzYAVxnLIjtnNZ7+g2yCxBCoA+oc2lnX3R5cGUgpGhhc2iCpHR5cGUIpXZhbHVlxCCR7pBlWD3AhUYqQqqqzI9KvxR57qtw+tk9sNsklnMI/aN0YWfNAgKndmVyc2lvbgE=
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/jeffwilcox
+
+==================================================================
