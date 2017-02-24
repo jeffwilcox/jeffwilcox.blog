@@ -3,6 +3,7 @@
 
 base_url: http://www.jeff.wilcox.name
 #base_url: /
+destination: ../blog-site/
 
 description: "The blog of Jeff Wilcox: Windows Phone, Windows Azure, Microsoft and open source technology by software developer Jeff Wilcox at Microsoft."
 root_desc: "Jeff Wilcox is a Principal Software Development Engineer at Microsoft."
