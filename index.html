@@ -1,72 +1,81 @@
 ---
 layout: containerlesspage
+description: Jeff Wilcox is a Principal Software Engineer at Microsoft on the Azure team. Jeff lives in Seattle.
 ---
 
 <div class="jumbotron" style="margin-top:-20px">
-	<div class="container">
-		<h1>
-			Jeff Wilcox
-		</h1>
-		<p>
-			Software Developer. Seattle, WA, USA.
-		</p>
-	</div>
+    <div class="container">
+        <h1>
+            Jeff Wilcox
+        </h1>
+        <p>
+            Principal Software Engineer. Seattle, WA, USA.
+        </p>
+    </div>
 </div>
 
 <div class="container">
-	<div class="row">
-		<div class="col-md-7">
+    <div class="row">
+        <div class="col-md-7">
 
-			<div id="home">
-			  <h2>My Recent Posts</h2>
-			  <ul class="posts list-unstyled">
-			    {% for post in site.posts limit: 16 %}
-			      <li><a href="{{ post.url }}">{{ post.title }}</a> &nbsp; <span><small class="text-muted">{{ post.date | date_to_string }}</small></span></li>
-			    {% endfor %}
-			  </ul>
-			  <p><a href="/posts/">&raquo; Full list of posts</a></p>
-			</div>
+            <div id="home">
+                <h2>Recent Posts by Jeff</h2>
+                <ul class="posts list-unstyled">
+                {% for post in site.posts limit: 10 %}
+                    <li style="margin-top:8px">
+                        <a href="{{ post.url }}">{{ post.title }}</a> &nbsp; <span><small class="text-muted">{{ post.date | date_to_string }}</small></span>
+                    </li>
+                {% endfor %}
+                </ul>
+                <p><a href="/posts/">&raquo; Full list of posts</a></p>
+            </div>
+    
+        </div>
 
-		</div>
+        <div class="col-md-5">
+            <h3 style="vertical-align: text-top">
+                <img src="img/home-microsoftazure.png" style="width: 70px; height: 70px" />
+                Azure - Microsoft's Cloud
+            </h3>
+            <p>
+                I'm a Principal Software Architect on the Azure team at Microsoft.
+                <!--
+                Previously I helped define 
+                a modern direction for the cross-platform, many-language open source Azure SDK and 
+                command line tools. -->
+            </p>
+            
+            <p>
+                My most recent corporate open source project is the Node.js-based <a href="https://github.com/azure/azure-oss-portal">Azure Open Source Portal for GitHub</a>. It 
+                is licensed with the MIT license and on GitHub.
+            </p>
+            <!--
+            <p>
+                Since 2005 I've worked on several startup projects at Microsoft, including many platform releases: ASP.NET, Silverlight, Windows Phone XAML, Windows Runtime, Azure SDK.
+            </p>
+            -->
+            <ul class="list">
+                <li><a href="https://github.com/jeffwilcox/">My GitHub profile</a></li>
+                <li><a href="https://github.com/azure/">Azure on GitHub</a></li>
+            </ul>
 
-		<div class="col-md-5">
-			<h3 style="vertical-align: text-top">
-				<img src="img/home-windowsazure.png" style="width: 70px; height: 70px" />
-				Azure - Microsoft's Cloud
-			</h3>
-			<p>
-				I'm a Principal SDE Architect on the Azure team at Microsoft. Previously I helped define 
-				a modern direction for the cross-platform, many-language open source Azure SDK and 
-				command line tools.
-			</p>
+            <h3>
+                <img src="img/home-4thandmayor.png" style="width: 70px; height: 70px" />
+                4th &amp; Mayor
+            </h3>
+            <p>I developed <a href="http://www.4thandmayor.com/">4th &amp; Mayor</a>, the 
+            #1 top-rated social app on the Windows Phone Store for many years. The app launched 
+            in 2011 and had over 100,000 daily active users and a 300k+ installed base.</p>
+            <p>The app is backed by cloud services implemented in Node.js &amp; running on both 
+            Microsoft Azure and Amazon Web Services.</p>
+            <ul class="list">
+                <li><a href="http://www.4thandmayor.com/">4th &amp; Mayor site</a></li>
+                <li><a href="http://www.windowsphone.com/en-us/store/app/4th-mayor/c7d13b8d-9951-e011-854c-00237de2db9e">Windows Store Download</a></li>
+                <li><a href="https://github.com/jeffwilcox/">Select source code on GitHub</a></li>
+                <li><a href="https://github.com/jeffwilcox/mpns">MPNS Node.js module</a></li>
+            </ul>
 
-			<p>
-				Since 2005 I've worked on several startup projects at Microsoft, including many platform releases: ASP.NET, Silverlight, Windows Phone XAML, Windows Runtime, Azure SDK.
-			</p>
+        </div>
 
-			<ul class="list-unstyled">
-				<li><a href="http://www.github.com/jeffwilcox/">&raquo; My GitHub profile</a></li>
-				<li><a href="http://azure.github.io/">&raquo; About Azure open source</a></li>
-				<li><a href="http://www.github.com/azure/">&raquo; Source code on GitHub</a></li>
-			</ul>
-
-			<h3>
-				<img src="img/home-4thandmayor.png" style="width: 70px; height: 70px" />
-				4th &amp; Mayor
-			</h3>
-			
-			<p>I'm the developer of <a href="http://www.4thandmayor.com/">4th &amp; Mayor</a>, the 
-			#1 top-rated social app on the Windows Phone Store, launched in early 2011. The client is backed by cloud services 
-			implemented in Node.js &amp; running on both the Microsoft and Amazon clouds.</p>
-
-			<ul class="list-unstyled">
-				<li><a href="http://www.4thandmayor.com/">&raquo; 4th &amp; Mayor site</a></li>
-				<li><a href="http://www.windowsphone.com/en-us/store/app/4th-mayor/c7d13b8d-9951-e011-854c-00237de2db9e">&raquo; Download for Windows Phone</a></li>
-				<li><a href="http://www.github.com/jeffwilcox/">&raquo; Select source code on GitHub</a></li>
-				<li><a href="http://www.github.com/jeffwilcox/mpns">&raquo; MPNS Node.js module</a></li>
-			</ul>
-
-		</div>
-		
-	</div>
+    </div>
 </div>

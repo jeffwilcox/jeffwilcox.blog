@@ -14,7 +14,7 @@ walk you through our Open Source Portal for GitHub, a Node.js app that has helpe
 to a self-service model for onboarding employees and helping with many outbound GitHub tasks. We 
 open sourced the web app last week.
 
-<a class="btn btn-primary btn-sm" href="https://github.com/Azure/azure-oss-portal" target="_new">
+<a class="btn btn-muted btn-sm" href="https://github.com/Azure/azure-oss-portal" target="_new">
   View open source on GitHub: <strong>Azure/azure-oss-portal</strong> <i class="glyphicon glyphicon-share-alt"></i>
 </a>
 
