@@ -2,8 +2,8 @@
 layout: post
 comments: true
 title: Moving 4th & Mayor to Windows Azure Web Sites
-categories: [windows-azure, cloud, nodejs, 4thandmayor]
-tags: [windows-azure, 4thandmayor, nodejs, cloud, express, websites]
+categories: [azure, cloud, nodejs, 4thandmayor]
+tags: [azure, 4thandmayor, nodejs, cloud, express, websites]
 ---
 After several years of hosting my mobile application's web server and services with Amazon Web Services (AWS), in April I moved my production services to Windows Azure, and it went really smoothly. Here I am sharing a guide through some of the highlights of this process, including how I went about migrating my Node.js backend to an HTTPS-secured site powered by Windows Azure Web Sites, Cloud Services, and the Windows Azure Store.
 
@@ -22,7 +22,7 @@ My app makes connections to my cloud infrastructure to enable rich live tiles, p
 
 Here's the kicker: the Windows Azure Web Sites preview product supports SSL using Microsoft's wildcard certificate for `*.azurewebsites.net` - great and secure for many apps today - but does not support a "bring your own certificate" model today. In time, the service will support custom certificates for Web Sites via SNI I've heard, but today you cannot bring your own certs like you might like to. Since my production app already uses my own custom certificates, moving my traffic to the Windows Azure endpoints isn't a great story for me, and I prefer to route my app traffic through DNS for my domain.
 
-Brady Gaster has a really good solution and tutorial for the interim: [Running SSL with Windows Azure Web Sites Today](http://www.bradygaster.com/running-ssl-with-windows-azure-web-sites) - this is what I have gone with, and though it is a little scary sounding at first, it was pretty easy to setup and has completely unblocked me. Check that out for the technical details and guide.
+Brady Gaster has a really good solution and tutorial for the interim: [Running SSL with Windows Azure Web Sites Today](http://www.bradygaster.com/running-ssl-with-azure-web-sites) - this is what I have gone with, and though it is a little scary sounding at first, it was pretty easy to setup and has completely unblocked me. Check that out for the technical details and guide.
 
 Production [4th & Mayor](https://www.4thandmayor.com/) app and site traffic as of April 4, 2013 is using SSL to communicate with the awesome Git-deployed goodness of [Windows Azure Web Sites](http://www.windowsazure.com/en-us/home/scenarios/web-sites/). WINNING!
 
@@ -178,7 +178,7 @@ Hosted MongoDB
 
 I use [MongoDB](http://www.mongodb.org/) for storing a lot of information about push notifications and app users. Mongo has been a great experience for me. Everyone has their own opinions on NoSQL but Mongo has been working great in production for me for years.
 
-I've found hosted Mongo to be relatively inexpensive yet super powerful: I use a third-party shared MongoDB hosting provider, [MongoLab](http://www.mongolab.com/), so I don't have to worry about devops. In my previous AWS infrastructure setup, I had a paid product (about $40 a month) in the AWS US-East-1 region that I paid MongoLab for directly. 
+I've found hosted Mongo to be relatively inexpensive yet super powerful: I use a third-party shared MongoDB hosting provider, [MongoLab](http://www.mongolab.com/), so I don't have to worry about devops. In my previous AWS infrastructure setup, I had a paid product (about $40 a month) in the AWS US-East-1 region that I paid MongoLab for directly.
 
 Windows Azure also has MongoLab and hosted Mongo support. MongoLab just makes things easy, you no longer have to worry about actually running the database (devops, etc.) and just use the connection info and let them manage the service. The MongoLab hosting service is available free today (for a 500MB max MongoDB shared instance) - yup - $0.00 per month. Awesome. This is enough capacity for my needs today and then some.
 
@@ -209,7 +209,7 @@ Today (April 29, 2013), the Windows Azure Web Sites product supports SSL, but no
 
 Reading through previous posts about the Web Sites preview functionality, in time there will be support for SNI SSL, but this functionality is not available today.
 
-The complete post at [http://www.bradygaster.com/running-ssl-with-windows-azure-web-sites](http://www.bradygaster.com/running-ssl-with-windows-azure-web-sites) is a good reference and you should follow that. This is just a short summary of some of the challenges/process.
+The complete post at [http://www.bradygaster.com/running-ssl-with-azure-web-sites](http://www.bradygaster.com/running-ssl-with-azure-web-sites) is a good reference and you should follow that. This is just a short summary of some of the challenges/process.
 
 For setting up the SSL reverse proxy with custom certificates I need to use my Windows workstation, Visual Studio 2012, and the Windows Azure SDK for Visual Studio today.
 
@@ -310,7 +310,7 @@ So again, the biggest functionality gap in the preview Web Sites feature for my 
 
 You can find out more about Cloud Services and the compute application models that Windows Azure supports at [http://www.windowsazure.com/en-us/develop/net/fundamentals/compute/](http://www.windowsazure.com/en-us/develop/net/fundamentals/compute/).
 
-> Cloud Services provides Platform as a Service (PaaS). This technology is designed to support applications that are scalable, reliable, and cheap to operate. It’s also meant to free developers from worrying about managing the platform they’re using, letting them focus entirely on their applications. 
+> Cloud Services provides Platform as a Service (PaaS). This technology is designed to support applications that are scalable, reliable, and cheap to operate. It’s also meant to free developers from worrying about managing the platform they’re using, letting them focus entirely on their applications.
 
 Creating the cloud service
 ==========================
@@ -392,6 +392,6 @@ In closing
 
 The Cloud Services workaround, using ARR to provide my own effective load balancing, will some day not be required. According to posts and comments Scott Guthrie has made on his blog in the past, eventually Web Sites will support the SNI/SSL protocol so that I can just upload my cert to the Web Site and have Azure take care of the rest. That will be nice! This solution will be a lot more affordable: the need to host your own set of cloud services reverse proxies will no longer be there. Can't wait for that!
 
-In the meantime, if custom SSL + Web Sites was holding you back, I hope with this post and (Brady Gaster's)[http://www.bradygaster.com/running-ssl-with-windows-azure-web-sites], you will have the information you need to get unblocked.
+In the meantime, if custom SSL + Web Sites was holding you back, I hope with this post and (Brady Gaster's)[http://www.bradygaster.com/running-ssl-with-azure-web-sites], you will have the information you need to get unblocked.
 
 I hope you appreciated this long look at some of this change, all said and done, writing this blog post took longer than migrating my production application from AWS to Windows Azure... maybe I need to learn to type a little faster?

@@ -2,8 +2,8 @@
 layout: post
 comments: true
 title: Windows Azure cross-platform command line improvements - Summer 2013
-categories: [windows-azure, cloud]
-tags: [windows-azure, cloud, cli, command-line, tools]
+categories: [azure, cloud]
+tags: [azure, cloud, cli, command-line, tools]
 ---
 On the Windows Azure team, we're committed to providing great experiences for developers and infrastructure customers with a number of ways to manage your services.
 
@@ -289,19 +289,19 @@ info:             _    _____   _ ___ ___
 info:            /_\  |_  / | | | _ \ __|
 info:      _ ___/ _ \__/ /| |_| |   / _|___ _ _
 info:    (___  /_/ \_\/___|\___/|_|_\___| _____)
-info:       (_______ _ _)         _ ______ _)_ _ 
+info:       (_______ _ _)         _ ______ _)_ _
 info:              (______________ _ )   (___ _ _)
-info:    
+info:
 info:    Windows Azure: Microsoft's Cloud Platform
-info:    
+info:
 info:    Tool version 0.7.0
-help:    
+help:
 help:    Display help for a given command
 help:      help [options] [command]
-help:    
+help:
 help:    Opens the portal in a browser
 help:      portal [options]
-help:    
+help:
 help:    Commands:
 help:      account        Commands to manage your account information and publish settings
 help:      config         Commands to manage your local settings
@@ -314,11 +314,11 @@ help:      site           Commands to manage your Web Sites
 help:      sql            Commands to manage your SQL Server accounts
 help:      storage        Commands to manage your Storage objects
 help:      vm             Commands to manage your Virtual Machines
-help:    
+help:
 help:    Options:
 help:      -h, --help     output usage information
 help:      -v, --version  output the application version
-jwmac:~ jeffwilcox$ 
+jwmac:~ jeffwilcox$
 </pre>
 
 To drill in to a specific area, just type it. For example, with this latest update, we've added initial support for managing Virtual Networks, so typing `azure network` will drop down with even more options:
@@ -326,24 +326,24 @@ To drill in to a specific area, just type it. For example, with this latest upda
 <pre class="brush: bash">
 jwmac:~ jeffwilcox$ azure network
 help:    Commands to manage your Networks
-help:    
+help:
 help:    Export the current Azure Network configuration to a file
 help:      network export [options] <file-path>
-help:    
+help:
 help:    Set the Azure Network configuration from json file
 help:      network import [options] <file-path>
-help:    
+help:
 help:    Commands to manage your DNS Servers
 help:      network dnsserver list [options]
 help:      network dnsserver register [options] <dnsIp>
 help:      network dnsserver unregister [options] <dnsIp>
-help:    
+help:
 help:    Commands to manage your Virtual Networks
 help:      network vnet list [options]
 help:      network vnet show <vnet> [options]
 help:      network vnet delete [options] <vnet>
 help:      network vnet create [options] <vnet>
-help:    
+help:
 help:    Options:
 help:      -h, --help  output usage information
 </pre>
@@ -355,9 +355,9 @@ And then you can always append `-h` to a command to learn more about its options
 <pre class="brush: bash">
 jwmac:~ jeffwilcox$ azure network vnet create -h
 help:    Create an Azure Virtual Network
-help:    
+help:
 help:    Usage: network vnet create [options] <vnet>
-help:    
+help:
 help:    Options:
 help:      -h, --help                      output usage information
 help:      -v, --verbose                   use verbose output
@@ -389,8 +389,8 @@ Here's what happens when I list my running VMs using `azure vm list` with no oth
 <pre class="brush: bash">
 jwair:~ jeffwilcox$ azure vm list
 info:    Executing command vm list
-+ Fetching VMs                                                                 
-data:    DNS Name                 VM Name       Status   
++ Fetching VMs
+data:    DNS Name                 VM Name       Status
 data:    -----------------------  ------------  ---------
 data:    cloudmongo.cloudapp.net  MongoArbiter  ReadyRole
 data:    cloudmongo.cloudapp.net  MongoNode1    ReadyRole
@@ -821,13 +821,13 @@ silly:           },
 silly:           md5: undefined
 silly:       }
 silly:   }
-data:    DNS Name                 VM Name       Status   
+data:    DNS Name                 VM Name       Status
 data:    -----------------------  ------------  ---------
 data:    cloudmongo.cloudapp.net  MongoArbiter  ReadyRole
 data:    cloudmongo.cloudapp.net  MongoNode1    ReadyRole
 data:    cloudmongo.cloudapp.net  MongoNode2    ReadyRole
 info:    vm list command OK
-jwmac:~ jeffwilcox$ 
+jwmac:~ jeffwilcox$
 </pre>
 
 ## Open source links

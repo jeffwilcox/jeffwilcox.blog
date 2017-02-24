@@ -2,8 +2,8 @@
 layout: post
 comments: true
 title: Creating secure Linux VMs in Azure with SSH key pairs
-categories: [windows-azure, cloud]
-tags: [windows-azure, cloud, vm, ssh]
+categories: [azure, cloud]
+tags: [azure, cloud, vm, ssh]
 ---
 A fairly standard security best practice for cloud-connected Linux virtual machines is to create "password-less" virtual machines. This is easy to do with Windows Azure but not the default if you use the "quick create" menu within the [Windows Azure Management Portal](https://manage.windowsazure.com/).
 
@@ -60,9 +60,9 @@ I recommend checking that out, too! The `openssl` parameters I've used here come
 To generate a key pair, use this command:
 
 <pre class="brush: bash">
-openssl req -x509 -nodes -days 365 \ 
--newkey rsa:2048 \ 
--keyout filename.key \ 
+openssl req -x509 -nodes -days 365 \
+-newkey rsa:2048 \
+-keyout filename.key \
 -out filename.pem
 </pre>
 

@@ -2,7 +2,7 @@
 layout: post
 comments: true
 title: "From 20 to 2,000 engineers on GitHub: Azure, GitHub and our Open Source Portal"
-categories: [windows-azure, microsoft-azure, cloud, open-source]
+categories: [azure, microsoft-azure, cloud, open-source]
 tags: [tech, azure, cloud, github, compliance, nodejs]
 ---
 On the [Microsoft Azure team our GitHub presence today](https://github.com/azure) is operating at more than an order of
@@ -873,7 +873,7 @@ Time for a quick side story...
 Those of us who were interested in working to improve the management experience for GitHub
 learned of a key opportunity for us to shift our GitHub management tooling and processes
 in March 2014: we announced that we were rebranding our cloud platform from the
-name [Windows Azure to Microsoft Azure](https://azure.microsoft.com/en-us/blog/upcoming-name-change-for-windows-azure/),
+name [Windows Azure to Microsoft Azure](https://azure.microsoft.com/en-us/blog/upcoming-name-change-for-azure/),
 effective in April.
 
 With a short runway in place, we realized that instead of renaming our organization, we could

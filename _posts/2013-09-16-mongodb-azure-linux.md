@@ -2,8 +2,8 @@
 layout: post
 comments: true
 title: Creating a MongoDB replica set cluster w/Windows Azure Linux VMs
-categories: [windows-azure, cloud]
-tags: [windows-azure, cloud, cli, mongodb, command-line, tools, linux, centos, nosql]
+categories: [azure, cloud]
+tags: [azure, cloud, cli, mongodb, command-line, tools, linux, centos, nosql]
 ---
 I love [MongoDB](http://www.mongodb.org/). I've been using it as the NoSQL solution in my production phone app for several years now. I've used hosted MongoDB solutions and also run my own replica set clusters in both AWS and Windows Azure. In this post today I'm going to demonstrate creating a full-blown MongoDB replica set cluster in Microsoft's cloud... but I'll also touch on hosted and single-instance deployments.
 
@@ -36,7 +36,7 @@ The backend is powered by Node.js and MongoDB. I first ran it all on Amazon EC2,
 
 Foursquare actually uses MongoDB very extensively as well. [Wikipedia](http://en.wikipedia.org/wiki/MongoDB) notes other large users, including eBay, MetLife, Foursquare, MTV Networks.
 
-Having attended the MongoDB Seattle conference for the past few years learning about modern best practices, including running MongoDB in other cloud providers, this is an area very close to me. 
+Having attended the MongoDB Seattle conference for the past few years learning about modern best practices, including running MongoDB in other cloud providers, this is an area very close to me.
 Although Windows Azure has published some great docs on MongoDB, I felt a need to go in a different direction with a little more automation. I've also found very little replica set guidance for Azure.
 
 Deploying and managing MongoDB replica sets makes for a a great case study and functional test for me as a development lead, looking to validate the cloud capabilities that Windows Azure has, along with the development tools and libraries that we ship. (Run into issues? Please [open issues in our GitHub repo](https://github.com/WindowsAzure/azure-sdk-tools-xplat/issues).)
@@ -174,7 +174,7 @@ MongoLab has 2 offerings available right now for Windows Azure Add-On customers.
 </tbody>
 </table>
 
-MongoLab offers a shared, hosted replica set option, but not in all Windows Azure data centers according to [their July post announcing the availability](http://blog.mongolab.com/2013/07/production-mongodb-replica-sets-now-available-on-windows-azure/), so if you're looking to have a replica set in Europe, for example, this post might help you run that yourself until they offer such an option/region combination.
+MongoLab offers a shared, hosted replica set option, but not in all Windows Azure data centers according to [their July post announcing the availability](http://blog.mongolab.com/2013/07/production-mongodb-replica-sets-now-available-on-azure/), so if you're looking to have a replica set in Europe, for example, this post might help you run that yourself until they offer such an option/region combination.
 
 # Replica set built from Linux VMs
 
@@ -720,9 +720,9 @@ While preparing the post, I've found all of these resources very helpful. Maybe 
 
 ## From MongoDB Inc.
 
-- [Collected Windows Azure resources](http://docs.mongodb.org/ecosystem/platforms/windows-azure/)
+- [Collected Windows Azure resources](http://docs.mongodb.org/ecosystem/platforms/azure/)
 - [MongoDB tutorial, Linux VMs](http://docs.mongodb.org/ecosystem/tutorial/install-mongodb-on-linux-in-azure/)
-- [MongoDB tutorial, Windows](http://docs.mongodb.org/ecosystem/tutorial/install-mongodb-on-windows-azure/)
+- [MongoDB tutorial, Windows](http://docs.mongodb.org/ecosystem/tutorial/install-mongodb-on-azure/)
 
 ## From Windows Azure
 

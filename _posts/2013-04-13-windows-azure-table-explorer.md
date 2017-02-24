@@ -2,8 +2,8 @@
 layout: post
 comments: true
 title: Using the Windows Azure SDK for Node.js to create a Table Service Explorer
-categories: [windows-azure, cloud, nodejs]
-tags: [windows-azure, table-service, storage, nodejs, cloud, bootstrap, express, github, websites]
+categories: [azure, cloud, nodejs]
+tags: [azure, table-service, storage, nodejs, cloud, bootstrap, express, github, websites]
 
 # cdni: {{ site.cdn }}table/blog/
 ---
@@ -366,7 +366,7 @@ We've already looked at the code exposed in the `/json/table` endpoint to return
 
 <pre class="brush: js">
  var loadTablesList = function () {
-    $.ajax({ 
+    $.ajax({
     	url: "/json/table",
       data: getStandardAjaxData(),
     	success: function (data) {
@@ -385,7 +385,7 @@ We've already looked at the code exposed in the `/json/table` endpoint to return
 
           var html = '<ul class="nav nav-list">';
           html += '<li class="nav-header">Tables</li>';
-          
+
           var c = 0;
           for (var tbl in dr.tables) {
             var table = dr.tables[tbl];

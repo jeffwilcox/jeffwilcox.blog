@@ -2,8 +2,8 @@
 layout: post
 comments: true
 title: Windows Azure Management Portal background color themes
-categories: [windows-azure, cloud]
-tags: [windows-azure, cloud, portal]
+categories: [azure, cloud]
+tags: [azure, cloud, portal]
 ---
 The current [Windows Azure Management Portal](https://manage.windowsazure.com/) has a few "custom backgrounds" available if you get tired of the very light gray background...
 
@@ -14,7 +14,7 @@ I don't know the history, whether it is a feature, an easter egg, something they
 
 If you double-click in the margins of the portal experience on either side, it will rotate through a few different choices. I'm a fan of #2 and #3 I think! What's yours?
 
-# Blue background 
+# Blue background
 ![Windows Azure Management Portal - Background 2]({{ site.cdn }}portalee/Portal2.PNG =700x419 "Windows Azure Management Portal - Background ")
 
 # Dark gray background
