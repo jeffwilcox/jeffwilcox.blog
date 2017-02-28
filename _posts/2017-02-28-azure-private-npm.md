@@ -139,7 +139,7 @@ After installation, the _Build & Release_ menus within the project will light up
 
 ## Creating a new private feed
 
-From a project's _Packages_ extension, you'll find a mail delivery person cartoon if you do not yet have any feeds.
+From a project's _Packages_ extension, you'll find a mail delivery person character if you do not yet have any feeds.
 Select "New feed".
 
 <img src="{{ site.cdn }}vstsnpm/vsts-new-package.PNG" class="img-responsive" />
@@ -672,9 +672,7 @@ for the other values, keeping the feed URL and the secret token value pair toget
 - _NPM_PRIVATE_FEED_TOKEN_: keyvault://my_vault_name.vault.azure.net/secrets/my-vsts-private-feed
 
 Here's the secret entry inside the vault in the Azure portal. You can see some of the tags I've used to help
-organization secrets.
-
-<img src="{{ site.cdn }}vstsnpm/keyvault-secrets-list.PNG" class="img-responsive" />
+organize secrets.
 
 <img src="{{ site.cdn }}vstsnpm/keyvault-secret-configuration.PNG" class="img-responsive" />
 
@@ -708,13 +706,13 @@ look at some of this.
 
 ## Configuration as code
 
-Finally, one last scenario is supported by the underlying script here: yet-another-opionated-configuration thing... By
-defining a `CONFIGURATION_ENVIRONMENT`, similar to a `NODE_ENV`, setting, the underlying configuration
-system currently used by the custom deployment script is able to look for special environment JSON files
-containing config info for the app.
+Finally, the custom deployment script supports "yet another" opinionated "painless" configuration-as-code story.
 
-Since the system supports KeyVault, we're able to safely commit configuration information, just pointing at the
-KeyVault, and then we're able to treat configuration changes as code. New secrets and environment changes can
+By defining a `CONFIGURATION_ENVIRONMENT` variable pointing to a known environment file, similar to a `NODE_ENV` setting,
+the configuration system is able to read variable values from the right local file.
+
+Since the configuration resolution code supports KeyVault, we're able to safely commit configuration information internally,
+just pointing at KeyVault secrets, and then we can treat config changes as code. New secrets and environment changes can
 be code reviewed and move through Git like any other set of changes.
 
 For any given secret we have a choice: we can point to a secret name, resolving the latest version at
