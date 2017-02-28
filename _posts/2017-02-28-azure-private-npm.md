@@ -6,75 +6,67 @@ categories: [azure, cloud, open-source, vsts, node]
 tags: [azure, cloud, npm, vsts, node, nodejs, keyvault, deployment]
 ---
 In this post I'm going to walk through using Visual Studio Team Services Package Management as a private npm
-registry for scoped npm packages using a simple custom deployment script alongside Azure App
-Service. I'll also show how my team is able to use this with Azure KeyVault at deployment time to
-enable central credential rotation without having to manage secrets per app instance.
+registry for scoped npm packages using a custom deployment script for Azure App
+Service.
 
-Many Node.js developers are probably familiar with npm private feeds, but may not have
-put them all together on the Microsoft Cloud stack. I wanted to share the experience that
-I have had, since my team is running a ton of small-to-medium Node.js services within Microsoft
-built on this great tech stack and Azure.
+Many Node.js developers are probably familiar with npm private feeds but may not have
+used them yet in the Microsoft Cloud + Node.js stack. I wanted to share the experience that
+I have had: my team is running a ton of small-to-medium Node.js services within Microsoft
+and we're eager to share our experiences for the good of the community.
+
+I'll also show how my team is able to use Azure KeyVault at deployment time to
+enable credential rotation without having to manage secrets at the individual app level.
 
 <img src="{{ site.cdn }}vstsnpm/vsts-new-package.PNG" class="img-responsive" title="The VSTS Package Management site" />
+
+_While this is a long post in explanation and detail, someone using App Service for their Node.js
+deployments today should be able to connect to a private npm feed in about 15-30 minutes if they have
+not yet adopted a custom deployment script. Of course KeyVault and other aspects could add time._
 
 Let's get started.
 
 # Private NPM modules
 
-Node.js developers know that there's an npm module for nearly everything, but it turns
-out that sometimes you need to host your own private npm registry to store private code
-that is specific to your organization, policies and business rules, or otherwise shared
-amongst your code.
+Node.js developers know that "there's an npm module for nearly everything", but it turns
+out that sometimes you need to host your own private npm registry to store [private modules](https://docs.npmjs.com/private-modules/intro)
+specific to your organization, policies or business rules, or to share custom code
+amongst your internal projects.
 
-[Private modules](https://docs.npmjs.com/private-modules/intro) let Node.js developers
-ship internal/team-specific modules to encourage innersourcing and code sharing without
-needing to ship the module to the public.
-
-Common scenarios might include:
-
-- standard many-app configuration
-- corporate-specific Express middleware
-- private business logic plugins to open source systems
-- configuration-as-code scenarios
-- getting a package ready to open source (refactoring, simplifying)
+Common scenarios include corporate-specific Express middleware, private business
+logic plugins to open source systems, supporting configuration-as-code,
+and getting an npm module ready to ship to the world ahead of release.
 
 ## Scoped packages
 
-When you are going to build a private npm program, you need to decide whether you
+When looking to use private npm registries, you'll need to decide whether you
 intend for the private npm registry to be the "primary" registry for all packages,
 including popular packages you would otherwise get from the public registry -
 `express`, `moment`, etc. - or if you want to use scoping.
 
-[Scopes are built into npm](https://docs.npmjs.com/misc/scope) and are the only natively
-supported way of supporting multiple registries. You can configure npm to go to
-a specific registry for a specific scope instead of the globally configured registry.
+[Scopes are built into npm](https://docs.npmjs.com/misc/scope) and are the only native
+way to support multiple registries. You can configure npm to visit a specific registry for a
+given scope instead of the global registry.
 
-Scoped package can be nice in that they can keep private modules completely separate. When
-using scoped packages, whether in source or `package.json` files, you will see the
-scope syntax in use.
+A downside to using scopes is that modules intending to go public will cause some churn in `package.json` files. A
+private npm that uses a scope today but ships to the world tomorrow will likely lose or change its scope, requiring
+you to edit your various package and source files.
 
-A downside to scopes during development is that modules intending to go open source will
-cause some churn in `package.json` files, etc., when you eventually publish your private
-package as a public open source thing.
+For this post I'm using a custom `@jeffwilcox` scope; within the Open Source Programs Office
+at Microsoft we use the `@ospo` scope, since that's the short name we use for our team.
 
-For this post we will use a custom `@jeffwilcox` scope; within the Open Source Programs Office
-at Microsoft we use the `@ospo` scope, since that's the short name we use for our team. There
-is also a public scope for Microsoft open source npm modules, `@microsoft`, but that is not
-a private scope from our perspective.
+Scopes are not unique to private repos. For example, the `@microsoft` scope is for
+Microsoft open source npm modules that are shipping to the world.
 
-## Paid NPMJS options
+## Paid NPMJS
 
 The official NPMJS registry sells private npm registry feeds for [$7/user/mo. or so](https://www.npmjs.com/pricing) and
 this may be sufficient for many users.
 
-However, those using Visual Studio Team Services will likely want to use the great
-package management integration and private feed support available in that product.
-
-On our team we like that the private NPM feeds live alongside our source code in
+However, those using Visual Studio Team Services may want to use the great
+package management integration and private feed support available in that product. On our
+team we like that the private NPM feeds live alongside our source code in
 VSTS, are contained, and the existing permission settings we use for the team just
-work with the private feed, too.
-
-More on VSTS soon.
+work with the private feed.
 
 ## Configuring your scoped npm environment
 
@@ -103,26 +95,21 @@ use environment variable replacement:
 //registry.npmjs.org/:_authToken=${NPM_TOKEN}
 ```
 
-However, for this guide, I'm going to use a custom script to customize the Azure App Service
+For this guide, I'm going to use a custom script to customize the Azure App Service
 environment at deployment time to handle other scenarios including KeyVault. If you are
-interested in the simplier scenarios, you can [read about the scenarios at npmjs.com](https://docs.npmjs.com/private-modules/ci-server-config).
+interested in simple CI/CD environments you can [read about the scenarios at npmjs.com](https://docs.npmjs.com/private-modules/ci-server-config).
 
 The custom script for this post is called [configure-azure-appservice-private-npm-feed](https://github.com/Microsoft/configure-azure-appservice-private-npm-feed). Very exciting name.
 
 # VSTS Package Management
 
-Visual Studio Team Services (VSTS), also known as visualstudio.com, is a set of
+Visual Studio Team Services (VSTS), located at visualstudio.com, is a set of
 clcoud-scale hosted Microsoft services for engineers to share code, track work, ship software, etc.
 VSTS is fast, easy, and offers private source code hosting of Git repositories free for up to 5 users.
 
 Package Management is a VSTS add-on, available as an extension that can be licensed,
-and today it provides both NuGet and npm private feed/registry hosting capabilities. A
-project administrator needs to install the extension and make it available.
-
-I am sure the team is very interested in feedback, I highly recommend that you check it out. For
-my small development team we're fans because it integrates with our existing project permissions, is
-easy to use, and means one less monthly credit card expense to handle (having had a paid NPM account, too. Corporate
-expense reporting is annoying).
+and today it provides both NuGet and npm private feed/registry hosting capabilities. Your VSTS
+administrator needs to install the extension and make it available to you.
 
 ## Adding the Package Management extension
 
@@ -239,7 +226,7 @@ Include the scope in the name; in my case this means my package name is `@jeffwi
 }
 ```
 
-Here is my `index.js` source code:
+Here is my `index.js` source file:
 
 ```
 'use strict';
@@ -266,23 +253,18 @@ lifetime of the npm module.
 
 ## Using the module with your app
 
-I have a super simple Express web app that I created using the npm `express-generator`. It is a
-good Hello World for both Node.js web apps and Azure App Service, so let's use that.
+I have a basic Express web app created using `express-generator`.
 
 ```
 npm install -g express-generator
-```
-
-Now I reopen my Command Prompt or Terminal and run the generator.
-
-```
+...
 express website
 cd website
 npm install
 ```
 
-This generates a new folder called "website" that I can initialize as a Git repository to eventually
-deploy directly to App Service, or GitHub, VSTS, you name it.
+This generates a new folder called "website" that I can initialize as a Git repository to
+deploy.
 
 Now I'm ready to use my private NPM module. Let's install it, saving the module, too.
 
@@ -327,14 +309,13 @@ Azure App Service really is my favorite way of hosting Node.js apps on Azure. It
 so easy to configure the web site as a Git repository itself, or connect it to GitHub, or
 use VSTS and its build system to deploy to the site.
 
-For this sample I am using the Git repository hosted by the App Service instance, meaning
-when I push to the repo, I am literally pushing and deploying right then on the web app. The
-deployment experience will be echoed back to my Git client, making it easy to watch how
-that goes, too.
+Here I am using the Git repository hosted by the App Service instance, meaning
+when I push to the repo, I am literally pushing and deploying right then onto the app service's
+storage. The deployment experience will be echoed back to my Git client, making it easy to watch how
+that goes.
 
-So I am going to go ahead and commit my little Express site. I do not want to
-commit my `node_modules/` folder, however, because that is a waste of space - I
-want to use npm to resolve those packages at runtime. So my `.gitignore` has
+I do not want to commit my `node_modules/` folder, however, because packages change and take up
+space that is not my code - I want to use npm to resolve those packages at runtime. So my `.gitignore` has
 the modules folder in it.
 
 After committing I add my Git remote as the origin of this repo and push:
@@ -344,14 +325,14 @@ $ git remote add origin https://jmwblog@privatefeed.scm.azurewebsites.net:443/pr
 $ git push origin master:master
 ```
 
-Inside the Git client, since I am using an App Service-hosted deployment, I will
+Within Git's `stdout`, since I am using an App Service-hosted deployment, I will
 get updates about the deployment. If I had connected the service instead up to
 GitHub or similar, I'd have to go to the "Deployment Options" part of the Azure
-portal to see how it's doing... but this is a good visual:
+portal to see how it's doing... but this is a _#fail# visual:
 
 <img src="{{ site.cdn }}vstsnpm/npm-push-fail.PNG" class="img-responsive" />
 
-In summary here, the deployment failed, because the `@jeffwilcox/private-npm-package` scoped
+The deployment failed because the `@jeffwilcox/private-npm-package` scoped
 npm module isn't in the global npmjs registry.
 
 Because it's a private module.
