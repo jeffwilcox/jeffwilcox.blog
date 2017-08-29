@@ -10,7 +10,7 @@ jumbotronStyle: "background: url('//az414997.vo.msecnd.net/waz/2017network/rooft
 jumbotronTitle: "A photo of the Belltown neighborhood and downtown Seattle, the Space Needle, and rooftop wireless backhaul networking equipment"
 ---
 
-I'm proud to live in Seattle where affordable 1000 Mbps Internet is common in multi-family buildings, served 
+I'm proud to live in Seattle where affordable 1000 Mbps Internet is common in multi-family buildings, served
 by a great regional network. It has been an interesting journey improving the network setup at home, one that
 I wanted to document and share in this post.
 
@@ -49,6 +49,25 @@ I love being 3 milliseconds away from the Westin Building Exchange, Seattle Inte
 <img src="{{ site.cdn }}2017network/microfische-machine.jpg" class="img-responsive" title="" />
 
 
+
+<img src="{{ site.cdn }}2017network/cat3-jack.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2017network/cat6-cat3-wall-mess3.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2017network/cat6-splicing.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2017network/cat6-wiring-service-loop.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2017network/ceiling-running-cables.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2017network/closet-running-cat6.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2017network/cloudkeytray2.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2017network/electrical-in-ceiling.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2017network/office-rack6.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2017network/rack-with-sgpro.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2017network/rooftop-microwaves.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2017network/rooftop-waveg1.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2017network/running-ent-through-kitchen-ceiling-walls.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2017network/ubnt-uap-blue-night.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2017network/ubnt-uap-wall-install.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2017network/ubnt-wifi-bedroom.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2017network/ubntuap.jpg" class="img-responsive" title="" />
+
 ## Seattle: Westin Building Exchange
 
 I still remember the disbelief when a good friend told me they had "true 100mbps Internet at home, but could upgrade to gigabit" in 2009. Their Internet service was powered by CondoInternet. Turns out I also lived in a building served by CondoInternet and so was active with the service a few hours later after a quick phone call to activate my account, where they flipped on my unit's Ethernet drop from their network closet. That was easy. Working at Microsoft I appreciate the world-class network I have access to at work, but I love that when I work from home, I have Internet that is as fast, or faster, than what I have at work, with lower latencies and a very direct connection to the Westin Building Exchange.
@@ -66,11 +85,11 @@ Rooftop line of site
 34 stories tall
 Hosts the Seattle Internet Exchange (SIX)
 Also has lots of folks - is Equinix SE2
-Next door is the relatively new Equinix SE3 facility 
+Next door is the relatively new Equinix SE3 facility
 Largest non-commercial member-governed Internet exchange in the US; funded by donations and one-time 10Gbps port fees
 Peers include Microsoft, Yahoo, Amazon, Twitter, Netflix, Google, Facebook, Peer 1, and more
 http://www.datacenterknowledge.com/archives/2014/09/17/amazon-to-recycle-data-center-heat-in-seattle-offices/
-https://www.westinbldg.com/Connectivity 
+https://www.westinbldg.com/Connectivity
 6th and Virginia on the edge of Belltown and the Denny Triange
 Datacenter heat from the building is recycled to heat Amazon's Day One/Doppler building complexes
 
