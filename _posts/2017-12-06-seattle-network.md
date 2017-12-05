@@ -1,7 +1,7 @@
 ---
 layout: post
 comments: true
-title: "My home network: Ubiquiti Networks gear, Wave-G Gigabit Internet, and CAT6-CAT3 wiring"
+title: "My home network: Ubiquiti Networks UniFi, Wave G Gigabit Internet, and CAT6-CAT3 wiring"
 categories: [tech]
 tags: [network, networking, internet, waveg]
 location: "SEATTLE, WA USA"
@@ -10,27 +10,31 @@ jumbotronStyle: "background: url('//az414997.vo.msecnd.net/waz/2017network/rooft
 jumbotronTitle: "A photo of the Belltown neighborhood and downtown Seattle, the Space Needle, and rooftop wireless backhaul networking equipment"
 ---
 
-I'm proud to live in Seattle where affordable 1000 Mbps Internet is common in multi-family buildings, served
-by a great regional network. It has been an interesting journey improving the network setup at home, one that
-I wanted to document and share in this post.
+I'm proud to live in Seattle, where affordable symmetric 1000 Mbps Internet is common in multi-family buildings and some area single-family homes, served
+by a great regional network. It has been an interesting journey improving my home network over the past few years: one that I wanted to document and share in this post.
 
 This post will be too long and will cover multiple semi-related topics:
 
 - the Pacific Northwest network connectivity and gigabit scene
-- how many condo and apartment buildings are served by the Wave G (a.k.a. CondoInternet) ISP
+- how many condo and apartment buildings are served by Wave G (a.k.a. CondoInternet) and other regional ISPs
 - my home network gear featuring the UniFi line of managed gear from Ubiquiti Networks
-- challenges
-  - with a CAT3 (yes, CAT3) grade home run
-  - wiring new CAT6 in a condo
+- challenges, including a CAT3 (yes, CAT3) home run and pulling new CAT6 in a steel/concrete construction condo
 
 > This post is from the perspective of a tech enthusiast in Seattle: I do not represent any of the companies mentioned, and the information I have about the Seattle region's Internet providers and services is only as accurate as what I have researched and the stories I've heard.
 
+> Full disclosure: while the initial 2 iterations of my Ubiquiti network at home were all personal investments, in October 2017 I was provided a new UniFi AC-HD access point to evaluate. I have since purchased an additional AC-HD AP at my own cost.
+
 # Connectivity
 
-Even today I remember the conversation with my friend Alex:
+Even today I remember the conversation with my friend Alex a decade ago when 15Mbps down and 1Mbps up was a pretty common cable Internet product offering:
 
+> Alex: "Yeah, well, we have CondoInternet. It's symmetric 100 Mbps up and down."
+> Me: "Hmm... that seems pretty hard to believe. There must be caps or something. It's not that fast. That's like university-grade."
+> Alex: "Well, it's real. Also, they offer 1000Mbps up and down."
 
 I love being 3 milliseconds away from the Westin Building Exchange, Seattle Internet Exchange and all of that lovely peering, with a 1000Mbps connection and solid gear in the rack at home.
+
+Turns out it's real. Seattle has great Internet, and with a little more competition, it hopefully will spur some more innovation in this space. Comcast is even starting to bow to the pressure of "gigabit" and they are starting to offer gigabit and even 2Gbps services powered by DOCSIS 3.1.
 
 ## Wave G: Residential gigabit to the home
 
