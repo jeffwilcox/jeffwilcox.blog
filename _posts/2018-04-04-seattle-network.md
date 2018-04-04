@@ -11,7 +11,9 @@ jumbotronTitle: "A photo of the Belltown neighborhood and downtown Seattle, the 
 ---
 
 I'm proud to live in Seattle, where affordable symmetric 1000 Mbps Internet is common in multi-family buildings and some area single-family homes, served
-by a great regional network. It has been an interesting journey improving my home network over the past few years: one that I wanted to document and share in this post.
+by a great regional network. It has been an interesting journey improving my home network over the past few years.
+
+After 2 years with Ubiquiti Networks equipment (18 months on their UniFi platform), 
 
 This post will be too long and will cover multiple semi-related topics:
 
