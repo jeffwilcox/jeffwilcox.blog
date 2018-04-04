@@ -4,7 +4,7 @@ It is transformed using [Jekyll](https://github.com/mojombo/jekyll) into a stati
 
 # Hosting
 
-At this time, the blog itself lives at [https://www.jeff.wilcox.name/](https://www.jeff.wilcox.name/) and is 
+At this time, the blog itself lives at [https://jeffwilcox.blog/](https://jeffwilcox.blog/) and is 
 hosted in storage.
 
 # License

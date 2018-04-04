@@ -1,14 +1,14 @@
 # Jekyll Configuration File
-# www.jeff.wilcox.name
+# jeffwilcox.blog
 
-base_url: http://www.jeff.wilcox.name
+base_url: https://jeffwilcox.blog
 #base_url: /
 destination: ../blog-site/
 
 keep_files: ['wp-content', '.git', 'assets']
 
-description: "The blog of Jeff Wilcox: Windows Phone, Windows Azure, Microsoft and open source technology by software developer Jeff Wilcox at Microsoft."
-root_desc: "Jeff Wilcox is a Principal Software Development Engineer at Microsoft."
+description: "The blog of Jeff Wilcox: software engineer living in Seattle"
+root_desc: "Jeff Wilcox is a Principal Software Engineer at Microsoft."
 
 markdown: rdiscount
 rdiscount:

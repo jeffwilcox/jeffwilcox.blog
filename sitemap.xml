@@ -12,7 +12,7 @@ layout: nil
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>http://www.jeff.wilcox.name/about/</loc>
+    <loc>http://www.jeffwilcox.blog/about/</loc>
     <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
