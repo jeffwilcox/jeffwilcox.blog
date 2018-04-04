@@ -1,7 +1,7 @@
 ---
 layout: post
 comments: true
-title: "My home network: Ubiquiti Networks UniFi, Wave G Gigabit Internet, and CAT6-CAT3 wiring"
+title: "My home network: Ubiquiti Networks UniFi, Wave G Gigabit Internet, CAT6 and CAT3 wiring"
 categories: [tech]
 tags: [network, networking, internet, waveg]
 location: "SEATTLE, WA USA"
