@@ -11,15 +11,17 @@ jumbotronTitle: "A photo of the Belltown neighborhood and downtown Seattle, the 
 ---
 
 In Seattle we're spoiled in multi-family residential buildings thanks to affordable symmetric 1000 Mbps Internet, served by a 
-great regional network. It's been an interesting journey improving my home network over the past few years after purchasing 
+great regional network.
+
+It's been an interesting journey improving my home network over the past few years after purchasing 
 my apartment, evolving from the rotating Asus-Linksys-Apple-Cisco network tech of the day at home to finally making the jump and 
 adopting Ubiquiti Networks equipment in 2016.
 
 After 2 years with Ubiquiti Networks equipment (18 months on their UniFi platform), I'm a huge fan, as evidenced through the 
-build-outs I've done at home, encouraged friends and family to make, and yeah, my Twitter feed. Decoupling routing and wireless 
-access points at home was a big win for me and I cannot be happier other than a few small issues such as IPv6 support.
+build-outs I've done at home, our building, encouraging friends and family, and yeah, my Twitter feed. Decoupling routing and wireless 
+access points at home was a big win for me and I cannot be happier.
 
-This post will be much too long and full of unoptimized large images. I hope to cover:
+This post will be much too long, full of unoptimized large images, and partially humblebrag. I hope to cover:
 
 - the Pacific Northwest Iternet connectivity and gigabit scene
 - the microwave tech that enables many condo and apartment buildings to be served by Wave G (a.k.a. CondoInternet) and other ISPs
@@ -114,6 +116,10 @@ I believe Spectrum has fiber between WBE and NYI
 
 <img src="{{ site.cdn }}2018network/rooftop-waveg1.jpg" class="img-responsive" title="" />
 
+netflix fast
+<img src="{{ site.cdn }}2018network/netflix-fast.jpg" class="img-responsive" title="" />
+
+
 # My UniFi network
 
 - Ubiquiti UniFi
@@ -156,6 +162,85 @@ VLAN tagging and separate SSIDs for guest networks, to advanced connectivity opt
 a site-to-site VPN running between a one of my Azure (Microsoft Cloud) virtual networks in a Microsoft datacenter
 and my home. Technically Ubiquiti hardware is based on the open source Vyatta OS.
 
+
+
+1
+<img src="{{ site.cdn }}2018network/unifi-clients-building.png" class="img-responsive" title="" />
+
+2
+<img src="{{ site.cdn }}2018network/unifi-clients-home-plus-dpi-apple-tv.png" class="img-responsive" title="" />
+
+3
+<img src="{{ site.cdn }}2018network/unifi-device-adoption-screen.png" class="img-responsive" title="" />
+
+4
+<img src="{{ site.cdn }}2018network/unifi-devices-building.png" class="img-responsive" title="" />
+
+5
+<img src="{{ site.cdn }}2018network/unifi-dpi-my-phone.png" class="img-responsive" title="" />
+
+6
+<img src="{{ site.cdn }}2018network/unifi-events-building.png" class="img-responsive" title="" />
+
+7
+<img src="{{ site.cdn }}2018network/unifi-fan-modification.jpg" class="img-responsive" title="" />
+
+8
+<img src="{{ site.cdn }}2018network/unifi-hd-pro-overhead.jpg" class="img-responsive" title="" />
+
+9
+<img src="{{ site.cdn }}2018network/unifi-hd-pro-side-by-side.jpg" class="img-responsive" title="" />
+
+10
+<img src="{{ site.cdn }}2018network/unifi-neighboring-access-points-home.png" class="img-responsive" title="" />
+
+11
+<img src="{{ site.cdn }}2018network/unifi-overview-home.png" class="img-responsive" title="" />
+
+12
+<img src="{{ site.cdn }}2018network/unifi-rf-utilized.png" class="img-responsive" title="" />
+
+13
+<img src="{{ site.cdn }}2018network/unifi-sg-home.png" class="img-responsive" title="" />
+
+14
+<img src="{{ site.cdn }}2018network/unifi-switch-view-southb.png" class="img-responsive" title="" />
+
+15
+<img src="{{ site.cdn }}2018network/unifi-switchstats-graphs-home.png" class="img-responsive" title="" />
+
+16
+<img src="{{ site.cdn }}2018network/unifi-topology-building.png" class="img-responsive" title="" />
+
+17
+<img src="{{ site.cdn }}2018network/unifi-topology-home.png" class="img-responsive" title="" />
+
+18
+<img src="{{ site.cdn }}2018network/unifi-topology-home-simple.png" class="img-responsive" title="" />
+
+19
+<img src="{{ site.cdn }}2018network/unifi-traffic-building.png" class="img-responsive" title="" />
+
+20
+<img src="{{ site.cdn }}2018network/unifi-traffic-home.png" class="img-responsive" title="" />
+
+21
+<img src="{{ site.cdn }}2018network/unifi-wireless-networks.png" class="img-responsive" title="" />
+
+22
+<img src="{{ site.cdn }}2018network/unifi-wireless-rf-environment.png" class="img-responsive" title="" />
+
+23
+<img src="{{ site.cdn }}2018network/updated-home-network-rack.jpg" class="img-responsive" title="" />
+
+24
+<img src="{{ site.cdn }}2018network/waveg-ping-times.png" class="img-responsive" title="" />
+
+25
+<img src="{{ site.cdn }}2018network/wireless-speed-testing.png" class="img-responsive" title="" />
+
+
+
 >> Azure portal screenshot
 
 
@@ -175,6 +260,34 @@ and my home. Technically Ubiquiti hardware is based on the open source Vyatta OS
 
 ## 2018: UniFi UAP AC-HD
 
+## UniFi deep packet inspection
+
+## Ease of PoE
+
+## Remote VPN
+
+## Site-to-site VPN
+
+## Cloud connectivity
+
+Cloud Access
+
+able to connect to my home
+family
+our building also has UniFi equipment I help maintain
+
+## Remote syslog
+
+write to synology
+
+## Fan noise
+
+## Consumer AmpliFi line
+
+Someone else who lives in my building recently purchased the AmpliFi line of consumer wireless 
+equipment from Ubiquiti, but unfortunately I haven't spent the time to learn about it. People 
+do say it's a nice and easy product, and it has some nice features.
+
 # Condo challenges
 
 ## WiFi in the city
@@ -183,38 +296,85 @@ and my home. Technically Ubiquiti hardware is based on the open source Vyatta OS
 
 ## As-built records
 
+## Metal studs
+
+An interesting side effect of living in a high-rise building is that our tower is constructed 
+with common commercial construction materials, so in our building we have steel studs supporting 
+the walls as opposed to wood.
+
+This makes pulling wires more difficult, you need to use wire grommits to protect the wires, and 
+if you cannot find an existing penetration in the studs, you need to improvise. A positive of the 
+metal studs, however, is that there is a not a wood fire block halfway up the wall as you might 
+find if you're wiring CAT6 across multiple levels in a traditional American home.
+
 ## Interior vs exterior walls
+
+Our condo association rules are more strict about "limited common" walls (those shared with the community 
+or other owners), so it's easy to run wires and things within your own interior walls, but if you are 
+dealing with the exterior walls you need to instead run cables through exposed conduit, behind the baseboards, 
+under the floors, etc.
+
+Fun stuff.
+
+In my office, which shares a common wall with another unit, I have several cables running under the floor 
+now, including speaker wire, several CAT6 pulls, and 2x digital optical audio cables.
 
 ## Carlon RiserGard for "the future"
 
 ## HDMI over Fiber, HDMI over CAT6
 
+cloudk1
+
 <img src="{{ site.cdn }}2018network/cloudkeytray1.jpg" class="img-responsive" title="" />
+
+ck2
 
 <img src="{{ site.cdn }}2018network/cloudkeytray2.jpg" class="img-responsive" title="" />
 
+micfmch
+
 <img src="{{ site.cdn }}2018network/microfische-machine.jpg" class="img-responsive" title="" />
+
+catj
 
 <img src="{{ site.cdn }}2018network/cat3-jack.jpg" class="img-responsive" title="" />
 
+cat6 cat3 mess
 <img src="{{ site.cdn }}2018network/cat6-cat3-wall-mess3.jpg" class="img-responsive" title="" />
 
+cat6 splicing
 <img src="{{ site.cdn }}2018network/cat6-splicing.jpg" class="img-responsive" title="" />
 
+cat6 wiring svc loop
 <img src="{{ site.cdn }}2018network/cat6-wiring-service-loop.jpg" class="img-responsive" title="" />
 
+structured media
+leviton
+hotel/condo
+
+<img src="{{ site.cdn }}2018network/leviton-in-wall.jpg" class="img-responsive" title="" />
+
+<img src="{{ site.cdn }}2018network/living-room-problem-connection.png" class="img-responsive" title="" />
+
+ceiling 1
 <img src="{{ site.cdn }}2018network/ceiling-running-cables.jpg" class="img-responsive" title="" />
 
+closet 1
 <img src="{{ site.cdn }}2018network/closet-running-cat6.jpg" class="img-responsive" title="" />
 
+elec in ceil
 <img src="{{ site.cdn }}2018network/electrical-in-ceiling.jpg" class="img-responsive" title="" />
 
+ent kitchen ceiling
 <img src="{{ site.cdn }}2018network/running-ent-through-kitchen-ceiling-walls.jpg" class="img-responsive" title="" />
 
+uap blue
 <img src="{{ site.cdn }}2018network/ubnt-uap-blue-night.jpg" class="img-responsive" title="" />
 
+uap in wall install
 <img src="{{ site.cdn }}2018network/ubnt-uap-wall-install.jpg" class="img-responsive" title="" />
 
+ubnt wifi bedroom
 <img src="{{ site.cdn }}2018network/ubnt-wifi-bedroom.jpg" class="img-responsive" title="" />
 
 <img src="{{ site.cdn }}2018network/ubntuap.jpg" class="img-responsive" title="" />
