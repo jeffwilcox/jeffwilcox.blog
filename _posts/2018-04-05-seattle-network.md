@@ -102,23 +102,37 @@ Datacenter heat from the building is recycled to heat Amazon's Day One/Doppler b
 Neighborhood also has the New York Internet (NYI) SEA1 data center on Western Ave
 I believe Spectrum has fiber between WBE and NYI
 
-<img src="{{ site.cdn }}2018network/other-buildings.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2018network/other-buildings.jpg" class="img-responsive" title="A look toward Elliott Bay, highlighting microwave Internet rooftop connections as part of the neighborhood mesh network." />
 
-<img src="{{ site.cdn }}2018network/other-buildings2.jpg" class="img-responsive" title="" />
+A look toward Elliott Bay, highlighting microwave Internet rooftop connections as part of the neighborhood mesh network.
 
-<img src="{{ site.cdn }}2018network/waveg-fiber.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2018network/other-buildings2.jpg" class="img-responsive" title="Looking across the Belltown neighborhood, nearly every rooftop has microwave backhaul equipment." />
 
-<img src="{{ site.cdn }}2018network/2018-mdf-2.jpg" class="img-responsive" title="" />
+Looking across the Belltown neighborhood, nearly every rooftop has microwave backhaul equipment.
 
-<img src="{{ site.cdn }}2018network/2018-mdf.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2018network/waveg-fiber.jpg" class="img-responsive" title="A large service loop of fiber in one of the intermediate distribution frames. Fiber runs from the rooftop down to the communications room (the main distribution frame) through the risers in the building alongside other communications providers. Fiber also runs between the two towers in our building." />
 
-<img src="{{ site.cdn }}2018network/rooftop-microwaves.jpg" class="img-responsive" title="" />
+A large service loop of fiber in one of the intermediate distribution frames. Fiber runs from the rooftop down to the communications room (the main distribution frame) through the risers in the building alongside other communications providers. Fiber also runs between the two towers in our building.
 
-<img src="{{ site.cdn }}2018network/rooftop-waveg1.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2018network/2018-mdf-2.jpg" class="img-responsive" title="A look at the main distribution frame (comms room) serving the building, including traditional telco, multiple cable providers, DirecTV, and our rooftop microwave backhaul provider." />
 
-netflix fast
-<img src="{{ site.cdn }}2018network/netflix-fast.jpg" class="img-responsive" title="" />
+A look at the main distribution frame (comms room) serving the building, including traditional telco, multiple cable providers, DirecTV, and our rooftop microwave backhaul provider.
 
+<img src="{{ site.cdn }}2018network/2018-mdf.jpg" class="img-responsive" title="A closer look at some of the backhaul equipment including routing, switching and fiber patching." />
+
+A closer look at some of the backhaul equipment including routing, switching and fiber patching.
+
+<img src="{{ site.cdn }}2018network/rooftop-microwaves.jpg" class="img-responsive" title="Rooftop 60GHz microwave backhaul equipment." />
+
+Rooftop 60GHz microwave backhaul equipment.
+
+<img src="{{ site.cdn }}2018network/rooftop-waveg1.jpg" class="img-responsive" title="The roof has multiple clusters of bakhaul equipment to cover many buildings that are a part of the backhaul network." />
+
+The roof has multiple clusters of bakhaul equipment to cover many buildings that are a part of the backhaul network.
+
+<img src="{{ site.cdn }}2018network/netflix-fast.png" class="img-responsive" title="According to Netflix fast.com, the connection speed is approximately 920 Mbps." />
+
+According to Netflix fast.com, the connection speed is approximately 920 Mbps.
 
 # My UniFi network
 
@@ -162,40 +176,60 @@ VLAN tagging and separate SSIDs for guest networks, to advanced connectivity opt
 a site-to-site VPN running between a one of my Azure (Microsoft Cloud) virtual networks in a Microsoft datacenter
 and my home. Technically Ubiquiti hardware is based on the open source Vyatta OS.
 
+<img src="{{ site.cdn }}2018network/unifi-overview-home.png" class="img-responsive" 
+     title="Accessible from anywhere online, the UniFi controller software provides a simple, clean interface that lets you manage the family of network devices from a central place." />
+
+Accessible from anywhere online, the UniFi controller software provides a simple, clean interface that lets you manage the family of network devices from a central place.
+
+<img src="{{ site.cdn }}2018network/unifi-clients-building.png" class="img-responsive" 
+     title="The  clients view shows all of the connected devices, high-level stats, current activity, and the ability to configure, tag and customize connections for that client." />
+
+The  clients view shows all of the connected devices, high-level stats, current activity, and the ability to configure, tag and customize connections for that client.
+
+<img src="{{ site.cdn }}2018network/unifi-clients-home-plus-dpi-apple-tv.png" class="img-responsive" 
+     title="In this screenshot, I've selected my Apple TV client entry. The Deep Pack Inspection experience lets me see a summary of the services that the client has been using. Looks like we use most of our media streaming bandwidth on HBO Now, Netflix, etc." />
+
+In this screenshot, I've selected my Apple TV client entry. The Deep Pack Inspection experience lets me see a summary of the services that the client has been using. Looks like we use most of our media streaming bandwidth on HBO Now, Netflix, etc.
+
+<img src="{{ site.cdn }}2018network/unifi-dpi-my-phone.png" class="img-responsive" 
+     title="The DPI view for my iPhone shows details about how I use my phone on the home network." />
+
+The DPI view for my iPhone shows details about how I use my phone on the home network.
+
+<img src="{{ site.cdn }}2018network/unifi-device-adoption-screen.png" class="img-responsive" 
+     title="When you connect a new UniFi device to your local network, you 'adopt' the device through the controller, at which point you can configure and control it. You can also see devices that are disabled or not currently connected, but that have been adopted." />
+
+When you connect a new UniFi device to your local network, you 'adopt' the device through the controller, at which point you can configure and control it. You can also see devices that are disabled or not currently connected, but that have been adopted.
+
+<img src="{{ site.cdn }}2018network/unifi-devices-building.png" class="img-responsive" 
+     title="In the Devices view, you see all the Ubiquiti UniFi equipment you have such as access points, the router, and managed switches. This view is from a larger network deployment for our condo building common areas and staff use." />
+
+In the Devices view, you see all the Ubiquiti UniFi equipment you have such as access points, the router, and managed switches. This view is from a larger network deployment for our condo building common areas and staff use.
+
+<img src="{{ site.cdn }}2018network/unifi-events-building.png" class="img-responsive" 
+     title="Events such as interference on wireless channels, administrators signing into the controller, PoE devices coming online, and new clients are all shown in this area. I also pipe all of these events to my network attached storage." />
+
+Events such as interference on wireless channels, administrators signing into the controller, PoE devices coming online, and new clients are all shown in this area. I also pipe all of these events to my network attached storage.
+
+<img src="{{ site.cdn }}2018network/unifi-fan-modification.jpg" class="img-responsive" 
+     title="Noctua replacement fans I have put in the security gateway device." />
+
+One issue I had, with my home office use of the UniFi equipment, is that I do not have a nicely cooled server room to store the equipment in. Instead, the equipment is in the media cabinet connected to my home office.
+
+The fans in both the UniFi 24-port PoE switch and also the security gateway were too noisy for my taste, so I replaced them with Noctua brand quiet fans. It's much nicer now, though my warranty is probably voided. The cost for a quiet home environment.
+
+<img src="{{ site.cdn }}2018network/unifi-hd-pro-overhead.jpg" class="img-responsive" 
+     title="An overhead look at the UniFi UAP AC Pro next to the beefier UAP AC HD." />
+
+An overhead look at the UniFi UAP AC Pro next to the beefier UAP AC HD.
 
 
-1
-<img src="{{ site.cdn }}2018network/unifi-clients-building.png" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2018network/unifi-hd-pro-side-by-side.jpg" class="img-responsive" title="A side view of the UniFi UAP AC Pro next to the beefier UAP AC HD." />
 
-2
-<img src="{{ site.cdn }}2018network/unifi-clients-home-plus-dpi-apple-tv.png" class="img-responsive" title="" />
-
-3
-<img src="{{ site.cdn }}2018network/unifi-device-adoption-screen.png" class="img-responsive" title="" />
-
-4
-<img src="{{ site.cdn }}2018network/unifi-devices-building.png" class="img-responsive" title="" />
-
-5
-<img src="{{ site.cdn }}2018network/unifi-dpi-my-phone.png" class="img-responsive" title="" />
-
-6
-<img src="{{ site.cdn }}2018network/unifi-events-building.png" class="img-responsive" title="" />
-
-7
-<img src="{{ site.cdn }}2018network/unifi-fan-modification.jpg" class="img-responsive" title="" />
-
-8
-<img src="{{ site.cdn }}2018network/unifi-hd-pro-overhead.jpg" class="img-responsive" title="" />
-
-9
-<img src="{{ site.cdn }}2018network/unifi-hd-pro-side-by-side.jpg" class="img-responsive" title="" />
+A side view of the UniFi UAP AC Pro next to the beefier UAP AC HD.
 
 10
 <img src="{{ site.cdn }}2018network/unifi-neighboring-access-points-home.png" class="img-responsive" title="" />
-
-11
-<img src="{{ site.cdn }}2018network/unifi-overview-home.png" class="img-responsive" title="" />
 
 12
 <img src="{{ site.cdn }}2018network/unifi-rf-utilized.png" class="img-responsive" title="" />
