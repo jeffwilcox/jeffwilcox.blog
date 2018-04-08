@@ -120,6 +120,16 @@ with a 1000Mbps connection, and never a problem.
   - Speed
   - Why Wave G is so valuable to Seattle apartment and condo developers
 
+
+
+
+The roof has multiple clusters of backhaul equipment to cover many buildings that are a part of the backhaul network.
+<img src="{{ site.cdn }}2018network/rooftop-waveg1.jpg" class="img-responsive" title="The roof has multiple clusters of bakhaul equipment to cover many buildings that are a part of the backhaul network." />
+
+According to Netflix fast.com, the connection speed is approximately 920 Mbps.
+<img src="{{ site.cdn }}2018network/netflix-fast.png" class="img-responsive" title="According to Netflix fast.com, the connection speed is approximately 920 Mbps." />
+
+
 ## 60GHz Microwave Internet
 
 60 GHz unlicensed spectrum; BridgeWave hardware; SFP; 45 watts consumption https://www.bridgewavedirect.com/wp-content/uploads/2015/10/BW64_64X_Datasheet.pdf
@@ -131,6 +141,13 @@ A look toward Elliott Bay, highlighting microwave Internet rooftop connections a
 
 Looking across the Belltown neighborhood, nearly every rooftop has microwave backhaul equipment.
 <img src="{{ site.cdn }}2018network/other-buildings2.jpg" class="img-responsive" title="Looking across the Belltown neighborhood, nearly every rooftop has microwave backhaul equipment." />
+
+
+A closer look at some of the backhaul equipment including routing, switching and fiber patching.
+<img src="{{ site.cdn }}2018network/2018-mdf.jpg" class="img-responsive" title="A closer look at some of the backhaul equipment including routing, switching and fiber patching." />
+
+Rooftop 60GHz microwave backhaul equipment.
+<img src="{{ site.cdn }}2018network/rooftop-microwaves.jpg" class="img-responsive" title="Rooftop 60GHz microwave backhaul equipment." />
 
 
 ## Competition
@@ -191,18 +208,6 @@ A large service loop of fiber in one of the intermediate distribution frames. Fi
 
 A look at the main distribution frame (comms room) serving the building, including traditional telco, multiple cable providers, DirecTV, and our rooftop microwave backhaul provider.
 <img src="{{ site.cdn }}2018network/2018-mdf-2.jpg" class="img-responsive" title="A look at the main distribution frame (comms room) serving the building, including traditional telco, multiple cable providers, DirecTV, and our rooftop microwave backhaul provider." />
-
-A closer look at some of the backhaul equipment including routing, switching and fiber patching.
-<img src="{{ site.cdn }}2018network/2018-mdf.jpg" class="img-responsive" title="A closer look at some of the backhaul equipment including routing, switching and fiber patching." />
-
-Rooftop 60GHz microwave backhaul equipment.
-<img src="{{ site.cdn }}2018network/rooftop-microwaves.jpg" class="img-responsive" title="Rooftop 60GHz microwave backhaul equipment." />
-
-The roof has multiple clusters of bakhaul equipment to cover many buildings that are a part of the backhaul network.
-<img src="{{ site.cdn }}2018network/rooftop-waveg1.jpg" class="img-responsive" title="The roof has multiple clusters of bakhaul equipment to cover many buildings that are a part of the backhaul network." />
-
-According to Netflix fast.com, the connection speed is approximately 920 Mbps.
-<img src="{{ site.cdn }}2018network/netflix-fast.png" class="img-responsive" title="According to Netflix fast.com, the connection speed is approximately 920 Mbps." />
 
 
 # My UniFi network
