@@ -9,10 +9,10 @@ jumbotron: true
 jumbotronStyle: "background: url('//az414997.vo.msecnd.net/waz/2018network/rooftop-pano-web.jpg') no-repeat left center; background-size: cover; overflow: hidden; min-height: 500px;"
 jumbotronTitle: "A photo of the Belltown neighborhood and downtown Seattle, the Space Needle, and rooftop wireless backhaul networking equipment"
 ---
-
 Access points placed where they're useful. WiFi that just works. True symmetric 
 gigabit Internet connectivity. Modern managed UniFi network gear built by 
-Ubiquiti Networks. Wiring CAT6 and dealing with not-so-modern CAT3 in an apartment.
+[Ubiquiti Networks](https://www.ubnt.com/). Pulling CAT6 cable while dealing 
+with ancient CAT3 in a condo.
 
 This is my long-overdue post about some of the delightful experiences, challenges, 
 and summary of the tech I'm thankful to have access to at home that pleases my 
@@ -24,26 +24,31 @@ be nearly dead, but there's no way I could tweet all of this.
 
 # Overview
 
-Seattle isn't the most competitive communications city in America, but it feels to 
-be in a pretty good spot near the top of that list. It's especially great for 
-urban dwellers, where specialized providers have been able to cherry-pick tech 
-customers by quickly bringing fast connectivity into multi-family buildings.
+Seattle a pretty good place to be a techie, and for urban dwellers, gigabit 
+Internet is the norm, thanks to a number of specialized providers have been able 
+to cherry-pick tech customers by quickly bringing fast connectivity into 
+multi-family buildings. Thankfully this creates pressure for the more 
+traditional providers to compete on price, speed and features.
 
 ## Wave G Gigabit (CondoInternet)
 
 CondoInternet, founded a decade ago (2008) in Seattle, has been the gold standard for 
 tech employees looking for very fast, great service at home. While the company 
-has been acquired a few times, today the service is known as Wave G and it's still 
+has been acquired a few times, today the service is known as 
+[Wave G](https://waveg.wavebroadband.com/), and it's still 
 as fast as ever, offering 100Mbps at home for $60/month and 1000Mbps for $80/month.
 
 Wave G doesn't have bandwidth caps or play games like the cable companies who are 
 using words like "gig" a little too judiciously. You connect your router directly to 
-the ISP's managed network switch, where the port is configured to the speed you 
+the ISP's managed network switch a few feet away, where the port is configured to the speed you 
 pay for.
 
-The service uses a backbone with fiber and rooftop microwave backhaul gear, 
-peers with the class Seattle fiber hotel at the Westin Building Exchange, and is 
-truly awesome.
+Wave G then has its own network with fiber and rooftop microwave backhaul gear, 
+peering inside the [Westin Building Exchange](https://www.westinbldg.com/) and 
+[Seattle Internet Exchange (SIX)](https://www.seattleix.net/), 
+providing ultra low latency and short hops around the Internet.
+
+<img src="{{ site.cdn }}2018network/rooftop-waveg1.jpg" class="img-responsive" title="The roof has multiple clusters of bakhaul equipment to cover many buildings that are a part of the backhaul network." />
 
 ## Ubiquiti Networks - UniFi
 
@@ -57,10 +62,12 @@ as possible.
 
 I invested in a set of Ubiquiti Networks gear in 2016 after having an Asus router 
 that bit the dust. While I started with their EdgeRouter line of carrier gear, I 
-eventually switched to the UniFi line that has an exceptional web interface, mobile 
+eventually switched to their [UniFi line of "Enterprise WiFi Systems"](https://unifi-sdn.ubnt.com/) and 
+software-defined networking equipment, complete with an exceptional web interface, mobile 
 apps, and a nice community / fan base.
 
-Today this means a dedicated controller device, multiple access points, a power-over-ethernet (PoE) switch, and their security gateway router product.
+Today this means a dedicated controller device, multiple access points, a 
+power-over-ethernet (PoE) switch, and their security gateway router product.
 
 With 2 years of experience with UniFi, I must say, I am a very happy customer, as 
 evidenced by the build-outs I've done in my unit, in my building at large, 
@@ -75,7 +82,7 @@ from each floor's telecommunications closet to the unit.
 For whatever reason, my building's developer was cheap, and so our building 
 was cursed with **Category 3 (CAT3)** network cable.
 
-What is CAT3? It's not CAT5, that's for sure. [According to wikipedia(https://en.wikipedia.org/wiki/Category_3_cable), it "was widely 
+What is CAT3? It's not CAT5, that's for sure. [According to wikipedia](https://en.wikipedia.org/wiki/Category_3_cable), it "was widely 
 used in computer networking in the early 1990s for 10BASE-T Ethernet".
 
 In my building, they've used 6-pair CAT3 cable, so that they can run 
@@ -90,65 +97,284 @@ a super fragile operation.
 
 ## Disclaimers
 
-This post is from the perspective of a tech enthusiast in Seattle: I do not represent any of the companies mentioned, and the information I have about the Seattle region's Internet providers and services is only as accurate as what I have researched and the stories I've heard.
+This post is from the perspective of a tech enthusiast in Seattle: I do not 
+represent any of the companies mentioned, and the information I have about the 
+Seattle region's Internet providers and services is only as accurate as what I 
+have researched and the stories I've heard.
 
 While all of my initial Ubiquiti equipment purchases were my own, in late 2017 I was 
 provided a single UniFi AC-HD access point unit by Ubiquiti to try out. I have since 
 purchased an AC-HD access point at my own cost.
 
-# Seattle Internet Connectivity
+<p style="font-size: 36px"><strong>tl; dr</strong></p>
 
-Even today, I remember the conversation with my friend Alex a decade ago when 15Mbps 
-down and 1Mbps up was a pretty common cable Internet product offering:
+# Wave G
 
-> Alex: "Yeah, well, we have CondoInternet. It's symmetric 100 Mbps up and down."
+Even today, I remember the conversation with my friend Alex a decade ago when 15/2 
+(15Mbps down, 2Mbps up) was a pretty common cable Internet product offering, and 
+if you had to get DSL, it would be even slower.
+
+> Alex: "Yeah, well, in my building we have CondoInternet now. It's symmetric 100 Mbps up and down."
 >
 > Me: "Hmm... that seems pretty hard to believe. That's like what I had at university... There must be caps or something. It can't be  that fast!"
 >
-> Alex: "Well, it's real. Also, they offer 1000Mbps up and down, a static IP if you want it, no bandwidth caps, no contract."
+> Alex: "Well, it's real. Also, they offer 1000Mbps up and down, a static IP if you want it, no bandwidth caps, no contract. The future!"
 
-Turns out it's real. Comcast is even starting to bow to the pressure of "gigabit" (since all the millenial tech employees just use
-Wave G); t hey're starting to advertise "gig speeds", with lower upload capability and bandwidth caps. Will be interesting to watch
-what develops with DOCSIS 3.1.
+Turns out: it's real.
 
-I love being a millisecond away from the Westin Building Exchange (Seattle Internet Exchange and all of that lovely peering), 
-with a 1000Mbps connection, and never a problem.
+The provider I use is called Wave G, formerly CondoInternet, formerly a part of 
+Spectrum Networks, then acquired by Wave Broadband, and now it's owned by a 
+leveraged-buyout/investment firm, TPG Capital, so that will be interesting to 
+see where it goes.
 
-## Wave G - CondoInternet
+Another area provider, CascadeLink, was purchased by Wave; and there are still 
+a few other options - Webpass (now owned by Google Fiber) is in our 
+neighborhood.
 
-  - The intrastructure
-  - Speed
-  - Why Wave G is so valuable to Seattle apartment and condo developers
+From my home network, my CAT6 networked machines get sub-millisecond to 1ms 
+ping times to Google, Microsoft, and all the major modern Internet services, with 
+just a few hops.
 
+This is because Wave G is just a hope away from Seattle's best peering opportunity: our 
+building has gigabits of bandwidth to the [Westin Building Exchange](https://www.westinbldg.com/), 
+within which is the non-profit [Seattle Internet Exchange](https://www.seattleix.net/about).
 
+<img src="{{ site.cdn }}2018network/waveg-ping-times.png" class="img-responsive" title="" />
 
+## Rooftop millimeter wave radio backhaul
 
-The roof has multiple clusters of backhaul equipment to cover many buildings that are a part of the backhaul network.
-<img src="{{ site.cdn }}2018network/rooftop-waveg1.jpg" class="img-responsive" title="The roof has multiple clusters of bakhaul equipment to cover many buildings that are a part of the backhaul network." />
+Our condo building's Wave G connectivity is based on microwave, but the Wave G 
+network does also include fiber links. If you look out from our tower's roof toward Elliott Bay, you can see a few of 
+the other nearby buildings that we connect to:
 
-According to Netflix fast.com, the connection speed is approximately 920 Mbps.
-<img src="{{ site.cdn }}2018network/netflix-fast.png" class="img-responsive" title="According to Netflix fast.com, the connection speed is approximately 920 Mbps." />
-
-
-## 60GHz Microwave Internet
-
-60 GHz unlicensed spectrum; BridgeWave hardware; SFP; 45 watts consumption https://www.bridgewavedirect.com/wp-content/uploads/2015/10/BW64_64X_Datasheet.pdf
-
-Today we're also seeing a lot of Ubiquiti equipment appearing on rooftops, but our building is still served by the BridgeWave product line.
-
-A look toward Elliott Bay, highlighting microwave Internet rooftop connections as part of the neighborhood mesh network.
 <img src="{{ site.cdn }}2018network/other-buildings.jpg" class="img-responsive" title="A look toward Elliott Bay, highlighting microwave Internet rooftop connections as part of the neighborhood mesh network." />
 
-Looking across the Belltown neighborhood, nearly every rooftop has microwave backhaul equipment.
+Turning around and facing downtown Seattle, looking across the Belltown 
+neighborhood, there are many rooftop sites:
+
 <img src="{{ site.cdn }}2018network/other-buildings2.jpg" class="img-responsive" title="Looking across the Belltown neighborhood, nearly every rooftop has microwave backhaul equipment." />
 
+Our roof has at least 6x [BridgeWave 60GHz millimeter wave radios](https://bridgewave.com/bw64/). 
+Each of these antennas provides a 1Gbps full-duplex encrypted link between locations. 
 
-A closer look at some of the backhaul equipment including routing, switching and fiber patching.
-<img src="{{ site.cdn }}2018network/2018-mdf.jpg" class="img-responsive" title="A closer look at some of the backhaul equipment including routing, switching and fiber patching." />
-
-Rooftop 60GHz microwave backhaul equipment.
 <img src="{{ site.cdn }}2018network/rooftop-microwaves.jpg" class="img-responsive" title="Rooftop 60GHz microwave backhaul equipment." />
 
+## Low-latency + fast
+
+I usually get speeds in excess of 900Mbps when I test with [SpeedTest](http://www.speedtest.net/) or 
+other services, though sometimes I'll see speeds closer to 700Mbps. Only 
+wired equipment will experience the full potential, as WiFi clients in my 
+urban neighborhood deal with a lot of interference from thousands of competing 
+wireless devices.
+
+According to Netflix's [fast.com](https://fast.com) just now, my connection 
+speed is approximately 920 Mbps. I like that the Netflix service does a good
+job of estimating your Netflix experience, which is a super common activity 
+for home users.
+
+<img src="{{ site.cdn }}2018network/netflix-fast.png" class="img-responsive" title="According to Netflix fast.com, the connection speed is approximately 920 Mbps." />
+
+## Static IPs and IPv6 blocks
+
+I don't actually know the latest on this story (whether it's a monthly or a 
+one-time charge now), but when I requested my static IP years ago, it was a one-time 
+fee for a static static IPv4 address, and now I also have my own IPv6 block.
+
+## Great tech support
+
+I've never experienced a large outage, but when I was first setting up my 
+connection, due to the CAT3 wiring to my unit, I was only able to get 100Mbps 
+connection to the carrier switch.
+
+A tech was able to come out and help me diagnose the connectivity issue - 
+because of the token ring CAT3 wiring in my unit, the signal was being 
+heavily degraded.
+
+We experimented with a few alternate locations and ideas, and in the end, found 
+that by terminating the CAT3 pairs for the network connection as soon as 
+reasonable (near where the CAT3 homerun came out of the concrete slab's conduit),
+I could get a reliable 1000Mbps connection.
+
+## Easy activation
+
+Since there are no contracts, and multi-family buildings are all wired for 
+their service up to your local communications room, it's easy to get going.
+
+If your unit has been served by Wave G in the past, chances are you have an 
+Ethernet jack in your unit that is still connected to their switch in a 
+nearby comms room.
+
+I've lived in 3 different buildings with Wave G service in the past, and in all 
+cases was able to get up and running over the phone or quickly after signing up 
+for the service, as they can activate the port for the speed you need, and 
+you're on your way.
+
+If your unit hasn't been served by them in the past, there are a few different 
+scenarios, but they all play out quickly by a tech:
+
+- Your unit's cable may need to be punched down or patched to a Wave G switch port
+- Your unit's interior network closet may need to get patched to the Wave G uplink
+- You may need to have an existing telephone jack converted to a CAT6 keystone jack (if you're served by CAT3, which was my case)
+- You might need a VDSL or other device (probably rare now)
+
+## A valuable asset to apartments/condos
+
+I made it a point while looking to purchase a home that I understood the current 
+Internet offerings available for each potential property.
+
+I'm surprised that more apartment rental advertisements or real estate listings 
+do not clearly call out that they are served by a modern gigabit Internet 
+provider. While it feels like nearly every modern apartment building in the city 
+has such a provider available now, I still meet fellow tech employees and 
+building residents who aren't aware of how great the offering is.
+
+Seems worth highlighting, similar to letting people know that your property 
+is within walking distance of a Microsoft Connector bus stop for employees.
+
+## Building infrastructure
+
+I am only familiar with the infrastructure in my current building, but I imagine 
+all are relatively similar.
+
+The Main Distribution Frame (MDF) is located 3 levels below ground, on our "C" 
+level of the parking garage. This is where the phone company, multiple cable 
+companies, and other services come together, and for Wave G, it is where there is 
+switching equipment, fiber splicing, UPS backup, etc.
+
+Here is our building's MDF. From left to right, there's:
+- the traditional telephone provider
+- various business phone lines
+- fire equipment
+- VOIP lines and our building's private network
+- Comcast coax
+- Wave G rack of equipment
+- Wave Broadband coax
+- DirecTV
+
+<img src="{{ site.cdn }}2018network/2018-mdf-2.jpg" class="img-responsive" title="A look at the main distribution frame (comms room) serving the building, including traditional telco, multiple cable providers, DirecTV, and our rooftop microwave backhaul provider." />
+
+From the MDF, fiber runs up 15 floors to the rooftop of the building through 
+risers, and on the roof, microwave gear is mounted in multiple clusters.
+
+Every few floors up the risers we have telecomm rooms. These rooms are also known 
+as Intermediate Distribution Frame (IDF) rooms, and tend to have switching 
+gear connected to the building's emergency generator power circuit.
+
+The switch gear is located adjacent to coax cable gear, traditional telephone 
+gear, etc.
+
+The IDFs are typically a mess. Here's the IDF on my floor... from left to right,
+there's a panel where the fiber and some network cabling goes up to the rooftop 
+microwaves, then Comcast, then some of our building's network, Wave G equipment 
+and switch, traditional telco, individual unit CAT3 patch panels, coax and 
+other equipment, and a bunch of messy coax splitters and amplifiers. 
+
+<img src="{{ site.cdn }}2018network/idf-11.jpg" class="img-responsive" title="A sample IDF, full of equipment, switch, lots of different communications providers in one place." />
+
+Our individual unit's homerun cabling comes into punchdown terminals and then 
+can be patched into the Wave G switch as needed.
+
+Here's a closer look at the short patch runs from the switch down to hte 
+CAT3 unit patch panels:
+
+<img src="{{ site.cdn }}2018network/idf-patch.jpg" class="img-responsive" title="" />
+
+And then the CAT3 runs go through small flex conduit embedded in the concrete 
+ceiling slabs. A single CAT3 cable in our building can then support both 
+plain-old-telephone-service (POTS) and modern Wave G (Ethernet). Sort of:
+
+<img src="{{ site.cdn }}2018network/idf-conduit-homeruns.jpg" class="img-responsive" title="Conduit homeruns embedded in the slab" />
+
+Our building is actually composed of 2 towers. Large conduit in the C level of 
+the garage (3 floors underground) connects the 2 towers. Wave G has run fiber 
+between the towers, and other communications providers have their coax/etc. 
+running in similar conduit.
+
+# Seattle's Internet connectivity
+
+## Seattle's peering community
+
+Seattle, and the Pacific Northwest's Internet gravity, is located the corner of 
+6th Avenue and Virginia Street at the edge of Belltown and downtown Seattle. 
+Known as the Westin Building, its original anchor tenant was the corporate office 
+for the Westin hotel chain, until the chain was purchased by Starwood Hotels.
+Once Westin relocated its HQ, all the vacant space became prime network real 
+estate.
+
+I honestly don't know the exact network topology between my condo building 
+and the Westin Building Exchange (WBX), whether it's microwave to WBX or if it is 
+microwave to the NYI SEA1 data center on Western Ave, a few blocks away from 
+my condo, and then fiber from there to WBX.
+
+## Westin Building Exchange
+
+The Seattle intersection of 6th Ave and Virginia Street is a busy spot: there's 
+gridlock on the streets, thousands of Amazon employees finding lunch each day, 
+the Westin hotel next door, but the best thing of all is the 
+Westin Building Exchange: terabytes of bandwidth; the epicenter of Seattle's Internet.
+
+While the Westin Building was once a traditional office building, today the 34-story 
+building is mostly full of carriers, network gear, and tons of fiber. I can only 
+imagine how much bandwidth the building has.
+
+The building is home to over 200 ISPs, carriers and service providers; according 
+[to the Westin Building Exchange datasheet](https://www.westinbldg.com/Content/PDF/WBX_Fact_Sheet.pdf), 
+they have over 19.5 megawatts of backup generation available from 17 diesel 
+generators.
+
+If you've heard of Equinix, a major connectivity company, their SE2 data 
+center is located within the Westin Building, and a few years ago they built 
+an orange/concrete-colored 8-story building, SE3, next to the Westin Building's 
+garage and Palace Kitchen. It was fun watching that get built out.
+
+## Seattle Internet Exchange (SIX)
+
+You can read all about the [Seattle Internet Exchange](https://www.seattleix.net/about) on their 
+web site, but the exchange is now a 20+ year-old non-profit that basically 
+started out in a closet of the Westin Building.
+
+It started because some folks were frustrated by a 111ms round trip time 
+between 2 companies on the very same 19th floor of the Westin Exchange... turns 
+out their traffic was going from the 19th floor to Texas and back to the other 
+business.
+
+There's also a very cool [YouTube video with Jared Reimer](https://www.youtube.com/watch?v=N2ChhZcH2ok) 
+that's fun to watch.
+
+As of 2017 they had 284 participants in the exchange who pay a one-time 
+reasonable fee for a specified port type; today at peak they aggregate over a 
+terabit of traffic.
+
+Awesome graphs and stats https://www.seattleix.net/statistics/
+
+Interesting peers according to their their transparent 
+switch records (
+[cool list](https://www.seattleix.net/participants/switches/SIX_7512R.txt),
+[another cool list](https://www.seattleix.net/participants/switches/SIX_7508E.txt):
+
+- Amazon
+- Dropbox
+- Facebook
+- Google
+- GitHub
+- Microsoft
+- Netflix
+
+This includes all the cloud computing providers. My ISP, wave, has a 40Gbps 
+connection between its network and SIX.
+
+If I `traceroute` from my home to a VM I have in Azure, I see just a hops, 
+each a millisecond or two at most:
+
+1. My UniFi router
+2. My building's router
+3. Wave G / Spectrum network
+4. Seattle Internet Exchange router
+5. `six2.microsoft.com`
+6. Various hops around into the right place
+
+If I trace the route to Google, they peer directly with Spectrum, so it's even 
+fewer hops to them (8 hops from my PC to 8.8.8.8).
 
 ## Competition
 
@@ -170,44 +396,14 @@ Our condominium has several connectivity choices, a more common thing now that t
 
 I believe that most people in our building use Wave G for Internet, but I do not have data. Not having a modem between the provider is clean and simple.
 
-## Seattle: Westin Building Exchange
+Comcast is even starting to bow to the pressure of "gigabit", 
+probably because all the Seattle tech employees living near downtown are in big
+modern apartment buildings with Wave G. While Comcast is advertising "gig speeds", 
+they still tend to have slower upload capacity, bandwidth caps, and that whole 
+corporate Philadelphia thing going against it. Will be interesting to see how 
+the DOCSIS 3.1 rollout goes for more communities.
 
-I still remember the disbelief when a good friend told me they had "true 100mbps Internet at home, but could upgrade to gigabit" in 2009. Their Internet service was powered by CondoInternet. Turns out I also lived in a building served by CondoInternet and so was active with the service a few hours later after a quick phone call to activate my account, where they flipped on my unit's Ethernet drop from their network closet. That was easy. Working at Microsoft I appreciate the world-class network I have access to at work, but I love that when I work from home, I have Internet that is as fast, or faster, than what I have at work, with lower latencies and a very direct connection to the Westin Building Exchange.
-
-Techies in Seattle living in apartments and condo buildings have had blazing fast Internet for almost a decade. I am blessed to have gigabit Internet connectivity at home for the monthly cost of $80. While gigabit speeds are very common today across the region and especially worldwide, across the United States the cable monopoly and lobbyists tend to prevent any competition in this space. Wave G provides a high-value service in dense areas, essentially cashing in on customers with high expectations for connectivity and being able to cherry pick great opportunities for installations.
-
-Today Wave G is the same service - CondoInternet (and its parent, Spectrum Networks) was acquired. Wave has also recently snatched up other niche providers in the area. CondoInternet was a boutique Seattle-area ISP serving multi-family dwellings, providing awesome connectivity, no bandwidth caps, taking advantage of the ease of wiring modern construction for Ethernet, all while monopolies like Comcast offered compartively slow, expensive services.
-
-Since CondoInternet became available, I have lived in 3 buildings served by CondoInternet, most recently purchasing a condo a few years ago in a building with the service. I find it interesting that buildings and realtors do not more prominently advertise the availability of gigabit Internet service in the same way that Seattle Craigslist ads regularly mention "one block away from the Microsoft Connector", etc., to help draw in the tech crowd.
-
-
-24
-<img src="{{ site.cdn }}2018network/waveg-ping-times.png" class="img-responsive" title="" />
-
-Westin Building Exchange
-Over 200 ISPs, carriers, service providers; 19.5 MW of backup generation capacity
-Rooftop line of site
-34 stories tall
-Hosts the Seattle Internet Exchange (SIX)
-Also has lots of folks - is Equinix SE2
-Next door is the relatively new Equinix SE3 facility
-Largest non-commercial member-governed Internet exchange in the US; funded by donations and one-time 10Gbps port fees
-Peers include Microsoft, Yahoo, Amazon, Twitter, Netflix, Google, Facebook, Peer 1, and more
-http://www.datacenterknowledge.com/archives/2014/09/17/amazon-to-recycle-data-center-heat-in-seattle-offices/
-https://www.westinbldg.com/Connectivity
-6th and Virginia on the edge of Belltown and the Denny Triange
-Datacenter heat from the building is recycled to heat Amazon's Day One/Doppler building complexes
-
-Neighborhood also has the New York Internet (NYI) SEA1 data center on Western Ave
-I believe Spectrum has fiber between WBE and NYI
-
-
-
-A large service loop of fiber in one of the intermediate distribution frames. Fiber runs from the rooftop down to the communications room (the main distribution frame) through the risers in the building alongside other communications providers. Fiber also runs between the two towers in our building.
-<img src="{{ site.cdn }}2018network/waveg-fiber.jpg" class="img-responsive" title="A large service loop of fiber in one of the intermediate distribution frames. Fiber runs from the rooftop down to the communications room (the main distribution frame) through the risers in the building alongside other communications providers. Fiber also runs between the two towers in our building." />
-
-A look at the main distribution frame (comms room) serving the building, including traditional telco, multiple cable providers, DirecTV, and our rooftop microwave backhaul provider.
-<img src="{{ site.cdn }}2018network/2018-mdf-2.jpg" class="img-responsive" title="A look at the main distribution frame (comms room) serving the building, including traditional telco, multiple cable providers, DirecTV, and our rooftop microwave backhaul provider." />
+WebPass (?)
 
 
 # My UniFi network
