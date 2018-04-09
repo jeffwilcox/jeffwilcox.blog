@@ -172,7 +172,10 @@ speed is approximately 920 Mbps. I like that the Netflix service does a good
 job of estimating your Netflix experience, which is a super common activity 
 for home users.
 
-<img src="{{ site.cdn }}2018network/netflix-fast.png" class="img-responsive" title="According to Netflix fast.com, the connection speed is approximately 920 Mbps." />
+<img src="{{ site.cdn }}2018network/netflix-fast.png" 
+class="img-responsive" 
+style="max-width: 400px" 
+title="According to Netflix fast.com, the connection speed is approximately 920 Mbps." />
 
 ## Static IPs and IPv6 blocks
 
@@ -277,7 +280,9 @@ can be patched into the Wave G switch as needed.
 Here's a closer look at the short patch runs from the switch down to hte 
 CAT3 unit patch panels:
 
-<img src="{{ site.cdn }}2018network/idf-patch.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2018network/idf-patch.jpg" 
+style="max-width: 300px" 
+class="img-responsive" title="" />
 
 And then the CAT3 runs go through small flex conduit embedded in the concrete 
 ceiling slabs. A single CAT3 cable in our building can then support both 
@@ -378,15 +383,21 @@ fewer hops to them (8 hops from my PC to 8.8.8.8).
 
 ## Competition
 
-Three years ago, the [Seattle City Council ended the "cable franchise" system](https://www.geekwire.com/2015/seattle-city-council-approves-legislation-that-eliminates-cable-tv-franchise-districts/) in the city, enabling multiple 
-cable providers to finally compete for service. This is most evident in our condo now: for over a decade our 
-building was served by what is today known as "Wave Broadband", but has had other names such as Millennium Digital in the 
-past. In late 2017, Comcast brought conduit into our building's main distribution frame and then to each floor's independent 
-distribution frame, so today every unit in our building has complete choice between 5 providers, including 2 cable providers for TV, Internet, etc..
+Three years ago, the [Seattle City Council ended the "cable franchise" system](https://www.geekwire.com/2015/seattle-city-council-approves-legislation-that-eliminates-cable-tv-franchise-districts/) 
+in the city, enabling multiple cable providers to finally compete for service. 
+This is most evident in our condo now: for over a decade our 
+building was served by what is today known as "Wave Broadband", but has had other 
+names such as Millennium Digital in the past. In late 2017, Comcast brought conduit 
+into our building's main distribution frame and then to each floor's independent 
+distribution frame, so today every unit in our building has complete choice 
+between 5 providers, including 2 cable providers for TV, Internet, etc..
 
-While the franchise rules were removed a few years ago, only recently did our building's 10-year contract expire (with an exclusivity clause) expire, allowing us to open the cable portion of the building up to multiple providers.
+While the franchise rules were removed a few years ago, only recently did our 
+building's 10-year contract expire (with an exclusivity clause) expire, 
+allowing us to open the cable portion of the building up to multiple providers.
 
-Our condominium has several connectivity choices, a more common thing now that the quasi-monopoly of a single cable provider per building has been struck down. Every individual unit in our building has their own choice between the following providers:
+Every individual unit in our building has their own choice between multiple of the 
+following providers:
 
 - CenturyLink traditional phone and DSL
 - Wave broadband cable TV, Internet, phone
@@ -394,7 +405,8 @@ Our condominium has several connectivity choices, a more common thing now that t
 - Wave G Gigabit Internet
 - DirecTV satellite TV service
 
-I believe that most people in our building use Wave G for Internet, but I do not have data. Not having a modem between the provider is clean and simple.
+I believe that most people in our building use Wave G for Internet, but I do not 
+have data. Not having a modem between the provider is clean and simple.
 
 Comcast is even starting to bow to the pressure of "gigabit", 
 probably because all the Seattle tech employees living near downtown are in big
@@ -403,52 +415,50 @@ they still tend to have slower upload capacity, bandwidth caps, and that whole
 corporate Philadelphia thing going against it. Will be interesting to see how 
 the DOCSIS 3.1 rollout goes for more communities.
 
-WebPass (?)
-
-
 # My UniFi network
-
-- Ubiquiti UniFi
-  - The pitch
-  - The hardware
-  - My EdgeMax experience
-  - Fan replacement
-  - My network
 
 Separation of concerns is central to any software developer's mindset, and when it comes
 to the ever-important home network, until recently "enterprise-grade" networking has been
 rather expensive and frankly not always worth it.
 
+For years I've had managed Cisco switches at home and then consumer-grade routers, 
+and it was never a great combination...
 
-Today I enjoy gigabit Internet and a Ubiquiti UniFi network at home; while there are
-many upstarts today in wireless home mesh networks and other products today, as an
-engineer I love separation of concerns, and having a gateway whose job is routing separate
-from access points to do the WiFi just makes great sense.
+To take advantage of my fast connectivity now, I've adopted the full line of 
+[Ubiquiti Networks](https://www.ubnt.com/) gear - originally to take advantage 
+of their great access points, and then realizing the value of the full line of 
+integrated UniFi products, it was the right move to make.
 
->>> SPEED screen capture
+While there are many other Ubiquiti success stories on the Internet, this one is mine, 
+and 2 years in I'm still a huge fan.
 
-While there are many other Ubiquiti success stories on the Internet, this one is mine. I
-strongly recommend [Troy Hunt's post](https://www.troyhunt.com/ubiquiti-all-the-things-how-i-finally-fixed-my-dodgy-wifi/);
+I strongly recommend [Troy Hunt's post](https://www.troyhunt.com/ubiquiti-all-the-things-how-i-finally-fixed-my-dodgy-wifi/);
 also, a special shoutout to [Clint Rutkas](https://twitter.com/ClintRutkas) for sharing his
-experience - he embarked on a similar journey around the same time, and I know many of my
-coworkers at Microsoft also have great Ubiquiti experiences.
-
->> UniFi screen capture
-
-This is also a great opportunity for me to rain praise upon Wave G, Seattle's finest
-gigabit Internet provider, and a super interesting success story of its own: while Wave G
-is high tech, my building is not so much, so the last 100 feet to my apartment is
-[CAT3 cable](https://en.wikipedia.org/wiki/Category_3_cable), something I'd never
-heard of, and I hope you do not need to deal with.
-
->>> WAVE G / MICROWAVE
+experience - he embarked on a similar journey around the same time as I did, 
+and I know many of my coworkers at Microsoft also have great Ubiquiti experiences.
 
 I absolutely love the advanced features that Ubiquiti offers at in easy-to-use manner. From
-VLAN tagging and separate SSIDs for guest networks, to advanced connectivity options; I have
-a site-to-site VPN running between a one of my Azure (Microsoft Cloud) virtual networks in a Microsoft datacenter
-and my home. Technically Ubiquiti hardware is based on the open source Vyatta OS.
+VLAN tagging to multiple wireless networks, guest network features and advanced 
+connectivity options, its all there.
 
-Accessible from anywhere online, the UniFi controller software provides a simple, clean interface that lets you manage the family of network devices from a central place.
+In the past I've had site-to-site VPN running between one of my Azure virtual 
+networks in a Microsoft datacenter and my home... I could then connect to a 
+dedicated wireless LAN through RADIUS to connect to my cloud machines. Fun stuff.
+
+## CloudKey Controller
+
+Something that I enjoy about the UniFi story is that everything is run through 
+a controller, so instead of independently configuring through your router's 
+portal, then another portal for each additional device, it can all be managed 
+through the centralized controller software. While you can run the controller 
+on your machine or server, it's best if you just pick up their simple UniFi 
+Cloud Key device for under $100... think of it as a nice Raspberry Pi that is 
+easy to update when you're using the UniFi stack.
+
+Accessible from anywhere online, the UniFi controller software provides a simple, 
+clean interface that lets you manage the family of network devices from a central place.
+
+
 <img src="{{ site.cdn }}2018network/unifi-overview-home.png" class="img-responsive" 
      title="Accessible from anywhere online, the UniFi controller software provides a simple, clean interface that lets you manage the family of network devices from a central place." />
 
@@ -461,7 +471,9 @@ In this screenshot, I've selected my Apple TV client entry. The Deep Pack Inspec
      title="In this screenshot, I've selected my Apple TV client entry. The Deep Pack Inspection experience lets me see a summary of the services that the client has been using. Looks like we use most of our media streaming bandwidth on HBO Now, Netflix, etc." />
 
 The DPI view for my iPhone shows details about how I use my phone on the home network.
-<img src="{{ site.cdn }}2018network/unifi-dpi-my-phone.png" class="img-responsive" 
+<img src="{{ site.cdn }}2018network/unifi-dpi-my-phone.png" 
+style="max-width: 320px" 
+class="img-responsive" 
      title="The DPI view for my iPhone shows details about how I use my phone on the home network." />
 
 When you connect a new UniFi device to your local network, you 'adopt' the device through the controller, at which point you can configure and control it. You can also see devices that are disabled or not currently connected, but that have been adopted.
@@ -475,20 +487,6 @@ In the Devices view, you see all the Ubiquiti UniFi equipment you have such as a
 Events such as interference on wireless channels, administrators signing into the controller, PoE devices coming online, and new clients are all shown in this area. I also pipe all of these events to my network attached storage.
 <img src="{{ site.cdn }}2018network/unifi-events-building.png" class="img-responsive" 
      title="Events such as interference on wireless channels, administrators signing into the controller, PoE devices coming online, and new clients are all shown in this area. I also pipe all of these events to my network attached storage." />
-
-One issue I had, with my home office use of the UniFi equipment, is that I do not have a nicely cooled server room to store the equipment in. Instead, the equipment is in the media cabinet connected to my home office.
-
-The fans in both the UniFi 24-port PoE switch and also the security gateway were too noisy for my taste, so I replaced them with Noctua brand quiet fans. It's much nicer now, though my warranty is probably voided. The cost for a quiet home environment.
-<img src="{{ site.cdn }}2018network/unifi-fan-modification.jpg" class="img-responsive" 
-     title="Noctua replacement fans I have put in the security gateway device." />
-
-An overhead look at the UniFi UAP AC Pro next to the beefier UAP AC HD.
-<img src="{{ site.cdn }}2018network/unifi-hd-pro-overhead.jpg" class="img-responsive" 
-     title="An overhead look at the UniFi UAP AC Pro next to the beefier UAP AC HD." />
-
-
-A side view of the UniFi UAP AC Pro next to the beefier UAP AC HD.
-<img src="{{ site.cdn }}2018network/unifi-hd-pro-side-by-side.jpg" class="img-responsive" title="A side view of the UniFi UAP AC Pro next to the beefier UAP AC HD." />
 
 
 10
@@ -519,8 +517,6 @@ A side view of the UniFi UAP AC Pro next to the beefier UAP AC HD.
 23
 <img src="{{ site.cdn }}2018network/updated-home-network-rack.jpg" class="img-responsive" title="" />
 
->> Azure portal screenshot
-
 
 <img src="{{ site.cdn }}2018network/rackview.jpg" class="img-responsive" title="" />
 
@@ -539,15 +535,31 @@ A side view of the UniFi UAP AC Pro next to the beefier UAP AC HD.
 
 ## 2018: UniFi UAP AC-HD
 
+
+An overhead look at the UniFi UAP AC Pro next to the beefier UAP AC HD.
+<img src="{{ site.cdn }}2018network/unifi-hd-pro-overhead.jpg" class="img-responsive" 
+     title="An overhead look at the UniFi UAP AC Pro next to the beefier UAP AC HD." />
+
+
+A side view of the UniFi UAP AC Pro next to the beefier UAP AC HD.
+<img src="{{ site.cdn }}2018network/unifi-hd-pro-side-by-side.jpg" class="img-responsive" title="A side view of the UniFi UAP AC Pro next to the beefier UAP AC HD." />
+
+
+
+25
+<img src="{{ site.cdn }}2018network/wireless-speed-testing.png" class="img-responsive" title="" />
+
+
+Getting 400+ up an down over WiFi is quite an accomplishment for me, with all 
+the interference in the city, this is about the most that I've ever been able 
+to maintain beyond the wired network.
+
 21
 <img src="{{ site.cdn }}2018network/unifi-wireless-networks.png" class="img-responsive" title="" />
 
 22
 <img src="{{ site.cdn }}2018network/unifi-wireless-rf-environment.png" class="img-responsive" title="" />
 
-
-25
-<img src="{{ site.cdn }}2018network/wireless-speed-testing.png" class="img-responsive" title="" />
 
 
 ## UniFi deep packet inspection
@@ -557,7 +569,6 @@ A side view of the UniFi UAP AC Pro next to the beefier UAP AC HD.
 
 20
 <img src="{{ site.cdn }}2018network/unifi-traffic-home.png" class="img-responsive" title="" />
-
 
 ## Ease of PoE
 
@@ -579,11 +590,13 @@ write to synology
 
 ## Fan noise
 
-## Consumer AmpliFi line
 
-Someone else who lives in my building recently purchased the AmpliFi line of consumer wireless 
-equipment from Ubiquiti, but unfortunately I haven't spent the time to learn about it. People 
-do say it's a nice and easy product, and it has some nice features.
+One issue I had, with my home office use of the UniFi equipment, is that I do not have a nicely cooled server room to store the equipment in. Instead, the equipment is in the media cabinet connected to my home office.
+
+The fans in both the UniFi 24-port PoE switch and also the security gateway were too noisy for my taste, so I replaced them with Noctua brand quiet fans. It's much nicer now, though my warranty is probably voided. The cost for a quiet home environment.
+<img src="{{ site.cdn }}2018network/unifi-fan-modification.jpg" class="img-responsive" 
+     title="Noctua replacement fans I have put in the security gateway device." />
+
 
 # Condo challenges
 
