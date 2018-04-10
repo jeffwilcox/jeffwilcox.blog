@@ -247,17 +247,20 @@ in the core of our high-rise tower. The MDF is where the phone company, multiple
 companies, and other services come together. For Wave G, this is where they 
 have installed their core switching equipment, fiber splices, and UPS backup.
 
-Here's a photo from within our MDF. From left to right, approximately:
+Here's a photo from within our MDF.
+
+<img src="{{ site.cdn }}2018network/2018-mdf-2.jpg" class="img-responsive" title="A look at the main distribution frame (comms room) serving the building, including traditional telco, multiple cable providers, DirecTV, and our rooftop microwave backhaul provider." />
+
+From left to right in the MDF:
+
 - traditional telephone provider
 - various business phone lines
 - fire equipment
 - VOIP lines and our building's private network
-- Comcast coax
-- Wave G rack of equipment
-- Wave Broadband coax
-- DirecTV
-
-<img src="{{ site.cdn }}2018network/2018-mdf-2.jpg" class="img-responsive" title="A look at the main distribution frame (comms room) serving the building, including traditional telco, multiple cable providers, DirecTV, and our rooftop microwave backhaul provider." />
+- Comcast coax cable
+- Wave G network rack
+- Wave Broadband coax cable
+- DirecTV cable
 
 From the MDF, Wave G fiber runs in 2 directions: up 15 floors to the rooftop
 where the millimeter wave gear is mounted, and the other several hundred feet 
@@ -448,11 +451,37 @@ connectivity options, its all there.
 
 So, what are some of the components, features, and so on?
 
-## UniFi Controller (CloudKey)
+## Rackmount
 
-All of your UniFi network sites are controlled through a central place, the
-UniFi controller. While you could install the controller on a notebook or a
-server, the best route to go is to pick up the UniFi CloudKey. The CloudKey
+A favorite of mine is that the UniFi line has a silver distinctive finish that 
+looks great in a home media rack.
+
+<img src="{{ site.cdn }}2018network/2018-rack.jpg" class="img-responsive" title="My home media rack, including a UniFi Security Gateway Pro, UniFi 24-port PoE switch, a Synology storage device, and an Xbox One" />
+
+While the Security Gateway Pro router that I have is rackmount-only, the 
+Security Gateway model does a great job for home use and is tiny, like a simple 
+network switch.
+
+The UniFi 8-port switches are desktop friendly, and with the 16-port switches 
+you have a choice of included rack ears for mounting or keeping it on a shelf 
+or desktop. The 24+ switches are rackmount only.
+
+<!--
+<img src="{{ site.cdn }}2018network/updated-home-network-rack.jpg" class="img-responsive" title="" />
+-->
+<!--
+<img src="{{ site.cdn }}2018network/rackview.jpg" class="img-responsive" title="" />
+-->
+<!--
+<img src="{{ site.cdn }}2018network/rack-with-sgpro.jpg" class="img-responsive" title="" />
+-->
+
+## UniFi CloudKey Controller
+
+All of your UniFi equipment's managed through the central UniFi controller. 
+While you could install the controller software on a notebook or a
+server, the best route to go is to pick up the UniFi CloudKey - that way you 
+can avoid having to install the Java runtime. The CloudKey
 has the controller installed on it and then you can access the management
 website from anywhere.
 
@@ -460,7 +489,11 @@ Instead of independently configuring your router's via its IP address and its
 portal, then the same for your managed switches, everything is consistent in
 the controller.
 
-Think of the CloudKey as the best $100 investment for a Raspberry Pi-like server.
+Think of the CloudKey as the best $100 investment in the UniFi lineup, saving 
+you from Java. It's a nice, small PoE-powered Raspberry Pi-like server. Here 
+is the key attached to a simple rack tray.
+
+<img src="{{ site.cdn }}2018network/cloudkeytray1.jpg" class="img-responsive" title="A CloudKey controller attached to a rack tray, providing UniFi Controller services to manage the network" />
 
 Here's a look at the home screen in the controller, where you can see overall
 site status, stats on connected devices, throughput.
@@ -473,12 +506,10 @@ site status, stats on connected devices, throughput.
 All of the UniFi network devices that are a part of your network site appear within
 the 'Devices' page.
 
-This also includes devices that were "adopted" in the past, but are not actively
-connected, as well as devices that are new, "pending adoption".
+#### Device adoption
 
-Once you adopt a device, it can be controlled through your controller instance.
-
-In this view of my home UniFi network, you can see:
+New devices need to be "adopted" into your managed network.  In this "devices"
+view of my home UniFi network, you can see:
 
 - My USG Security Gateway Pro (router)
 - Multiple UniFi managed switches
@@ -489,15 +520,32 @@ In this view of my home UniFi network, you can see:
 <img src="{{ site.cdn }}2018network/unifi-device-adoption-screen.png" class="img-responsive"
      title="When you connect a new UniFi device to your local network, you 'adopt' the device through the controller, at which point you can configure and control it. You can also see devices that are disabled or not currently connected, but that have been adopted." />
 
-Here's the condo building's security camera and office network - it has more devices, and I've
+Here's my condo building's security camera and office network - it has more devices, and I've
 opened up the details for one of the PoE switches in this view.
 
 For each connected port, you get high-level status, information about whether it is powered
 by PoE, and then a summary for the device - stats including how long it's been up, what version
 of the UniFi firmware it is running, overall power consumption and temperature.
 
+#### WAN config
+
+The security gateway can be configured with multiple WAN connections, in case 
+you need redundant providers.
+
+<img src="{{ site.cdn }}2018network/unifi-sg-home.png" class="img-responsive" title="" style="max-width:480px" />
+
+#### Configuring a switch
+
 <img src="{{ site.cdn }}2018network/unifi-devices-building.png" class="img-responsive"
      title="In the Devices view, you see all the Ubiquiti UniFi equipment you have such as access points, the router, and managed switches. This view is from a larger network deployment for our condo building common areas and staff use." />
+
+#### Access point properties
+
+For each access point you can configure the various wireless networks that 
+should be broadcast by the AP, radio settings, and get an idea of the RF 
+utilization near the device.
+
+<img src="{{ site.cdn }}2018network/unifi-rf-utilized.png" class="img-responsive" title="Access point properties and RF utilization information" style="max-width:420px" />
 
 ### Clients view
 
@@ -524,27 +572,6 @@ panels open at once to maintain your productivity in managing the site.
 <img src="{{ site.cdn }}2018network/unifi-clients-building.png" class="img-responsive"
      title="The  clients view shows all of the connected devices, high-level stats, current activity, and the ability to configure, tag and customize connections for that client." />
 
-
-
-12
-<img src="{{ site.cdn }}2018network/unifi-rf-utilized.png" class="img-responsive" title="" />
-
-13
-<img src="{{ site.cdn }}2018network/unifi-sg-home.png" class="img-responsive" title="" />
-
-23
-<img src="{{ site.cdn }}2018network/updated-home-network-rack.jpg" class="img-responsive" title="" />
-
-
-<img src="{{ site.cdn }}2018network/rackview.jpg" class="img-responsive" title="" />
-
-<img src="{{ site.cdn }}2018network/2018-rack.jpg" class="img-responsive" title="" />
-
-<img src="{{ site.cdn }}2018network/office-rack6.jpg" class="img-responsive" title="" />
-
-<img src="{{ site.cdn }}2018network/rack-with-sgpro.jpg" class="img-responsive" title="" />
-
-
 ### Events
 
 A rolling stream of events can be accessed within the UniFi Controller, and I also have these events
@@ -556,137 +583,7 @@ channels and watch clients come and go.
 <img src="{{ site.cdn }}2018network/unifi-events-building.png" class="img-responsive"
      title="Events such as interference on wireless channels, administrators signing into the controller, PoE devices coming online, and new clients are all shown in this area. I also pipe all of these events to my network attached storage." />
 
-## UniFi Access Points
-
-Power over Ethernet makes it super simple to add access points exactly where
-you want them, instead of where it's close to your Internet router or cable
-modem.
-
-The only job of an AP is to make wireless happen; being able to offload that
-from the router makes diagnostics easier.
-
-Here's one of the access points I've installed along an edge of a kitchen living
-area. Plenum CAT6 runs through the soffit to where the access point is mounted
-on the wall.
-
-<img src="{{ site.cdn }}2018network/ubnt-wifi-hallway.jpg" class="img-responsive" title="A UniFi access point is wall mounted above a hallway" />
-
-In a bedroom, I have another access point installed. Visually it blends in to
-the wall just like the emergency building intercom and Nest Protect already
-on the wall.
-
-<img src="{{ site.cdn }}2018network/ubnt-wifi-bedroom.jpg" class="img-responsive" title="A UniFi access point mounted alongside a bedroom wall" />
-
-### Wall or ceiling mount
-
-UniFi Access Points (UAP) are easy to mount - ceiling, wall mount, ceiling
-tile in a business environment, etc.
-
-While I would love to have this mounted on the ceiling for the best reception
-and range, my ceiling is concrete, so no options there without running exposed
-CAT6 along the ceiling.
-
-While you could mount the access point around a low voltage old work box or
-near a CAT6 keystone, I've chosen to keep a service loop of CAT6 in the wall
-and then simply attached a CAT6 end that I've poked through the wall.
-
-<img src="{{ site.cdn }}2018network/ubnt-uap-wall-install.jpg" class="img-responsive" title="Wall mounting an access point" style="max-width:500px" />
-
-The access point rotates onto the base frame, and to remove it, you can use a
-paperclip to wedge the removal point.
-
-### LED indicator light
-
-At the site-wide level you can toggle LED indicator lights on and off, and then
-per Ubiquiti device, you can configure whether to override that setting by
-forcing the LED on or off.
-
-The soft blue glow when the access point may be nice in a business setting or
-a living room to indicate that the connectivity is good, but I have chosen to
-turn off the glow in my other location in a bedroom.
-
-The indicator light can also illuminate in different colors and patterns if
-it is upgrading firmware, having connectivity issues, etc.
-
-<img src="{{ site.cdn }}2018network/ubnt-uap-blue-night.jpg" class="img-responsive" title="A soft blue glow indicates that the access point is powered, connected and healthy" />
-
-#### Pro mounting system
-
-While installing some access points in shared community areas of my condo
-building, I discovered the [UniFi Professional Mounting System](https://store.ubnt.com/products/unifi-professional-mounting-plate)
-which is a $9 precision-crafted bracket.
-
-We've used these in our parking garage where we were able to easily mount the
-access points to standard 4"x4" electrical boxes that were secured to the concrete
-ceiling.
-
-<img src="{{ site.cdn }}2018network/unifi-pro-kit.jpg" class="img-responsive" title="The pro mounting kit, useful in commercial or business environments" />
-
-In the above photo, on the left: the bracket mounted to a 4"x4" square junction
-box. Flexible conduit attaches to the j-box and CAT6 runs through it into the box
-and then through the hole to be plugged into the AP. On the right, the access
-point once mounted and powered up via PoE with its signature blue glow.
-
-The brackets are a fair value and have holes for traditional wall mount, T-bar ceiling mounts (common commercial drop ceilings),
-3.5" round j-boxes, 4" square j-boxes, 1-gang outlet boxes, 4" round j-boxes,
-and european outlet boxes. Slick, simple design.
-
-## Neighboring access point data
-
-One of the unfortunate side effects of living in the city is that you are
-competing with hundreds of other access points, wireless devices, even radar.
-
-If I open my Mac and try and pick a wireless connection, there are hundreds to
-scroll through.
-
-The UniFi controller is also always collecting data on neighboring access points. In
-the past they called this the "Rogue AP report", but it was renamed.
-
-I could imagine a business using this to keep tabs on whether people are bringing
-their own wireless access points or routers into the corporate environment,
-but in a city, it's mostly interesting to just get a bird's eye view of how
-much connectivity is around.
-
-<img src="{{ site.cdn }}2018network/unifi-neighboring-access-points-home.png" class="img-responsive" title="" />
-
-I regularly see 400-500 access points listed in this report.
-
-## RF environment
-
-If you are OK to take an access point offline for a few minutes, UniFi APs are
-able to perform a scan of the 2G and 5G wireless utilization around that access
-point. This can be very helpful in planning how to allocate channels and
-diagnose performance issues.
-
-Here's a side-by-side of the 2G and 5G environment in my main living area. The
-2G wireless spectrum is almost entirely bogged down by all of the competing
-devices, but the 5G channels are much more readily available.
-
-<img src="{{ site.cdn }}2018network/unifi-wireless-rf-environment.png" class="img-responsive" title="A screenshot after performing radio frequency (RF) scans of both the 2.4GHz and 5GHz spectrum near one of my access points. Lots of contention in the 2G space." />
-
-I must use 5GHz wireless devices as much as possible.
-
-21
-<img src="{{ site.cdn }}2018network/unifi-wireless-networks.png" class="img-responsive" title="" />
-
-## AC-HD Upgrade
-
-An overhead look at the UniFi UAP AC Pro next to the beefier UAP AC HD.
-<img src="{{ site.cdn }}2018network/unifi-hd-pro-overhead.jpg" class="img-responsive"
-     title="An overhead look at the UniFi UAP AC Pro next to the beefier UAP AC HD." />
-
-A side view of the UniFi UAP AC Pro next to the beefier UAP AC HD.
-<img src="{{ site.cdn }}2018network/unifi-hd-pro-side-by-side.jpg" class="img-responsive" title="A side view of the UniFi UAP AC Pro next to the beefier UAP AC HD." />
-
-25
-<img src="{{ site.cdn }}2018network/wireless-speed-testing.png" class="img-responsive" title="" />
-
-Getting 400+ up an down over WiFi is quite an accomplishment for me, with all
-the interference in the city, this is about the most that I've ever been able
-to maintain beyond the wired network.
-
-
-## Topology
+### Topology
 
 While my home network is rather simple - a router, a primary switch, two access
 points and a switch under my desk, the topology view for the UniFi network is
@@ -706,7 +603,7 @@ super.
 
 You can toggle link labels and clients on/off.
 
-## Switch stats
+### Switch stats
 
 Similar to the topology view, there are multiple ways to dig through the
 data regarding your switch ports. In the Switch Stats view you can see aggregate 
@@ -720,6 +617,189 @@ of connections from any part of the UniFi UI.
 
 <img src="{{ site.cdn }}2018network/unifi-switch-view-southb.png" class="img-responsive" style="max-width:420px" title="" />
 
+### VPN
+
+Lots of great VPN support is of course built into the UniFi Security Gateway.
+
+#### Remote VPN
+
+Being able to remotely connect via L2TP is nice to let me get to my home 
+network and its devices from anywhere in the world, whether that's my iPhone,
+a notebook computer somewhere, etc.
+
+It's easy to setup and configure, and the latest release of the UniFi controller 
+software has a built-in RADIUS server - so for me, I've found it even easier 
+than before, when I used to run a RADIUS server on my network storage server instead.
+
+#### Site-to-site VPN
+
+Although I no longer utilize it, I used to run an Azure site-to-site VPN 
+connection between my local network and my personal vnet in the cloud. This
+made it super simple to connect to and debug a Kubernetes cluster I was
+experimenting with.
+
+#### Virtual LANs
+
+I make use of VLAN tagging to keep my guest network separate from my primary 
+network, and also to separate most of my "Internet of Things" connections from 
+my other gear.
+
+
+## UniFi Access Points
+
+Power over Ethernet makes it super simple to add access points exactly where
+you want them, instead of where it's close to your Internet router or cable
+modem.
+
+The only job of an AP is to make wireless happen; being able to offload that
+from the router makes diagnostics easier.
+
+Here's one of the access points I've installed along an edge of a kitchen living
+area. Plenum CAT6 runs through the soffit to where the access point is mounted
+on the wall.
+
+<img src="{{ site.cdn }}2018network/ubnt-wifi-hallway.jpg" class="img-responsive" title="A UniFi access point is wall mounted above a hallway" />
+
+In a bedroom, I have installed another access point.
+
+<img src="{{ site.cdn }}2018network/ubnt-wifi-bedroom.jpg" class="img-responsive" title="A UniFi access point mounted alongside a bedroom wall" />
+
+### Wall or ceiling mount
+
+UniFi Access Points (UAP) are easy to mount to the wall or ceiling.
+
+While I would love to have this mounted on the ceiling for the best reception
+and range, my ceiling is concrete, so no options there without running exposed
+CAT6 or conduit along the ceiling.
+
+While you could mount the access point around a low voltage old work box or
+near a CAT6 keystone, I've chosen to keep a service loop of CAT6 in the wall
+and then simply attached a CAT6 end that I've poked through the wall.
+
+<img src="{{ site.cdn }}2018network/ubnt-uap-wall-install.jpg" class="img-responsive" title="Wall mounting an access point" style="max-width:500px" />
+
+The access point rotates onto the base frame, and to remove it, you can use a
+paperclip or removal tool to wedge tab and allow you to rotate the AP.
+
+### LED indicator light
+
+At the site-wide level you can toggle LED indicator lights on and off, and then
+per Ubiquiti device, you can configure whether to override that setting by
+forcing the LED on or off.
+
+The soft blue glow when the access point may be nice in a business setting or
+a living room to indicate that the connectivity is good, but I have chosen to
+turn off the glow in my other location in a bedroom.
+
+The indicator light can also illuminate in different colors and patterns if
+it is upgrading firmware, having connectivity issues, etc.
+
+<img src="{{ site.cdn }}2018network/ubnt-uap-blue-night.jpg" class="img-responsive" title="A soft blue glow indicates that the access point is powered, connected and healthy" />
+
+### Pro mounting system
+
+While installing some access points in shared community areas of my condo
+building, I discovered the [UniFi Professional Mounting System](https://store.ubnt.com/products/unifi-professional-mounting-plate)
+which is a $9 precision-crafted bracket.
+
+We've used this system in our parking garage to easily mount to j-boxes on
+the ceiling.
+
+<img src="{{ site.cdn }}2018network/unifi-pro-kit.jpg" class="img-responsive" title="The pro mounting kit, useful in commercial or business environments" />
+
+<em>In the above photo, on the left: the bracket mounted to a 4"x4" square junction
+box. Flexible conduit attaches to the j-box and CAT6 runs through it into the box
+and then through the hole to be plugged into the AP. On the right, the access
+point once mounted and powered up via PoE with its signature blue glow.</em>
+
+The brackets are a fair value and have holes for traditional wall mount, 
+T-bar ceiling mounts (common commercial drop ceilings), 3.5" round j-boxes, 
+4" square j-boxes, 1-gang outlet boxes, 4" round j-boxes, and European outlet 
+boxes.
+
+### Configuring WiFi networks
+
+You can configure several WiFi networks, for your corporate or private use, 
+guests, and other purposes.
+
+<img src="{{ site.cdn }}2018network/unifi-wireless-networks.png" class="img-responsive" title="The controller configuration screen" />
+
+With VLAN tagging, the ability to configure different auth profiles, you can 
+setup a more advanced RADIUS-backed network for yourself, then let everyone 
+else use a more general traffic network when they visit.
+
+While I don't use the guest portal features, there's a whole system to setup 
+accepting payments, generating use tokens, etc., if you feel the urge to 
+start a cybercafe.
+
+## RF environment
+
+If you are OK to take an access point offline for a few minutes, UniFi APs are
+able to perform a scan of the 2G and 5G wireless utilization around that access
+point. This can be very helpful in planning how to allocate channels and
+diagnose performance issues.
+
+Here's a side-by-side of the 2G and 5G environment in my main living area. The
+2G wireless spectrum is almost entirely bogged down by all of the competing
+devices, but the 5G channels are much more readily available.
+
+<img src="{{ site.cdn }}2018network/unifi-wireless-rf-environment.png" class="img-responsive" title="A screenshot after performing radio frequency (RF) scans of both the 2.4GHz and 5GHz spectrum near one of my access points. Lots of contention in the 2G space." />
+
+I must use 5GHz wireless devices as much as possible!
+
+### Neighboring access point data
+
+One of the unfortunate side effects of living in the city is that you are
+competing with hundreds of other access points, wireless devices, even radar.
+
+If I open my Mac and try and pick a wireless connection, there are hundreds to
+scroll through.
+
+The UniFi controller is also always collecting data on neighboring access points. In
+the past they called this the "Rogue AP report", but it was renamed.
+
+I could imagine a business using this to keep tabs on whether people are bringing
+their own wireless access points or routers into the corporate environment,
+but in a city, it's mostly interesting to just get a bird's eye view of how
+much connectivity is around.
+
+<img src="{{ site.cdn }}2018network/unifi-neighboring-access-points-home.png" class="img-responsive" title="" />
+
+I regularly see 200-300 access points listed in this report.
+
+## UAP AC-HD Upgrade
+
+In late 2017 I moved to the [UAP AC-HD](https://unifi-hd.ubnt.com/)
+and have been very happy with this beefier 
+access point. A swap-in replacement for the UAP AC Pro, it can reuse the pro's 
+mounting bracket, making it a very quick swap out.
+
+The HD access points are 802.11ac Wave 2 MU‑MIMO (Multi‑User, Multiple Input, Multiple Output) 
+devices, designed to support tons of clients. For me, I believe this helps me 
+better cut through the noise and still get decent performance in the 
+interference-ridden city.
+
+Comparing specs, the pro has a radio rate 450 Mbps (2.4 GHz) and 1300 Mbps (5 GHz), 
+the HD has respective rates of 800 Mbps and 1733 Mbps max.
+
+The units are physically larger; here's an overhead shot of the UAP AC HD on the 
+left of the previous UAP AC Pro model.
+
+<img src="{{ site.cdn }}2018network/unifi-hd-pro-overhead.jpg" class="img-responsive"
+     title="An overhead look at the UniFi UAP AC Pro next to the beefier UAP AC HD." />
+
+And a side view shows that the AC HD does protrude more from the mounting surface.
+
+<img src="{{ site.cdn }}2018network/unifi-hd-pro-side-by-side.jpg" class="img-responsive" title="A side view of the UniFi UAP AC Pro next to the beefier UAP AC HD." />
+
+After upgrading to the UAP AC-HD, I'm able to get 400 Mbps+ from my wireless devices,
+where before I was more often in the 140 Mbps range.
+
+<img src="{{ site.cdn }}2018network/wireless-speed-testing.png" class="img-responsive" title="Over WiFi, a speed test showing download speeds of 423 Mbp and upload of 474 Mbps with the UAP AC-HD" />
+
+Getting 400+ up an down over WiFi is quite an accomplishment for me, with all
+the interference in the city, this is about the most that I've ever been able
+to maintain beyond the wired network.
 
 ## UniFi deep packet inspection
 
@@ -764,33 +844,6 @@ class="img-responsive"
 <img src="{{ site.cdn }}2018network/unifi-traffic-building.png" class="img-responsive" title="" />
 -->
 
-## VPN
-
-Lots of great VPN support is of course built into the UniFi Security Gateway.
-
-### Remote VPN
-
-Being able to remotely connect via L2TP is nice to let me get to my home 
-network and its devices from anywhere in the world, whether that's my iPhone,
-a notebook computer somewhere, etc.
-
-It's easy to setup and configure, and the latest release of the UniFi controller 
-software has a built-in RADIUS server - so for me, I've found it even easier 
-than before, when I used to run a RADIUS server on my network storage server instead.
-
-### Site-to-site VPN
-
-Although I no longer utilize it, I used to run an Azure site-to-site VPN 
-connection between my local network and my personal vnet in the cloud. This
-made it super simple to connect to and debug a Kubernetes cluster I was
-experimenting with.
-
-### Virtual LANs
-
-I make use of VLAN tagging to keep my guest network separate from my primary 
-network, and also to separate most of my "Internet of Things" connections from 
-my other gear.
-
 ## Fan noise
 
 The higher-end PoE and security gateway products are not quiet. They aren't
@@ -803,9 +856,12 @@ nice, too.
 For me, I like having everything rackmounted, and so I end up with noisy
 rackmount gear, because racks are supposed to be loud.
 
-The fans in both the UniFi 24-port PoE switch and also the security gateway were too noisy for my taste, so I replaced them with Noctua brand quiet fans. It's much nicer now, though my warranty is probably voided. The cost for a quiet home environment.
+I replaced the Ubiquiti stock fans with Noctua's quiet fans. It's very quiet
+now, though my warranty is probably void.
+
 <img src="{{ site.cdn }}2018network/unifi-fan-modification.jpg" class="img-responsive"
      title="Noctua replacement fans I have put in the security gateway device." />
+
 
 
 
@@ -839,84 +895,44 @@ pull new CAT6 from the comms room, the flex conduit run inside the concrete
 slab is only a quarter inch, and there are snags in the run, so it would be
 a super fragile operation.
 
-
-
-
-
-
-
-
-
-Upgrading and improving a wired network is pretty difficult in a building 
-such as mine: we're a steel-and-concrete construction building, so unless
-there's existing conduit that was placed when the concrete slab was originally 
-poured, there's no way to get new capacity and technologies easily from the 
-communications room to the unit.
-
-Within the unit, besides the soffits and a few slightly dropped ceilings, you 
-need to cable through the walls, making it really challenging to pull cable
-through the studs.
-
-On top of all this, my condo building developer was a little cheap (they all
-are), and so in the end we got CAT3 to the home instead of CAT5 or newer.
-
-## WiFi in the city
-
-## CAT3
-
-## As-built records
+Within the unit, besides the soffits and a few slightly dropped ceilings, I've 
+had to run cable through the walls, making it challenging to pull cable
+through the metal studs.
 
 ## Metal studs
 
-An interesting side effect of living in a high-rise building is that our tower is constructed
-with common commercial construction materials, so in our building we have steel studs supporting
-the walls as opposed to wood.
+An interesting side effect of living in a high-rise building is that our tower 
+is built with some commercial construction materials, so we have steel studs 
+supporting the walls instead of wood.
 
-This makes pulling wires more difficult, you need to use wire grommits to protect the wires, and
-if you cannot find an existing penetration in the studs, you need to improvise. A positive of the
-metal studs, however, is that there is a not a wood fire block halfway up the wall as you might
-find if you're wiring CAT6 across multiple levels in a traditional American home.
+Metal studs are perforated already with holes for wires to be pulled through, 
+as long as you remember to use wire grommits to protect from fraying and damaging 
+the wire.
+
+A positive for metal studs is that there's no drilling through wood fire blocks.
 
 ## Interior vs exterior walls
 
-Our condo association rules are more strict about "limited common" walls (those shared with the community
-or other owners), so it's easy to run wires and things within your own interior walls, but if you are
-dealing with the exterior walls you need to instead run cables through exposed conduit, behind the baseboards,
-under the floors, etc.
+Our condo association rules are well-defined and strict about any changes to 
+"limited common" shared walls. While it's easy to run wires within my interior 
+walls, I'm not able to just run cable through the shared walls, and instead 
+would need to use exposed concrete, wire behind the baseboards, or under the 
+floors. I've had to use all of these approaches in my unit.
 
-Fun stuff.
+In my office I run speaker wire, several CAT6 pulls, and 2x digital optical 
+audio cables through the floor instead of the shared wall with an adjacent 
+unit.
 
-In my office, which shares a common wall with another unit, I have several cables running under the floor
-now, including speaker wire, several CAT6 pulls, and 2x digital optical audio cables.
-
-## Carlon RiserGard for "the future"
-
-## HDMI over Fiber, HDMI over CAT6
-
-cloudk1
-
-<img src="{{ site.cdn }}2018network/cloudkeytray1.jpg" class="img-responsive" title="" />
-
-ck2
-
-<img src="{{ site.cdn }}2018network/cloudkeytray2.jpg" class="img-responsive" title="" />
-
-micfmch
-
-<img src="{{ site.cdn }}2018network/microfische-machine.jpg" class="img-responsive" title="" />
-
-catj
+## CAT3
 
 <img src="{{ site.cdn }}2018network/cat3-jack.jpg" class="img-responsive" title="" />
 
-cat6 cat3 mess
-<img src="{{ site.cdn }}2018network/cat6-cat3-wall-mess3.jpg" class="img-responsive" title="" />
+<!--
+<img src="{{ site.cdn }}2018network/cat6-splicing.jpg" class="img-responsive" title="CAT6 keystone punchdown" />
+-->
 
-cat6 splicing
-<img src="{{ site.cdn }}2018network/cat6-splicing.jpg" class="img-responsive" title="" />
+## No structured media center
 
-cat6 wiring svc loop
-<img src="{{ site.cdn }}2018network/cat6-wiring-service-loop.jpg" class="img-responsive" title="" />
 
 structured media
 leviton
@@ -924,7 +940,29 @@ hotel/condo
 
 <img src="{{ site.cdn }}2018network/leviton-in-wall.jpg" class="img-responsive" title="" />
 
+cat6 cat3 mess
+<img src="{{ site.cdn }}2018network/cat6-cat3-wall-mess3.jpg" class="img-responsive" title="" />
+
+
+## Carlon RiserGard for "the future"
+
+## HDMI over Fiber, HDMI over CAT6
+
+<img src="{{ site.cdn }}2018network/office-rack6.jpg" class="img-responsive" title="" />
+
+
+ck2
+
+<img src="{{ site.cdn }}2018network/cloudkeytray2.jpg" class="img-responsive" title="" />
+
+
+cat6 wiring svc loop
+<img src="{{ site.cdn }}2018network/cat6-wiring-service-loop.jpg" class="img-responsive" title="" />
+
+
 <img src="{{ site.cdn }}2018network/living-room-problem-connection.png" class="img-responsive" title="" />
+
+## Running CAT6 between rooms
 
 ceiling 1
 <img src="{{ site.cdn }}2018network/ceiling-running-cables.jpg" class="img-responsive" title="" />
@@ -938,7 +976,9 @@ elec in ceil
 ent kitchen ceiling
 <img src="{{ site.cdn }}2018network/running-ent-through-kitchen-ceiling-walls.jpg" class="img-responsive" title="" />
 
+<!--
 <img src="{{ site.cdn }}2018network/ubntuap.jpg" class="img-responsive" title="" />
+-->
 
 # References
 
@@ -949,4 +989,3 @@ Some interesting articles that I found while researching parts of this post:
 - http://www.geekwire.com/2013/spectrum-wave-condointernet/
 - http://www.geekwire.com/2013/condointernet-expands-service-ballard/
 - http://www.bbpmag.com/2013mags/october/BBC_Oct13_CondoInternet.pdf
-- https://www.geekwire.com/2015/seattle-city-council-approves-legislation-that-eliminates-cable-tv-franchise-districts/
