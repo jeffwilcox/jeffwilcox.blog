@@ -10,50 +10,57 @@ jumbotron: true
 jumbotronStyle: "background: url('//az414997.vo.msecnd.net/waz/2018network/rooftop-pano-web.jpg') no-repeat left center; background-size: cover; overflow: hidden; min-height: 500px;"
 jumbotronTitle: "A photo of the Belltown neighborhood and downtown Seattle, the Space Needle, and rooftop wireless backhaul networking equipment"
 ---
-Fast access points mounted where they're useful. WiFi that just works. True 
-symmetric gigabit Internet. Modern managed network gear. Pulling CAT6 cable 
-while dealing with ancient CAT3 in a condo.
+WiFi that just works with multiple mounted access pints. Symmetric 1000 Mbps 
+symmetric gigabit Internet. Centrally managed enterprise network gear. Pulling 
+new CAT6 while dealing with old CAT3 in a condo.
 
-This is my long-overdue post about some of the delightful experiences, challenges,
-and summary of the tech I'm thankful to have had the time to install and enjoy
-at home.
+This is my story, long overdue, about some of the experiences, challenges, and 
+information about the connectivity tech I enjoyed at home. I love not having to 
+worry about my WiFi ever having issues, even in the dense city, thanks to 
+enterprise-grade gear.
 
-In Seattle we're lucky to have broad access in apartments/condos to
+In Seattle we're lucky to have broad access in apartments/condominiums to
 gigabit Internet from providers such as 
-[Wave G](https://waveg.wavebroadband.com/) (a.k.a. CondoInternet). My building 
-is served by 60GHz millimeter wave connections, and I wanted to take the time
-to describe some of how that is setup for our condo.
+[Wave G](https://waveg.wavebroadband.com/) (a.k.a. CondoInternet). Having a 
+zippy connection without bandwidth caps means that I'm free to stream 4K content,
+backup my on-premise storage to the cloud, and not worry about keeping 
+operating system installation disc images around.
 
-Beyond having access to fast connections, latency is super low. Our ISPs tend 
-to be very close to cloud providers to the peering opportunities in downtown Seattle's 
-colos and carrier hotels such as the 
-[Westin Building Exchange](https://www.westinbldg.com/), home of the non-profit 
-[Seattle Internet Exchange](https://www.seattleix.net/), moving terabits per second.
+My building's gigabit is provided by several 60GHz millimeter wave radio links, 
+and I wanted to share how that infrastructure is deployed in my condo building.
+
+Not only are connections fast, but there are minimal hops between major cloud 
+providers and big networks thanks to the many peering opportunities in downtown
+Seattle. The 
+[Westin Building Exchange](https://www.westinbldg.com/) carrier hotel/colo is 
+home to the important non-profit 
+[Seattle Internet Exchange](https://www.seattleix.net/), moving terabits per second, 
+with a transparent approach that lets you peek at their stats, story and customers.
 
 Having fast Internet creates pressure to be able to move a lot of packets to 
-take advantage of the speed.
+take advantage of the speed, and that's where enterprise-grade managed network
+equipment comes in. There's a lot of value in the data and featureset of the 
+UniFi line from [Ubiquiti Networks](https://www.ubnt.com/) when it comes to 
+routing, switching, and access points.
 
-Like many other tech enthusiasts over the last few years, one of the best 
-tech decisions at home was moving to the [Ubiquiti Networks](https://www.ubnt.com/) 
-UniFi line of enterprise gear for routing, switching, and WiFi access points. 
-I've been running a Ubiquiti network at home for over 2 years and have to 
-share that story.
-
-Finally, I wanted to document some of the challenges with old CAT3 and 
-pulling new pulling CAT6 within the constraints of my condo building.
+I've been running a Ubiquiti network at home for over 2 years and have been very
+happy with that investment.
 
 <img src="{{ site.cdn }}2018network/post-collage.jpg" class="img-responsive" title="From left-to-right: UniFi security gateway pro, PoE switch, and other rack gear; a screenshot of the deep packet inspection features of the UniFi Controller; an access point glowing; screenshot of my 2G RF environment; picture of one of the intermediate distribution frame (IDF) near my unit" />
 
-Sorry, this post will be much too long, full of un-optimized images...
+Finally, I wanted to document some of the challenges with old CAT3 and 
+pulling new pulling CAT6 within the constraints of my condo building, mostly to
+share my pain.
+
+Apologies in advance, this post is full of up-optimized images and is much too
+long.
 
 <small>Disclaimer:<br />
-This post is from the perspective of a tech enthusiast in Seattle: I do not
-represent any of the companies mentioned, and the information I have about the
-Seattle region's Internet providers and services is only as accurate as what I
-have researched and the stories I've heard. While all of my initial Ubiquiti 
-equipment purchases were my own, in late 2017 I was provided a single UniFi 
-AC-HD access point unit by Ubiquiti to try out. I've since purchased a new 
-AC-HD access point at my own cost.</small>
+I'm a tech enthusiast in this space but don't represent any of the companies 
+mentioned. While my initial Ubiquiti buildout in Feb. 2016 was my own, in 
+Dec. 2017 I was provided a demo AC-HD access point to evaluate. 
+I've since purchased my own AC-HD.</small>
+
 
 
 
@@ -63,75 +70,92 @@ AC-HD access point at my own cost.</small>
 
 
 
+
 # Wave G / CondoInternet
 
-Even today, I remember the conversation with my friend Alex a decade ago when 15/2
-(15Mbps down, 2Mbps up) was a pretty common cable Internet product offering, and
-if you had to get DSL, it would be even slower.
+Even today, I remember a conversation with my friend Alex a decade ago when 
+15 Mbps down, 2 Mbps up cable Internet was a common offering from Comcast and 
+competitors, and if you used DSL, it'd be even slower.
 
-> Alex: "Yeah, well, in my building we have CondoInternet now. It's symmetric 100 Mbps up and down."
+> Alex (in 2008): "My apartment building just got CondoInternet. 100 Mbps up and down, no caps or contracts."
 >
-> Me: "Hmm... that seems pretty hard to believe. That's like what I had at university... There must be caps or something. It can't be  that fast!"
+> Jeff: "That's hard to believe, that's like what I had in my university dorm room, but no commercial providers offer that sort of speed. There must be caps or something. It can't be  that fast!"
 >
-> Alex: "Well, it's real. Also, they offer 1000Mbps up and down, a static IP if you want it, no bandwidth caps, no contract. The future!"
+> Alex: "It's true, and I hear you can also get a 1000 Mbps connection. This is the future."
 
-Turns out: it's real. If you live in an apartment or condo in Seattle, chances 
-are you're reading this through your [Wave G](https://waveg.wavebroadband.com) 
-connection, but for those that are not familiar with the service, this is a 
-primer.
+Alex was right, I was wrong. 
+If you live in an apartment or condo in Seattle, chances are you're reading this 
+via your [Wave G](https://waveg.wavebroadband.com) connection, but for those 
+that are not familiar with the service, this is a primer.
 
-Wave G, known as CondoInternet before being acquired, was founded a decade ago 
-by techies who ran their own wholesale bandwidth business and wanted to have 
-fast Internet at home in their condos, too.
+Wave G, formerly known as CondoInternet before being acquired by the Wave 
+conglomerate, was founded a decade ago by techies who ran their own wholesale 
+bandwidth business and wanted to have fast Internet at home in their condos.
 
-Today it is the gold standard for everyone from tech employees working from home 
-to just being the best ISP to stream content through.
+Today, the Wave G gigabit product is the gold standard for everyone from tech 
+employees working from home to being the best ISP in town to stream content with.
+It's basically the opposite of Comcast: no contracts, no upward pricing pressure,
+quick service, no cable modem required, no bundling.
 
-It's basically the opposite of Comcast, by the way: no contracts, no upward 
-price changes, quick service, no cable modem required, no bundling.
+If your multi-family building is connected to Wave G (hundreds are), often you
+only need to make a phone call and patch your unit's home run network cable 
+to your router or computer.
 
-All you have to do is setup your account and then plug an Ethernet cable 
-into your homerun wallplate, and a few feet away, in a comms closet, is Wave G's 
-managed switch equipment and network.
+From the home run, a nearby comms closet holds Wave G's managed switch equipment,
+at which point you're on their network.
 
-Interestingly Wave has more recently been purchased by a leveraged buyout and 
-investment firm, TPG Capital, so it'll be interesting to see what happens to 
-the service over time. There's also some competition in this space - while 
-another similar service called Cascadelink was acquired by Wave as well, Google 
-Fiber now owns Webpass, which is popping up in buildings in the neighborhood, 
-offering slightly less expensive gigabit connections.
+## Locations
+
+Wave G is available today in several cities in Western Washington including 
+Seattle, Bellevue and Everett; Portland, Oregon; and in California, Roseville 
+and then San Francisco all the way to San Jose.
+
+<img src="{{ site.cdn }}2018network/wave-locator.png" class="img-responsive" title="A screenshot of the Wave G service locator" />
+
+There's some competition, too - while Wave acquired a previous similar company,
+Cascadelink, Google Fiber's Webpass is available in the neighborhood,
+and I'm seeing more expansion there. Wave was recently purchased by a 
+leveraged buyout and investment firm, TPG Capital, and I'm interesting to see 
+what happens to the service. Hopefully no change.
 
 ## Pricing
 
 If you pay for gigabit, Wave G configures your switch port for full duplex 
-1000Mbps, otherwise your link will negotiate to 100Mbps.
+1000 Mbps negotiation; otherwise your link will negotiate to 100 Mbps.
 
-The pricing as far as I can remember has been $60/month for 100Mbps 
-or $80/month for 1000Mbps. A few years ago gigabit was double the price of the 
-hundred megs, so there was a positive price adjustment.
+The pricing as far as I can remember has been $60/month for 100 Mbps 
+or $80/month for 1000 Mbps. A few years ago gigabit was double the price of the 
+hundred megs, so there was a price reduction.
 
 ## Most of the web is slow...
-
-Keep in mind, while 1000Mbps is the theoretical maximum, most web sites and 
-cloud services aren't going to be able to make full use of your connection 
-in any sustained way.
-
-<img src="{{ site.cdn }}2018network/quick-windows-download.png" class="img-responsive" title="At least you can download Windows and Linux ISO images in a few minutes" />
 
 While you can stream 4K content just fine without buffering, or download an OS 
 image in seconds, at home you don't really need a gigabit connection for most 
 daily web tasks (yet).
 
-Having it there is great and you're ready for the future.
+While just under 1000 Mbps is the theoretical gigabit maximum, most web sites 
+and cloud services aren't going to be able to make full use of your connection 
+in a sustained manner. Large files hosted on CDNs should be quick at least:
+
+<img src="{{ site.cdn }}2018network/quick-windows-download.png" class="img-responsive" title="At least you can download Windows and Linux ISO images in a few minutes" />
+
+Having gigabit at least feels like a key requirement to experiment with 4K
+content, keeping all your storage in the cloud, VR, and other up-and-coming 
+advancements.
 
 ## Wave G's network
 
 Once your home is connected to Wave G's network, they have their own 
-efficient gear that connects to their fiber and rooftop microwave backhaul gear,
-eventually peering inside datacenters and nearby colos like the 
-[Westin Building Exchange](https://www.westinbldg.com/) and the 
+efficient gear that connects to their fiber and rooftop millimeter wave backhaul
+transmitters and receivers, eventually peering with others inside data
+centers and nearby colo facilities like the 
+[Westin Building Exchange (WBX)](https://www.westinbldg.com/) and the 
 [Seattle Internet Exchange (SIX)](https://www.seattleix.net/),
-providing short hops around the Internet.
+providing short hops and low latency.
+
+This is where the original Condo Internet company took advantage of their
+parent company, Spectrum Networks, and their wholesale bandwidth offerings and
+connectivity.
 
 From my home network, my CAT6 networked machines get sub-millisecond - to - 1ms
 ping times to Google, Microsoft, and all the major modern Internet services, just 
@@ -139,29 +163,31 @@ a few hops away...
 
 <img src="{{ site.cdn }}2018network/waveg-ping-times.png" class="img-responsive" title="" />
 
-## 890-940Mbps typical test speeds
+## 890-940 Mbps typical test speeds
 
 Testing with [SpeedTest.net](http://www.speedtest.net/) I'll usually see 
-download speeds between 850-950Mbps depending on the test site selected, and 
-interestingly, my upload speeds are usually measured consistently around 950Mbps.
+download speeds between 850-950 Mbps depending on the test site selected, and 
+interestingly, my upload speeds are usually measured consistently around 950 Mbps.
 
-Only wired equipment will experience the full potential, as WiFi clients in my
-urban neighborhood deal with a lot of interference from thousands of competing
-wireless devices.
+In my home, only wired equipment experiences the full potential of this
+connectivity, since WiFi is very dense in my neighborhood - lots of interference 
+means that devices individually often connect at a slower line rate.
 
-According to Netflix's [fast.com](https://fast.com), my connection is ~920Mbps.
-I like that the Netflix service does a good job of estimating your ideal 
-Netflix experience, a super common activity for home users.
+According to Netflix's [fast.com](https://fast.com), when I recently checked, 
+my connection was approximated to 920 Mbps. Fast.com does a nice job of 
+estimating various data sources to find a number that represents how your 
+Netflix experience should be.
 
 <img src="{{ site.cdn }}2018network/netflix-fast.png"
 class="img-responsive"
 style="max-width: 360px"
 title="According to Netflix fast.com, the connection speed is approximately 920 Mbps." />
 
-## Rooftop millimeter wave radio backhaul
+## Millimeter wave backhaul
 
-My building isn't connected to Wave G's network by fiber, but instead by 
-millimeter wave / microwave backhaul radios.
+While some buildings in Wave G's network are connected by fiber, we're actually
+connected by millimeter wave transmitters/receivers mounted on the rooftop of 
+our high-rise building.
 
 If you look out from our tower's roof toward Elliott Bay, you can see a few of
 the other nearby buildings that we connect to:
@@ -169,50 +195,58 @@ the other nearby buildings that we connect to:
 <img src="{{ site.cdn }}2018network/other-buildings.jpg" class="img-responsive" title="A look toward Elliott Bay, highlighting microwave Internet rooftop connections as part of the neighborhood mesh network." />
 
 Turning around and facing downtown Seattle, looking across the Belltown
-neighborhood, there are many rooftop sites:
+neighborhood, there are many rooftop sites, likely all part of the Wave G
+network:
 
 <img src="{{ site.cdn }}2018network/other-buildings2.jpg" class="img-responsive" title="Looking across the Belltown neighborhood, nearly every rooftop has microwave backhaul equipment." />
 
-Our roof has at least 6x [BridgeWave 60GHz millimeter wave radios](https://bridgewave.com/bw64/).
-Each of these antennas provides a 1Gbps full-duplex encrypted link between locations,
-essentially a large private mesh network between campuses.
+Our roof has 6+ [BridgeWave 60GHz millimeter wave radios](https://bridgewave.com/bw64/).
+Each of these antennas provides a 1 Gbps full-duplex encrypted link between locations,
+essentially a large private mesh network.
 
 <img src="{{ site.cdn }}2018network/rooftop-microwaves.jpg" class="img-responsive" title="Rooftop 60GHz microwave backhaul equipment." />
 
-## Static IPs and IPv6 blocks
+## Static IPv4, IPv6 blocks
 
 I don't actually know the latest on this story (whether it's a monthly or a
 one-time charge now), but when I requested my static IP years ago, it was a one-time 
 $15 fee for a static static IPv4 address, and now I also have my own IPv6 block.
 
+When moving between buildings and units, I've needed to get a new static IP 
+address, but have been happy with the great support experience in requesting 
+those changes and coordinating my moves.
+
 ## Great tech support
 
 I've never experienced a large outage, but when I was first setting up my
-connection, due to the CAT3 wiring to my unit, I was only able to get 100Mbps
+connection, due to the CAT3 wiring to my unit, I was only able to get 100 Mbps
 connection to the carrier switch.
 
-A tech was able to come out and help me diagnose the connectivity issue -
-because of the token ring CAT3 wiring in my unit, the signal was being
-heavily degraded.
+Wave G's primary equipment has commercial UPS units present, and the switching
+gear throughout the building runs off of the emergency generator circuit in
+our building.
 
-We experimented with a few alternate locations and ideas, and in the end, found
-that by terminating the CAT3 pairs for the network connection as soon as
-reasonable (near where the CAT3 homerun came out of the concrete slab's conduit),
-I could get a reliable 1000Mbps connection.
+When I first moved to my condo, I had a tech come out to help me look into why 
+I was only able to get a 100 Mbps connection, and in the end I learned a lot
+about CAT3 and the heavy signal degradation I was experiencing. (More about my
+CAT3 woes later in this post)
+
+The tech even came out with a box of CAT5e cable in case we wanted to pull a new
+home run to my unit. Appreciate the enthusiasm and free support.
 
 ## Easy activation
 
-Since there are no contracts, and multi-family buildings are all wired for
-their service up to your local communications room, it's easy to get going.
+Since there are no contracts, and so many multi-family buildings are already
+wired for Wave G - with a switch near you - it's easy to get going.
 
 If your unit has been served by Wave G in the past, chances are you have an
-Ethernet jack in your unit that is still connected to their switch in a
-nearby comms room.
+Ethernet jack in your unit that is still patched into to their switch, with
+a disabled port. This can be remotely reactivated once you establish an
+account.
 
 I've lived in 3 different buildings with Wave G service in the past, and in all
 cases was able to get up and running over the phone or quickly after signing up
-for the service, as they can activate the port for the speed you need, and
-you're on your way.
+for the service.
 
 If your unit hasn't been served by them in the past, there are a few different
 scenarios, but they all play out quickly by a tech:
@@ -220,61 +254,67 @@ scenarios, but they all play out quickly by a tech:
 - Your unit's cable may need to be punched down or patched to a Wave G switch port
 - Your unit's interior network closet may need to get patched to the Wave G uplink
 - You may need to have an existing telephone jack converted to a CAT6 keystone jack (if you're served by CAT3, which was my case)
-- You might need a VDSL or other device (probably rare now)
+- You might need a VDSL or other device to handle very old wiring (probably more rare today)
 
-## A valuable asset to apartments/condos
+## A valuable building amenity
 
-I made it a point while looking to purchase a home that I understood the current
+I made it a point while looking to purchase a home that I know what current
 Internet offerings available for each potential property.
 
-I'm surprised that more apartment rental advertisements or real estate listings
-do not clearly call out that they are served by a modern gigabit Internet
-provider. While it feels like nearly every modern apartment building in the city
-has such a provider available now, I still meet fellow tech employees and
-building residents who aren't aware of how great the offering is.
+I'm surprised that more apartment rental ads and real estate listings don't
+clearly call out that they are served by a gigabit Internet provider beyond the
+cable company. I still meet fellow tech employees and residents in my building
+who aren't aware of how great the offering is.
+
+One other small branding issue - when Wave renamed Condo Internet to Wave G,
+I've found that some of my building's residents believe that Wave G is the same
+thing as the Wave cable/coax-based broadband product.
+
+I try to tell them that Wave G is an amazing product, great connectivity and all.
 
 Seems worth highlighting, similar to letting people know that your property
 is within walking distance of a Microsoft Connector bus stop for employees.
 
 ## Building infrastructure
 
-Having helped with enough projects around my condo building, I'm pretty familiar 
-with its communications infrastructure. Here's how our building's comms work, 
-and I imagine most condos designed in this era are pretty similar.
+Having helped maintain and upgrade some of our building's tech, I'm familiar
+with its communication infrastructure. Here's how our building's communications
+equipment works.
 
 The Main Distribution Frame (MDF) is located 3 levels below ground (the "C level garage") 
 in the core of our high-rise tower. The MDF is where the phone company, multiple cable
 companies, and other services come together. For Wave G, this is where they 
 have installed their core switching equipment, fiber splices, and UPS backup.
 
-Here's a photo from within our MDF.
+Here's our MDF:
 
 <img src="{{ site.cdn }}2018network/2018-mdf-2.jpg" class="img-responsive" title="A look at the main distribution frame (comms room) serving the building, including traditional telco, multiple cable providers, DirecTV, and our rooftop microwave backhaul provider." />
 
-From left to right in the MDF:
+From left to right::
 
 - traditional telephone provider
 - various business phone lines
 - fire equipment
-- VOIP lines and our building's private network
+- VoIP lines and our building's private network
 - Comcast coax cable
 - Wave G network rack
 - Wave Broadband coax cable
 - DirecTV cable
 
-From the MDF, Wave G fiber runs in 2 directions: up 15 floors to the rooftop
-where the millimeter wave gear is mounted, and the other several hundred feet 
-through conduit in the garage, up several floors to the low-rise tower.
+Focusing on Wave G, from the MDF, fiber and CAT5 runs in 2 directions: the fiber
+splits off - one run goes up 15 floors to the rooftop, while the other connects 
+hundreds of feet away to the other tower in our building, up into its first 
+communications room.
 
-Within the core of the building, telcom rooms alternate with power generation 
-and electric meter utility rooms. The communication rooms are also known
-as Intermediate Distribution Frame (IDF) rooms.
+Within the core of the building, telco rooms alternate with power generation 
+and electric meter utility rooms as you move up the risers. The communication 
+rooms are also known as Intermediate Distribution Frame (IDF) rooms.
 
-The IDFs are  a mess, and I expect all the carriers are to blame a little bit. 
-Respect to the contractors who visit and leave the IDFs cleaner than they found 
-them.
+The IDFs are  a mess, mostly the cable companies who leave the rooms full of
+splitters and amplifiers. I respect the contractors who visit and leave the IDF
+cleaner than they found 'em!
 
-Here's the IDF on my floor... from left to right, there's a panel where the fiber 
+Here's the IDF on my floor... from left to right: a panel where the fiber 
 and some network cabling goes up to the rooftop, Comcast, some of our building's 
 private network cable, Wave G equipment and switch, traditional telco, 
 individual unit CAT3 patch panels, coax and other equipment, and a bunch of messy 
@@ -282,19 +322,20 @@ coax splitters and amplifiers.
 
 <img src="{{ site.cdn }}2018network/idf-11.jpg" class="img-responsive" title="A sample IDF, full of equipment, switch, lots of different communications providers in one place." />
 
-Each unit's homerun cabling comes into punchdown terminals where both POTS and 
-Wave G can be patched in. Wave G customers then are patched to their switch.
+Each unit in our building has a choice between multiple providers, so a unit's 
+coax cable connects to either Comcast, Wave broadband, or DirecTV in the IDF.
+
+The network home run for our units is a single CAT3 6-pair cable that can carry
+both network signals and POTS. Wave G patch cable is then punched into the network
+terminals for customer units.
 
 Here's a closer look at the short patch runs from the switch down to the
-CAT3 unit patch panels:
+CAT3 patch panels:
 
 <img src="{{ site.cdn }}2018network/idf-patch.jpg" style="max-width: 300px" class="img-responsive" title="A closer look at the patch connections between the Wave G switch, individual units punchdown terminals, and telco pairs" />
 
-A single CAT3 cable in our building can then support both
-plain-old-telephone-service (POTS) and modern Wave G (Ethernet). Sigh.
-
-From the punchdown panels, a unit's CAT3/5/6 cable runs through the ceiling in 
-a rather tiny flex conduit embedded in the concrete slab. 
+From the punchdown panels, the cables for all the units run to the ceiling 
+and then into conduit embedded in the concrete slab.
 
 <img src="{{ site.cdn }}2018network/idf-conduit-homeruns.jpg" class="img-responsive" title="Conduit homeruns embedded in the slab" />
 
@@ -310,11 +351,11 @@ a rather tiny flex conduit embedded in the concrete slab.
 
 # Seattle's Internet connectivity
 
-Not counting my favorite Azure data center where I spend a lot of my days, the 
-Pacific Northwest's Internet gravity is at the edge of Belltown at the corner 
-of Virginia Street and 6th Avenue... not because of the thousands of Amazonians 
-looking for lunch around there every daym but because of the Westin Building 
-next to the Westin hotel.
+Not counting my favorite Azure data center where I spend a lot of my days
+virtually, the Pacific Northwest's Internet gravity is at the edge of Belltown, 
+at the corner of Virginia Street and 6th Avenue... not because of the thousands 
+of Amazonians looking for lunch around there every day, but because of the 
+Westin Building office tower next to the Westin hotel.
 
 The Westin Building, named for the corporate headquarters of the Westin hotel 
 chain (before they were purchased by Starwood Hotels and then a much more boring hotel
@@ -335,7 +376,8 @@ over 200 ISPs. According to
 they have over 19.5 megawatts of backup generation available from 17 diesel
 generators.
 
-If you've heard of Equinix, a major connectivity company, their SE2 data
+While a lot of the classic hosters and companies are located here, an example 
+of the scale is Equinix, a major connectivity company: their SE2 data
 center is located within the Westin Building, and a few years ago they built
 an orange/concrete-colored 8-story building, SE3, located right next door to the
 Westin Building's garage... and Palace Kitchen. Tasty.
@@ -360,13 +402,13 @@ sure could help.
 
 As of 2017 they had 284 participants in the exchange who pay a one-time
 reasonable fee for their port; today at peak they aggregate over a
-terabit of traffic.
+terabit of traffic, and their members have over 4 Tbps of capacity.
 
 Here's [their topology, including the switch equipment and models](https://www.seattleix.net/topology).
 
 If you happen to be sitting nearby to SIX, they do not charge monthly port 
-connection fees, just the one-time... $100 for a 1000Mbps port, $2,000 for 10GbE, 
-and $10,000 for your 40GbE or 100GbE SFP module.
+connection fees, just the one-time... $100 for a 1000 Mbps port, $2,000 for 10 GbE, 
+and $10,000 for 40 GbE or 100 GbE SFP modules.
 
 Since they are very transparent in all things, you can review [the whole list](https://www.seattleix.net/participants/) or 
 [this list](https://www.seattleix.net/participants/switches/SIX_7512R.txt) and 
@@ -382,16 +424,16 @@ the companies and providers who peer with them, including:
 - Netflix
 
 Having all the cloud computing providers close is great. Wave G / Spectrum is 
-part of the SIX extension and has a 40Gbps port between its network and SIX.
+part of the SIX extension and has a 40 Gbps port between its network and SIX.
 
 If I `traceroute` from my home to a VM I have in Azure, I see just a hops,
 each a millisecond or two at most:
 
 1. My UniFi router
 2. My building's router
-3. Wave G / Spectrum
+3. Wave G / Spectrum network
 4. Seattle Internet Exchange router
-5. Microsoft's SIX network edge
+5. Microsoft's network edge at the Seattle Internet Exchange
 6. A few hops around Microsoft
 
 If I trace the route to Google, they peer directly with Spectrum, so it's even
@@ -732,21 +774,6 @@ While I don't use the guest portal features, there's a whole system to setup
 accepting payments, generating use tokens, etc., if you feel the urge to 
 start a cybercafe.
 
-## RF environment
-
-If you are OK to take an access point offline for a few minutes, UniFi APs are
-able to perform a scan of the 2G and 5G wireless utilization around that access
-point. This can be very helpful in planning how to allocate channels and
-diagnose performance issues.
-
-Here's a side-by-side of the 2G and 5G environment in my main living area. The
-2G wireless spectrum is almost entirely bogged down by all of the competing
-devices, but the 5G channels are much more readily available.
-
-<img src="{{ site.cdn }}2018network/unifi-wireless-rf-environment.png" class="img-responsive" title="A screenshot after performing radio frequency (RF) scans of both the 2.4GHz and 5GHz spectrum near one of my access points. Lots of contention in the 2G space." />
-
-I must use 5GHz wireless devices as much as possible!
-
 ### Neighboring access point data
 
 One of the unfortunate side effects of living in the city is that you are
@@ -766,6 +793,23 @@ much connectivity is around.
 <img src="{{ site.cdn }}2018network/unifi-neighboring-access-points-home.png" class="img-responsive" title="" />
 
 I regularly see 200-300 access points listed in this report.
+
+## RF environment
+
+If you are OK to take an access point offline for a few minutes, UniFi APs are
+able to perform a scan of the 2G and 5G wireless utilization around that access
+point. This can be very helpful in planning how to allocate channels and
+diagnose performance issues.
+
+Here's a side-by-side of the 2G and 5G environment in my main living area. The
+2G wireless spectrum is almost entirely bogged down by all of the competing
+devices, but the 5G channels are much more readily available.
+
+<img src="{{ site.cdn }}2018network/unifi-wireless-rf-environment.png" class="img-responsive" title="A screenshot after performing radio frequency (RF) scans of both the 2.4GHz and 5GHz spectrum near one of my access points. Lots of contention in the 2G space." />
+
+I must use 5GHz wireless devices as much as possible!
+
+<img src="{{ site.cdn }}2018network/living-room-problem-connection.png" class="img-responsive" title="" />
 
 ## UAP AC-HD Upgrade
 
@@ -820,10 +864,7 @@ services and streaming services I think are identified by IP range/bucket:
 - 216 GB of HBO streaming
 - 193 GB of Netflix
 - 130 GB of SSL/TLS
-- 58 GB of "Google User Content"
 - 51 GB of YouTube
-- 30.7 GB of "Microsoft Authentication via SSL"
-- 16 GB of Amazon video streaming
 
 <img src="{{ site.cdn }}2018network/unifi-traffic-home.png" class="img-responsive" title="" />
 
@@ -853,9 +894,6 @@ If sound is an issue, do note that the 8-port PoE switch would be a great
 product to buy if you want quiet, and the standard Security Gateway is very 
 nice, too.
 
-For me, I like having everything rackmounted, and so I end up with noisy
-rackmount gear, because racks are supposed to be loud.
-
 I replaced the Ubiquiti stock fans with Noctua's quiet fans. It's very quiet
 now, though my warranty is probably void.
 
@@ -872,44 +910,170 @@ now, though my warranty is probably void.
 
 
 
-# Condo wiring challenges
+# Condo wiring
 
+Many condos today are built with at least a modern Ethernet network in mind, so 
+when they pull coax to the media jacks in the unit, they also pull CAT5e or CAT6.
 
-The building I live in was built in 2003, a time when CAT5 is a very common
-cabling choice. Several other buildings built in the same condo era have CAT5
-from each floor's telecommunications closet to the unit.
+These then terminate in a structured media cabinet (SMC) enclosure embedded in a 
+wall. Usually made by Leviton, they tend to be in an office or by the electrical 
+panel.
 
-For whatever reason, my building's developer was cheap, and so our building
-was cursed with **Category 3 (CAT3)** network cable.
+Here's one from a condo I used to live in at Hotel 1000 / Madison Tower in 
+Seattle. Pretty good work was done, and I was able to add a CAT6 patch panel to 
+the SMC to easily build a wired network in that unit. The SMC has:
 
-What is CAT3? It's not CAT5, that's for sure. [According to wikipedia](https://en.wikipedia.org/wiki/Category_3_cable), it "was widely
+- A simple map of the unit and the jack identifiers
+- CAT5e punch-down block
+- Simple switch for the VOIP phone system
+- Unterminated coax running to all the wall plates
+- Terminated CAT5e (though not patched to wall jacks)
+- Home runs from the various providers
+
+<img src="{{ site.cdn }}2018network/leviton-in-wall.jpg" class="img-responsive" title="A Leviton SMC with unterminated and terminated cables including network and coax, VOIP switch, etc." />
+
+The building I live in was built in 2003, a time when CAT5 or CAT5e would be 
+an entirely common cabling choice, but ... yeah, I wasn't so lucky. While I was 
+aware of this before closing my real estate transaction, this isn't the sort of 
+thing that is a deal breaker.
+
+Even worse than not having an SMC were 2 other things: the home run to my unit 
+was not modern network cable, and also that the units in my building were 
+not built with network drops running throughout the units!
+
+## Office rack
+
+My network terminates in the office/media closet: a simple small rack that
+houses the UniFi network equipment, UPS, storage, media and IoT systems.
+
+<img src="{{ site.cdn }}2018network/office-rack6.jpg" class="img-responsive" title="In the office closet is a simple small rack with the network equipment, 3-zone media receiver, and other devices like an Xbox One and an Apple TV" />
+
+The CAT6 I've pulled through my walls terminates into keystone jacks along the 
+closet ceiling, and then patch cables connect to the switch.
+
+This was different than a more traditional commercial termination where you 
+might bring the network bundles together to a patch panel in the rack itself.
+This way, if and when I move out, the keystone jacks will be able to stay as-is.
+
+<!--
+<img src="{{ site.cdn }}2018network/closet-running-cat6.jpg" class="img-responsive" title="A photo from the process of running wire down to the rack during installation" style="max-width: 420px" />
+-->
+
+Getting here took a lot of time and effort...
+
+## CAT3
+
+My building's developer was cheap, and unfortunately that means that we were 
+cursed with *Category 3* (CAT3) cable daisy-chained throughout the individual 
+unit, running all the way from the telecommunication room through to the last 
+RJ11 jack in the unit after being terminated at 5 wall plates along the way.
+
+Not knowing the intentions of the developer, my guess is that they saw CAT3 as 
+a great way to save money when building out 200 units... while our original 
+building electrical plan includes reference to structured media centers and 
+network cable, all we got was CAT3.
+
+What's CAT3? [According to wikipedia](https://en.wikipedia.org/wiki/Category_3_cable), it "was widely
 used in computer networking in the early 1990s for 10BASE-T Ethernet".
 
-In my building, they've used 6-pair CAT3 cable, so that they can run
-a 10/100 network alongside traditional teleco service on the same cable,
-saving money.
+My building used 6-pair CAT3 (12 conductors), the idea being that it was a 
+compromise: you could offer a 10/100 network potentially alongside traditional 
+telephone service on the same cable.
 
-Here's the fun part: through some in-unit modifications and luck, I'm able to
-get full 1000Mbps connectivity through the CAT3 cable. While I'd love to
-pull new CAT6 from the comms room, the flex conduit run inside the concrete
-slab is only a quarter inch, and there are snags in the run, so it would be
-a super fragile operation.
+## Home run: risky to replace
 
-Within the unit, besides the soffits and a few slightly dropped ceilings, I've 
-had to run cable through the walls, making it challenging to pull cable
-through the metal studs.
+A conundrum with the CAT3 run between my unit and the IDF runs 
+through 1/4" flex conduit that's embedded in the concrete slab of the ceiling. 
+It isn't an entirely straight shot.
 
-## Metal studs
+While it does have a pull string, preliminary testing and planning to replace 
+the CAT3 with 2x CAT6 cables indicates that there may be snags or other 
+obstacles in the conduit.
 
-An interesting side effect of living in a high-rise building is that our tower 
-is built with some commercial construction materials, so we have steel studs 
-supporting the walls instead of wood.
+The risk: trying to replace the CAT3 could risk being left without phone or 
+Internet service to the unit. The decision was to not try and replace it at all.
+
+## CAT3: Terminating daisy chain
+
+For units in my building, the daisy chain design means that at most you can 
+punch down a single network jack in the unit, and in the name of not making 
+large alterations to units, this means that when Condo Internet first came by 
+to install their service for a previous owner of my unit, they punched down 
+the jack without terminating the CAT3 cable there...
+
+As a result, by my estimates after poking around inside the walls, the length 
+of the CAT3 wire being used was: 
+
+- 60 feet from the IDF to the conduit termination in the ceiling above my kitchen
+- 15 feet from the conduit to a blank wall plate and junction box in a closet
+- 300 feet from the j-box past 4 RJ11 jacks and a few rooms
+- The office Ethernet jack
+- 150 feet of additional cable past 2 RJ11 jacks
+
+This means an effective cable distance of 525 feet, likely leading to cross-talk or 
+general signal degradation. Higher-grade CAT6 spec cable should only be 
+run 328 ft. (100 m).
+
+My link was therefore negotiating to 100 Mbps full duplex. Not horrible, but 
+also not 1000 Mbps, and not as future-friendly.
+
+I went into experimentation mode and tested punching down network jacks at all 
+the RJ11 jacks in the unit to see what my network test equipment would say for 
+distance, as well as the negotiated link quality with Condo Internet, and nothing 
+improved much.
+
+This is not your standard T56B coloring, by the way, since the 
+orange and blue pairs are used for POTS.
+
+<img src="{{ site.cdn }}2018network/cat3-jack.jpg" class="img-responsive" title="Connecting to CAT3 - note the conductor colors, not traditional T56B" style="max-width: 420px" />
+
+At one of the closer jacks in terms of cable distance, I finally was able to 
+get a full duplex 1000 Mbps connection negotiated, but then the connection was 
+rather poor: speed test results around 200 Mbps, lots of dropped packets, etc.
+
+Back at the original blank wall plate (where a structured media cabinet really 
+should've been), I decided to clip and terminate the 4 pairs of network wire 
+right there. 
+
+While not clean, you'll see that this 2-gang junction box is stuffed with the 
+coax splitter and cables, CAT3 cable, and now I've added to it keystone jacks 
+for CAT6 I later pulled. This lets me tap into whichever segment I need.
+
+<img src="{{ site.cdn }}2018network/cat6-cat3-wall-mess3.jpg" class="img-responsive" title="" style="max-width: 420px" />
+
+I connected my Asus router I was using as a test, turned it on, and was 
+happy to discover a 1000 Mbps full duplex gigabit connection to Condo Internet, 
+yielding speed tests over 900 Mbps up and down. Low latency. No dropped packets. 
+Hooray! Good outcome.
+
+## Pulling CAT6 in-unit
+
+While I wouldn't be able to replace the home run CAT3 to my unit easily, I did 
+decide that having a wired network is very important to my home network 
+configuration.
+
+I wanted to be able to install a small rack as a media closet, and that was 
+located 80 feet away from the termination point. I also wanted to hardwire my 
+office computers, pull CAT6 to the television mounts to do HDMI-over-HDBase, etc.
+
+<!--
+<img src="{{ site.cdn }}2018network/cat6-splicing.jpg" class="img-responsive" title="CAT6 keystone punchdown" />
+-->
+
+In the end I pulled over 2,400 feet of CAT6 throughout my condo and was able to 
+bring online 20 CAT6 jacks.
+
+## Steel studs 
+
+My condo does not have wood studs, but instead steel, supporting the walls. 
 
 Metal studs are perforated already with holes for wires to be pulled through, 
 as long as you remember to use wire grommits to protect from fraying and damaging 
 the wire.
 
-A positive for metal studs is that there's no drilling through wood fire blocks.
+A positive for metal studs is that there's no drilling through wood fire blocks 
+or studs themselves, as long as you can carefully fish wire through the 
+existing wire holes.
 
 ## Interior vs exterior walls
 
@@ -923,58 +1087,35 @@ In my office I run speaker wire, several CAT6 pulls, and 2x digital optical
 audio cables through the floor instead of the shared wall with an adjacent 
 unit.
 
-## CAT3
+### Drop ceilings
 
-<img src="{{ site.cdn }}2018network/cat3-jack.jpg" class="img-responsive" title="" />
+Thankfully my unit's utilities tend to run in the ceiling above the kitchen, 
+bathrooms and other spaces. The living areas have no drop ceiling, so there is 
+only concrete above, leaving no wiring space.
 
-<!--
-<img src="{{ site.cdn }}2018network/cat6-splicing.jpg" class="img-responsive" title="CAT6 keystone punchdown" />
--->
+Here's a look inside the ceiling above a bathroom - lots of electrical 
+steel conduit.
 
-## No structured media center
+<img src="{{ site.cdn }}2018network/electrical-in-ceiling.jpg" class="img-responsive" title="A peek inside the ceiling above a bathroom at the electrical flex conduit" />
 
+Challenges include:
 
-structured media
-leviton
-hotel/condo
+- Not running network cable parallel to electrical when close
+- Pulling conduit and wire with minimal wall damage and patching
+- Navigating obstacles including fire systems and forced air ducts
 
-<img src="{{ site.cdn }}2018network/leviton-in-wall.jpg" class="img-responsive" title="" />
+In several locations I decided to run flex conduit to make pulling wire later 
+easier, and then have both CAT6 and speaker wire running inside. Here you 
+can see a flex conduit coupling, ductwork, sprinker system water pipes, and 
+the hot and cold water pipes running above the kitchen cabinets:
 
-cat6 cat3 mess
-<img src="{{ site.cdn }}2018network/cat6-cat3-wall-mess3.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2018network/ceiling-running-cables.jpg" class="img-responsive" title="Running conduit and cabling in the ceiling above the kitchen cabinets" style="max-width: 420px" />
 
+Old work low voltage boxes are used where CAT6 terminates in closets, along 
+walls and other locations. Besides the service loop with 2x CAT6 runs is also 
+pull cord to make future changes easier.
 
-## Carlon RiserGard for "the future"
-
-## HDMI over Fiber, HDMI over CAT6
-
-<img src="{{ site.cdn }}2018network/office-rack6.jpg" class="img-responsive" title="" />
-
-
-ck2
-
-<img src="{{ site.cdn }}2018network/cloudkeytray2.jpg" class="img-responsive" title="" />
-
-
-cat6 wiring svc loop
-<img src="{{ site.cdn }}2018network/cat6-wiring-service-loop.jpg" class="img-responsive" title="" />
-
-
-<img src="{{ site.cdn }}2018network/living-room-problem-connection.png" class="img-responsive" title="" />
-
-## Running CAT6 between rooms
-
-ceiling 1
-<img src="{{ site.cdn }}2018network/ceiling-running-cables.jpg" class="img-responsive" title="" />
-
-closet 1
-<img src="{{ site.cdn }}2018network/closet-running-cat6.jpg" class="img-responsive" title="" />
-
-elec in ceil
-<img src="{{ site.cdn }}2018network/electrical-in-ceiling.jpg" class="img-responsive" title="" />
-
-ent kitchen ceiling
-<img src="{{ site.cdn }}2018network/running-ent-through-kitchen-ceiling-walls.jpg" class="img-responsive" title="" />
+<img src="{{ site.cdn }}2018network/cat6-wiring-service-loop.jpg" class="img-responsive" title="A 2-gang old work low voltage opening with pull cord and CAT6" style="max-width: 420px" />
 
 <!--
 <img src="{{ site.cdn }}2018network/ubntuap.jpg" class="img-responsive" title="" />
