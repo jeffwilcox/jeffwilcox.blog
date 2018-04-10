@@ -5,110 +5,65 @@ title: "My home network: Ubiquiti UniFi gear, microwave gigabit Internet, CAT6 a
 categories: [tech]
 tags: [network, networking, internet, waveg]
 location: "SEATTLE, WA USA"
+neighborhood: "BELLTOWN"
 jumbotron: true
 jumbotronStyle: "background: url('//az414997.vo.msecnd.net/waz/2018network/rooftop-pano-web.jpg') no-repeat left center; background-size: cover; overflow: hidden; min-height: 500px;"
 jumbotronTitle: "A photo of the Belltown neighborhood and downtown Seattle, the Space Needle, and rooftop wireless backhaul networking equipment"
 ---
-Access points placed where they're useful. WiFi that just works. True symmetric
-gigabit Internet connectivity. Modern managed UniFi network gear built by
-[Ubiquiti Networks](https://www.ubnt.com/). Pulling CAT6 cable while dealing
-with ancient CAT3 in a condo.
+Fast access points mounted where they're useful. WiFi that just works. True 
+symmetric gigabit Internet. Modern managed network gear. Pulling CAT6 cable 
+while dealing with ancient CAT3 in a condo.
 
 This is my long-overdue post about some of the delightful experiences, challenges,
-and summary of the tech I'm thankful to have access to at home that pleases my
-inner geek.
+and summary of the tech I'm thankful to have had the time to install and enjoy
+at home.
 
-This post will be much too long, full of unoptimized images, regrettfully a rough
-experience for anyone without fast Internet. Some humblebrag in here, too. Blogging may
-be nearly dead, but there's no way I could tweet all of this.
+In Seattle we're lucky to have broad access in apartments/condos to
+gigabit Internet from providers such as 
+[Wave G](https://waveg.wavebroadband.com/) (a.k.a. CondoInternet). My building 
+is served by 60GHz millimeter wave connections, and I wanted to take the time
+to describe some of how that is setup for our condo.
 
-# Overview
+Beyond having access to fast connections, latency is super low. Our ISPs tend 
+to be very close to cloud providers to the peering opportunities in downtown Seattle's 
+colos and carrier hotels such as the 
+[Westin Building Exchange](https://www.westinbldg.com/), home of the non-profit 
+[Seattle Internet Exchange](https://www.seattleix.net/), moving terabits per second.
 
-Seattle a pretty good place to be a techie, and for urban dwellers, gigabit
-Internet is the norm, thanks to a number of specialized providers have been able
-to cherry-pick tech customers by quickly bringing fast connectivity into
-multi-family buildings. Thankfully this creates pressure for the more
-traditional providers to compete on price, speed and features.
+Having fast Internet creates pressure to be able to move a lot of packets to 
+take advantage of the speed.
+
+Like many other tech enthusiasts over the last few years, one of the best 
+tech decisions at home was moving to the [Ubiquiti Networks](https://www.ubnt.com/) 
+UniFi line of enterprise gear for routing, switching, and WiFi access points. 
+I've been running a Ubiquiti network at home for over 2 years and have to 
+share that story.
+
+Finally, I wanted to document some of the challenges with old CAT3 and 
+pulling new pulling CAT6 within the constraints of my condo building.
 
 <img src="{{ site.cdn }}2018network/post-collage.jpg" class="img-responsive" title="From left-to-right: UniFi security gateway pro, PoE switch, and other rack gear; a screenshot of the deep packet inspection features of the UniFi Controller; an access point glowing; screenshot of my 2G RF environment; picture of one of the intermediate distribution frame (IDF) near my unit" />
 
-## Wave G Gigabit (CondoInternet)
+Sorry, this post will be much too long, full of un-optimized images...
 
-CondoInternet, founded a decade ago (2008) in Seattle, has been the gold standard for
-tech employees looking for very fast, great service at home. While the company
-has been acquired a few times, today the service is known as
-[Wave G](https://waveg.wavebroadband.com/), and it's still
-as fast as ever, offering 100Mbps at home for $60/month and 1000Mbps for $80/month.
-
-Wave G doesn't have bandwidth caps or play games like the cable companies who are
-using words like "gig" a little too judiciously. You connect your router directly to
-the ISP's managed network switch a few feet away, where the port is configured to the speed you
-pay for.
-
-Wave G then has its own network with fiber and rooftop microwave backhaul gear,
-peering inside the [Westin Building Exchange](https://www.westinbldg.com/) and
-[Seattle Internet Exchange (SIX)](https://www.seattleix.net/),
-providing ultra low latency and short hops around the Internet.
-
-## Ubiquiti Networks - UniFi
-
-With a very fast Internet connection comes the responsibility of managing your
-home network with a mind toward simplicity, performance, and awesomeness.
-
-While many customers of CondoInternet enjoy the typical consumer gear - Asus,
-Linksys, Apple - it makes sense to invest in business-grade equipment that
-will last longer, offer advanced features, and be able to move as many packets
-as possible.
-
-I invested in a set of Ubiquiti Networks gear in 2016 after having an Asus router
-that bit the dust. While I started with their EdgeRouter line of carrier gear, I
-eventually switched to their [UniFi line of "Enterprise WiFi Systems"](https://unifi-sdn.ubnt.com/) and
-software-defined networking equipment, complete with an exceptional web interface, mobile
-apps, and a nice community / fan base.
-
-Today this means a dedicated controller device, multiple access points, a
-power-over-ethernet (PoE) switch, and their security gateway router product.
-
-With 2 years of experience with UniFi, I must say, I am a very happy customer, as
-evidenced by the build-outs I've done in my unit, in my building at large,
-convinced friends to do, and yes, my Twitter feed. I love their stuff!
-
-## Condo wiring challenges
-
-The building I live in was built in 2003, a time when CAT5 is a very common
-cabling choice. Several other buildings built in the same condo era have CAT5
-from each floor's telecommunications closet to the unit.
-
-For whatever reason, my building's developer was cheap, and so our building
-was cursed with **Category 3 (CAT3)** network cable.
-
-What is CAT3? It's not CAT5, that's for sure. [According to wikipedia](https://en.wikipedia.org/wiki/Category_3_cable), it "was widely
-used in computer networking in the early 1990s for 10BASE-T Ethernet".
-
-In my building, they've used 6-pair CAT3 cable, so that they can run
-a 10/100 network alongside traditional teleco service on the same cable,
-saving money.
-
-Here's the fun part: through some in-unit modifications and luck, I'm able to
-get full 1000Mbps connectivity through the CAT3 cable. While I'd love to
-pull new CAT6 from the comms room, the flex conduit run inside the concrete
-slab is only a quarter inch, and there are snags in the run, so it would be
-a super fragile operation.
-
-## Disclaimers
-
+<small>Disclaimer:<br />
 This post is from the perspective of a tech enthusiast in Seattle: I do not
 represent any of the companies mentioned, and the information I have about the
 Seattle region's Internet providers and services is only as accurate as what I
-have researched and the stories I've heard.
+have researched and the stories I've heard. While all of my initial Ubiquiti 
+equipment purchases were my own, in late 2017 I was provided a single UniFi 
+AC-HD access point unit by Ubiquiti to try out. I've since purchased a new 
+AC-HD access point at my own cost.</small>
 
-While all of my initial Ubiquiti equipment purchases were my own, in late 2017 I was
-provided a single UniFi AC-HD access point unit by Ubiquiti to try out. I have since
-purchased an AC-HD access point at my own cost.
 
-<p style="font-size: 36px" text="Too long; don't read">tl; dr</p>
 
-# Wave G
+
+<!-- ---------------- WAVE G ---------------- -->
+
+
+
+
+# Wave G / CondoInternet
 
 Even today, I remember the conversation with my friend Alex a decade ago when 15/2
 (15Mbps down, 2Mbps up) was a pretty common cable Internet product offering, and
@@ -120,31 +75,95 @@ if you had to get DSL, it would be even slower.
 >
 > Alex: "Well, it's real. Also, they offer 1000Mbps up and down, a static IP if you want it, no bandwidth caps, no contract. The future!"
 
-Turns out: it's real.
+Turns out: it's real. If you live in an apartment or condo in Seattle, chances 
+are you're reading this through your [Wave G](https://waveg.wavebroadband.com) 
+connection, but for those that are not familiar with the service, this is a 
+primer.
 
-The provider I use is called Wave G, formerly CondoInternet, formerly a part of
-Spectrum Networks, then acquired by Wave Broadband, and now it's owned by a
-leveraged-buyout/investment firm, TPG Capital, so that will be interesting to
-see where it goes.
+Wave G, known as CondoInternet before being acquired, was founded a decade ago 
+by techies who ran their own wholesale bandwidth business and wanted to have 
+fast Internet at home in their condos, too.
 
-Another area provider, CascadeLink, was purchased by Wave; and there are still
-a few other options - Webpass (now owned by Google Fiber) is in our
-neighborhood.
+Today it is the gold standard for everyone from tech employees working from home 
+to just being the best ISP to stream content through.
 
-From my home network, my CAT6 networked machines get sub-millisecond to 1ms
-ping times to Google, Microsoft, and all the major modern Internet services, with
-just a few hops.
+It's basically the opposite of Comcast, by the way: no contracts, no upward 
+price changes, quick service, no cable modem required, no bundling.
 
-This is because Wave G is just a hope away from Seattle's best peering opportunity: our
-building has gigabits of bandwidth to the [Westin Building Exchange](https://www.westinbldg.com/),
-within which is the non-profit [Seattle Internet Exchange](https://www.seattleix.net/about).
+All you have to do is setup your account and then plug an Ethernet cable 
+into your homerun wallplate, and a few feet away, in a comms closet, is Wave G's 
+managed switch equipment and network.
+
+Interestingly Wave has more recently been purchased by a leveraged buyout and 
+investment firm, TPG Capital, so it'll be interesting to see what happens to 
+the service over time. There's also some competition in this space - while 
+another similar service called Cascadelink was acquired by Wave as well, Google 
+Fiber now owns Webpass, which is popping up in buildings in the neighborhood, 
+offering slightly less expensive gigabit connections.
+
+## Pricing
+
+If you pay for gigabit, Wave G configures your switch port for full duplex 
+1000Mbps, otherwise your link will negotiate to 100Mbps.
+
+The pricing as far as I can remember has been $60/month for 100Mbps 
+or $80/month for 1000Mbps. A few years ago gigabit was double the price of the 
+hundred megs, so there was a positive price adjustment.
+
+## Most of the web is slow...
+
+Keep in mind, while 1000Mbps is the theoretical maximum, most web sites and 
+cloud services aren't going to be able to make full use of your connection 
+in any sustained way.
+
+<img src="{{ site.cdn }}2018network/quick-windows-download.png" class="img-responsive" title="At least you can download Windows and Linux ISO images in a few minutes" />
+
+While you can stream 4K content just fine without buffering, or download an OS 
+image in seconds, at home you don't really need a gigabit connection for most 
+daily web tasks (yet).
+
+Having it there is great and you're ready for the future.
+
+## Wave G's network
+
+Once your home is connected to Wave G's network, they have their own 
+efficient gear that connects to their fiber and rooftop microwave backhaul gear,
+eventually peering inside datacenters and nearby colos like the 
+[Westin Building Exchange](https://www.westinbldg.com/) and the 
+[Seattle Internet Exchange (SIX)](https://www.seattleix.net/),
+providing short hops around the Internet.
+
+From my home network, my CAT6 networked machines get sub-millisecond - to - 1ms
+ping times to Google, Microsoft, and all the major modern Internet services, just 
+a few hops away...
 
 <img src="{{ site.cdn }}2018network/waveg-ping-times.png" class="img-responsive" title="" />
 
+## 890-940Mbps typical test speeds
+
+Testing with [SpeedTest.net](http://www.speedtest.net/) I'll usually see 
+download speeds between 850-950Mbps depending on the test site selected, and 
+interestingly, my upload speeds are usually measured consistently around 950Mbps.
+
+Only wired equipment will experience the full potential, as WiFi clients in my
+urban neighborhood deal with a lot of interference from thousands of competing
+wireless devices.
+
+According to Netflix's [fast.com](https://fast.com), my connection is ~920Mbps.
+I like that the Netflix service does a good job of estimating your ideal 
+Netflix experience, a super common activity for home users.
+
+<img src="{{ site.cdn }}2018network/netflix-fast.png"
+class="img-responsive"
+style="max-width: 360px"
+title="According to Netflix fast.com, the connection speed is approximately 920 Mbps." />
+
 ## Rooftop millimeter wave radio backhaul
 
-Our condo building's Wave G connectivity is based on microwave, but the Wave G
-network does also include fiber links. If you look out from our tower's roof toward Elliott Bay, you can see a few of
+My building isn't connected to Wave G's network by fiber, but instead by 
+millimeter wave / microwave backhaul radios.
+
+If you look out from our tower's roof toward Elliott Bay, you can see a few of
 the other nearby buildings that we connect to:
 
 <img src="{{ site.cdn }}2018network/other-buildings.jpg" class="img-responsive" title="A look toward Elliott Bay, highlighting microwave Internet rooftop connections as part of the neighborhood mesh network." />
@@ -155,33 +174,16 @@ neighborhood, there are many rooftop sites:
 <img src="{{ site.cdn }}2018network/other-buildings2.jpg" class="img-responsive" title="Looking across the Belltown neighborhood, nearly every rooftop has microwave backhaul equipment." />
 
 Our roof has at least 6x [BridgeWave 60GHz millimeter wave radios](https://bridgewave.com/bw64/).
-Each of these antennas provides a 1Gbps full-duplex encrypted link between locations.
+Each of these antennas provides a 1Gbps full-duplex encrypted link between locations,
+essentially a large private mesh network between campuses.
 
 <img src="{{ site.cdn }}2018network/rooftop-microwaves.jpg" class="img-responsive" title="Rooftop 60GHz microwave backhaul equipment." />
-
-## Low-latency + fast
-
-I usually get speeds in excess of 900Mbps when I test with [SpeedTest](http://www.speedtest.net/) or
-other services, though sometimes I'll see speeds closer to 700Mbps. Only
-wired equipment will experience the full potential, as WiFi clients in my
-urban neighborhood deal with a lot of interference from thousands of competing
-wireless devices.
-
-According to Netflix's [fast.com](https://fast.com) just now, my connection
-speed is approximately 920 Mbps. I like that the Netflix service does a good
-job of estimating your Netflix experience, which is a super common activity
-for home users.
-
-<img src="{{ site.cdn }}2018network/netflix-fast.png"
-class="img-responsive"
-style="max-width: 400px"
-title="According to Netflix fast.com, the connection speed is approximately 920 Mbps." />
 
 ## Static IPs and IPv6 blocks
 
 I don't actually know the latest on this story (whether it's a monthly or a
-one-time charge now), but when I requested my static IP years ago, it was a one-time
-fee for a static static IPv4 address, and now I also have my own IPv6 block.
+one-time charge now), but when I requested my static IP years ago, it was a one-time 
+$15 fee for a static static IPv4 address, and now I also have my own IPv6 block.
 
 ## Great tech support
 
@@ -294,6 +296,15 @@ Our building is actually composed of 2 towers. Large conduit in the C level of
 the garage (3 floors underground) connects the 2 towers. Wave G has run fiber
 between the towers, and other communications providers have their coax/etc.
 running in similar conduit.
+
+
+
+
+<!-- ---------------- SIX, WBX ---------------- -->
+
+
+
+
 
 # Seattle's Internet connectivity
 
@@ -415,7 +426,46 @@ they still tend to have slower upload capacity, bandwidth caps, and that whole
 corporate Philadelphia thing going against it. Will be interesting to see how
 the DOCSIS 3.1 rollout goes for more communities.
 
-# My UniFi network
+
+
+
+<!-- ---------------- UBIQUITI ---------------- -->
+
+
+
+
+
+# Ubiquiti UniFi
+
+With a very fast Internet connection comes the responsibility of managing your
+home network with a mind toward simplicity, performance, and awesomeness.
+
+While many customers of CondoInternet enjoy the typical consumer gear - Asus,
+Linksys, Apple - it makes sense to invest in business-grade equipment that
+will last longer, offer advanced features, and be able to move as many packets
+as possible.
+
+I invested in a set of Ubiquiti Networks gear in 2016 after having an Asus router
+that bit the dust. While I started with their EdgeRouter line of carrier gear, I
+eventually switched to their [UniFi line of "Enterprise WiFi Systems"](https://unifi-sdn.ubnt.com/) and
+software-defined networking equipment, complete with an exceptional web interface, mobile
+apps, and a nice community / fan base.
+
+Today this means a dedicated controller device, multiple access points, a
+power-over-ethernet (PoE) switch, and their security gateway router product.
+
+With 2 years of experience with UniFi, I must say, I am a very happy customer, as
+evidenced by the build-outs I've done in my unit, in my building at large,
+convinced friends to do, and yes, my Twitter feed. I love their stuff!
+
+
+
+
+
+
+
+
+
 
 Separation of concerns is central to any software developer's mindset, and when it comes
 to the ever-important home network, until recently "enterprise-grade" networking has been
@@ -528,22 +578,6 @@ panels open at once to maintain your productivity in managing the site.
 
 13
 <img src="{{ site.cdn }}2018network/unifi-sg-home.png" class="img-responsive" title="" />
-
-14
-<img src="{{ site.cdn }}2018network/unifi-switch-view-southb.png" class="img-responsive" title="" />
-
-15
-<img src="{{ site.cdn }}2018network/unifi-switchstats-graphs-home.png" class="img-responsive" title="" />
-
-16
-<img src="{{ site.cdn }}2018network/unifi-topology-building.png" class="img-responsive" title="" />
-
-17
-<img src="{{ site.cdn }}2018network/unifi-topology-home.png" class="img-responsive" title="" />
-
-18
-<img src="{{ site.cdn }}2018network/unifi-topology-home-simple.png" class="img-responsive" title="" />
-
 
 23
 <img src="{{ site.cdn }}2018network/updated-home-network-rack.jpg" class="img-responsive" title="" />
@@ -664,7 +698,7 @@ much connectivity is around.
 
 I regularly see 400-500 access points listed in this report.
 
-## RF environment scans
+## RF environment
 
 If you are OK to take an access point offline for a few minutes, UniFi APs are
 able to perform a scan of the 2G and 5G wireless utilization around that access
@@ -679,12 +713,8 @@ devices, but the 5G channels are much more readily available.
 
 I must use 5GHz wireless devices as much as possible.
 
-
-
 21
 <img src="{{ site.cdn }}2018network/unifi-wireless-networks.png" class="img-responsive" title="" />
-
-
 
 ## AC-HD Upgrade
 
@@ -703,45 +733,179 @@ the interference in the city, this is about the most that I've ever been able
 to maintain beyond the wired network.
 
 
+## Topology
 
+While my home network is rather simple - a router, a primary switch, two access
+points and a switch under my desk, the topology view for the UniFi network is
+super interesting and helpful when building out larger networks.
+
+<img src="{{ site.cdn }}2018network/unifi-topology-home-simple.png" class="img-responsive" title="" />
+
+By being able to visualize the network, understand which ports are uplinks and
+downlinks, the channels in use by various access points, all in one place is
+super.
+
+<!--
+<img src="{{ site.cdn }}2018network/unifi-topology-home.png" class="img-responsive" title="" />
+-->
+
+<img src="{{ site.cdn }}2018network/unifi-topology-building.png" class="img-responsive" title="" />
+
+You can toggle link labels and clients on/off.
+
+## Switch stats
+
+Similar to the topology view, there are multiple ways to dig through the
+data regarding your switch ports. In the Switch Stats view you can see aggregate 
+stats for individual ports over time, the name and type of connection for the 
+client connected to a port, etc.
+
+<img src="{{ site.cdn }}2018network/unifi-switchstats-graphs-home.png" class="img-responsive" title="The switch stats view helps show per-port aggregated stats and other information, such as the name of the connected client" />
+
+For any individual switch, you can always see the summary of its ports and types 
+of connections from any part of the UniFi UI.
+
+<img src="{{ site.cdn }}2018network/unifi-switch-view-southb.png" class="img-responsive" style="max-width:420px" title="" />
 
 
 ## UniFi deep packet inspection
 
-In this screenshot, I've selected my Apple TV client entry. The Deep Pack Inspection experience lets me see a summary of the services that the client has been using. Looks like we use most of our media streaming bandwidth on HBO Now, Netflix, etc.
+If you turn deep packet inspection (DPI) on, you begin to collect statistics 
+and all sorts of interesting information about how your WAN connection is being
+used by clients.
+
+At a high level, in aggregate, you'll be able to learn where your household 
+or business spends a lot of time, and at the individual client connection level, 
+you can get summary stats there, too.
+
+Since many web sites and services are encrypted these days (a good thing!), you 
+end up with some easily identified sources of data and then a lot falls by the 
+wayside... most sites are just "encrypted", and then the really big cloud 
+services and streaming services I think are identified by IP range/bucket:
+
+- 406 GB of HTTP over TLS (encrypted web traffic, could be nearly any site)
+- 216 GB of HBO streaming
+- 193 GB of Netflix
+- 130 GB of SSL/TLS
+- 58 GB of "Google User Content"
+- 51 GB of YouTube
+- 30.7 GB of "Microsoft Authentication via SSL"
+- 16 GB of Amazon video streaming
+
+<img src="{{ site.cdn }}2018network/unifi-traffic-home.png" class="img-responsive" title="" />
+
+If I select a client from the clients view, like my Apple TV, I can then see
+its individualized totals...
+
 <img src="{{ site.cdn }}2018network/unifi-clients-home-plus-dpi-apple-tv.png" class="img-responsive"
      title="In this screenshot, I've selected my Apple TV client entry. The Deep Pack Inspection experience lets me see a summary of the services that the client has been using. Looks like we use most of our media streaming bandwidth on HBO Now, Netflix, etc." />
 
-The DPI view for my iPhone shows details about how I use my phone on the home network.
+<!--
 <img src="{{ site.cdn }}2018network/unifi-dpi-my-phone.png"
 style="max-width: 320px"
 class="img-responsive"
      title="The DPI view for my iPhone shows details about how I use my phone on the home network." />
+-->
 
-
-19
+<!--
 <img src="{{ site.cdn }}2018network/unifi-traffic-building.png" class="img-responsive" title="" />
-
-20
-<img src="{{ site.cdn }}2018network/unifi-traffic-home.png" class="img-responsive" title="" />
+-->
 
 ## VPN
 
+Lots of great VPN support is of course built into the UniFi Security Gateway.
+
 ### Remote VPN
+
+Being able to remotely connect via L2TP is nice to let me get to my home 
+network and its devices from anywhere in the world, whether that's my iPhone,
+a notebook computer somewhere, etc.
+
+It's easy to setup and configure, and the latest release of the UniFi controller 
+software has a built-in RADIUS server - so for me, I've found it even easier 
+than before, when I used to run a RADIUS server on my network storage server instead.
 
 ### Site-to-site VPN
 
+Although I no longer utilize it, I used to run an Azure site-to-site VPN 
+connection between my local network and my personal vnet in the cloud. This
+made it super simple to connect to and debug a Kubernetes cluster I was
+experimenting with.
+
+### Virtual LANs
+
+I make use of VLAN tagging to keep my guest network separate from my primary 
+network, and also to separate most of my "Internet of Things" connections from 
+my other gear.
+
 ## Fan noise
 
+The higher-end PoE and security gateway products are not quiet. They aren't
+really designed for my use case - home office, media cabinet.
 
-One issue I had, with my home office use of the UniFi equipment, is that I do not have a nicely cooled server room to store the equipment in. Instead, the equipment is in the media cabinet connected to my home office.
+If sound is an issue, do note that the 8-port PoE switch would be a great 
+product to buy if you want quiet, and the standard Security Gateway is very 
+nice, too.
+
+For me, I like having everything rackmounted, and so I end up with noisy
+rackmount gear, because racks are supposed to be loud.
 
 The fans in both the UniFi 24-port PoE switch and also the security gateway were too noisy for my taste, so I replaced them with Noctua brand quiet fans. It's much nicer now, though my warranty is probably voided. The cost for a quiet home environment.
 <img src="{{ site.cdn }}2018network/unifi-fan-modification.jpg" class="img-responsive"
      title="Noctua replacement fans I have put in the security gateway device." />
 
 
-# Condo challenges
+
+
+<!-- ---------------- CONDO WIRING ---------------- -->
+
+
+
+
+
+# Condo wiring challenges
+
+
+The building I live in was built in 2003, a time when CAT5 is a very common
+cabling choice. Several other buildings built in the same condo era have CAT5
+from each floor's telecommunications closet to the unit.
+
+For whatever reason, my building's developer was cheap, and so our building
+was cursed with **Category 3 (CAT3)** network cable.
+
+What is CAT3? It's not CAT5, that's for sure. [According to wikipedia](https://en.wikipedia.org/wiki/Category_3_cable), it "was widely
+used in computer networking in the early 1990s for 10BASE-T Ethernet".
+
+In my building, they've used 6-pair CAT3 cable, so that they can run
+a 10/100 network alongside traditional teleco service on the same cable,
+saving money.
+
+Here's the fun part: through some in-unit modifications and luck, I'm able to
+get full 1000Mbps connectivity through the CAT3 cable. While I'd love to
+pull new CAT6 from the comms room, the flex conduit run inside the concrete
+slab is only a quarter inch, and there are snags in the run, so it would be
+a super fragile operation.
+
+
+
+
+
+
+
+
+
+Upgrading and improving a wired network is pretty difficult in a building 
+such as mine: we're a steel-and-concrete construction building, so unless
+there's existing conduit that was placed when the concrete slab was originally 
+poured, there's no way to get new capacity and technologies easily from the 
+communications room to the unit.
+
+Within the unit, besides the soffits and a few slightly dropped ceilings, you 
+need to cable through the walls, making it really challenging to pull cable
+through the studs.
+
+On top of all this, my condo building developer was a little cheap (they all
+are), and so in the end we got CAT3 to the home instead of CAT5 or newer.
 
 ## WiFi in the city
 
