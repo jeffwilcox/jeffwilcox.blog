@@ -238,16 +238,17 @@ is within walking distance of a Microsoft Connector bus stop for employees.
 
 ## Building infrastructure
 
-I am only familiar with the infrastructure in my current building, but I imagine
-all are relatively similar.
+Having helped with enough projects around my condo building, I'm pretty familiar 
+with its communications infrastructure. Here's how our building's comms work, 
+and I imagine most condos designed in this era are pretty similar.
 
-The Main Distribution Frame (MDF) is located 3 levels below ground, on our "C"
-level of the parking garage. This is where the phone company, multiple cable
-companies, and other services come together, and for Wave G, it is where there is
-switching equipment, fiber splicing, UPS backup, etc.
+The Main Distribution Frame (MDF) is located 3 levels below ground (the "C level garage") 
+in the core of our high-rise tower. The MDF is where the phone company, multiple cable
+companies, and other services come together. For Wave G, this is where they 
+have installed their core switching equipment, fiber splices, and UPS backup.
 
-Here is our building's MDF. From left to right, there's:
-- the traditional telephone provider
+Here's a photo from within our MDF. From left to right, approximately:
+- traditional telephone provider
 - various business phone lines
 - fire equipment
 - VOIP lines and our building's private network
@@ -258,44 +259,42 @@ Here is our building's MDF. From left to right, there's:
 
 <img src="{{ site.cdn }}2018network/2018-mdf-2.jpg" class="img-responsive" title="A look at the main distribution frame (comms room) serving the building, including traditional telco, multiple cable providers, DirecTV, and our rooftop microwave backhaul provider." />
 
-From the MDF, fiber runs up 15 floors to the rooftop of the building through
-risers, and on the roof, microwave gear is mounted in multiple clusters.
+From the MDF, Wave G fiber runs in 2 directions: up 15 floors to the rooftop
+where the millimeter wave gear is mounted, and the other several hundred feet 
+through conduit in the garage, up several floors to the low-rise tower.
 
-Every few floors up the risers we have telecomm rooms. These rooms are also known
-as Intermediate Distribution Frame (IDF) rooms, and tend to have switching
-gear connected to the building's emergency generator power circuit.
+Within the core of the building, telcom rooms alternate with power generation 
+and electric meter utility rooms. The communication rooms are also known
+as Intermediate Distribution Frame (IDF) rooms.
 
-The switch gear is located adjacent to coax cable gear, traditional telephone
-gear, etc.
+The IDFs are  a mess, and I expect all the carriers are to blame a little bit. 
+Respect to the contractors who visit and leave the IDFs cleaner than they found 
+them.
 
-The IDFs are typically a mess. Here's the IDF on my floor... from left to right,
-there's a panel where the fiber and some network cabling goes up to the rooftop
-microwaves, then Comcast, then some of our building's network, Wave G equipment
-and switch, traditional telco, individual unit CAT3 patch panels, coax and
-other equipment, and a bunch of messy coax splitters and amplifiers.
+Here's the IDF on my floor... from left to right, there's a panel where the fiber 
+and some network cabling goes up to the rooftop, Comcast, some of our building's 
+private network cable, Wave G equipment and switch, traditional telco, 
+individual unit CAT3 patch panels, coax and other equipment, and a bunch of messy 
+coax splitters and amplifiers.
 
 <img src="{{ site.cdn }}2018network/idf-11.jpg" class="img-responsive" title="A sample IDF, full of equipment, switch, lots of different communications providers in one place." />
 
-Our individual unit's homerun cabling comes into punchdown terminals and then
-can be patched into the Wave G switch as needed.
+Each unit's homerun cabling comes into punchdown terminals where both POTS and 
+Wave G can be patched in. Wave G customers then are patched to their switch.
 
-Here's a closer look at the short patch runs from the switch down to hte
+Here's a closer look at the short patch runs from the switch down to the
 CAT3 unit patch panels:
 
-<img src="{{ site.cdn }}2018network/idf-patch.jpg"
-style="max-width: 300px"
-class="img-responsive" title="" />
+<img src="{{ site.cdn }}2018network/idf-patch.jpg" style="max-width: 300px" class="img-responsive" title="A closer look at the patch connections between the Wave G switch, individual units punchdown terminals, and telco pairs" />
 
-And then the CAT3 runs go through small flex conduit embedded in the concrete
-ceiling slabs. A single CAT3 cable in our building can then support both
-plain-old-telephone-service (POTS) and modern Wave G (Ethernet). Sort of:
+A single CAT3 cable in our building can then support both
+plain-old-telephone-service (POTS) and modern Wave G (Ethernet). Sigh.
+
+From the punchdown panels, a unit's CAT3/5/6 cable runs through the ceiling in 
+a rather tiny flex conduit embedded in the concrete slab. 
 
 <img src="{{ site.cdn }}2018network/idf-conduit-homeruns.jpg" class="img-responsive" title="Conduit homeruns embedded in the slab" />
 
-Our building is actually composed of 2 towers. Large conduit in the C level of
-the garage (3 floors underground) connects the 2 towers. Wave G has run fiber
-between the towers, and other communications providers have their coax/etc.
-running in similar conduit.
 
 
 
@@ -308,65 +307,68 @@ running in similar conduit.
 
 # Seattle's Internet connectivity
 
-## Seattle's peering community
+Not counting my favorite Azure data center where I spend a lot of my days, the 
+Pacific Northwest's Internet gravity is at the edge of Belltown at the corner 
+of Virginia Street and 6th Avenue... not because of the thousands of Amazonians 
+looking for lunch around there every daym but because of the Westin Building 
+next to the Westin hotel.
 
-Seattle, and the Pacific Northwest's Internet gravity, is located the corner of
-6th Avenue and Virginia Street at the edge of Belltown and downtown Seattle.
-Known as the Westin Building, its original anchor tenant was the corporate office
-for the Westin hotel chain, until the chain was purchased by Starwood Hotels.
-Once Westin relocated its HQ, all the vacant space became prime network real
-estate.
+The Westin Building, named for the corporate headquarters of the Westin hotel 
+chain (before they were purchased by Starwood Hotels and then a much more boring hotel
+conglomerate), is an office building turned carrier and fiber hotel.
 
-I honestly don't know the exact network topology between my condo building
-and the Westin Building Exchange (WBX), whether it's microwave to WBX or if it is
-microwave to the NYI SEA1 data center on Western Ave, a few blocks away from
-my condo, and then fiber from there to WBX.
+I don't know the network topology between my condo and the Westin Building, but 
+Wave G is part of Spectrum, an extension member of the Seattle Internet Exchange 
+hosted in the Westin Building... near my condo there's also the NYI SEA1 
+datacenter on Western Ave, and there must be plenty of fiber between there and 
+the Westin Building.
 
 ## Westin Building Exchange
 
-The Seattle intersection of 6th Ave and Virginia Street is a busy spot: there's
-gridlock on the streets, thousands of Amazon employees finding lunch each day,
-the Westin hotel next door, but the best thing of all is the
-Westin Building Exchange: terabytes of bandwidth; the epicenter of Seattle's Internet.
-
-While the Westin Building was once a traditional office building, today the 34-story
-building is mostly full of carriers, network gear, and tons of fiber. I can only
-imagine how much bandwidth the building has.
-
-The building is home to over 200 ISPs, carriers and service providers; according
-[to the Westin Building Exchange datasheet](https://www.westinbldg.com/Content/PDF/WBX_Fact_Sheet.pdf),
+Today the 34-story Westin Building is mostly colo space, tons of network gear 
+and fiber, and I can only imagine the building's bandwidth, as they are home to 
+over 200 ISPs. According to 
+[the Westin Building Exchange datasheet](https://www.westinbldg.com/Content/PDF/WBX_Fact_Sheet.pdf),
 they have over 19.5 megawatts of backup generation available from 17 diesel
 generators.
 
 If you've heard of Equinix, a major connectivity company, their SE2 data
 center is located within the Westin Building, and a few years ago they built
-an orange/concrete-colored 8-story building, SE3, next to the Westin Building's
-garage and Palace Kitchen. It was fun watching that get built out.
+an orange/concrete-colored 8-story building, SE3, located right next door to the
+Westin Building's garage... and Palace Kitchen. Tasty.
 
 ## Seattle Internet Exchange (SIX)
 
-You can read all about the [Seattle Internet Exchange](https://www.seattleix.net/about) on their
-web site, but the exchange is now a 20+ year-old non-profit that basically
-started out in a closet of the Westin Building.
+The [Seattle Internet Exchange](https://www.seattleix.net/about) (SIX) has a cool 
+story... as a non-profit that is now more than 20 years old, they offer the 
+community a great service by peering terabits of traffic. They started out in 
+a small closet in the Westin Building.
 
-It started because some folks were frustrated by a 111ms round trip time
-between 2 companies on the very same 19th floor of the Westin Exchange... turns
-out their traffic was going from the 19th floor to Texas and back to the other
-business.
+SIX is completely transparent, their website is full of near real-time graphs 
+of their aggregate traffic, lists of all their peering members, etc. 
+[Really do go check out the SIX statistics page now](https://www.seattleix.net/statistics/). 
+While you're at it, I also enjoyed a [YouTube video about SIX with Jared Reimer](https://www.youtube.com/watch?v=N2ChhZcH2ok) that helps share some of this story from a conference.
 
-There's also a very cool [YouTube video with Jared Reimer](https://www.youtube.com/watch?v=N2ChhZcH2ok)
-that's fun to watch.
+The story about SIX is that a few engineers were super frustrated to find that 
+they were seeing "a 111ms round trip time between 2 companies on the very same 
+19th floor of the Westin Exchange"... turns out their traffic was going from 
+the 19th floor... to Texas... back to the 19th floor of the building. Peering 
+sure could help.
 
 As of 2017 they had 284 participants in the exchange who pay a one-time
-reasonable fee for a specified port type; today at peak they aggregate over a
+reasonable fee for their port; today at peak they aggregate over a
 terabit of traffic.
 
-Awesome graphs and stats https://www.seattleix.net/statistics/
+Here's [their topology, including the switch equipment and models](https://www.seattleix.net/topology).
 
-Interesting peers according to their their transparent
-switch records (
-[cool list](https://www.seattleix.net/participants/switches/SIX_7512R.txt),
-[another cool list](https://www.seattleix.net/participants/switches/SIX_7508E.txt):
+If you happen to be sitting nearby to SIX, they do not charge monthly port 
+connection fees, just the one-time... $100 for a 1000Mbps port, $2,000 for 10GbE, 
+and $10,000 for your 40GbE or 100GbE SFP module.
+
+Since they are very transparent in all things, you can review [the whole list](https://www.seattleix.net/participants/) or 
+[this list](https://www.seattleix.net/participants/switches/SIX_7512R.txt) and 
+[that list](https://www.seattleix.net/participants/switches/SIX_7508E.txt) of 
+the companies and providers who peer with them, including:
 
 - Amazon
 - Dropbox
@@ -376,55 +378,22 @@ switch records (
 - Microsoft
 - Netflix
 
-This includes all the cloud computing providers. My ISP, wave, has a 40Gbps
-connection between its network and SIX.
+Having all the cloud computing providers close is great. Wave G / Spectrum is 
+part of the SIX extension and has a 40Gbps port between its network and SIX.
 
 If I `traceroute` from my home to a VM I have in Azure, I see just a hops,
 each a millisecond or two at most:
 
 1. My UniFi router
 2. My building's router
-3. Wave G / Spectrum network
+3. Wave G / Spectrum
 4. Seattle Internet Exchange router
-5. `six2.microsoft.com`
-6. Various hops around into the right place
+5. Microsoft's SIX network edge
+6. A few hops around Microsoft
 
 If I trace the route to Google, they peer directly with Spectrum, so it's even
 fewer hops to them (8 hops from my PC to 8.8.8.8).
 
-## Competition
-
-Three years ago, the [Seattle City Council ended the "cable franchise" system](https://www.geekwire.com/2015/seattle-city-council-approves-legislation-that-eliminates-cable-tv-franchise-districts/)
-in the city, enabling multiple cable providers to finally compete for service.
-This is most evident in our condo now: for over a decade our
-building was served by what is today known as "Wave Broadband", but has had other
-names such as Millennium Digital in the past. In late 2017, Comcast brought conduit
-into our building's main distribution frame and then to each floor's independent
-distribution frame, so today every unit in our building has complete choice
-between 5 providers, including 2 cable providers for TV, Internet, etc..
-
-While the franchise rules were removed a few years ago, only recently did our
-building's 10-year contract expire (with an exclusivity clause) expire,
-allowing us to open the cable portion of the building up to multiple providers.
-
-Every individual unit in our building has their own choice between multiple of the
-following providers:
-
-- CenturyLink traditional phone and DSL
-- Wave broadband cable TV, Internet, phone
-- Comcast cable TV, Internet, phone
-- Wave G Gigabit Internet
-- DirecTV satellite TV service
-
-I believe that most people in our building use Wave G for Internet, but I do not
-have data. Not having a modem between the provider is clean and simple.
-
-Comcast is even starting to bow to the pressure of "gigabit",
-probably because all the Seattle tech employees living near downtown are in big
-modern apartment buildings with Wave G. While Comcast is advertising "gig speeds",
-they still tend to have slower upload capacity, bandwidth caps, and that whole
-corporate Philadelphia thing going against it. Will be interesting to see how
-the DOCSIS 3.1 rollout goes for more communities.
 
 
 
@@ -445,42 +414,28 @@ Linksys, Apple - it makes sense to invest in business-grade equipment that
 will last longer, offer advanced features, and be able to move as many packets
 as possible.
 
-I invested in a set of Ubiquiti Networks gear in 2016 after having an Asus router
-that bit the dust. While I started with their EdgeRouter line of carrier gear, I
-eventually switched to their [UniFi line of "Enterprise WiFi Systems"](https://unifi-sdn.ubnt.com/) and
-software-defined networking equipment, complete with an exceptional web interface, mobile
-apps, and a nice community / fan base.
+I invested in a set of Ubiquiti Networks gear in 2016 after deciding I had had 
+enough with consumer WiFi equipment. I had a decent Cisco managed switch sitting 
+behind an Asus router, and an Apple AirPort Extreme acting as an additional AP. 
+Nothing fit together, I had to reboot the router constantly, and I knew there 
+had to be something better out there.
 
-Today this means a dedicated controller device, multiple access points, a
-power-over-ethernet (PoE) switch, and their security gateway router product.
+While I first adopted their EdgeRouter PoE device, and appreciated its declarative 
+configuration story, I found myself wanting the integrated experience and dashboards 
+that the Ubiquiti [UniFi line of enterprise WiFi systems"](https://unifi-sdn.ubnt.com/)
+had.
+
+Today my home network is built from:
+
+- UniFi Security Gateway Pro
+- UniFi 24-port 250W PoE switch
+- 2x UniFi UAP AC-HD Access Points
+- UniFi 8-port PoE switch
+- UniFi CloudKey
 
 With 2 years of experience with UniFi, I must say, I am a very happy customer, as
 evidenced by the build-outs I've done in my unit, in my building at large,
 convinced friends to do, and yes, my Twitter feed. I love their stuff!
-
-
-
-
-
-
-
-
-
-
-Separation of concerns is central to any software developer's mindset, and when it comes
-to the ever-important home network, until recently "enterprise-grade" networking has been
-rather expensive and frankly not always worth it.
-
-For years I've had managed Cisco switches at home and then consumer-grade routers,
-and it was never a great combination...
-
-To take advantage of my fast connectivity now, I've adopted the full line of
-[Ubiquiti Networks](https://www.ubnt.com/) gear - originally to take advantage
-of their great access points, and then realizing the value of the full line of
-integrated UniFi products, it was the right move to make.
-
-While there are many other Ubiquiti success stories on the Internet, this one is mine,
-and 2 years in I'm still a huge fan.
 
 I enjoyed reading [Troy Hunt's post](https://www.troyhunt.com/ubiquiti-all-the-things-how-i-finally-fixed-my-dodgy-wifi/);
 also, a shoutout to [Clint Rutkas](https://twitter.com/ClintRutkas) for sharing his
@@ -491,9 +446,7 @@ I absolutely love the advanced features that Ubiquiti offers at in easy-to-use m
 VLAN tagging to multiple wireless networks, guest network features and advanced
 connectivity options, its all there.
 
-In the past I've had site-to-site VPN running between one of my Azure virtual
-networks in a Microsoft datacenter and my home... I could then connect to a
-dedicated wireless LAN through RADIUS to connect to my cloud machines. Fun stuff.
+So, what are some of the components, features, and so on?
 
 ## UniFi Controller (CloudKey)
 
