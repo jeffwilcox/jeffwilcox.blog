@@ -10,7 +10,7 @@ jumbotron: true
 jumbotronStyle: "background: url('//az414997.vo.msecnd.net/waz/2018network/rooftop-pano-web.jpg') no-repeat left center; background-size: cover; overflow: hidden; min-height: 500px;"
 jumbotronTitle: "A photo of the Belltown neighborhood and downtown Seattle, the Space Needle, and rooftop wireless backhaul networking equipment"
 ---
-WiFi that just works with multiple mounted access pints. Symmetric 1000 Mbps 
+WiFi that just works with multiple mounted access points. Symmetric 1000 Mbps 
 symmetric gigabit Internet. Centrally managed enterprise network gear. Pulling 
 new CAT6 while dealing with old CAT3 in a condo.
 
