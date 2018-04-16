@@ -1,7 +1,7 @@
 ---
 layout: post
 comments: true
-title: "My home network: Ubiquiti UniFi gear, microwave gigabit Internet, CAT6 and CAT3 wiring"
+title: "My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring"
 categories: [tech]
 tags: [network, networking, internet, waveg]
 location: "SEATTLE, WA USA"
@@ -26,10 +26,13 @@ zippy connection without bandwidth caps means that I'm free to stream 4K content
 backup my on-premise storage to the cloud, and not worry about keeping 
 operating system installation disc images around.
 
-My building's gigabit is provided by several 60GHz millimeter wave radio links, 
-and I wanted to share how that infrastructure is deployed in my condo building.
+My building's gigabit is provided by a 10G fiber link to a data center just a 
+few blocks away, which then has its own 40G link to classic peering location in
+Seattle - . Our rooftop also has several 60GHz millimeter wave radio links, 
+available either as backup or to serve nearby buildings. In this post 
+I wanted to share how that infrastructure is deployed in my condo building.
 
-Not only are connections fast, but there are minimal hops between major cloud 
+With fiber to our building there are minimal hops between major cloud 
 providers and big networks thanks to the many peering opportunities in downtown
 Seattle. The 
 [Westin Building Exchange](https://www.westinbldg.com/) carrier hotel/colo is 
@@ -61,9 +64,13 @@ mentioned. While my initial Ubiquiti buildout in Feb. 2016 was my own, in
 Dec. 2017 I was provided a demo AC-HD access point to evaluate. 
 I've since purchased my own AC-HD.</small>
 
-
-
-
+<strong>4/15/18 update:<br />
+Through follow-up conversations on Twitter following this post, I discovered 
+something amazing: our building was originally provided Internet through 
+millimeter wave, and still has it as a backup and to provide coverage to other 
+nearby buildings, but our building is actually connected directly through a 
+10 Gigabit fiber link. Cool!
+</strong>
 
 <!-- ---------------- WAVE G ---------------- -->
 
@@ -102,7 +109,8 @@ only need to make a phone call and patch your unit's home run network cable
 to your router or computer.
 
 From the home run, a nearby comms closet holds Wave G's managed switch equipment,
-at which point you're on their network.
+at which point you're on their network: fiber from our building runs to a 
+nearby data center, then Seattle's central peering fiber hotel.
 
 ## Locations
 
@@ -183,11 +191,12 @@ class="img-responsive"
 style="max-width: 360px"
 title="According to Netflix fast.com, the connection speed is approximately 920 Mbps." />
 
-## Millimeter wave backhaul
+## Fiber backbone
 
-While some buildings in Wave G's network are connected by fiber, we're actually
-connected by millimeter wave transmitters/receivers mounted on the rooftop of 
-our high-rise building.
+While many buildings in Wave G's network are connected by millimeter wave 
+rooftop connections, our building has a 10G fiber connection. Our building also
+has rooftop millimeter wave dishes to serve other nearby buildings that do not
+have fiber runs.
 
 If you look out from our tower's roof toward Elliott Bay, you can see a few of
 the other nearby buildings that we connect to:
@@ -205,6 +214,9 @@ Each of these antennas provides a 1 Gbps full-duplex encrypted link between loca
 essentially a large private mesh network.
 
 <img src="{{ site.cdn }}2018network/rooftop-microwaves.jpg" class="img-responsive" title="Rooftop 60GHz microwave backhaul equipment." />
+
+In our building's garage basement, that network connects to the 10 Gigabit 
+backbone network that Spectrum networks and Wave G runs.
 
 ## Static IPv4, IPv6 blocks
 
@@ -298,13 +310,15 @@ From left to right::
 - VoIP lines and our building's private network
 - Comcast coax cable
 - Wave G network rack
+- Wave G fiber underground run from a nearby data center
 - Wave Broadband coax cable
 - DirecTV cable
 
-Focusing on Wave G, from the MDF, fiber and CAT5 runs in 2 directions: the fiber
-splits off - one run goes up 15 floors to the rooftop, while the other connects 
-hundreds of feet away to the other tower in our building, up into its first 
-communications room.
+Focusing on Wave G, from the MDF, fiber and CAT5 runs in 3 directions: the fiber
+splits off - it runs up 15 floors to the rooftop, another connects 
+hundreds of feet away to the other tower in our building, into its first 
+communications room, and the backbone comes from an armored fiber run 
+that goes several blocks away to the data center at 3101 Western Ave.
 
 Within the core of the building, telco rooms alternate with power generation 
 and electric meter utility rooms as you move up the risers. The communication 
@@ -361,8 +375,9 @@ The Westin Building, named for the corporate headquarters of the Westin hotel
 chain (before they were purchased by Starwood Hotels and then a much more boring hotel
 conglomerate), is an office building turned carrier and fiber hotel.
 
-I don't know the network topology between my condo and the Westin Building, but 
-Wave G is part of Spectrum, an extension member of the Seattle Internet Exchange 
+From my condo building we have fiber to a data center a few blocks away at 
+3101 Western Ave - home of the NYI SEA1 DC - and Wave G / Spectrum is then 
+an extension member of the Seattle Internet Exchange 
 hosted in the Westin Building... near my condo there's also the NYI SEA1 
 datacenter on Western Ave, and there must be plenty of fiber between there and 
 the Westin Building.
@@ -1123,10 +1138,11 @@ pull cord to make future changes easier.
 
 # References
 
-Some interesting articles that I found while researching parts of this post:
+Some interesting resources I found while researching parts of this post:
 
 - https://www.reddit.com/r/IAmA/comments/2m3awz/we_are_the_founders_of_condointernet_and_were/
 - http://www.bbpmag.com/2013mags/october/BBC_Oct13_CondoInternet.pdf
 - http://www.geekwire.com/2013/spectrum-wave-condointernet/
 - http://www.geekwire.com/2013/condointernet-expands-service-ballard/
 - http://www.bbpmag.com/2013mags/october/BBC_Oct13_CondoInternet.pdf
+- https://twitter.com/TimB0nd/status/985638564984573952
