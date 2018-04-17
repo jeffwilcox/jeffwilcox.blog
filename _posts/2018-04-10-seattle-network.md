@@ -73,9 +73,8 @@ nearby buildings, but our building is actually connected directly through a
 </strong>
 
 <strong>4/16/18 update:<br />
-Wave G (Spectrum and family) actually has at least 2x 100 Gbit fiber connections 
-from my neighborhood DC to the WBX, the 40 Gbit connection is only the peer 
-extension portion. Regardless - impressive!
+Wave G (Spectrum and family) actually has at least 1x 100 Gbit fiber connection 
+to the SIX, soon to have a second.
 </strong>
 
 
