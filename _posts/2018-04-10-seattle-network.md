@@ -72,6 +72,14 @@ nearby buildings, but our building is actually connected directly through a
 10 Gigabit fiber link. Cool!
 </strong>
 
+<strong>4/16/18 update:<br />
+Wave G (Spectrum and family) actually has at least 2x 100 Gbit fiber connections 
+from my neighborhood DC to the WBX, the 40 Gbit connection is only the peer 
+extension portion. Regardless - impressive!
+</strong>
+
+
+
 <!-- ---------------- WAVE G ---------------- -->
 
 
@@ -154,12 +162,13 @@ advancements.
 ## Wave G's network
 
 Once your home is connected to Wave G's network, they have their own 
-efficient gear that connects to their fiber and rooftop millimeter wave backhaul
-transmitters and receivers, eventually peering with others inside data
-centers and nearby colo facilities like the 
+efficient gear that connects to their fiber, eventually peering with 
+others inside data centers and nearby colo facilities like the 
 [Westin Building Exchange (WBX)](https://www.westinbldg.com/) and the 
 [Seattle Internet Exchange (SIX)](https://www.seattleix.net/),
-providing short hops and low latency.
+providing short hops and low latency. Buildings near ours connect to the 
+10 Gbit fiber backhaul our building has underground using millimeter wave 
+radios on the roof of our building.
 
 This is where the original Condo Internet company took advantage of their
 parent company, Spectrum Networks, and their wholesale bandwidth offerings and
@@ -376,11 +385,10 @@ chain (before they were purchased by Starwood Hotels and then a much more boring
 conglomerate), is an office building turned carrier and fiber hotel.
 
 From my condo building we have fiber to a data center a few blocks away at 
-3101 Western Ave - home of the NYI SEA1 DC - and Wave G / Spectrum is then 
-an extension member of the Seattle Internet Exchange 
-hosted in the Westin Building... near my condo there's also the NYI SEA1 
-datacenter on Western Ave, and there must be plenty of fiber between there and 
-the Westin Building.
+3101 Western Ave - home of the NYI SEA1 DC - and Wave / Spectrum has multiple 
+fiber connections to the Westin Building from there, at least one of which is 
+a 100 Gbit connection. Spectrum is also an extension member of the Seattle Internet Exchange 
+hosted in the Westin Building.
 
 ## Westin Building Exchange
 
@@ -439,7 +447,8 @@ the companies and providers who peer with them, including:
 - Netflix
 
 Having all the cloud computing providers close is great. Wave G / Spectrum is 
-part of the SIX extension and has a 40 Gbps port between its network and SIX.
+part of the SIX extension and has a 100 Gbps port between its network and SIX, 
+[soon to be more](https://twitter.com/jwvo/status/986104140307750912).
 
 If I `traceroute` from my home to a VM I have in Azure, I see just a hops,
 each a millisecond or two at most:
