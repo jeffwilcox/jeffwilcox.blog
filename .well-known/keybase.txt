@@ -52,3 +52,59 @@ appending to this document.
 View my publicly-auditable identity here: https://keybase.io/jeffwilcox
 
 ==================================================================
+==================================================================
+https://keybase.io/jeffwilcox
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://jeffwilcox.blog
+  * I am jeffwilcox (https://keybase.io/jeffwilcox) on keybase.
+  * I have a public key ASBpvDxU_5_QAGsSSXBWZ8aJQePt7_cdwZ9tLYK_jS-aGgo
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "01207e31894d3f4ffb078f8fbf7c356db60c886d6b014d0af53c7f7469c1fad9a5f50a",
+      "host": "keybase.io",
+      "kid": "012069bc3c54ff9fd0006b1249705667c68941e3edeff71dc19f6d2d82bf8d2f9a1a0a",
+      "uid": "c3ffb540c4a2cb9ab333904cd016c019",
+      "username": "jeffwilcox"
+    },
+    "merkle_root": {
+      "ctime": 1524062452,
+      "hash": "3ce35cd0176c9c91c854ce1f639365577fa1062b322223570934a54f19cf33698fdedb68f74f16e881b7b6c14b5ee12fe7d15a03899e058b528504b9e672ec54",
+      "hash_meta": "a4adcf7de65223b92df9572960314fdce0bbba07f54d49940a77b7c279808b9a",
+      "seqno": 2407681
+    },
+    "service": {
+      "entropy": "KVh5xzjIknkDLatUxzWlqPao",
+      "hostname": "jeffwilcox.blog",
+      "protocol": "https:"
+    },
+    "type": "web_service_binding",
+    "version": 2
+  },
+  "client": {
+    "name": "keybase.io go client",
+    "version": "1.0.47"
+  },
+  "ctime": 1524062464,
+  "expire_in": 504576000,
+  "prev": "cfad27efd5b8cc70c4615e04538fa529742e8b69a19b5910e2967d3c296a2258",
+  "seqno": 47,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+hKRib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEgabw8VP+f0ABrEklwVmfGiUHj7e/3HcGfbS2Cv40vmhoKp3BheWxvYWTESpcCL8Qgz60n79W4zHDEYV4EU4+lKXQui2mhm1kQ4pZ9PClqIljEIPvQ5QXKkaAAaMpoNu64+qZFq3LcLDzGBu5ls4RPSUo7AgHCo3NpZ8RA6X8vXOe3L2VIlWp56eA612QVlPqaOtbAm0SCtvhARG8DxYEY5hvuQEDvRVZ8rWVDGHLDKkQP6pT4xDo2APu6CqhzaWdfdHlwZSCkaGFzaIKkdHlwZQildmFsdWXEII9RK9cP3CY0KzkdUjhQrfgh3b5vQzRXvBJzbQGUcMryo3RhZ80CAqd2ZXJzaW9uAQ==
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/jeffwilcox
+
+==================================================================
