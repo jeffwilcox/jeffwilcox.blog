@@ -7,6 +7,10 @@ It is transformed using [Jekyll](https://github.com/mojombo/jekyll) into a stati
 At this time, the blog itself lives at [https://jeffwilcox.blog/](https://jeffwilcox.blog/) and is 
 hosted in storage.
 
+# Identity
+
+In 2018 the primary hostname changed from `jeff.wilcox.name` to `jeffwilcox.blog`.
+
 # License
 
 The following directories and their contents are Copyright Jeff Wilcox. You may not reuse anything therein without my permission:
