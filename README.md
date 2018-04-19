@@ -9,7 +9,7 @@ hosted in storage.
 
 # Identity
 
-In 2018 the primary hostname changed from `jeff.wilcox.name` to `jeffwilcox.blog`.
+In 2018 the primary hostname changed from `jeff.wilcox.name` to `jeffwilcox.blog`
 
 # License
 
