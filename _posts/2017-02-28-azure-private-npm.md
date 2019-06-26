@@ -9,6 +9,8 @@ In this post I'm going to walk through using Visual Studio Team Services Package
 registry for scoped npm packages using a custom deployment script for Azure App
 Service.
 
+> 2019 update: this content is no longer considered useful, accurate, or appropriate... there are newer Azure DevOps Pipelines features today that can update a `.npmrc` file, etc.
+
 Many Node.js developers are probably familiar with npm private feeds but may not have
 used them yet in the Microsoft Cloud + Node.js stack. I wanted to share the experience that
 I have had: my team is running a ton of small-to-medium Node.js services within Microsoft
