@@ -10,10 +10,10 @@ keep_files: ['wp-content', '.git', 'assets']
 description: "The blog of Jeff Wilcox: software engineer living in Seattle"
 root_desc: "Jeff Wilcox is a Principal Software Engineer at Microsoft."
 
-markdown: rdiscount
-rdiscount:
-    extensions:
-        - generate_toc
+markdown: kramdown
+#kramdown:
+#    extensions:
+#        - generate_toc
 #pygments: false
 
 highlighter: rouge

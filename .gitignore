@@ -3,4 +3,4 @@ _jekyll_s3.yml
 _drafts/
 _site/
 .DS_Store
-
+.jekyll-cache/
