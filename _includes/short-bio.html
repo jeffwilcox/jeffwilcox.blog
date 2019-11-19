@@ -1,7 +1,14 @@
+{% if page.personal %}
+<p class="lead" style="font-size:12px">
+  Jeff Wilcox is a Software Engineer living in Seattle. Jeff 
+  attended the University of Michigan in Ann Arbor, MI and is a cyclist
+  and an electric vehicle enthusiast.
+  {% else %}
 <p class="lead" style="font-size:20px">
   Jeff Wilcox is a Software Engineer at Microsoft in the
   Open Source Programs Office (OSPO), helping Microsoft engineers
   use, contribute to and release open source at scale.
+  {% endif %}
 </p>
 <!--
 <p>

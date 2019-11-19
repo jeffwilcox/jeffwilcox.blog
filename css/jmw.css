@@ -18,6 +18,25 @@ body {
   background-color: #000;
 }
 
+blockquote {
+  font-size: 15px !important;
+  border: 2px solid #ddd;
+  background-color: #efefef;
+}
+
+h2 {
+  font-weight: 600;
+}
+
+h2.post-title {
+  font-size: 30px;
+  color: #0072c6;
+}
+
+h3 {
+  font-weight: 400;
+}
+
 .btn-muted {
   color:#333;
   background-color: #bbb;
