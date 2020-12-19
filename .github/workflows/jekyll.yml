@@ -13,10 +13,3 @@ jobs:
       - uses: helaili/jekyll-action@2.0.1
         env:
           JEKYLL_PAT: ${{ secrets.JEKYLL_PAT }}
-      - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: 'jeffwilcox'
-          slot-name: 'production'
-          publish-profile: ${{ secrets.AzureAppService_PublishProfile_40533ccb60974bc3b9ca2b6ad154f8f7 }}
-          package: /github/workspace/build
