@@ -1,4 +1,4 @@
-name: Build and deploy Jekyll blog
+name: Build Jekyll blog
 
 on:
   push:
