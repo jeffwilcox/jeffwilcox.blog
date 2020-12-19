@@ -19,4 +19,4 @@ jobs:
           app-name: 'jeffwilcox'
           slot-name: 'production'
           publish-profile: ${{ secrets.AzureAppService_PublishProfile_40533ccb60974bc3b9ca2b6ad154f8f7 }}
-          package: _site
+          package: /github/workspace/build
