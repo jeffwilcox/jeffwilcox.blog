@@ -1,4 +1,4 @@
-var app = require('./app');
+var app = require('../app');
 
 var debug = require('debug')('vinecameras:server');
 var http = require('http');

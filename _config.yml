@@ -5,7 +5,7 @@ base_url: https://jeffwilcox.blog
 #base_url: /
 destination: ../blog-site/
 
-keep_files: ['wp-content', '.git', 'assets', '.github', 'bin']
+keep_files: ['wp-content', '.git', 'assets', '.github', 'bin', 'app.js']
 
 description: "The blog of Jeff Wilcox: software engineer living in Seattle"
 root_desc: "Jeff Wilcox is a Principal Software Engineer at Microsoft."
@@ -23,7 +23,7 @@ permalink:	/:year/:month/:title/
 
 exclude: ['Rakefile', 'README.textile', 'server.bat']
 
-include: ['.well-known', '.github', 'bin']
+include: ['.well-known', '.github', 'bin', 'app.js']
 
 # Custom variables I use to define my primary and secondary CDN endpoints.
 cdn: //az414997.vo.msecnd.net/waz/
