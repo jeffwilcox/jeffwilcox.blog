@@ -5,7 +5,7 @@ base_url: https://jeffwilcox.blog
 #base_url: /
 destination: ../blog-site/
 
-keep_files: ['wp-content', '.git', 'assets']
+keep_files: ['wp-content', '.git', 'assets', '.github']
 
 description: "The blog of Jeff Wilcox: software engineer living in Seattle"
 root_desc: "Jeff Wilcox is a Principal Software Engineer at Microsoft."
