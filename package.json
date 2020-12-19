@@ -1,0 +1,27 @@
+{
+  "name": "jeffwilcox.blog",
+  "version": "1.0.0",
+  "description": "It is transformed using [Jekyll](https://github.com/mojombo/jekyll) into a static site.",
+  "main": "bin/www",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./bin/www"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jeffwilcox/jeffwilcox.blog.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jeffwilcox/jeffwilcox.blog/issues"
+  },
+  "homepage": "https://github.com/jeffwilcox/jeffwilcox.blog#readme",
+  "dependencies": {
+    "debug": "4.2.0",
+    "express": "4.17.1",
+    "http-errors": "1.6.3",
+    "morgan": "1.9.1"
+  }
+}
