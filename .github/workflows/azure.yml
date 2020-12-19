@@ -9,7 +9,7 @@ on:
       - gh-pages
 
 jobs:	
-  build-and-deploy:	
+  deploy:	
     runs-on: ubuntu-latest	
 
     steps:	
