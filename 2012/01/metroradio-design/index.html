@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>A quick look at MetroRadio: quick spacing, margin, and icon tips for Windows Phone devs - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A quick look at MetroRadio: quick spacing, margin, and icon tips for Windows Phone devs">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2012/01/metroradio-design/">-->A quick look at MetroRadio: quick spacing, margin, and icon tips for Windows Phone devs<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              15 January 2012
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p>I’ve harped on this one a few times before in my <a href="http://www.jeff.wilcox.name/2011/03/metro-design-guide-v1/">Windows Phone Metro Design Guidelines</a> post for devs. But it’s time for another helping!</p>  <p><a href="http://www.windowsphone.com/en-US/apps/0caac4aa-962f-483b-9c26-76a3d8a1fd10">Metro Radio</a> is a slick and functional Pandora application for the Windows Phone. Like many apps, there are plenty of small little UX things that could make it even better. I saw the app recently and really like it, but as a stickler on design things, I’d love to make a few small tweaks if I could!</p>  <p>I briefly spoke with the application’s developer, Mustafa Taleb, and obtained his OK to me to write a little post just pointing out a few things. The app really does rock, but it’s also probably a place that in the next update a few visual blemishes could be fixed to yield an even better app.</p>  <p>So I’m going to point out simple things to think about when building out your UI. I have 9 points about simple spacing/design/margin things, and then a quick comment on the icon.</p>  <h2>Margin Issues and other easy XAML Fixes</h2>  <p>It’s pretty easy to overlook margins while developing applications. Between having controls like TextBlock that expect an associated Style, and most controls like Button that have an integrated margin and touch area, it&#160; can be tough to either notice OR spend the time to fine-tune these things.</p>  <p>I don’t have the source to the app, so I am going to be overlaying yellow lines on top of the marketplace screen shots to help show potential issues with margins.</p>  <h3>Text blocks: when to case plus the classic 12px left margin issue when not using styles</h3>  <p><img src="http://media.jeff.wilcox.name/blog/2012/AboutPage.png" /></p>  <p>So here we have a few basics.</p>  <p>1. Consider all uppercase for the small font app title (very top visual in a page’s default template), unless you have branding or other reasons for that change.</p>  <p>2. Consider all lowercase for the larger page title.</p>  <p>Now these two aren’t hard-and-fast. I’m inconsistent in my apps, too. But I believe that you should be consistent: if you choose one, choose both.</p>  <p>3. Use the PhoneTextNormalStyle or other provided textblock styles OR hard-code at least a 12px left margin for text blocks. That way you align with other default visuals.</p>  <p>In this screen capture I overlaid a yellow block over the 12px space – really all the text should be to the right of that block, not under.</p>  <p><img src="http://media.jeff.wilcox.name/blog/2012/LoginPage.png" /></p>  <p>Here’s a super classic login page experience. And actually it is affected by the same issue of not using Style={StaticResource PhoneTextNormalStyle} in those TextBlocks, I’m guessing.</p>  <p>4. 12px issues create jagged forms often.</p>  <p><strong>Recommended fix: </strong>Use the styles that are provided. The left of the text <em>and</em> the other controls should be aligned flush, not jagged like in this form.</p>  <p>Again this is because the default Margin of all TextBlocks is 0, but on the phone the styles set a left margin of 12px to allow for flush alignment.</p>  <h3>Looking into Pivot specifics</h3>  <p><img src="http://media.jeff.wilcox.name/blog/2012/SmallPivotThings.png" /></p>  <p>Now on this one, there are just a few simple things when using pivots.</p>  <p>5. Consider lowercase pivot item headers.</p>  <p>It’s consistent with what you’ll find throughout the official phone user interface. This can either be accomplished through hard-coding lowercase in your XAML, using a string converter that goes lowercase with binding, or by doing it on the model/data side of your app.</p>  <p>6. Everything in a Pivot control should usually align left flush.</p>  <p>This page seems to have the actual item content off by 12-to-24 pixels, instead of allowing all things on the left to be flush.</p>  <p>Additionally, the space between the Pivot header and item is off by maybe just 2- or 4- pixels.</p>  <h3>Look into spacing and alignment a lot on list pages</h3>  <p><img src="http://media.jeff.wilcox.name/blog/2012/SongsPage.png" /></p>  <p>This is one of the screen captures of the list results when searching for the text ‘today’, one of the marketplace example screen shots. It could use some alignment and cleanup and could probably be cleaned up in a good 10 minutes of XAML hacking</p>  <p>7. Visually check for alignment consistency.</p>  <p>I’ve drawn a yellow line to try and show that many items here are not aligned: images, group headers, the top search controls, etc. This could be fixed in Blend through some movements or just in XAML by slowly adjusting by 2-, 4-, 8-, however many pixels until things are nicely aligned.</p>  <p>8. Try spacing list items by the same value on the top and bottom.</p>  <p>It looks pretty inconsistent when a list item (like the first here) has 2- or 4- pixels on the top, but then what looks to be 18 pixels or so on the bottom.</p>  <p>Instead using a consistent value for the top and bottom will let all items look natural regardless of whether they are first or last.</p>  <p>9. Have space between items and text.</p>  <p>The data template for these results could use some spacing between the album art and the text.</p>  <p>My guess is that this is another example of hard-coding font values instead of using the standard PhoneTextLargeStyle or PhoneTextNormalStyle with a TextBlock. That would add a nice left margin of 12px back into the UI.</p>  <p>And another quick example, this is a list page from the app that has some of the same underlying potential spacing issues:</p>  <p><img src="http://media.jeff.wilcox.name/blog/2012/AnotherList.png" /></p>  <p>And now, the best page in the app!</p>  <p><img src="http://media.jeff.wilcox.name/blog/2012/PlaybackPage.png" /></p>  <p>This is the playback experience and page. It rocks. It’s smooth, visually awesome, has good information, and is styled on the in-app Music+Videos UI. If I had to nit-pic, I might want to put 6- or 12- pixels of margin spacing on top between the artist name and song title at the top, but it’s nice.</p>  <h2>Marketplace Application Tile</h2>  <p>When I looked up Metro Radio using the Web Marketplace, the icon was … hardly there. This might be on purpose, but it’s really not a great branding experience – my guess is this either is a take on, or based on, the regular app icon, which adjusts itself to the accent color of the phone (hence a transparent background color).</p>  <p>Trouble with using the same asset is that the Web Marketplace, the Zune Marketplace, and even in some situations the regular Marketplace app on the phone, don’t do the same replacement with accent colors – so you get a visually difficult to see tile.</p>  <h3>On-the-phone</h3>  <p>This looks great. It’s important to realize that the different asset sets and sizes are used in different places – whether web marketplace, app, etc., you should always try and submit your best icon forward if you can!</p>  <p><img src="http://media.jeff.wilcox.name/blog/2012/MetroRadioOnPhone.png" /></p>  <h3>Web Marketplace</h3>  <p><img src="http://media.jeff.wilcox.name/blog/2012/WebMarketplaceTile.png" /></p>  <p>Here you can see the hard-to-see tile for the app.</p>  <p><strong>Suggested Fix: </strong>Always use a background color (easy if you’re layering in Photoshop or a similar tool) for your actual marketplace submission’s tile.</p>  <h3>Zune Marketplace</h3>  <p><img src="http://media.jeff.wilcox.name/blog/2012/ZuneMR.png" /></p>  <p>Same icon issue here.</p>  <p>Hope this is useful. Thanks Mustafa for letting me write this post! And I should note, I’m publishing this without running it by him – he’s completely possible that some of these things were intentional design choices. If so, sorry if I have not agreed with them!</p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

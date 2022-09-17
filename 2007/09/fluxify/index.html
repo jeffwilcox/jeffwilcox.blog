@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Fluxify: A client-side photo resize and upload tool for Silverlight v1.1 - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Fluxify: A client-side photo resize and upload tool for Silverlight v1.1">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2007/09/fluxify/">-->Fluxify: A client-side photo resize and upload tool for Silverlight v1.1<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              21 September 2007
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            [RAW]
+
+<P>There’s a ton of potential for the Silverlight platform out there, and some smart guys out there from <A class="" href="http://fluxcapacity.net/2007/09/21/fluxify-a-simpler-way-to-resize-and-email-your-photos/" mce_href="http://fluxcapacity.net/2007/09/21/fluxify-a-simpler-way-to-resize-and-email-your-photos/">FluxCapacity.net</A> have been working on an excellent client-side photo resizing application that targets Silverlight v1.1.&nbsp; This was totally a pet project that I’d been thinking of producing, but I got stuck when it came to the need to implement a managed JPEG codec to perform the client-side resizing since the Silverlight CTPs don’t expose any of this functionality.</P>
+
+
+
+<P><STRONG>You need to immediately check out “<A class="" title=Fluxify href="http://fluxtools.net/" mce_href="http://fluxtools.net/">Fluxify</A>”</STRONG></P>
+
+
+
+<P><IMG title=Fluxify style="WIDTH: 540px; HEIGHT: 679px" height=679 alt=Fluxify src="http://media.jeff.wilcox.name/blog/view/silverlight/fluxify/fluxify-ui.jpg" width=540 border=0 mce_src="http://media.jeff.wilcox.name/blog/view/silverlight/fluxify/fluxify-ui.jpg"></P>
+
+
+
+<P>This is a core capability that many sites need to have, and have been either implementing with custom third-party ActiveX and Java controls, Flash in some cases, or simply recommending to users that they use a desktop application to resize their images by restricting the permitted photo upload size.&nbsp; </P>
+
+
+
+<P>Is anyone else tired of the custom ActiveX control that Facebook uses?&nbsp; Why spend on extra bandwidth or burden your server farm with having to use CPU cycles to resize images when you could use the client’s machine!? </P>
+
+
+
+<P><IMG title="Facebook's proprietary ActiveX control for resizing and uploading photos" style="WIDTH: 540px; HEIGHT: 52px" height=52 alt="Facebook's proprietary ActiveX control for resizing and uploading photos" src="http://media.jeff.wilcox.name/blog/view/silverlight/fluxify/facebook-control.jpg" width=540 border=0 mce_src="http://media.jeff.wilcox.name/blog/view/silverlight/fluxify/facebook-control.jpg"></P>
+
+
+
+<P>The user experience in Fluxify is pretty good: when you click to select the photos that you would like to upload using the FileOpenDialog for instance, the underlying user interface is greyed out to keep the experience focused on selecting files:</P>
+
+
+
+<P><IMG title="Selecting photos user experience" style="WIDTH: 540px; HEIGHT: 374px" height=374 alt="Selecting photos user experience" src="http://media.jeff.wilcox.name/blog/view/silverlight/fluxify/selecting-photos.jpg" width=540 border=0 mce_src="http://media.jeff.wilcox.name/blog/view/silverlight/fluxify/selecting-photos.jpg"></P>
+
+
+
+<P>The authors of the sample have a <A class="" href="http://fluxcapacity.net/2007/09/21/fluxify-a-simpler-way-to-resize-and-email-your-photos/" mce_href="http://fluxcapacity.net/2007/09/21/fluxify-a-simpler-way-to-resize-and-email-your-photos/">blog post announcing</A> Fluxify as a proof-of-concept, the <A class="" href="http://fluxtools.net/" mce_href="http://fluxtools.net/">actual application up</A> for people to try out resizing &amp; sending their photos via e-mail to others, and a page that goes into some of the <A class="" href="http://fluxtools.net/emailphotos/about.html" mce_href="http://fluxtools.net/emailphotos/about.html">technical details of their implementation</A>&nbsp;(or a least what makes it special, unique, and what they had to overcome).&nbsp; Some highlights from that:</P>
+
+
+
+<UL>
+
+<LI>They've created a purely 'safe' managed code JPEG library in transparent user code</LI>
+
+
+
+<LI>EXIF tags are preserved through the resize.&nbsp; A pet peeve that I have with most image resizing tools is that they don’t do this, and I love knowing the camera model and even GPS location of photos that’s often in the EXIF data</LI>
+
+
+
+<LI>Asynchronous send: if you have a lot of photos, it can resize/send/etc. in the background</LI>
+
+
+
+<LI>They’re using the OpenFileDialog, a feature of the managed Silverlight framework with which I’m quite familiar.&nbsp; The ability to select multiple photos is a major improvement over the HTML &lt;input type="upload" ... /&gt; form element</LI>
+
+</UL>
+
+
+
+<P>And from the sound of it, we can expect to eventually see more technical details and some source from the developers in the future.&nbsp; </P>
+
+
+
+<P>I think the real creative genius here is the innovation on top of the CTP platform; I can't even imagine having to implement the JPEG codec in JavaScript.&nbsp; <A class="" title=Picnik href="http://www.picnik.com/" mce_href="http://www.picnik.com/">Picnik</A> was made with Flash/Flex, a very mature platform-so it's good to know that perhaps someday we may technically see a Picnik based on .NET.</P>
+
+
+
+<P>Hope everybody else out there thinks this is as awesome as I do!</P>
+
+
+
+[/RAW]
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

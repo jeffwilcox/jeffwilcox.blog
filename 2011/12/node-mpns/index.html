@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>MPNS module for Node: A simple push notification helper for the cloud - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MPNS module for Node: A simple push notification helper for the cloud">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2011/12/node-mpns/">-->MPNS module for Node: A simple push notification helper for the cloud<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+               7 December 2011
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p>One of the fun projects I’ve been working on recently related to my app has been bringing online a cloud to handle sending push notifications processing. I’m using <a href="http://nodejs.org/">Node.js</a> for this and have a ton of people enjoying the beta push experience right now: toasts, live tiles, etc.</p>  <p>Tonight I pushed to GitHub ‘mpns’, a simple interface and helper to the Microsoft Push Notification Service (MPNS). It essentially takes the simple properties for your live tile update or toast, packages it in a simple XML payload, and then posts it to the subscription endpoint.</p>  <p>It isn’t a lot of code, but I sure hope it helps others who may be experimenting with other platforms while building a great push experience. If you’re using Azure, the Windows Phone team has already provided some awesome content here – <a href="http://windowsteamblog.com/windows_phone/b/wpdev/archive/2011/01/14/windows-push-notification-server-side-helper-library.aspx">Yochay has previously posted</a> about a <a href="http://create.msdn.com/en-us/education/catalog/article/pnhelp-wp7">Windows Push Notification Server Side Helper Library</a>.</p>  <blockquote>   <p>This module is on NPM as 'mpns' or you clone or submodule it from GitHub: <a href="https://github.com/jeffwilcox/mpns">https://github.com/jeffwilcox/mpns</a></p> </blockquote>  <h4>Here’s some simple usage information that I’ve also posted to GitHub.</h4>  <h3>Load in the module</h3>  <pre class="brush: js">var mpns = require('mpns');</pre>
+
+
+
+<h3>Create a new notification</h3>
+
+
+
+<p>You can create a new notification object (either of type live tile or toast). Raw notifications are not yet supported.</p>
+
+
+
+<p>Property names for the notification object directly correlate to the names used in the MPNS XML payload as documented on MSDN. Properties can either be set directly on the object (such as toast.text1) or by passing the values in as options to the constructor.</p>
+
+
+
+<pre class="brush: js">options =   { text1: 'Hello!'
+
+            , text2: 'Great to see you today.'
+
+            };
+
+
+
+var toast = new mpns.toast(options);</pre>
+
+
+
+<h3>Sending a notification</h3>
+
+
+
+<p>To send a notification simply call the <code>send</code> method on the object. The first parameter is the HTTP URI to the MPNS endpoint of the client you'd like to send the notification to. You may provide an optional callback function as well.</p>
+
+
+
+<pre class="brush: js">toast.send('http://sn1.notify.live.net/throttledthirdparty/01.00/YOUR_ENDPOINT_HERE');</pre>
+
+
+
+<p>You can also use the other syntax. Let's send a live tile update!</p>
+
+
+
+<pre class="brush: js">var toast = new mpns.liveTile();
+
+toast.title: 'My App';
+
+toast.backgroundUri: 'http://sample.com/image.png';
+
+toast.send('http://sn1.notify.live.net/throttledthirdparty/01.00/YOUR_ENDPOINT_HERE', function(err,res) {
+
+    if (err) console.dir(err);
+
+    else console.dir(res);
+
+});</pre>
+
+
+
+<h3>Results object information</h3>
+
+
+
+<p>A results object is passed back through the callback and has important information from MPNS.</p>
+
+
+
+<ul>
+
+  <li><code>deviceConnectionStatus</code>: The device status as reported by the service. </li>
+
+
+
+  <li><code>notificationStatus</code>: The status of your provided notification. </li>
+
+
+
+  <li><code>subscriptionStatus</code>: The status of the subscription URI. </li>
+
+</ul>
+
+
+
+<p>The object will also contain all the key fields for your toast or live tile update, plus the pushType. This makes it easy to store this information in a history log somewhere in the ether.</p>
+
+
+
+<h3>Handling Errors</h3>
+
+
+
+<p>It is very important as a consumer that you store appropriate actionable data about failed push notification attempts. As a result, the callback's first parameter (err) is set to the standard results object as well as a few additional fields depending on the returned status code from the server.</p>
+
+
+
+<p>Remember to take action on that information in order to be a good MPNS citizen. These values may be set in the error object and of interest to you:</p>
+
+
+
+<ul>
+
+  <li><code>minutesToDelay</code>: If this is present, it is the suggested minimum amount of time that you should wait until making another request to the same subscription URI. For HTTP 412s, for example, the minimum time is one hour and so the returned value defaults to 61. </li>
+
+
+
+  <li><code>shouldDeleteChannel</code>: If this is set to <code>true</code>, the channel is gone according to MPNS. Delete it from your channel/subscription database and never look back. </li>
+
+
+
+  <li><code>error</code>: If an error is captured while trying to make the HTTP request, this will be set to that error callback instance. </li>
+
+</ul>
+
+
+
+<h3>A note about Windows Phone 7.5</h3>
+
+
+
+<p>This module permits sending toasts and tiles specific to Mango. If you include the <code>param</code> field when sending a push to a 7.0 (first Windows Phone release) phone, unfortunately it may not be received, or will error out the subscription.</p>
+
+
+
+<p>Take care when registering your subscription channels with your cloud service to include the application platform version of the app (7.1 for Mango apps). To rock, maybe also grab the OS version and deployed app version. That information can be helpful when supporting customers.</p>
+
+
+
+<p>Hope this helps!</p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Installing an Infineon TPM in the Gigabyte GA-77X-UP5 TH motherboard - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Installing an Infineon TPM in the Gigabyte GA-77X-UP5 TH motherboard">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2013/09/tpm/">-->Installing an Infineon TPM in the Gigabyte GA-77X-UP5 TH motherboard<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              19 September 2013
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            <li>tech</li>
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p>BitLocker is a great way to have peace of mind about your computer data security. At work, all of our machines are typically mandated to use BitLocker, and it seems like a majority of the Windows notebooks these days that are intended for business use come equipped with a TPM module, enabling the opportunity to use BitLocker.</p>
+
+<p>At home, I tend to have a nice, fast hand-built workstation full of parts from NewEgg. Most recently, in early 2013, I built a zippy workstation using the Gigabyte GA-Z77X-UP5 TH motherboard model. It features the Intel LGA 1155 + Z77 architecture, dual thunderbolt ports, support for a number of nice operating systems, and it also has headers and BIOS support on the motherboard for a <a href="http://en.wikipedia.org/wiki/Trusted_Platform_Module">Trusted Platform Module (TPM)</a> chip.</p>
+
+<p>But it doesn’t come with a TPM module and there doesn’t seem to be a lot of documentation about how to obtain one in the retail market.</p>
+
+<h3 id="forums--blogs">Forums + Blogs</h3>
+
+<p>I found a few references on forums saying that Gigabyte users are relatively out of luck; others saying they got some traction in learning who builds out and sells TPM modules, but none that fit the slot.</p>
+
+<p>Thankfully I came across a post by the blogger “TechBobbins” about <a href="https://sites.google.com/site/techbobbins/home/articles/gigabyte-motherboard-tpm-compatibility">Gigabyte Motherboard TPM Compatbility</a>. In the post, the author has found out that the 19-pin TPM modules sold by ASUS are Infineon-branded TPM modules and compatible at the technical level with the socket on the Gigabyte motherboard.</p>
+
+<p>Now the problem is: the PCB for the Infineon TPM actually extends the length of the connector, so if it has to fit into a socket like that on the Gigabyte motherboard, you’re out of luck. The author’s recommendation is to purchase dual USB extension cables and then use these to connect to the motherboard socket. Problem with this is the need to then securely mount or protect this module then from moving around, shorting out, etc., since it would be a loose component.</p>
+
+<h3 id="jeffs-tpm--gigabyte-solution">Jeff’s TPM + Gigabyte solution</h3>
+
+<p>I couldn’t easily find USB extension cables except for the 9-pin variety, so I went for a more classic solution:</p>
+
+<ul>
+  <li>Find a utility razor</li>
+  <li>Carefully slip the razor between the PCB and the plastic connector</li>
+  <li>Wedge a half centimeter or so of space between the components by carefully, slowly bending the metal PCB connectors. The 90-degree metal joints feel very sturdy and even with bending remain very solid.</li>
+  <li>Simply plug the TPM module into the motherboard.</li>
+</ul>
+
+<h3 id="bitlocker-setup">BitLocker setup</h3>
+
+<p>After this, I was able to get the TPM module enabled:</p>
+
+<ul>
+  <li>Boot the computer. <code class="language-plaintext highlighter-rouge">DEL</code> into the BIOS</li>
+  <li>Move to the Peripherals - Trusted Computing menu item that now appears.</li>
+  <li>Switch the <code class="language-plaintext highlighter-rouge">TPM SUPPORT</code> menu item from Disabled to Enable</li>
+  <li>Save settings and restart</li>
+</ul>
+
+<p>Then setup BitLocker in Windows Pro:</p>
+
+<ul>
+  <li>Search for <code class="language-plaintext highlighter-rouge">BitLocker</code> from the Start Menu</li>
+  <li>Follow the steps to set up, store a backup key on a USB thumb drive (that you can then store safely or encrypt somewhere)</li>
+  <li>A few reboots by Windows</li>
+  <li>Encrypting the drive</li>
+</ul>
+
+<p>Easy enough. My data is now quite secure, though of course I need to keep my recovery key safe, plus assume that I trust that the manufacturer of the TPM doesn’t have the original private key handy for anyone to get to.</p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+                   
+                   
+                    
+            
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

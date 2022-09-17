@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Creating a highlighting text block for Silverlight 3, revisited - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Creating a highlighting text block for Silverlight 3, revisited">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2009/08/sl3-highlighting-text-block/">-->Creating a highlighting text block for Silverlight 3, revisited<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              26 August 2009
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p>Now that Silverlight 3 has shipped, I’d like to take a moment to revisit the highlighting AutoCompleteBox control that I <a href="http://www.jeff.wilcox.name/2008/11/highlighting-autocompletebox/">blogged about back</a> in November of ‘08, and again <a href="http://www.jeff.wilcox.name/2009/03/sl3-highlighting-autocompletebox/">earlier this year</a>, thanks to tooling improvements: <a href="http://www.microsoft.com/expression/products/Blend_Overview.aspx">Expression Blend 3</a> is out, and the Visual Studio 2008 tools have changed as well. There are new project and item templates this time around.</p>  <p>This short post re-creates the HighlightingTextBlock control, using the <strong>Templated Silverlight Control</strong> item template that ships in the Silverlight Tools. When I last blogged about the highlighting text block control, I had to describe in detail how to go about creating a library, creating the default control styles file (Generic.xaml), setting properties, and putting it all together.</p>  <p>Now it is a lot easier! Using the advanced copy-and-paste coding technique, you can create and build this control in about 2 minutes.</p>  <h3>Create a new Silverlight Class Library Project</h3>  <ul>   <li>Open Visual Studio 2008 SP1 </li>    <li>File | New Project, Visual C# | Silverlight | Silverlight Class Library project type </li> </ul>  <h3>Remove Class1.cs</h3>  <p>The default class file, Class1.cs, can be removed. Right-click on it in the Solution Explorer and select the ‘Delete’ menu item.</p>  <h3>Use the ‘Silverlight Templated Control’ template</h3>  <p>The new template is great since it creates a simple class for the control, sets up the default style key, and then creates/modifies the Generic.xaml theme file for the library, setting all the right properties along the way.</p>  <ul>   <li>Click on the Project menu (or right-click on the project in the Solution Explorer) </li>    <li>Select ‘Add New Item’ </li>    <li>Use the ‘Silverlight Templated Control’ template </li>    <li>Change the name from TemplatedControl1.cs to HighlightingTextBlock.cs </li>    <li>Click ‘Add’ </li> </ul>  <p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="Templated" border="0" alt="Templated" src="http://az414997.vo.msecnd.net/wordpress/2009/08/Templated.png" width="541" height="324" /> </p>  <h3>Insert the control code</h3>  <p>Borrowed from my previous post on the topic, just paste this class’ code into the namespace, replacing what is already there:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1182d2c0-4aa2-4496-9350-0f266d7158b6" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">/// &lt;summary&gt;   
+    /// A specialized highlighting text block control.   
+    /// &lt;/summary&gt;   
+    public partial class HighlightingTextBlock : Control
+    {
+        /// &lt;summary&gt;   
+        /// The name of the TextBlock part.   
+        /// &lt;/summary&gt;   
+        private string TextBlockName = "Text";
+
+        /// &lt;summary&gt;   
+        /// Gets or sets the text block reference.   
+        /// &lt;/summary&gt;   
+        private TextBlock TextBlock { get; set; }
+
+        /// &lt;summary&gt;   
+        /// Gets or sets the inlines list.   
+        /// &lt;/summary&gt;   
+        private List&lt;Inline&gt; Inlines { get; set; }
+
+        #region public string Text
+        /// &lt;summary&gt;   
+        /// Gets or sets the contents of the TextBox.   
+        /// &lt;/summary&gt;   
+        public string Text
+        {
+            get { return GetValue(TextProperty) as string; }
+            set { SetValue(TextProperty, value); }
+        }
+
+        /// &lt;summary&gt;   
+        /// Identifies the Text dependency property.   
+        /// &lt;/summary&gt;   
+        public static readonly DependencyProperty TextProperty =
+            DependencyProperty.Register(
+                "Text",
+                typeof(string),
+                typeof(HighlightingTextBlock),
+                new PropertyMetadata(OnTextPropertyChanged));
+
+        /// &lt;summary&gt;   
+        /// TextProperty property changed handler.   
+        /// &lt;/summary&gt;   
+        /// &lt;param name="d"&gt;AutoCompleteBox that changed its Text.&lt;/param&gt;   
+        /// &lt;param name="e"&gt;Event arguments.&lt;/param&gt;   
+        private static void OnTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            HighlightingTextBlock source = d as HighlightingTextBlock;
+
+            if (source.TextBlock != null)
+            {
+                while (source.TextBlock.Inlines.Count &gt; 0)
+                {
+                    source.TextBlock.Inlines.RemoveAt(0);
+                }
+                string value = e.NewValue as string;
+                source.Inlines = new List&lt;Inline&gt;();
+                if (value != null)
+                {
+                    for (int i = 0; i &lt; value.Length; i++)
+                    {
+                        Inline run = new Run { Text = value[i].ToString() };
+                        source.TextBlock.Inlines.Add(run);
+                        source.Inlines.Add(run);
+                    }
+
+                    source.ApplyHighlighting();
+                }
+            }
+        }
+
+        #endregion public string Text
+
+        #region public string HighlightText
+        /// &lt;summary&gt;   
+        /// Gets or sets the highlighted text.   
+        /// &lt;/summary&gt;   
+        public string HighlightText
+        {
+            get { return GetValue(HighlightTextProperty) as string; }
+            set { SetValue(HighlightTextProperty, value); }
+        }
+
+        /// &lt;summary&gt;   
+        /// Identifies the HighlightText dependency property.   
+        /// &lt;/summary&gt;   
+        public static readonly DependencyProperty HighlightTextProperty =
+            DependencyProperty.Register(
+                "HighlightText",
+                typeof(string),
+                typeof(HighlightingTextBlock),
+                new PropertyMetadata(OnHighlightTextPropertyChanged));
+
+        /// &lt;summary&gt;   
+        /// HighlightText property changed handler.   
+        /// &lt;/summary&gt;   
+        /// &lt;param name="d"&gt;AutoCompleteBox that changed its HighlightText.&lt;/param&gt;   
+        /// &lt;param name="e"&gt;Event arguments.&lt;/param&gt;   
+        private static void OnHighlightTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            HighlightingTextBlock source = d as HighlightingTextBlock;
+            source.ApplyHighlighting();
+        }
+
+        #endregion public string HighlightText
+
+        #region public Brush HighlightBrush
+        /// &lt;summary&gt;   
+        /// Gets or sets the highlight brush.   
+        /// &lt;/summary&gt;   
+        public Brush HighlightBrush
+        {
+            get { return GetValue(HighlightBrushProperty) as Brush; }
+            set { SetValue(HighlightBrushProperty, value); }
+        }
+
+        /// &lt;summary&gt;   
+        /// Identifies the HighlightBrush dependency property.   
+        /// &lt;/summary&gt;   
+        public static readonly DependencyProperty HighlightBrushProperty =
+            DependencyProperty.Register(
+                "HighlightBrush",
+                typeof(Brush),
+                typeof(HighlightingTextBlock),
+                new PropertyMetadata(null, OnHighlightBrushPropertyChanged));
+
+        /// &lt;summary&gt;   
+        /// HighlightBrushProperty property changed handler.   
+        /// &lt;/summary&gt;   
+        /// &lt;param name="d"&gt;HighlightingTextBlock that changed its HighlightBrush.&lt;/param&gt;   
+        /// &lt;param name="e"&gt;Event arguments.&lt;/param&gt;   
+        private static void OnHighlightBrushPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            HighlightingTextBlock source = d as HighlightingTextBlock;
+            source.ApplyHighlighting();
+        }
+        #endregion public Brush HighlightBrush
+
+        #region public FontWeight HighlightFontWeight
+        /// &lt;summary&gt;   
+        /// Gets or sets the font weight used on highlighted text.   
+        /// &lt;/summary&gt;   
+        public FontWeight HighlightFontWeight
+        {
+            get { return (FontWeight)GetValue(HighlightFontWeightProperty); }
+            set { SetValue(HighlightFontWeightProperty, value); }
+        }
+
+        /// &lt;summary&gt;   
+        /// Identifies the HighlightFontWeight dependency property.   
+        /// &lt;/summary&gt;   
+        public static readonly DependencyProperty HighlightFontWeightProperty =
+            DependencyProperty.Register(
+                "HighlightFontWeight",
+                typeof(FontWeight),
+                typeof(HighlightingTextBlock),
+                new PropertyMetadata(FontWeights.Normal, OnHighlightFontWeightPropertyChanged));
+
+        /// &lt;summary&gt;   
+        /// HighlightFontWeightProperty property changed handler.   
+        /// &lt;/summary&gt;   
+        /// &lt;param name="d"&gt;HighlightingTextBlock that changed its HighlightFontWeight.&lt;/param&gt;   
+        /// &lt;param name="e"&gt;Event arguments.&lt;/param&gt;   
+        private static void OnHighlightFontWeightPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            HighlightingTextBlock source = d as HighlightingTextBlock;
+            FontWeight value = (FontWeight)e.NewValue;
+        }
+        #endregion public FontWeight HighlightFontWeight
+
+        /// &lt;summary&gt;   
+        /// Initializes a new HighlightingTextBlock class.   
+        /// &lt;/summary&gt;   
+        public HighlightingTextBlock()
+        {
+            DefaultStyleKey = typeof(HighlightingTextBlock);
+            Loaded += OnLoaded;
+        }
+
+        /// &lt;summary&gt;   
+        /// Loaded method handler.   
+        /// &lt;/summary&gt;   
+        /// &lt;param name="sender"&gt;The loaded event.&lt;/param&gt;   
+        /// &lt;param name="e"&gt;The event data.&lt;/param&gt;   
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            OnApplyTemplate();
+        }
+
+        /// &lt;summary&gt;   
+        /// Override the apply template handler.   
+        /// &lt;/summary&gt;   
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+
+            // Grab the template part   
+            TextBlock = GetTemplateChild(TextBlockName) as TextBlock;
+
+            // Re-apply the text value   
+            string text = Text;
+            Text = null;
+            Text = text;
+        }
+
+        /// &lt;summary&gt;   
+        /// Apply the visual highlighting.   
+        /// &lt;/summary&gt;   
+        private void ApplyHighlighting()
+        {
+            if (Inlines == null)
+            {
+                return;
+            }
+
+            string text = Text ?? string.Empty;
+            string highlight = HighlightText ?? string.Empty;
+            StringComparison compare = StringComparison.OrdinalIgnoreCase;
+
+            int cur = 0;
+            while (cur &lt; text.Length)
+            {
+                int i = highlight.Length == 0 ? -1 : text.IndexOf(highlight, cur, compare);
+                i = i &lt; 0 ? text.Length : i;
+
+                // Clear   
+                while (cur &lt; i && cur &lt; text.Length)
+                {
+                    Inlines[cur].Foreground = Foreground;
+                    Inlines[cur].FontWeight = FontWeight;
+                    cur++;
+                }
+
+                // Highlight   
+                int start = cur;
+                while (cur &lt; start + highlight.Length && cur &lt; text.Length)
+                {
+                    Inlines[cur].Foreground = HighlightBrush;
+                    Inlines[cur].FontWeight = HighlightFontWeight;
+                    cur++;
+                }
+            }
+        }
+    }</pre></div>
+
+<p>Then, refactor the Using statements to make the code a little crisper:</p>
+
+<ul>
+  <li>Right-click on one of the ‘using’ statements at the top of the file </li>
+
+  <li>Select ‘Organize Usings’, then ‘Remove and Sort’</li>
+</ul>
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="RefactorUsings" border="0" alt="RefactorUsings" src="http://az414997.vo.msecnd.net/wordpress/2009/08/RefactorUsings.png" width="409" height="374" /> </p>
+
+<h3>Define the default control style</h3>
+
+<p>Now, Generic.xaml is already created in the Themes folder – so go ahead and open it, then use this for the control template. Our default style is simple: sets the default highlight brush color, plus a single template part – a text block named ‘Text’.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:05362e20-1d92-4755-873c-e774656b7c75" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;Style TargetType="local:HighlightingTextBlock"&gt;
+        &lt;Setter Property="HighlightBrush" Value="Blue" /&gt;
+        &lt;Setter Property="Template"&gt;
+            &lt;Setter.Value&gt;
+                &lt;ControlTemplate TargetType="local:HighlightingTextBlock"&gt;
+                    &lt;TextBlock x:Name="Text" /&gt;
+                &lt;/ControlTemplate&gt;
+            &lt;/Setter.Value&gt;
+        &lt;/Setter&gt;
+    &lt;/Style&gt;</pre></div>
+
+<p>Build the project, and you’re good to go and use that control now. Hope this helps!</p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

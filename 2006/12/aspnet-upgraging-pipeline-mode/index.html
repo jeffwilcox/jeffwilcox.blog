@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Upgrading ASP.NET Applications to the Integrated Pipeline - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Upgrading ASP.NET Applications to the Integrated Pipeline">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2006/12/aspnet-upgraging-pipeline-mode/">-->Upgrading ASP.NET Applications to the Integrated Pipeline<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              11 December 2006
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            [RAW]
+
+<P>There's a <A class="" href="http://www.iis.net/default.aspx?tabid=2&amp;subtabid=25&amp;i=1223&amp;p=1" mce_href="http://www.iis.net/default.aspx?tabid=2&amp;subtabid=25&amp;i=1223&amp;p=1">helpful article</A> at the IIS.NET site detailing a lot of what it means to upgrade your developer workstation to Vista, what changes IIS 7.0 brings, and ASP.NET application compatibility.&nbsp; <A class="" href="http://www.iis.net/default.aspx?tabid=2&amp;subtabid=25&amp;i=1223&amp;p=1" mce_href="http://www.iis.net/default.aspx?tabid=2&amp;subtabid=25&amp;i=1223&amp;p=1">Direct link to the article.</A></P>
+
+
+
+<P>The most important content in this article, in my opinion, is that which <A class="" href="http://www.iis.net/default.aspx?tabid=2&amp;subtabid=25&amp;i=1223&amp;p=5" mce_href="http://www.iis.net/default.aspx?tabid=2&amp;subtabid=25&amp;i=1223&amp;p=5">outlines the specific ASP.NET changes</A>.</P>
+
+
+
+<P>Here is the list of known changes with IIS 7.0 at this time:</P>
+
+
+
+<UL>
+
+<LI>In Integrated mode, Application_OnError is not called for exceptions that occur in HttpApplication::Init</LI>
+
+
+
+<LI>Server.ClearError in EndRequest does not clear exception message in Integrated mode</LI>
+
+
+
+<LI>Integrated mode applications may write to a response in EndRequest after an exception has been formatted and written to the response</LI>
+
+
+
+<LI>In Integrated mode, ASP.NET no longer suppresses the content type when the response is empty</LI>
+
+
+
+<LI>Different windows identity in Forms authentication</LI>
+
+
+
+<LI>Default Authentication_OnAuthenticate event does not raise in Integrated mode</LI>
+
+
+
+<LI>In Integrated mode Request.RawUrl contains the new query string after RewritePath is called</LI>
+
+
+
+<LI>Passport Network credentials authentication is not supported in Windows Vista</LI>
+
+
+
+<LI>PassportAuthentication module is not part of the Integrated pipeline</LI>
+
+
+
+<LI>Large, valid forms auth tickets (length &lt;= 4096 bytes) present in the query string are rejected by IIS 7.0</LI>
+
+
+
+<LI>In Integrated mode, the ASP.NET request time-out is applied multiple times during the request, allowing the request to execute longer</LI>
+
+
+
+<LI>Trace settings are not transferred to Server.Transfer target page</LI>
+
+
+
+<LI>The method Httpcontext.Current.Response.Write() cannot work in Application_Onstart()</LI>
+
+
+
+<LI>HttpRequest.LogonUserIdentity throws an exception when accessed before PostAuthenticateRequest</LI>
+
+
+
+<LI>In Integrated mode, ASP.NET modules will receive the first unauthenticated request to IIS when Anonymous authentication is disabled</LI>
+
+
+
+<LI>ASP.NET cannot impersonate the client identity until PostAuthenticateRequest</LI>
+
+
+
+<LI>Content-Type header is not generated when charset and content type are set to empty string</LI>
+
+
+
+<LI>In Integrated mode, both synchronous and asynchronous events raise for each module before the next module executes</LI>
+
+
+
+<LI>Response headers are removed in Integrated mode after calling ClearHeader in a custom IHttpModule</LI>
+
+
+
+<LI>Using Windows and Forms authentication together in Integrated mode is not supported</LI>
+
+
+
+<LI>In Integrated mode, IIS always rejects new lines in response headers (even if ASP.NET enableHeaderChecking is set to false)</LI>
+
+
+
+<LI>PreSendRequestHeaders and PreSendRequestContent events will raise together for each module</LI>
+
+
+
+<LI>The ordering of modules is reversed for PreSendRequestHeaders and PreSendRequestContent when using Integrated mode</LI>
+
+
+
+<LI>In Integrated mode, threading and queuing settings in are ignored</LI>
+
+
+
+<LI>If a configuration file error is encountered when using Integrated mode, IIS, not ASP.NET, generates the error message</LI>
+
+
+
+<LI>In Integrated mode, ASP.NET applications must subscribe to pipeline events during a module’s Init call</LI>
+
+</UL>
+
+
+
+[/RAW]
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

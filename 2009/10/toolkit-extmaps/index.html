@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Application Library Caching support for the Silverlight Toolkit - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Application Library Caching support for the Silverlight Toolkit">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2009/10/toolkit-extmaps/">-->Application Library Caching support for the Silverlight Toolkit<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              20 October 2009
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p>We previously received user feedback that we should ship the Application Library Caching manifest files along with the <a href="http://silverlight.codeplex.com/">Silverlight Toolkit</a>, to help reduce the size of .Xap files and cache the important libraries for future use in applications.</p>  <p>This advanced feature in Silverlight 3 allows libraries that your app depends on to be delivered outside the primary .Xap for your app, allowing the browser to cache the extensions for future use. This will speed up the startup experience for your frequent users if you update the app but don’t have changes to those libraries – it can save you bandwidth costs when hosting on a CDN, too!</p>  <p>We haven’t able to get the files included in the setup experience yet, so I wanted to share with the community the .extmap.xml files to use the feature before we release it in a future Silverlight Toolkit release.</p>  <p>Yes, the next release will have this feature built-in, so this is a stop-gap. Great details on how the feature works <a href="http://timheuer.com/blog/archive/2009/07/13/silverlight-3-cached-assembly-feature.aspx">here</a>.</p>  <h3>What a library cache file looks like</h3>  <p>The XML file is quite basic: it lists the assembly name, assembly version, public key token, and then the path information. Here’s the <strong>System.Windows.Controls.Toolkit.extmap.xml</strong> file:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:b172cd01-de3c-46a5-b4eb-ea5ec30b65af" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;?xml version="1.0"?&gt;
+
+&lt;manifest xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+
+          xmlns:xsd="http://www.w3.org/2001/XMLSchema"&gt;
+
+  &lt;assembly&gt;
+
+    &lt;name&gt;System.Windows.Controls.Toolkit&lt;/name&gt;
+
+    &lt;version&gt;2.0.5.0&lt;/version&gt;
+
+    &lt;publickeytoken&gt;31bf3856ad364e35&lt;/publickeytoken&gt;
+
+    &lt;relpath&gt;System.Windows.Controls.Toolkit.dll&lt;/relpath&gt;
+
+    &lt;extension downloadUri="System.Windows.Controls.Toolkit.zip" /&gt;
+
+  &lt;/assembly&gt;
+
+&lt;/manifest&gt;</pre></div>
+
+
+
+<h3>Downloading and install the files</h3>
+
+
+
+<p><a href="http://az414997.vo.msecnd.net/wordpress/2009/10/ToolkitApplicationLibraryCacheFiles.zip">Download</a> a ZIP (4 KB) of the extmaps for the toolkit <a href="http://az414997.vo.msecnd.net/wordpress/2009/10/ToolkitApplicationLibraryCacheFiles.zip">here</a>. These files work with both the July 2009 and October 2009 releases of the toolkit, though I’d recommend using the latest available official release!</p>
+
+
+
+<p>After downloading, extract the files. For the best experience, copy the files side-by-side with the <a href="http://silverlight.codeplex.com/">Silverlight Toolkit</a> binaries. We added a link to the Binaries folder in the October release of the toolkit to make it quick to get there, too:</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="ToolkitBinaries" border="0" alt="ToolkitBinaries" src="http://az414997.vo.msecnd.net/wordpress/2009/10/ToolkitBinaries.png" width="431" height="548" /> </p>
+
+
+
+<p>On my 64-bit machine, the folder is ‘C:\Program Files (x86)\Microsoft SDKs\Silverlight\v3.0\Toolkit\Oct09\Bin’</p>
+
+
+
+<p>You’ll be asked to elevate when you copy in the extracted .extmap.xml files, as the program location is system-wide. Allow the operation by clicking ‘Continue’:</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="DeniedForCopying" border="0" alt="DeniedForCopying" src="http://az414997.vo.msecnd.net/wordpress/2009/10/DeniedForCopying.png" width="528" height="310" /> </p>
+
+
+
+<p>Now you’re ready to go – the Silverlight build tasks will detect the presence of these small XML files and use that information to zip up the dependent libraries for your app.</p>
+
+
+
+<h3>How this can help</h3>
+
+
+
+<p>Now, I have this amazing Silverlight 3 app that uses the <a href="http://silverlight.codeplex.com/wikipage?title=Silverlight%20Toolkit%20Overview%20Part%202&amp;referringTitle=Home">charting components from the Silverlight Toolkit</a>:</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="SampleChartingApp" border="0" alt="SampleChartingApp" src="http://az414997.vo.msecnd.net/wordpress/2009/10/SampleChartingApp.png" width="680" height="604" /> </p>
+
+
+
+<p>When I build the app, I see that the original .Xap file is <strong>345 KB</strong>. This is a debug build of the app, btw.</p>
+
+
+
+<p>It includes the toolkit’s charting components, the primary toolkit assembly, plus the control library from the Silverlight SDK.</p>
+
+
+
+<p>It is all of great value, but does add up in bytes – and the bytes for those libraries don’t change very often, making them a great target for this caching.</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="OriginalSize" border="0" alt="OriginalSize" src="http://az414997.vo.msecnd.net/wordpress/2009/10/OriginalSize.png" width="680" height="475" /> </p>
+
+
+
+<h3>Turning on the feature for your Silverlight Application project</h3>
+
+
+
+<p>You need to opt-in to the application library caching feature.</p>
+
+
+
+<p>Right-click on your Silverlight application project in Visual Studio (applies the same in Visual Studio 2008 and Visual Studio 2010 Beta 2) and select ‘Properties’</p>
+
+
+
+<p>Navigate to the Silverlight tab and check the ‘Reduce XAP size by using application library caching’ box:</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="SilverlightBuildOptions" border="0" alt="SilverlightBuildOptions" src="http://az414997.vo.msecnd.net/wordpress/2009/10/SilverlightBuildOptions.png" width="630" height="288" /> </p>
+
+
+
+<p>Save the changes and then build your project. Now, we see that there are 3 new .Zip files, and the original .Xap. The .Xap is only <strong>41 KB</strong>, plus the first time someone uses your application from the server, their browser will also go ahead and download the 3 .Zip files equaling the rest of the original app’s size.</p>
+
+
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="UpdatedSize" border="0" alt="UpdatedSize" src="http://az414997.vo.msecnd.net/wordpress/2009/10/UpdatedSize.png" width="680" height="475" /> </p>
+
+
+
+<p><strong>NOTE:</strong> The reason this is opt-in is that it’s more involved for publishing, since you need to remember that not only do you need the .Xap file for your app, you also need to store the .Zip file(s) of the libraries alongside as well.</p>
+
+
+
+<h3>This will be a feature in a future release of the Silverlight Toolkit</h3>
+
+
+
+<p>We shipped the October 2009 release of the Silverlight Toolkit on Monday, focusing primarily on delivering the necessary design features for enabling a great Visual Studio 2010 Beta 2 story.</p>
+
+
+
+<p>We’ve also been working diligently on longer-lead items for the <em>next</em> release of the Silverlight Toolkit, such as integrating the generation of these .extmap.xml files into our build process. Next, we’ll add them to the setup and with the next release, you won’t need this blog post to take advantage of the feature.</p>
+
+
+
+<p>If you’d like to learn more about the feature, <a href="http://timheuer.com/blog/archive/2009/07/13/silverlight-3-cached-assembly-feature.aspx">Tim Heuer</a> really covered this well earlier this year in <a href="http://timheuer.com/blog/archive/2009/07/13/silverlight-3-cached-assembly-feature.aspx">this post</a>.</p>
+
+
+
+<p><em>Hope this helps.</em> Special thanks to user ‘TimmyG’ on CodePlex who <a href="http://silverlight.codeplex.com/WorkItem/View.aspx?WorkItemId=3518">initially reminded</a> us of this!</p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

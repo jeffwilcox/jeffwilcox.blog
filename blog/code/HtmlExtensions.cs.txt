@@ -1,0 +1,113 @@
+
+namespace JeffWilcox.RichWebClient.Utilities
+{
+    using System;
+    using System.Windows;
+    using System.Windows.Browser;
+
+    /// <summary>
+    /// A set of C# 3.0 extension methods *as well* as a general 
+    /// HTML DOM bridge helper & utility library
+    /// </summary>
+    public static class HtmlExtensions
+    {
+        /// <summary>
+        /// Retrieve the first HtmlElement in the document that matches 
+        /// the tag name
+        /// </summary>
+        /// <param name="tagName">HTML tag</param>
+        /// <returns>The first HtmlElement of tagName on the page</returns>
+        public static HtmlElement GetSingleElementByTagName(string tagName)
+        {
+            HtmlElementCollection hh = HtmlPage.Document.GetElementsByTagName(tagName);
+            if (hh.Count > 0) {
+                return hh[0];
+            }
+
+            throw new InvalidOperationException(
+                String.Format(@"There were no ""{0}"" HTML tags found on the page.", tagName));
+        }
+
+        /// <summary>
+        /// Property representing the &lt;body /&gt; element on 
+        /// the page.
+        /// </summary>
+        /// <remarks>Although a static property, this get is actually 
+        /// a method call</remarks>
+        public static HtmlElement BodyElement
+        {
+            get { return GetSingleElementByTagName("body"); }
+        }
+
+        /// <summary>
+        /// Evaluate some JavaScript code on the page body
+        /// </summary>
+        public static void Eval(string code)
+        {
+            HtmlElement js = CreateJavaScriptElement(code);
+            BodyElement.AppendChild(js);
+        }
+
+        /// <summary>
+        /// Popup a JavaScript alert message
+        /// </summary>
+        public static void Alert(string alertMessage)
+        {
+            Eval("alert('" 
+                + alertMessage.Replace("'", "\\'") 
+                + "')");
+        }
+
+        /// <summary>
+        /// Create a JavaScript code block
+        /// </summary>
+        public static HtmlElement CreateJavaScriptElement(string code)
+        {
+            HtmlElement js = CreateJavaScriptElement();
+            js.SetProperty("text", code);
+            return js;
+        }
+
+        /// <summary>
+        /// Create an HTML element that is a JavaScript include
+        /// </summary>
+        public static HtmlElement CreateJavaScriptInclude(string src)
+        {
+            HtmlElement js = CreateJavaScriptElement();
+            js.SetAttribute("src", src);
+            return js;
+        }
+
+        /// <summary>
+        /// Create a new &lt;script /&gt; tag
+        /// </summary>
+        private static HtmlElement CreateJavaScriptElement()
+        {
+            HtmlElement js = HtmlPage.Document.CreateElement("script");
+            js.SetAttribute("type", "text/javascript");
+            return js;
+        }
+
+        /// <summary>
+        /// Property representing the &lt;head /&gt; element on 
+        /// the page.
+        /// </summary>
+        /// <remarks>Although a static property, this get is actually 
+        /// a method call</remarks>
+        public static HtmlElement HeadElement
+        {
+            get { return GetSingleElementByTagName("head"); }
+        }
+
+        /// <summary>
+        /// Append multiple HtmlElements to a single HtmlElement
+        /// </summary>
+        public static void AppendChildren(this HtmlElement element, params HtmlElement[] children)
+        {
+            for (int i = 0; i < children.Length; ++i) {
+                element.AppendChild(children[i]);
+            }
+        }
+
+    }
+}

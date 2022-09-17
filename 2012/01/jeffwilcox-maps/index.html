@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Displaying static maps on the Windows Phone for performance and scenario wins - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Displaying static maps on the Windows Phone for performance and scenario wins">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2012/01/jeffwilcox-maps/">-->Displaying static maps on the Windows Phone for performance and scenario wins<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              31 January 2012
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p>One of the nice visuals of 4th &amp; Mayor is the animation and display of a simple area map whenever you view a place in the app.</p>  <p>Unfortunately, most map controls, such as the Bing Maps control included with the platform, are highly sophisticated: they let you have a bunch of pushpins, gather information about bounding boxes, etc. This awesome feature set can have a negative effect on performance.</p>  <blockquote>   <p>2/1/2012 Update: Thanks to <a href="http://timheuer.com/blog/">Tim Heuer</a>, who just provided a pull request that adds an OpenStreetMap provider, MapQuest provider, offers the ability to add an authentication key optionally as a property on the control, and to specify the type of maps. I’ve updated NuGet to 1.1 with these contributions, thanks!</p> </blockquote>  <p>My static map control is simple but nice because it’s an easy replacement, can be used in Panorama/Pivots, and overall still has a great, high-speed experience that your users will enjoy.</p>  <p><a href="http://az414997.vo.msecnd.net/wordpress/2012/01/SampleMap.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="SampleMap" border="0" alt="SampleMap" src="http://az414997.vo.msecnd.net/wordpress/2012/01/SampleMap_thumb.png" width="341" height="346" /></a>     <br /><em>A sample static Bing Map from 4th &amp; Mayor: touching the map takes you to an interactive map view page allow for directions, panning, etc.</em></p>  <h3>“JeffWilcox.Maps” Component</h3>  <p>I’ve refactored one of the libraries used in my app to be general enough for others to use: it offers simple static map code in the form of a “StaticMap” control: just drop it into your XAML page and you’re mostly good to go.</p>  <p>The <strong>MapCenter</strong> property takes a GeoCoordinate, either data bind it or set the property as the page is navigated to.</p>  <p>Over time I’ll consider adding more of the functionality I’ve had to the library, including the interactive libraries.</p>  <h3>Get the library</h3>  <p>I’m using my favorite pair of deployment places for this library: GitHub for source, NuGet for binaries.</p>  <h4>NuGet</h4>  <p>The library is <a href="http://nuget.org/packages/JeffWilcox.Maps">JeffWilcox.Maps</a></p>  <h4>Source on GitHub</h4>  <p>Fork the repo, <a href="https://github.com/jeffwilcox/wp-maps">wp-maps</a></p>  <h3>Offering an interactive experience</h3>  <p>To optimize the maps experience, I instead decided to use the static map REST APIs from Bing Maps for my mobile application: this lets me perform a HTTP request, grab the image, and data bind it into my display.</p>  <p>I then place it inside a borderless, retemplated Button control, so that touching the map takes you to a new page: an experience where I can show the real Bing Maps control, your current position, as well as the location of the place you are trying to go. By moving this to a separate assembly, I get great performance wins: the Bing Maps control and other code needed to offer the rich interactive experience is delay loaded and only there when needed.</p>  <h3>Properties on the control</h3>  <p>These properties are on the initial version of the control:</p>  <p><strong>Foreground</strong> is supported and used for the implicit, centered point: it’s Black by default to match the Windows Phone’s “Maps” app, but I find that using {StaticResource PhoneAccentBrush} looks great in my opinion.</p>  <p><strong>MapCenter</strong> takes a GeoCoordinate, this is a key property.</p>  <p><strong>ZoomLevel</strong> sets the zoom level (default of 15 I think) for the map. 1 effectively shows a bunch of the world, and 21 shows street level sizes. The zoom levels for Goog and Bing are pretty similar.</p>  <p><strong>MapCenterVisibility</strong> defaults to Visible, and if you decide you don’t want the center point to be on the view, just set this to Collapsed.</p>  <p><strong>IsSensorCoordinate</strong> should be data bound, some APIs (like Google’s) require that the API call identify whether it’s a position from a sensor, or a database. In my case, sensor is used for any GeoCoordinateWatcher/LocationService code, while I set it to False for data from the Foursquare venues database where I get info about a place.</p>  <p><strong>Provider</strong> sets the static map provider to use.</p>  <p>The height and width are automatically identified by the system, but many APIs limit the width and height to small numbers (typically &lt;= 640 pixels in any direction), FYI.</p>  <h3>Bing Maps API Key</h3>  <p>If you’re using Bing Maps, you’ll need a <a href="http://www.microsoft.com/maps/developers/web.aspx">Bing Maps API key</a> and to make sure that your app is compliant with the requirements of its terms and conditions. This is the same key you use with the Bing Maps control.</p>  <p>For this first version you have to set the API key as a string resource inside your App.xaml file.</p>  <p>Here’s how you would go about this: add the namespace and set the string – I’ve put a comment where your key should go in App.xaml:</p>  <pre class="brush: xml">&lt;Application 
+    x:Class=&quot;StaticMapSample.App&quot;
+    xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot;       
+    xmlns:x=&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot;
+    xmlns:phone=&quot;clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone&quot;
+    xmlns:shell=&quot;clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone&quot;
+    xmlns:core=&quot;clr-namespace:System;assembly=mscorlib&quot;&gt;
+
+    &lt;!--Application Resources--&gt;
+    &lt;Application.Resources&gt;
+        &lt;core:String x:Key=&quot;BingMapsKey&quot;&gt;&lt;!-- Place your Bing Maps API key here--&gt;&lt;/core:String&gt;
+    &lt;/Application.Resources&gt;
+
+    &lt;Application.ApplicationLifetimeObjects&gt;
+        &lt;!--Required object that handles lifetime events for the application--&gt;
+        &lt;shell:PhoneApplicationService 
+            Launching=&quot;Application_Launching&quot; Closing=&quot;Application_Closing&quot; 
+            Activated=&quot;Application_Activated&quot; Deactivated=&quot;Application_Deactivated&quot;/&gt;
+    &lt;/Application.ApplicationLifetimeObjects&gt;
+
+&lt;/Application&gt;</pre>
+
+<p>I haven’t decided if this is better or worse than just exposing an API key property for you to bind or set on the page, but I really like just having one central place in an app to put the key.</p>
+
+<h3>Static map providers</h3>
+
+<p>The initial implementation has a simple enum for chosing between two provider choices, Bing Maps and Google Maps. I’ve decided to include Google Maps because it turns out that in some parts of the world, Google Maps are much better, and I’ve had hundreds of app users ask for a setting to instead use Google Maps. There are slightly different requirements for its API, such as exposing an “open in web browser” function so that the user could decide to open the same map view in the browser on the phone.</p>
+
+<p>Just set the <strong>Provider</strong> property on the StaticMap to either Bing or Google. The default is Bing, as it should be!</p>
+
+<p>Here’s a screenshot of the sample app I’ve included in the GitHub repo (though if you use it, remember to put your Bing Maps API key inside of the App.xaml file first!) – it has both Bing and Google Maps, and the application bar is hooked up to events to open the Maps app on the phone <em>or</em> to open the browser with the appropriate map page. Take a look.</p>
+
+<p><a href="http://az414997.vo.msecnd.net/wordpress/2012/01/SampleApp.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="SampleApp" border="0" alt="SampleApp" src="http://az414997.vo.msecnd.net/wordpress/2012/01/SampleApp_thumb.png" width="680" height="567" /></a></p>
+
+<p><em>On the right, the expanded app bar: your app may need to expose the “open in browser” option to comply with the terms and conditions that you interpret on the maps API of your choice. Also, the “open in maps app” is a nice function to provide users who want to open the location in the main OS’s Maps app.</em></p>
+
+<h3>Design note: flush maps</h3>
+
+<p>One design technique that I use in my app, as does the “Local Scout” app in Mango, is having a “flush” map experience: the map extends to the edge of the phone, instead of the standard spacing with margins from the edges of the phone.</p>
+
+<p>This visual effect looks great, and can in general be created by setting the Margin of the control to “-12,0,-12,0”.</p>
+
+<p>Hope this helps.</p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

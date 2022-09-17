@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Moving 4th & Mayor to Windows Azure Web Sites - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Moving 4th & Mayor to Windows Azure Web Sites">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2013/04/4thandmayor-azure-websites/">-->Moving 4th & Mayor to Windows Azure Web Sites<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              29 April 2013
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            <li>azure</li><li>cloud</li><li>nodejs</li><li>4thandmayor</li>
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p>After several years of hosting my mobile application’s web server and services with Amazon Web Services (AWS), in April I moved my production services to Windows Azure, and it went really smoothly. Here I am sharing a guide through some of the highlights of this process, including how I went about migrating my Node.js backend to an HTTPS-secured site powered by Windows Azure Web Sites, Cloud Services, and the Windows Azure Store.</p>
+
+<blockquote>
+  <p>Update 6/18/13: Windows Azure Web Sites now supports custom SSL certificates without the Cloud Services workarounds described in this post. The new post is up at <a href="http://www.jeff.wilcox.name/2013/06/waz-web-sites-ssl/">http://www.jeff.wilcox.name/2013/06/waz-web-sites-ssl/</a>.</p>
+</blockquote>
+
+<p>After planning for the migration in March and doing some testing over weekends, I migrated all the traffic for my foursquare application <a href="https://www.4thandmayor.com/">4th &amp; Mayor</a> to Windows Azure via a quick DNS update a few days into the month of April. It has continued running without a hitch. I’m not going to detail my data migration here, however, that is never fun.</p>
+
+<p>As my cloud backend is implemented in <a href="http://nodejs.org/">Node.js</a>, there was not very little app coding work required other than updating my logging provider and configuring some new infrastructure connection strings.</p>
+
+<h1 id="ssl--windows-azure-web-sites-today">SSL + Windows Azure Web Sites today</h1>
+
+<p>My app makes connections to my cloud infrastructure to enable rich live tiles, push notification registration and processing, configuraton, and other future scenarios I hope to launch some day in future app updates. These requests need to be secured with SSL. I also expose some functionality on the web site for the app’s marketing and user diagnostics.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/4thandmayorSsl.png =700x100" alt="A screen capture of the web browser showing the key icon and graphics to show that the site has been served in a secure manner." title="4thandmayor.com with SSL, site hosted by Windows Azure" /></p>
+
+<p>Here’s the kicker: the Windows Azure Web Sites preview product supports SSL using Microsoft’s wildcard certificate for <code class="language-plaintext highlighter-rouge">*.azurewebsites.net</code> - great and secure for many apps today - but does not support a “bring your own certificate” model today. In time, the service will support custom certificates for Web Sites via SNI I’ve heard, but today you cannot bring your own certs like you might like to. Since my production app already uses my own custom certificates, moving my traffic to the Windows Azure endpoints isn’t a great story for me, and I prefer to route my app traffic through DNS for my domain.</p>
+
+<p>Brady Gaster has a really good solution and tutorial for the interim: <a href="http://www.bradygaster.com/running-ssl-with-azure-web-sites">Running SSL with Windows Azure Web Sites Today</a> - this is what I have gone with, and though it is a little scary sounding at first, it was pretty easy to setup and has completely unblocked me. Check that out for the technical details and guide.</p>
+
+<p>Production <a href="https://www.4thandmayor.com/">4th &amp; Mayor</a> app and site traffic as of April 4, 2013 is using SSL to communicate with the awesome Git-deployed goodness of <a href="http://www.windowsazure.com/en-us/home/scenarios/web-sites/">Windows Azure Web Sites</a>. WINNING!</p>
+
+<p>Using Brady’s guide, my services design for the core SSL traffic and Node.js app hosting is as follows:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/MyAzureNetworkMap.png =700x350" alt="A simple network map of the various Windows Azure services involved in hosting the secure web site." title="4thandmayor.com with SSL, site hosted by Windows Azure" /></p>
+
+<p>I can independently scale the Cloud Services (reverse proxy) and reserved Web Sites instances for the front end. Since I host a few other sites with my reserved region/subscription, I tend to keep more instances there for good response times across my network of sites.</p>
+
+<p>Since both Windows Azure Web Sites and Cloud Services have built-in network load balancing (this is a difference from when I was with AWS and had to pay for and configure elastic load balancing separately), I get a nice value out of this configuration.</p>
+
+<blockquote>
+  <p>Full disclosure: I’m a software development lead on the Windows Azure team and looked to this exercise to learn more about the tools, products and services that we offer. My application is a member of the <a href="http://www.microsoft.com/bizspark/">Microsoft BizSpark program</a> which offers a nice set of cloud services, too.</p>
+</blockquote>
+
+<h1 id="my-nodejs-app-backend--site">My Node.js app backend &amp; site</h1>
+
+<p>Implemented in <a href="http://nodejs.org/">Node.js</a>, the web services and site for the app are super portable as a result: I’m glad there is great support for Node on Windows and Windows Azure. I also use some secondary services like MongoDB hosting (provided by the <a href="http://www.mongolab.com/">MongoLab company</a>) and table/blob storage, and a nice thing of this infrastructure world is that I can move and migrate them as I please - it isn’t all strongly coupled and is just a matter of identifying resources the right way and having the appropriate credentials available to my app, wherever it may live.</p>
+
+<p>If I were to create my app from scratch today I might consider using the <a href="http://www.windowsazure.com/en-us/home/scenarios/mobile-services/">Mobile Services</a> product that Windows Azure has, but I really enjoy the level of control I get with my own implemented Node app, and the experience of using the tools and techniques common in the cloud world today is really valuable to me. It is quite portable to any cloud as a result, too - it is just JavaScript code at the end of the day.</p>
+
+<p>When hosted in the AWS cloud, I was using pure infrastructure services, and though I loved that level of control, keeping my VMs up-to-date just wasn’t that fun. The huge benefit with this migration is that I’ve moved to the nice deployment model that Windows Azure Web Sites offers - reducing the complexity in scaling and provisioning new virtual machines.</p>
+
+<p>Although not exactly the same as Web Sites, Amazon’s Elastic Beanstalk product is pretty similar in some ways in terms of enabling a much better deployment model, FYI.</p>
+
+<blockquote>
+  <p>The source code to my simple Node backend is open on GitHub at <a href="https://github.com/jeffwilcox/4th-cloud">https://github.com/jeffwilcox/4th-cloud</a>.</p>
+</blockquote>
+
+<h1 id="creating-a-new-windows-azure-web-site">Creating a new Windows Azure Web Site</h1>
+
+<p>From the management portal, creating a new web site is easy:</p>
+
+<ul>
+  <li>Like anything else in Windows Azure, I just open up the “New” menu, pick Compute, and then Web Site.</li>
+  <li>I’m hosting my own app and don’t need a starting place, so Quick Create is the way to go.</li>
+  <li>I provide the URL endpoint for the app</li>
+  <li>I select the region I’d like the app hosted in</li>
+  <li>I choose which Windows Azure subscription I would like to use for the service’s billing.</li>
+</ul>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/createWebSite.png =700x400" alt="The Windows Azure management portal has an easy way to select New service, Compute, Web Site, to add a new site to a region and associate with a specific subscription." title="Adding a new Web Site to Azure" /></p>
+
+<h2 id="the-dashboard">The Dashboard</h2>
+
+<p>Once the site is created, clicking on it in the portal will bring up its dashboard display where you can get deployment info, monitor data transfer and various instance and site metrics, plus perform configuration &amp; administrative tasks.</p>
+
+<p>Here’s the 4th &amp; Mayor dashboard showing a week of data - each day you can see clear ebb and flow.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/dashboard.png =700x411" alt="The portal dashboard view shows information about web endpoints, graphics and charts of recent data transfers, CPU use, and other metrics of interest." title="The dashboard view of a Windows Azure Web Sites app." /></p>
+
+<h2 id="configuring-the-source-code-deployment-mechanism">Configuring the source code deployment mechanism</h2>
+
+<p>To make the source control association for a site, from the dashboard, touch ‘Set up deployment from source control’ and make your selection. It will then let you setup credentials for Git or authenticate with services like CodePlex or GitHub.com.</p>
+
+<p>There are many ways to deploy code to an Azure Web Site - each time I open the deployment set-up window I smile:</p>
+
+<ul>
+  <li>Associating with Team Foundation Service</li>
+  <li>Associating the site with a CodePlex project</li>
+  <li>A GitHub private or public repo</li>
+  <li>Your Dropbox</li>
+  <li>Bitbucket Git/Mercurial repo</li>
+  <li>Any external Git or Mercurial repo</li>
+  <li>Push a local Git repo to the Web Site</li>
+</ul>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/git.png =700x400" alt="While setting up the deployment for a site, you can easily pick from a service like hosted Team Foundation Service, CodePlex, GitHub, Dropbox, Bitbucket, or a local Git repo on your machine." title="Configuring a local git repo for site deployment." /></p>
+
+<p>For my app, I’m using <em>Local Git repository</em> - I do some magic w.r.t. generating a JSON file with configuration information that I need to deploy in secret to the app, so I need to do this magic before pushing the site and service. This enables a good workflow for me, but for other web sites I host, I often just have them deployed straight from my source control.</p>
+
+<p>So now, from a local repo, I can do a <code class="language-plaintext highlighter-rouge">git push azureproduction</code> or similar command to get my site updated in seconds. The first time you configure local Git deployment, the management portal will help you setup some credentials to pushing, fyi. There are a lot of nice tutorials out there that go into detail if you need.</p>
+
+<h2 id="git-deploying-the-service">Git deploying the service</h2>
+<p>Once configured, I setup the Git remotes inside my repo. The Azure portal should show you the command for this - but essentially you just issue a <code class="language-plaintext highlighter-rouge">git remote add</code> command to enable pushing to that endpoint.</p>
+
+<p>When you push to the Git endpoint in the Azure cloud, a service called “Kudu” picks up the changes and redeploys the application. You can find out more about Kudu at <a href="http://blog.davidebbo.com/2012/06/introducing-open-source-engine-behind.html">David Ebbo’s blog</a> - he is the architect of that product.</p>
+
+<p>When I push locally, the Git push command will echo back how the Web Site is being deployed. In this case, I see some useful information:</p>
+
+<ul>
+  <li>It knows which branch I want deployed</li>
+  <li>It recognizes that I am deploying a Node.js Web Site</li>
+  <li>It updates and installs any needed npm packages</li>
+  <li>It lets me know that the deployment is successful</li>
+</ul>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/deployedNodeApp.png =700x400" alt="Using the standard Git command I am able to deploy my local code to the Windows Azure web site. Azure takes care then of making sure everything is setup for the Node.js application to be served live. The app experiences no downtime with the new deployment across all the reserved instances I have setup." title="Mac Terminal - Git deployment to a Web Site" /></p>
+
+<p>I can also view the status of my app’s deployments from within the management experience online. Here is what it looks like during a deployment:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/deploying.png =700x400" alt="While the Git deployment is in progress, you will see live status updates inside the portal. You can also revert to previous deployments in the portal if need be." title="Watching an active deployment in the management portal." /></p>
+
+<p>If something went wrong, the UI is available to help roll back to an earlier version in seconds, too.</p>
+
+<h2 id="using-the-paid-reserved-web-site-mode">Using the paid Reserved web site mode</h2>
+
+<p>The Free and Shared tiers of service for Windows Azure Web Sites are all great products; however, having a decent amount of traffic at times, I need to be able to scale and make sure that I have the right amount of resources available to my application. I’m using the Reserved web site mode which lets me actually associate a few complete virtual machine instances with all of my Web Sites in a region/subscription pair.</p>
+
+<p>If you go to the “SCALE” tab in the management portal, you can scale your site to the Reserved mode, and even set the number and size of VM instances to use in the Reserved mode.</p>
+
+<p>This lets me share my costs for dedicated VM hosting among all my web properties in a subscription, and also helps me make sure that my response times and available computing power are always there. My costs so far have been similar to those I had in AWS, though I have the benefit of being able to pool multiple sites on these instances, instead of before, when I would spin up a few EC2 instances and then have to pay for a load balancer (ELB) between the instances.</p>
+
+<p>Load balancing is included at no additional cost with Windows Azure Web Sites and Cloud Services, which is great. Because of a workaround that I need to do for custom SSL today, however, I have similar costs as before since I am running a separate reverse proxy for encryption purposes. This cost will disappear once new functionality launches for web sites some day.</p>
+
+<h2 id="setting-instance--mode-scaling-options">Setting instance &amp; mode scaling options</h2>
+
+<p>I prefer the standard Small instance types in Windows Azure right now - these are essentially single core VMs. Right now I’m using 3 small instances. Since “Small” is the default unit for billing in the Azure world, it also is pretty straightforward for me to understand where my cloud spend is going with these units.</p>
+
+<p>Instance numbers and scale mode for my Web Site is configured in Configuration tab for the app. Just slide the Instance Count bar to the right to ramp up the instances.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/reservedScale.png =700x500" alt="By moving to the Reserved web site model, all your Web Sites in a region under the same subscription can share the same deployed virtual machine instances." title="Scaling your subscription's Web Sites to use a reserved model and set of instances of a specific size." /></p>
+
+<p>Thanks to the underlying technical implementation of the Web Sites system, these scaling operations are often extremely quick and instantaneous - there are virtual machines standing by, more or less, for my scale.</p>
+
+<p>I get more traffic at night and weekends across the US (about half of my user base), and have thought about automating the scale up and down work on this schedule using the Windows Azure PowerShell or cross-platform command line tools for my Mac… but for now I am doing this by hand.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/reservedSites.png =700x400" alt="All the Web Sites in the same region and with the same subscription will share the same virtual machine instances, load balancing across all instances." title="Reserved Web Sites." /></p>
+
+<p>When I go and view all my Web Sites now, I can check and see that the ‘Mode’ column clearly shows Reserved.</p>
+
+<h2 id="setting-environment-variables-logging-etc">Setting environment variables, logging, etc.</h2>
+
+<p>It is very easy to set environment variables that will be exposed to your application hosted via Web Sites. On the Configuration tab in the management portal, you can add key/value string pairs that will be exposed - and these can be changed on the fly, too.</p>
+
+<p>A common configuration variable for Node.js apps is the <code class="language-plaintext highlighter-rouge">NODE_ENV</code> setting - when set to “production”, the Express framework/module that exposes the web services &amp; site will configure its error and diagnostics system in a way that will be efficient for production use.</p>
+
+<p>Simply add the key/value pair in the UI in a blank space and then press the Save button in the bottom menu for the site. It should update all the running instances pretty quickly.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/productionNodeEnvironment.png =700x129" alt="Inside the Windows Azure management portal you can configure the app settings which become environment variables for the specific Web Site." title="Setting the NODE_ENV to production." /></p>
+
+<p>My app also is designed to be run in one of 3 ways: dev, staging, and production; by setting a custom <code class="language-plaintext highlighter-rouge">MODE</code> environment variable, I then have the startup path for the app load the appropriate configuration file with cloud credentials and other data.</p>
+
+<p>I actually have several Windows Azure Web Sites running for the app: the production app, a staging app, etc. Since they are all nearly mirrors of one another, it is very easy to use this configuration system to control the runtime environment.</p>
+
+<p>Here you can see the configured values for my app in the management portal:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/stagingMode.png =700x400" alt="My application looks for an environment variable named MODE that then tells it which configuration files to use. This lets me use the same exact application source for dev, staging, and production environments, without worrying too much about the specifics of implementing such a system." title="Setting up an app-specific environment variable." /></p>
+
+<p>For logging, my app uses a common log provider that many Node apps use, with a custom adapter I wrote that stores this information in the Windows Azure table service. More on that another day &amp; post.</p>
+
+<h2 id="endpoint-monitoring">Endpoint monitoring</h2>
+
+<p>There is a preview feature in Web Sites called Endpoint Monitoring that lets you pick a few test data centers and a URL to your application. The service then periodically pings your URL, records the response time (or error if it cannot connect), and makes this info available in the portal.</p>
+
+<p>On the Configuration tab you just give the metric a name, URL, and pick a one or more locations and press Save.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/endpointMonitoring.png =700x190" alt="Endpoint monitoring is a preview feature available for both Cloud Services as well as Web Sites. It allows you to have data centers regularly check that your site is running and prove information on the response times for endpoints of interest." title="Configuring endpoint monitoring." /></p>
+
+<p>This, combined with the built-in diagnostics information the Web Sites gathers and shows for all sites and no cost, is a really nice alternative to Amazon CloudWatch metrics I believe.</p>
+
+<h1 id="hosted-mongodb">Hosted MongoDB</h1>
+
+<p>I use <a href="http://www.mongodb.org/">MongoDB</a> for storing a lot of information about push notifications and app users. Mongo has been a great experience for me. Everyone has their own opinions on NoSQL but Mongo has been working great in production for me for years.</p>
+
+<p>I’ve found hosted Mongo to be relatively inexpensive yet super powerful: I use a third-party shared MongoDB hosting provider, <a href="http://www.mongolab.com/">MongoLab</a>, so I don’t have to worry about devops. In my previous AWS infrastructure setup, I had a paid product (about $40 a month) in the AWS US-East-1 region that I paid MongoLab for directly.</p>
+
+<p>Windows Azure also has MongoLab and hosted Mongo support. MongoLab just makes things easy, you no longer have to worry about actually running the database (devops, etc.) and just use the connection info and let them manage the service. The MongoLab hosting service is available free today (for a 500MB max MongoDB shared instance) - yup - $0.00 per month. Awesome. This is enough capacity for my needs today and then some.</p>
+
+<p>The Windows Azure Store exposes 3rd party providers and resources like this to me and actually lets me use my existing Azure billing information if the product is paid - no need to setup a separate billing relationship like when I was using MongoLab + AWS. To use such a resource, just like creating any other service inside the management portal, I go to New, Add-ons, then find the MongoLab service under App Services.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/mongoAddOn.png =700x457" alt="Adding a MongoDB shared instance through the service that MongoLab offers." title="Adding a MongoLab add-on." /></p>
+
+<p>Then you can setup information about the service, read about what is included, functionality, configuring it, etc.</p>
+
+<p>For now I pick the Free plan, select the associated subscription and region, then give it a name.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/mongoPersonalize.png =700x456" alt="Providing a name for the service." title="Naming the service." /></p>
+
+<p>Once it is created (this took about 60 seconds for me when I recently tried), you highlight the service and the contextual toolbar at the bottom of the portal will update.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/mongoConnectionInfoToolbar.png =405x60" alt="The contextual menu for the store service, MongoLab. Connection Info reveals the connection string to connect to the MongoDB." title="The contextual menu for the store purchase." /></p>
+
+<p>Just go ahead and hit Connection Info, and the connection string you will use is there. The connection is open to the web, so you can use the Mongo tools locally or from the cloud to copy and migrate, or backup, data.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/mongoConnectionInfo.png =500x445" alt="The connection string for the MongoLab shared MongoDB instance." title="Connection information for the store." /></p>
+
+<p>So for my app, I just update my configuration JSON files with this connection string, and redeploy and boom, the free MongoDB instance is being used. <em>Yup I’m skipping the data migration headache issue right now</em></p>
+
+<h1 id="web-sites--my-custom-ssl-certificate">Web Sites + my custom SSL certificate</h1>
+
+<p>Today (April 29, 2013), the Windows Azure Web Sites product supports SSL, but not the kind that I need in order to be backwards compatible with my existing production deployment on Amazon that uses my own SSL certificates for <code class="language-plaintext highlighter-rouge">www.4thandmayor.com</code> endpoints.</p>
+
+<p>Reading through previous posts about the Web Sites preview functionality, in time there will be support for SNI SSL, but this functionality is not available today.</p>
+
+<p>The complete post at <a href="http://www.bradygaster.com/running-ssl-with-azure-web-sites">http://www.bradygaster.com/running-ssl-with-azure-web-sites</a> is a good reference and you should follow that. This is just a short summary of some of the challenges/process.</p>
+
+<p>For setting up the SSL reverse proxy with custom certificates I need to use my Windows workstation, Visual Studio 2012, and the Windows Azure SDK for Visual Studio today.</p>
+
+<p>So, switching away from the Mac for this part…</p>
+
+<h2 id="ssl-certificates">SSL Certificates</h2>
+<p>Most web developers have been through this dance a few times - I’ve used Comodo and other reseller-friendly certificate services in the past through GoDaddy and NameCheap.</p>
+
+<p>Most of the cheap certs are just fine and verify that you control the domain name in question. If you’re looking for the fancy “green” security bar though, you’ll need an EV cert and those typically actually have a much more involved verification process - for an LLC they will check records in D&amp;B, perhaps require proof of a corporate bank account, look for legal documentation or business licenses, etc.</p>
+
+<p>I don’t require EV/green trust bar so I’m not covering that process - I am just using a domain control-validated cert.</p>
+
+<h3 id="creating-a-signing-request">Creating a signing request</h3>
+
+<p>When you get a signing certificate, you never have to transmit the private key to the certificate authority - instead, you just send a .CSR file - a signing request.</p>
+
+<p>To generate this, I’m most familiar with OpenSSL. For 4th &amp; Mayor, I moved this year from a standard certificate (for just the <code class="language-plaintext highlighter-rouge">www.4thandmayor.com</code> URL) to a wildcard certificate (<code class="language-plaintext highlighter-rouge">*.4thandmayor.com</code>, includes any subdomain) - this allows me to secure endpoints like <code class="language-plaintext highlighter-rouge">api.4thandmayor.com</code> and <code class="language-plaintext highlighter-rouge">staging.4thandmayor.com</code> as well. The wildcard cert did cost about $100 more per year.</p>
+
+<p>Don’t forget to renew and keep your deployed certs up-to-date ;-)</p>
+
+<blockquote>
+  <p>Fun Windows trick: if you have the Git Bash installed, just run it - <code class="language-plaintext highlighter-rouge">openssl</code> is available in the command prompt.</p>
+</blockquote>
+
+<p>So from a command prompt, follow the guidance from your CA for generating the CSR. You can use openssl’s walkthrough question/answer format from a terminal or just provide the parameters all at once. For my request, it went something like this:</p>
+
+<pre class="brush: bash">
+$ openssl req -nodes \
+    -newkey rsa:2048 \
+    -nodes \
+    -keyout 4thandmayor-wildcard.key \
+    -out 4thandmayor-wildcard.csr \
+    -subj "/C=US/ST=Washington/L=Seattle/O=Wilcox Digital, LLC/OU=Corporate/CN=*.4thandmayor.com"
+</pre>
+
+<p>It will then generate and save the <code class="language-plaintext highlighter-rouge">.key</code> file - save that - it is your private key - keep it safe, like Frodo would.</p>
+
+<pre class="brush: bash">
+Generating a 2048 bit RSA private key
+..................................................................+++
+.......................................+++
+writing new private key to '4thandmayor-wildcard.key'
+</pre>
+
+<p>The .CSR file is just a text file with the appropriate headers and base64-encoded key; this is part of the PKCS #12 format specification.</p>
+
+<p>Just open, copy and drop the file into your SSL certificate order form as part of the checkout and ordering process. Most providers allow unlimited “re-keying” these days, in case you make a mistake, but do use care in these steps.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/csrRequest.png =700x490" alt="Providing the certificate signing request." title="Submitting the CSR request online to the certificate authority." /></p>
+
+<p>At this point you’ll just wait for the verification process and then be able to download the certificate and any needed intermediate chain to then install on your web servers or your cloud service. Most services send an e-mail with information about grabbing the chain once validated, approved and generated.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/csrSummary.png =700x490" alt="The process according to the CSR reseller web site." title="A summary according to the CSR reseller w.r.t. the process." /></p>
+
+<h3 id="creating-a-pkcs-12-pfx-bundle">Creating a PKCS #12 PFX bundle</h3>
+
+<p>As I was making the request on my Mac initially (Windows may be different), I needed to generate a single .PFX file which contains the private key, certificate, any intermediate certs, and ideally/optionally a password to protect it all.</p>
+
+<p>Since my EssentialSSL-branded certificate is actually built on the trust of a few intermediate CAs and resellers, you need the full chain to effectively validate the cert in the end. I munged these things using OpenSSL. Note that these are the commands I used, but every CA is going to be a little different depending on any intermediate certificate names, etc..</p>
+
+<p>Step One: combine all the intermediate chain certs into an intermediate file (these are all just text files, BTW)</p>
+
+<pre class="brush: bash">
+$ cat AddTrustExternalCARoot.crt \
+      UTNAddTrustSGCCA.crt \
+      ComodoUTNSGCCA.crt \
+      EssentialSSLCA_2.crt &gt; intermediates.crt
+</pre>
+
+<p>Next, export/generate the PFX file… it will prompt you for a password, too. Provide a password.</p>
+
+<pre class="brush: bash">
+$ openssl pkcs12 -export -in 4thandmayor-wildcard.crt \
+    -inkey 4thandmayor-wildcard.key \
+    -certfile intermediates.crt \
+    -out 4thandmayor-wildcard.pfx
+</pre>
+
+<p>Keep this file safe. Super safe. It has your private key, certificate, and everything in it. You’ll upload it to Windows Azure soon.</p>
+
+<h2 id="cloud-services">Cloud Services</h2>
+<p>OK so let’s briefly look at where I am now:</p>
+
+<ul>
+  <li>I have a deployed Web Site that has my Node.js app running in the cloud. It is scaled using a reserved model, multiple VMs, and ready for traffic.</li>
+  <li>I am using a hosted MongoDB solution for some of my needs, powered by the Windows Azure Store</li>
+  <li>I’ve configured my application’s connecting strings, settings, etc.</li>
+  <li>I am ready to be secure
+    <ul>
+      <li>I have a private SSL key for my server</li>
+      <li>I have received back my certificate that I purhcased from a CA reseller</li>
+      <li>I have generated a PKCS12 PFX file to upload to my server/the cloud</li>
+    </ul>
+  </li>
+</ul>
+
+<p>What’s left?</p>
+
+<ul>
+  <li>Securing the site with my custom SSL certificate</li>
+  <li>Updating DNS entries and launching my service</li>
+</ul>
+
+<p>So again, the biggest functionality gap in the preview Web Sites feature for my needs here is that I just cannot use my custom domain SSL certificate without a workaround. The workaround is detailed in other posts, but is essentially a Web Role Cloud Service, which is the strongly managed, powerful application model that is a key Windows Azure service.</p>
+
+<p>You can find out more about Cloud Services and the compute application models that Windows Azure supports at <a href="http://www.windowsazure.com/en-us/develop/net/fundamentals/compute/">http://www.windowsazure.com/en-us/develop/net/fundamentals/compute/</a>.</p>
+
+<blockquote>
+  <p>Cloud Services provides Platform as a Service (PaaS). This technology is designed to support applications that are scalable, reliable, and cheap to operate. It’s also meant to free developers from worrying about managing the platform they’re using, letting them focus entirely on their applications.</p>
+</blockquote>
+
+<h1 id="creating-the-cloud-service">Creating the cloud service</h1>
+
+<p>Like the other services, in the management portal I select New, Compute, and setup details like the Cloud Services endpoint.</p>
+
+<p>Once setup, I will know the DNS name (ending in <code class="language-plaintext highlighter-rouge">cloudapp.net</code>) and have a placeholder project that I can then upload and deploy staging and production packages to. The Visual Studio and PowerShell tools on Windows generate these deployment packages.</p>
+
+<h1 id="uploading-my-certificate">Uploading my certificate</h1>
+
+<p>The Certificates tab for the creatd Cloud Service is where I can go to view information about any certificates that are available to my app. In the app bar at the bottom of the page, I select <em>Upload</em>.</p>
+
+<p>Browsing my machine for my safely secured <code class="language-plaintext highlighter-rouge">.pfx</code> file, I also provide the password to decrypt the contents.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/cloudServicesUploadCertificate.png =496x348" alt="Uploading a certificate in the Azure management portal." title="Uploading a certificate in the Azure management portal." /></p>
+
+<p>After the certificate PFX bundle is uploaded, the Certificates area will show a table listing all the certificates that it was able to extract, including the Subject, Status, Thumbprint, and expiration information.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/cloudServicesCertificates.png =700x229" alt="Viewing the certificates associated with a cloud service. This includes the certificate chain with intermediate certs." title="Viewing the certificates associated with a cloud service." /></p>
+
+<p>I will use the thumbprint of these while configuring the cloud service in Visual Studio so that the proper URL endpoints use the right certificate, and also to provide the certificate chain for the cloud services hosting environment to use during SSL/TLS negotiation.</p>
+
+<h1 id="publishing-the-production-cloud-service">Publishing the production Cloud Service</h1>
+
+<p>The actual reverse proxy is detailed in Brady’s post, it builds on a Microsoft IIS-built component called <a href="http://www.iis.net/downloads/microsoft/application-request-routing">Application Request Routing</a>. Once setup with the basics for deploying the ARR, etc., I need to configure the app specifics.</p>
+
+<p>ARR will essentially request the secure <code class="language-plaintext highlighter-rouge">4thandmayor.azurewebsites.net</code> content, re-encrypt it with my custom cert, and pass it along. It also will rewrite any URLs, cookies, etc. so that things work and appear properly.</p>
+
+<p>First, I update the ServiceConfiguration.Cloud.cscfg file. This essentially is a mapping between the service and how I want it configured both when using locally, or when deployed to the placeholder Cloud Service I’ve already setup.</p>
+
+<p>In the file I provide the thumbprints and helpful names I give to the certificates I will be referring to.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/vsCscfg.png =700x240" alt="Configuring the cloud service by providing information about the certificate chain." title="A look at the CSCFG configuration for the cloud service." /></p>
+
+<p>Then, inside the Web.config file, I actually setup the routing rules that ARR understands for rewriting hostnames, cookies, etc. This uses regular expressions.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/vsWebConfig.png =700x523" alt="Setting up the redirection options in the web.config that the redirection service uses." title="The web.config file for the reverse proxy." /></p>
+
+<p>Finally, I build the project, it does some basic configuration file checking, and then walk through the Publish Windows Azure Application dialogs in Visual Studio.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/vsPublish.png =700x469" alt="Publishing a cloud service to Windows Azure." title="The Publish dialog for Cloud Services in Visual Studio." /></p>
+
+<p>I publish the service to the Production environment, configure a few things, and in 15-20 minutes or so the Cloud Service is published and live for me to do some testing with. Since I have not updated my DNS endpoints yet, I can test the app independently (even using a local <code class="language-plaintext highlighter-rouge">hosts</code> file for example) to see that things are behaving as I expect before I move production traffic over.</p>
+
+<h1 id="scaling-my-reverse-proxy-cloud-service">Scaling my reverse proxy Cloud Service</h1>
+
+<p>Once my Cloud Service is deployed and I am happy with how it is routing and encrypting traffic between itself and my client machine, I want to get ready to do things for real.</p>
+
+<p>In the Scale section of the management experience, I bump the service up to 2 roles. I hit Save. This will provision and configure another machine in the cloud.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/scaleCloudService.png =700x264" alt="By scaling a cloud service beyond a single instance, I can be sure that my cloud service complies with the requirements to receive very high uptime in the Windows Azure cloud." title="Scaling a Cloud Service." /></p>
+
+<p>This is essential in the Windows Azure world to make sure that my app is available, since this is a single point of potential failure between all of my users and Web Sites (it sits between them). The Windows Azure SLA (review the legal details here <a href="http://www.windowsazure.com/en-us/support/legal/sla/">http://www.windowsazure.com/en-us/support/legal/sla/</a>) essentially requires the 2 instances, allowing Azure itself to manage the platform as a service, install patches, etc. This also will make sure that I have the network bandwidth and computing power to host all my site information.</p>
+
+<h2 id="updating-dns">Updating DNS</h2>
+
+<p>Before April, I actually had the application deployed both on Amazon and Microsoft’s clouds using DNS round robin for a while, helping me make sure that I had a high level of confidence in the fault tolerance of my application.</p>
+
+<p>Flipping DNS to move all of my traffic to just the <code class="language-plaintext highlighter-rouge">4thssl.cloudapp.net</code> endpoint is all that is left - that is the new Cloud Service that is running, sitting between my Windows Azure Web Site (which itself is load balanced with several virtual machines) and the end user.</p>
+
+<p>I continue to use Route 53, Amazon’s DNS product, and inside their service editor I’m able to update the CNAME entry for my <code class="language-plaintext highlighter-rouge">www.4thandmayor.com</code> endpoint to move to the new cloudapp.net service. I press Save Record Set, and within the TTL window, most clients will begin to have the service through Windows Azure instead of AWS.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/route53.png =700x400" alt="My DNS, hosted by Route 53, allows me to setup CNAMEs to direct traffic to cloud services or web sites as appropriate." title="Configuring Route 53 DNS." /></p>
+
+<p>I kept the original EC2 instances and load balancer for my site running for a few days, monitoring traffic until I was sure that nearly all clients had the new DNS information.</p>
+
+<p>Then I went into the AWS portal and terminated a bunch of EC2 instances and deleted the load balancer.</p>
+
+<p>So, check it out - <a href="https://www.4thandmayor.com/">https://www.4thandmayor.com/</a>, now hosted securely, powered by the simple Web Sites product, and it is fast!</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thwazblog/4thandmayorSsl.png =700x100" alt="A screen capture of the web browser showing the key icon and graphics to show that the site has been served in a secure manner." title="4thandmayor.com with SSL, site hosted by Windows Azure" /></p>
+
+<h2 id="in-closing">In closing</h2>
+
+<p>The Cloud Services workaround, using ARR to provide my own effective load balancing, will some day not be required. According to posts and comments Scott Guthrie has made on his blog in the past, eventually Web Sites will support the SNI/SSL protocol so that I can just upload my cert to the Web Site and have Azure take care of the rest. That will be nice! This solution will be a lot more affordable: the need to host your own set of cloud services reverse proxies will no longer be there. Can’t wait for that!</p>
+
+<p>In the meantime, if custom SSL + Web Sites was holding you back, I hope with this post and (Brady Gaster’s)[http://www.bradygaster.com/running-ssl-with-azure-web-sites], you will have the information you need to get unblocked.</p>
+
+<p>I hope you appreciated this long look at some of this change, all said and done, writing this blog post took longer than migrating my production application from AWS to Windows Azure… maybe I need to learn to type a little faster?</p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+                   
+                   
+                        <h4>Microsoft Azure</h4>
+                        <ul class="list">
+                            <li><a href="https://github.com/azure/">Azure on GitHub</a></li>
+                            <li><a href="https://azure.microsoft.com/en-us/documentation/">Azure docs</a></li>
+                            <li><a href="http://azure.github.io/guidelines.html">How to contribute</a></li>
+                        </ul>
+                   
+                    
+            
+                   
+                   
+                    
+            
+                   
+                   
+                    
+            
+                   
+                   
+                    
+                        <h4>4th &amp; Mayor</h4>
+                        <ul class="list">
+                            <li><a href="http://www.4thandmayor.com/">4th &amp; Mayor site</a></li>
+                            <li><a href="http://www.windowsphone.com/en-us/store/app/4th-mayor/c7d13b8d-9951-e011-854c-00237de2db9e">Download the app</a></li>
+                            <li><a href="https://github.com/jeffwilcox/">Jeff on GitHub</a></li>
+                            <li><a href="https://github.com/jeffwilcox/mpns">MPNS Node.js module</a></li>
+                        </ul>
+                    
+            
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

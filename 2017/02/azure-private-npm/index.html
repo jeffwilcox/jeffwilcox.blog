@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2017/02/azure-private-npm/">-->Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              28 February 2017
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            <li>azure</li><li>cloud</li><li>open-source</li><li>vsts</li><li>node</li>
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p>In this post I’m going to walk through using Visual Studio Team Services Package Management as a private npm
+registry for scoped npm packages using a custom deployment script for Azure App
+Service.</p>
+
+<blockquote>
+  <p>2019 update: this content is no longer considered useful, accurate, or appropriate… there are newer Azure DevOps Pipelines features today that can update a <code class="language-plaintext highlighter-rouge">.npmrc</code> file, etc.</p>
+</blockquote>
+
+<p>Many Node.js developers are probably familiar with npm private feeds but may not have
+used them yet in the Microsoft Cloud + Node.js stack. I wanted to share the experience that
+I have had: my team is running a ton of small-to-medium Node.js services within Microsoft
+and we’re eager to share our experiences for the good of the community.</p>
+
+<p>I’ll also show how my team is able to use Azure KeyVault at deployment time to
+enable credential rotation without having to manage secrets at the individual app level.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/vsts-new-package.PNG" class="img-responsive" title="The VSTS Package Management site" /></p>
+
+<p><em>While this is a long post in explanation and detail, someone using App Service for their Node.js
+deployments today should be able to connect to a private npm feed in about 15-30 minutes if they have
+not yet adopted a custom deployment script. Of course KeyVault and other aspects could add time.</em></p>
+
+<p>Let’s get started.</p>
+
+<h1 id="private-npm-modules">Private NPM modules</h1>
+
+<p>Node.js developers know that “there’s an npm module for nearly everything”, but it turns
+out that sometimes you need to host your own private npm registry to store <a href="https://docs.npmjs.com/private-modules/intro">private modules</a>
+specific to your organization, policies or business rules, or to share custom code
+amongst your internal projects.</p>
+
+<p>Common scenarios include corporate-specific Express middleware, private business
+logic plugins to open source systems, supporting configuration-as-code,
+and getting an npm module ready to ship to the world ahead of release.</p>
+
+<h2 id="scoped-packages">Scoped packages</h2>
+
+<p>When looking to use private npm registries, you’ll need to decide whether you
+intend for the private npm registry to be the “primary” registry for all packages,
+including popular packages you would otherwise get from the public registry -
+<code class="language-plaintext highlighter-rouge">express</code>, <code class="language-plaintext highlighter-rouge">moment</code>, etc. - or if you want to use scoping.</p>
+
+<p><a href="https://docs.npmjs.com/misc/scope">Scopes are built into npm</a> and are the only native
+way to support multiple registries. You can configure npm to visit a specific registry for a
+given scope instead of the global registry.</p>
+
+<p>A downside to using scopes is that modules intending to go public will cause some churn in <code class="language-plaintext highlighter-rouge">package.json</code> files. A
+private npm that uses a scope today but ships to the world tomorrow will likely lose or change its scope, requiring
+you to edit your various package and source files.</p>
+
+<p>For this post I’m using a custom <code class="language-plaintext highlighter-rouge">@jeffwilcox</code> scope; within the Open Source Programs Office
+at Microsoft we use the <code class="language-plaintext highlighter-rouge">@ospo</code> scope, since that’s the short name we use for our team.</p>
+
+<p>Scopes are not unique to private repos. For example, the <code class="language-plaintext highlighter-rouge">@microsoft</code> scope is for
+Microsoft open source npm modules that are shipping to the world.</p>
+
+<h2 id="paid-npmjs">Paid NPMJS</h2>
+
+<p>The official NPMJS registry sells private npm registry feeds for <a href="https://www.npmjs.com/pricing">$7/user/mo. or so</a> and
+this may be sufficient for many users.</p>
+
+<p>However, those using Visual Studio Team Services may want to use the great
+package management integration and private feed support available in that product. On our
+team we like that the private NPM feeds live alongside our source code in
+VSTS, are contained, and the existing permission settings we use for the team just
+work with the private feed.</p>
+
+<h2 id="configuring-your-scoped-npm-environment">Configuring your scoped npm environment</h2>
+
+<p>To enable private npm use you’ll need to login to npm (for the official private npm feed support) or
+configure your Node environment to use a specific credential or credential helper (i.e. <code class="language-plaintext highlighter-rouge">.npmrc</code> file
+customizations).</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm config set @YOUR_SCOPE:always-auth true
+npm config set @YOUR_SCOPE:registry REGISTRY_URL_HERE
+</code></pre></div></div>
+
+<p>If you didn’t want to use scoping but were replacing the entire npm environment, you would leave
+off the scope part of the commands.</p>
+
+<p>For VSTS Package Management users on Windows, there is also a credential helper, but for the
+deployment-focused purposes of this post, I am skipping that detail.</p>
+
+<h3 id="deployment-environment">Deployment environment</h3>
+
+<p>On a deployment or CI server, you will often need to commit a <code class="language-plaintext highlighter-rouge">.npmrc</code> file directly into
+your environment; while that is out of scope for this post, do note that such files can
+use environment variable replacement:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//registry.npmjs.org/:_authToken=${NPM_TOKEN}
+</code></pre></div></div>
+
+<p>For this guide, I’m going to use a custom script to customize the Azure App Service
+environment at deployment time to handle other scenarios including KeyVault. If you are
+interested in simple CI/CD environments you can <a href="https://docs.npmjs.com/private-modules/ci-server-config">read about the scenarios at npmjs.com</a>.</p>
+
+<p>The custom script for this post is called <a href="https://github.com/Microsoft/configure-azure-appservice-private-npm-feed">configure-azure-appservice-private-npm-feed</a>. Very exciting name.</p>
+
+<h1 id="vsts-package-management">VSTS Package Management</h1>
+
+<p>Visual Studio Team Services (VSTS), located at visualstudio.com, is a set of
+clcoud-scale hosted Microsoft services for engineers to share code, track work, ship software, etc.
+VSTS is fast, easy, and offers private source code hosting of Git repositories free for up to 5 users.</p>
+
+<p>Package Management is a VSTS add-on, available as an extension that can be licensed,
+and today it provides both NuGet and npm private feed/registry hosting capabilities. Your VSTS
+administrator needs to install the extension and make it available to you.</p>
+
+<h2 id="adding-the-package-management-extension">Adding the Package Management extension</h2>
+
+<p>VSTS administrators have an “extensions” menu under the project-wide settings.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/extensions-menu.PNG" class="img-responsive" /></p>
+
+<p>From the extensions page, you can then browse the VSTS extensions marketplace.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/extensions-marketplace.PNG" class="img-responsive" /></p>
+
+<p>Package Management is a key extension, you should be able to quickly locate it on one of the main pages
+of the VSTS extensions marketplace.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/vsts-package-management.PNG" class="img-responsive" /></p>
+
+<p>On the Package Management extension info page you can learn plenty more, but we are just interested in the “buy” button.
+You can also start a 30-day trial easily.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/vsts-buy.PNG" class="img-responsive" /></p>
+
+<p>The process will confirm your Azure subscription as part of the licensing process. It took me about 20 seconds to install.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/vsts-buy2.PNG" class="img-responsive" /></p>
+
+<p>After installation, the <em>Build &amp; Release</em> menus within the project will light up with the new <em>Packages</em> extension. Let’s go there now.</p>
+
+<h2 id="creating-a-new-private-feed">Creating a new private feed</h2>
+
+<p>From a project’s <em>Packages</em> extension, you’ll find a mail delivery person character if you do not yet have any feeds.
+Select “New feed”.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/vsts-new-package.PNG" class="img-responsive" /></p>
+
+<p>You can then configure the feed:</p>
+
+<ul>
+  <li>The name for the feed</li>
+  <li>Whether it will be open to your entire team, including who can publish to the feed</li>
+  <li>Whether to include upstream sources (only select this if you are intending to completely replace the npm registy)</li>
+</ul>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/create-new-feed.png" class="img-responsive" /></p>
+
+<p>Now we’re ready to go! We just need credentials to authorize our local NPM environment to be able to publish packages to the private feed hosted by VSTS.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/private-feed-ready.PNG" class="img-responsive" /></p>
+
+<h2 id="generating-an-access-token">Generating an access token</h2>
+
+<p>From the private feed’s page within the <em>Packages</em> extension, select “Connect to feed”. This
+screen will share the basic <code class="language-plaintext highlighter-rouge">.npmrc</code> configuration settings that you will need to get to the
+feed:</p>
+
+<ul>
+  <li>The registry URL</li>
+  <li>The <code class="language-plaintext highlighter-rouge">always-auth</code> flag that should be true for private feeds</li>
+</ul>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/connect-to-feed.png" class="img-responsive" /></p>
+
+<p>While there’s a command for Windows users to install the credential helper, <code class="language-plaintext highlighter-rouge">vsts-npm-auth</code>,
+for this blog post I’m just going to use the non-Windows token. Part of the reason - I use a
+MacBook Pro most of the day, so I’m going to need that token - but we’ll also save it to use
+with our deployment environment (though in a real prod scenario you will want to use a service
+account to probably generate such a token).</p>
+
+<p>Select “Generate npm credentials” to get the non-Windows token.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/connect-to-feed-non-windows.png" class="img-responsive" /></p>
+
+<p>Make sure to safely and securely store the token from the generated <code class="language-plaintext highlighter-rouge">.npmrc</code> file. I
+stored my token inside Azure KeyVault, since that is eventually where I will be grabbing
+this token from in a more advanced, automated scenario.</p>
+
+<h2 id="configuring-your-development-environment">Configuring your development environment</h2>
+
+<p>If you are configuring for scoped private npm packages, here are the commands you will
+want to enter.</p>
+
+<p>First, follow the instructions from the token generation to update your <code class="language-plaintext highlighter-rouge">.npmrc</code> file with
+the token for your private registry.</p>
+
+<p>Second, configure the user-global environment using <code class="language-plaintext highlighter-rouge">npm</code> (though you could also just edit the same rc):</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ npm config set @jeffwilcox:always-auth true
+$ npm config set @jeffwilcox:registry https://jeffwilcox.pkgs.visualstudio.com/_packaging/PrivateTeamFeed/registry
+</code></pre></div></div>
+
+<p>While you can confirm your settings with <code class="language-plaintext highlighter-rouge">npm config list</code>, note that private feed tokens will <em>not</em> be shown
+in this view:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/npm-config-output.PNG" class="img-responsive" /></p>
+
+<h2 id="publishing-a-private-npm">Publishing a private npm</h2>
+
+<p>It’s time to ship some private code!</p>
+
+<p>I’ve created a super simple npm module: a function that will return a string value when called to “prove” that it
+came from the module. After creating this <code class="language-plaintext highlighter-rouge">index.js</code> file, I run <code class="language-plaintext highlighter-rouge">npm init</code> to create a new <code class="language-plaintext highlighter-rouge">package.json</code> file
+in the folder, give the component a name and version, etc.</p>
+
+<p>Include the scope in the name; in my case this means my package name is <code class="language-plaintext highlighter-rouge">@jeffwilcox/private-npm-package</code>. Here’s my
+<code class="language-plaintext highlighter-rouge">package.json</code> file:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+  "name": "@jeffwilcox/private-npm-package",
+  "version": "1.0.0",
+  "description": "This is the best 1.0 package release ever",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" &amp;&amp; exit 1"
+  },
+  "author": "Jeff Wilcox &lt;...&gt;",
+  "license": "MIT"
+}
+</code></pre></div></div>
+
+<p>Here is my <code class="language-plaintext highlighter-rouge">index.js</code> source file:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>'use strict';
+
+module.exports = function () {
+  return 'This is a private npm package';
+};
+</code></pre></div></div>
+
+<p>Time to publish! Since my token to publish and consume the private feed is in my <code class="language-plaintext highlighter-rouge">.npmrc</code> environment,
+I can simply publish and it’s good to go.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ npm publish
++ @jeffwilcox/private-npm-package@1.0.0
+</code></pre></div></div>
+
+<p>Now I can go back to the Package Management extension within VSTS and refresh the feed to see my npm package.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/private-npm-feed-after-publish.PNG" class="img-responsive" /></p>
+
+<p>VSTS provides some options including unpublishing and deprecating the package that will help in the
+lifetime of the npm module.</p>
+
+<h2 id="using-the-module-with-your-app">Using the module with your app</h2>
+
+<p>I have a basic Express web app created using <code class="language-plaintext highlighter-rouge">express-generator</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm install -g express-generator
+...
+express website
+cd website
+npm install
+</code></pre></div></div>
+
+<p>This generates a new folder called “website” that I can initialize as a Git repository to
+deploy.</p>
+
+<p>Now I’m ready to use my private NPM module. Let’s install it, saving the module, too.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm install --save @jeffwilcox/private-npm-package
+</code></pre></div></div>
+
+<p>And then I should get confirmation that this package was installed OK:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>website@0.0.0 C:\local\website
+`-- @jeffwilcox/private-npm-package@1.0.0
+</code></pre></div></div>
+
+<p>And to integrate with my private npm, this is what my <code class="language-plaintext highlighter-rouge">./routes/index.js</code> file ended up as; it will
+set the title of the page, used by the view engine, to the value returned from the function exported
+by my private npm:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>'use strict';
+
+const express = require('express');
+const router = express.Router();
+
+const privateNpmPackage = require('@jeffwilcox/private-npm-package');
+
+router.get('/', (req, res, next) =&gt; {
+  const title = privateNpmPackage();
+  res.render('index', { title: title });
+});
+
+module.exports = router;
+</code></pre></div></div>
+
+<p>I can now run <code class="language-plaintext highlighter-rouge">npm start</code> and navigate to <code class="language-plaintext highlighter-rouge">localhost:3000</code> to confirm that the app is working just fine.</p>
+
+<h1 id="deploying-to-azure-app-service">Deploying to Azure App Service</h1>
+
+<h2 id="selecting-the-deployment-type">Selecting the deployment type</h2>
+
+<p>Azure App Service really is my favorite way of hosting Node.js apps on Azure. It’s
+so easy to configure the web site as a Git repository itself, or connect it to GitHub, or
+use VSTS and its build system to deploy to the site.</p>
+
+<p>Here I am using the Git repository hosted by the App Service instance, meaning
+when I push to the repo, I am literally pushing and deploying right then onto the app service’s
+storage. The deployment experience will be echoed back to my Git client, making it easy to watch how
+that goes.</p>
+
+<p>I do not want to commit my <code class="language-plaintext highlighter-rouge">node_modules/</code> folder, however, because packages change and take up
+space that is not my code - I want to use npm to resolve those packages at runtime. So my <code class="language-plaintext highlighter-rouge">.gitignore</code> has
+the modules folder in it.</p>
+
+<p>After committing I add my Git remote as the origin of this repo and push:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ git remote add origin https://jmwblog@privatefeed.scm.azurewebsites.net:443/privatefeed.git
+$ git push origin master:master
+</code></pre></div></div>
+
+<p>Within Git’s <code class="language-plaintext highlighter-rouge">stdout</code>, since I am using an App Service-hosted deployment, I will
+get updates about the deployment. If I had connected the service instead up to
+GitHub or similar, I’d have to go to the “Deployment Options” part of the Azure
+portal to see how it’s doing… but this is a _#fail# visual:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/npm-push-fail.PNG" class="img-responsive" /></p>
+
+<p>The deployment failed because the <code class="language-plaintext highlighter-rouge">@jeffwilcox/private-npm-package</code> scoped
+npm module isn’t in the global npmjs registry.</p>
+
+<p>Because it’s a private module.</p>
+
+<p>And App Service does not have any idea about my scoped private registry nor what credential/token
+it would even use to connect to it.</p>
+
+<h2 id="deployment-scripts">Deployment scripts</h2>
+
+<h3 id="automatic-kudu-deployment-script">Automatic Kudu deployment script</h3>
+
+<p>By default the Kudu engine used for deployments actually dynamically generates a
+deployment script based on how it identifies your application. If it looks like your
+code is a Node.js app, it will generate a pretty good default.</p>
+
+<p>You can retrieve the script that was generated for your environment by going to the
+“Advanced Tools” part of the web site in the portal to open up the Kudu site
+administrator tools where there’s an option to download the script to take a peek.
+The script generator itself is open source, too.</p>
+
+<h3 id="custom-deployment-scripts">Custom deployment scripts</h3>
+
+<p>To enable private NPM feed use, I’m going to need to go ahead and <a href="customize my deployment">https://github.com/projectkudu/kudu/wiki/Customizing-deployments</a> with
+a custom <code class="language-plaintext highlighter-rouge">deploy.cmd</code> script. I’ll fork this from the best-known current generated
+version for Node.js apps, adding value where I need to.</p>
+
+<p>I first need to create a file called <code class="language-plaintext highlighter-rouge">.deployment</code> and commit it to my repo. The content of
+the file points the deployment engine at my custom deployment script:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[config]
+command = deploy.cmd
+</code></pre></div></div>
+
+<p>Here is my “current favorite” deployment script, reproduced here for anyone to use,
+with the caveat that this is not in source control. That’s another future blog post
+I hope.</p>
+
+<p>This is for Node.js deployment and it does a few things:</p>
+
+<ul>
+  <li>It installs npm prod and development packages (since I want to use grunt and some other tools)</li>
+  <li>It uses my npm deployment script for private repos, described at the end of this post, <code class="language-plaintext highlighter-rouge">configure-azure-appservice-private-npm-feed</code> to configure private npm feed support</li>
+  <li>If you have a Gruntfile it will grunt</li>
+  <li>If you have a <code class="language-plaintext highlighter-rouge">bower.json</code> file it will install any bower dependencies</li>
+  <li>It installs npm packages <em>before</em> copying over the actively deployed site</li>
+  <li>Yes it is a batch file, because 2017. You can also write a <code class="language-plaintext highlighter-rouge">deploy.sh</code> bash script.</li>
+</ul>
+
+<p>The important step for this blog post is just that it installs the <code class="language-plaintext highlighter-rouge">npm</code> script I wrote and executes it before installing npm modules. This way, scoped private feeds are configured either through the environment and/or configuration before the npm modules are officially installed.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@if "%SCM_TRACE_LEVEL%" NEQ "4" @echo off
+
+:: ----------------------
+:: Forked from KUDU Deployment Script
+:: Version: 1.0.6
+:: ----------------------
+
+:: Prerequisites
+:: -------------
+
+:: Verify node.js installed
+where node 2&gt;nul &gt;nul
+IF %ERRORLEVEL% NEQ 0 (
+  echo Missing node.js executable, please install node.js, if already installed make sure it can be reached from current environment.
+  goto error
+)
+
+:: Setup
+:: -----
+
+setlocal enabledelayedexpansion
+
+SET ARTIFACTS=%~dp0%..\artifacts
+
+IF NOT DEFINED DEPLOYMENT_SOURCE (
+  SET DEPLOYMENT_SOURCE=%~dp0%.
+)
+
+IF NOT DEFINED DEPLOYMENT_TARGET (
+  SET DEPLOYMENT_TARGET=%ARTIFACTS%\wwwroot
+)
+
+IF NOT DEFINED NEXT_MANIFEST_PATH (
+  SET NEXT_MANIFEST_PATH=%ARTIFACTS%\manifest
+
+  IF NOT DEFINED PREVIOUS_MANIFEST_PATH (
+    SET PREVIOUS_MANIFEST_PATH=%ARTIFACTS%\manifest
+  )
+)
+
+IF NOT DEFINED KUDU_SYNC_CMD (
+  :: Install kudu sync
+  echo Installing Kudu Sync
+  call npm install kudusync -g --silent
+  IF !ERRORLEVEL! NEQ 0 goto error
+
+  :: Locally just running "kuduSync" would also work
+  SET KUDU_SYNC_CMD=%appdata%\npm\kuduSync.cmd
+)
+goto Deployment
+
+:: Utility Functions
+:: -----------------
+
+:SelectNodeVersion
+
+IF DEFINED KUDU_SELECT_NODE_VERSION_CMD (
+  :: The following are done only on Windows Azure Websites environment
+  call %KUDU_SELECT_NODE_VERSION_CMD% "%DEPLOYMENT_SOURCE%" "%DEPLOYMENT_TARGET%" "%DEPLOYMENT_TEMP%"
+  IF !ERRORLEVEL! NEQ 0 goto error
+
+  IF EXIST "%DEPLOYMENT_TEMP%\__nodeVersion.tmp" (
+    SET /p NODE_EXE=&lt;"%DEPLOYMENT_TEMP%\__nodeVersion.tmp"
+    IF !ERRORLEVEL! NEQ 0 goto error
+  )
+
+  IF EXIST "%DEPLOYMENT_TEMP%\__npmVersion.tmp" (
+    SET /p NPM_JS_PATH=&lt;"%DEPLOYMENT_TEMP%\__npmVersion.tmp"
+    IF !ERRORLEVEL! NEQ 0 goto error
+  )
+
+  IF NOT DEFINED NODE_EXE (
+    SET NODE_EXE=node
+  )
+
+  SET NPM_CMD="!NODE_EXE!" "!NPM_JS_PATH!"
+) ELSE (
+  SET NPM_CMD=npm
+  SET NODE_EXE=node
+)
+
+goto :EOF
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:: Deployment
+:: ----------
+
+:Deployment
+echo Handling customized node.js deployment.
+
+:: Changes: KuduSync happens after installation of modules now
+
+:: 1. Select node version
+call :SelectNodeVersion
+
+:: 2. Configure private npm feed
+call npm install configure-azure-appservice-private-npm-feed -g --silent --only=prod
+IF !ERRORLEVEL! NEQ 0 goto error
+
+call :ExecuteCmd %APPDATA%\npm\kuduPrivateNpm.cmd
+IF !ERRORLEVEL! NEQ 0 goto error
+
+:: 3. Customize npm
+IF EXIST "%DEPLOYMENT_SOURCE%\package.json" (
+  pushd "%DEPLOYMENT_SOURCE%"
+  call :ExecuteCmd !NPM_CMD! config set color false
+  IF !ERRORLEVEL! NEQ 0 goto error
+  call :ExecuteCmd !NPM_CMD! config set progress false
+  IF !ERRORLEVEL! NEQ 0 goto error
+  popd
+)
+
+:: 4. Install npm packages
+IF EXIST "%DEPLOYMENT_SOURCE%\package.json" (
+  pushd "%DEPLOYMENT_SOURCE%"
+  echo Installing npm packages at the deploy source of %DEPLOYMENT_SOURCE%
+  call :ExecuteCmd !NPM_CMD! install --production
+  IF !ERRORLEVEL! NEQ 0 goto error
+  popd
+)
+
+:: 5. Install npm development packages
+IF EXIST "%DEPLOYMENT_SOURCE%\package.json" (
+  pushd "%DEPLOYMENT_SOURCE%"
+  call :ExecuteCmd !NPM_CMD! install --only=dev
+  IF !ERRORLEVEL! NEQ 0 goto error
+  popd
+)
+
+:: 6. Bower
+IF EXIST "%DEPLOYMENT_SOURCE%\bower.json" (
+  echo Installing Bower components...
+  pushd "%DEPLOYMENT_SOURCE%"
+  call node_modules\.bin\bower install
+  IF !ERRORLEVEL! NEQ 0 goto error
+  popd
+)
+
+:: 7. Grunt
+IF EXIST "%DEPLOYMENT_SOURCE%\Gruntfile.js" (
+  pushd "%DEPLOYMENT_SOURCE%"
+  echo Grunting...
+  call :ExecuteCmd !NPM_CMD! install grunt-cli
+  IF !ERRORLEVEL! NEQ 0 goto error
+  call node_modules\.bin\grunt --no-color default
+  IF !ERRORLEVEL! NEQ 0 goto error
+  popd
+)
+
+:: 8. KuduSync
+IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
+  call :ExecuteCmd "%KUDU_SYNC_CMD%" -v 50 -f "%DEPLOYMENT_SOURCE%" -t "%DEPLOYMENT_TARGET%" -n "%NEXT_MANIFEST_PATH%" -p "%PREVIOUS_MANIFEST_PATH%" -i ".git;.hg;.deployment;deploy.cmd"
+  IF !ERRORLEVEL! NEQ 0 goto error
+)
+
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+:: Post deployment stub
+IF DEFINED POST_DEPLOYMENT_ACTION call "%POST_DEPLOYMENT_ACTION%"
+IF !ERRORLEVEL! NEQ 0 goto error
+
+goto end
+
+:: Execute command routine that will echo out when error
+:ExecuteCmd
+setlocal
+set _CMD_=%*
+call %_CMD_%
+if "%ERRORLEVEL%" NEQ "0" echo Failed exitCode=%ERRORLEVEL%, command=%_CMD_%
+exit /b %ERRORLEVEL%
+
+:error
+endlocal
+echo An error has occurred during web site deployment.
+call :exitSetErrorLevel
+call :exitFromFunction 2&gt;nul
+
+:exitSetErrorLevel
+exit /b 1
+
+:exitFromFunction
+()
+
+:end
+endlocal
+echo Finished successfully.
+</code></pre></div></div>
+
+<h2 id="configuring-private-feed-settings">Configuring private feed settings</h2>
+
+<p>Now all that is left to do is to actually tell our custom deployment script about
+the private npm feed token that we want to use.</p>
+
+<p>By default the script used is configured to look for environment variables named:</p>
+
+<ul>
+  <li><em>NPM_PRIVATE_FEED_TOKEN</em>: The token credential from VSTS Package Management that we generated earlier</li>
+  <li><em>NPM_PRIVATE_FEED_SCOPE</em>: The scoped name to use, so <code class="language-plaintext highlighter-rouge">jeffwilcox</code> in my example. You can omit the @ symbol.</li>
+  <li><em>NPM_PRIVATE_FEED</em>: The path to the private feed hosted by VSTS for my npm scope</li>
+</ul>
+
+<p>The custom script run during deployment will use these values, if present, to configure the <code class="language-plaintext highlighter-rouge">.npmrc</code> specific
+to this single app service.</p>
+
+<p>Here’s a look at what this looks like, redacted partially:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/private-npm-config.PNG" class="img-responsive" /></p>
+
+<p>After setting these values I’m ready to deploy again. Fingers crossed.</p>
+
+<h2 id="publishing-with-custom-deployment">Publishing with custom deployment</h2>
+
+<p>So I just need to commit these deployment files and push to the remote to kick off
+another build attempt.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ git add .deployment deploy.cmd
+$ git commit .deployment deploy.cmd -m "Custom deployment script with private npm support"
+$ git push origin master:master
+</code></pre></div></div>
+
+<p>And here it goes…</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/deployment-success-1.png" class="img-responsive" /></p>
+
+<p>Partly through the deployment process you should see that it installed the custom npm
+script to help things get configured, and then it executed, since it recognized the
+presence of the environment variables.</p>
+
+<p>I get some feedback here about the private scoped feed being configured.</p>
+
+<p>Also some good news: I see that the private npm package is successfully installed now
+that the <code class="language-plaintext highlighter-rouge">.npmrc</code> on the App Service side is properly configured inside the sandboxed
+environment.</p>
+
+<p>Finally I get that great “deployment successful” message and know it’s time to go visit
+the site.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/deployment-success-2.png" class="img-responsive" /></p>
+
+<h2 id="success">Success!</h2>
+
+<p>Navigating to the App Service web URL I will now see the title that is generated
+by my private npm function.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/edge-private-npm-package.png" class="img-responsive" /></p>
+
+<p>At this point we’re done covering the basics and you could successfully use this
+just fine to deploy App Services using your private npm package(s) for your Node.js apps.</p>
+
+<h1 id="azure-keyvault-support">Azure KeyVault support</h1>
+
+<p>While storing the private feed token to get to my package inside the Application Settings
+for the App Service works to an extent, it has some issues.</p>
+
+<ul>
+  <li>The token has been manually placed inside the configuration. A typo or extra space
+could cause problems.</li>
+  <li>If I have 50 web site deployments that use the private npm feed, I have 50 places to configure the token</li>
+  <li>If the credential leaks, is exposed, or as a general practice I want to reguarly rotate my secrets, I will have to update the secret token in at least 50 places. This will take time.</li>
+  <li>If I accidentally grant someone broad access to my web site instance, they may easily get to the token</li>
+</ul>
+
+<blockquote>
+  <p>The KeyVault support in this post, I should mention, is what works for my team, but is not official guidance. Use at your own risk and level of understanding of your needs and vault scenarios.</p>
+</blockquote>
+
+<p>While KeyVault can be used for many scenarios, I’m most interested here in these:</p>
+
+<ul>
+  <li>Preventing developer mistakes, especially from manual operation or settings data entry</li>
+  <li>Potentially being able to build a production environment that very few, or no one, have access to, including the token</li>
+  <li>Authorizing an individual app and its deployment to have access to a token, instead of having to configure more</li>
+  <li>Being able to rotate a secret, knowing that the next deployment will pick up the latest secret version and use that to connect to my feed, enabling great cred rotation options</li>
+  <li>Enabling configuration-as-code scenarios… I can actually store KeyVault secret paths inside private source control repositories without worrying the same way I would about committing an actual secret value</li>
+</ul>
+
+<h2 id="authoring-the-vault-in-the-portal">Authoring the vault in the portal</h2>
+
+<p>There are many ways to authorize an app to have access to KeyVault, from client ID and secret pairs
+to certificates and other methods. In the most simple case, supported in this script, my web site
+has an Azure Active Directory application registration that provides an app client ID and a client secret
+key that is good for 1-2 years.</p>
+
+<p>I’m able to authorize the application identity to have access to the KeyVault, so it can read the
+secrets, and then I can use a custom protocol scheme supported by this script to point the various
+Application Settings to the vault.</p>
+
+<p>So I’ll end up with something similar to these values for the 3 environment variables to configure
+the private npm feed, where the actual secret value is my token and then I use tags on the KeyVault entry
+for the other values, keeping the feed URL and the secret token value pair together:</p>
+
+<ul>
+  <li><em>NPM_PRIVATE_FEED</em>: keyvault://feed@my_vault_name.vault.azure.net/secrets/my-vsts-private-feed</li>
+  <li><em>NPM_PRIVATE_FEED_SCOPE</em>: jeffwilcox</li>
+  <li><em>NPM_PRIVATE_FEED_TOKEN</em>: keyvault://my_vault_name.vault.azure.net/secrets/my-vsts-private-feed</li>
+</ul>
+
+<p>Here’s the secret entry inside the vault in the Azure portal. You can see some of the tags I’ve used to help
+organize secrets.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/keyvault-secret-configuration.PNG" class="img-responsive" /></p>
+
+<h2 id="helping-manage-secrets">Helping manage secrets</h2>
+
+<p>Another great value that KeyVault provide is a good way to gather and review
+metadata about the secrets that I’m using in my set of apps.</p>
+
+<p>By tagging secrets with my own representation for the type of secret, I’m able
+to generate a rather useful dashboard that identifies secret age and other
+properties, grouping similar types of secrets together.</p>
+
+<p>Here in my custom portal I have a view that shows the metadata for a specific
+secret version, including the tags I’ve defined, and also the custom <code class="language-plaintext highlighter-rouge">keyvault://</code>
+scheme we’ve designed for this scenario, making it easy to copy and paste the
+vault secret URL as needed.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/vault-npmjs-token.PNG" class="img-responsive" /></p>
+
+<p>And here is a color-coded look at the current broader dashboard for a simple
+application deployment covering about 10 different types of secrets that are
+stored in this particular vault.</p>
+
+<p>The private NPM feed key is stored under the “NPMJS Tokens” category to help
+aid in understanding.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/vault-with-npmjs-tokens.PNG" class="img-responsive" /></p>
+
+<p>I’ll cover some of this dashboard work in a future post but wanted to share an early
+look at some of this.</p>
+
+<h2 id="configuration-as-code">Configuration as code</h2>
+
+<p>Finally, the custom deployment script supports “yet another” opinionated “painless” configuration-as-code story.</p>
+
+<p>By defining a <code class="language-plaintext highlighter-rouge">CONFIGURATION_ENVIRONMENT</code> variable pointing to a known environment file, similar to a <code class="language-plaintext highlighter-rouge">NODE_ENV</code> setting,
+the configuration system is able to read variable values from the right local file.</p>
+
+<p>Since the configuration resolution code supports KeyVault, we’re able to safely commit configuration information internally,
+just pointing at KeyVault secrets, and then we can treat config changes as code. New secrets and environment changes can
+be code reviewed and move through Git like any other set of changes.</p>
+
+<p>For any given secret we have a choice: we can point to a secret name, resolving the latest version at
+deployment or runtime, or we can point at a specific version. There are scenarios for both, but for the
+private npm feed example, we’re using the versionless secret URI. This enables token credential rotation easier.</p>
+
+<p>Here’s a quick look inside Visual Studio Code at the configuration environment settings for the secrets
+used by this app:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vstsnpm/keyvault-configuration-as-code-with-private-feed.PNG" class="img-responsive" /></p>
+
+<p>Thanks to config-as-code, we no longer need to configure the private NPM information on each app service, as
+long as the app’s identity is authorized to the vault. This helps reduce errors.</p>
+
+<h1 id="open-source">Open source</h1>
+
+<p>The <a href="https://github.com/Microsoft/configure-azure-appservice-private-npm-feed">configure-azure-appservice-private-npm-feed</a>
+script is licensed MIT and is a small tool/utility. At this time it is also published as an npm, <code class="language-plaintext highlighter-rouge">configure-azure-appservice-private-npm-feed</code>.</p>
+
+<p>It’s worth noting that at this time only a single private scoped feed is supported by the script. The script has two top-level dependencies that flow to others:</p>
+<ul>
+  <li>async</li>
+  <li><a href="https://github.com/Microsoft/painless-config-resolver">painless-config-resolver</a></li>
+</ul>
+
+<p>Your contributions and feedback are always welcome.</p>
+
+<h1 id="closing">Closing</h1>
+
+<p>Hopefully you found this post interesting. It’s really fun how we’re able to piece together
+so many great technologies: Node.js, npm; Azure App Service, Active Directory, KeyVault; VSTS
+and VSTS Package Management.</p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+                   
+                   
+                        <h4>Microsoft Azure</h4>
+                        <ul class="list">
+                            <li><a href="https://github.com/azure/">Azure on GitHub</a></li>
+                            <li><a href="https://azure.microsoft.com/en-us/documentation/">Azure docs</a></li>
+                            <li><a href="http://azure.github.io/guidelines.html">How to contribute</a></li>
+                        </ul>
+                   
+                    
+            
+                   
+                   
+                    
+            
+                   
+                        <h4>Microsoft Open Source</h4>
+                        <ul class="list">
+                            <li><a href="https://github.com/Microsoft">github.com/microsoft</a></li>
+                            <li><a href="https://opensource.microsoft.com">opensource.microsoft.com</a></li>
+                            <li><a href="https://opensource.microsoft.com/explore">up-for-grabs issues</a></li>
+                        </ul>
+                   
+                   
+                    
+            
+                   
+                   
+                    
+            
+                   
+                   
+                    
+            
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>24 Feb 2017</span> &raquo; <a href="/2017/02/mail2bug/">Using mail2bug with Azure App Service, WebJobs and VSTS to handle support mail</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

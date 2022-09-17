@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Silverlight Unit Test Framework source code released - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Silverlight Unit Test Framework source code released">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2008/11/test-framework-source/">-->Silverlight Unit Test Framework source code released<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+               4 November 2008
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p>A week ago, we gave the world the first release of the <a href="http://www.codeplex.com/Silverlight/">Silverlight Toolkit</a>. Shawn Burke told you that we're agile, and that we have a neat <a href="http://blogs.msdn.com/sburke/archive/2008/10/28/silverlight-toolkit-now-available-for-download.aspx">release model</a>. The fun continues!</p> <p>Today, the source code to the Silverlight Unit Test Framework is available with the same open source license. It is checked in to the <a href="http://www.codeplex.com/Silverlight/SourceControl/ListDownloadableCommits.aspx">source control</a> for the <a href="http://www.codeplex.com/Silverlight/">toolkit</a> on CodePlex.</p> <p>So, now you have more of the pieces to the toolkit story, in open source C#:</p> <ul> <li>controls and charting source code,  </li><li>unit tests source,  </li><li>unit test framework source.</li></ul> <p>This is like a telescope pointing straight at what it has taken our team to be successful in delivering the controls to you. Hopefully this is all good for you to study while building your own Silverlight solutions.</p> <p>Having source access will give you the opportunity to innovate, meld the framework to meet your needs, and understand the internals. We're committed to sharing more of our infrastructure and a look behind-the-scenes, so this is just a part of that story - one that I'm proud to be sharing with you.</p> <p>Previous key posts about the framework to help anyone looking to get started:</p> <ul> <li><a href="http://www.jeff.wilcox.name/2008/10/25/ut-docs/">Test framework API documentation</a>  </li><li><a href="http://www.jeff.wilcox.name/2008/10/24/final-ut-templates/">Test project templates for Silverlight 2</a>  </li><li><a href="http://www.jeff.wilcox.name/2008/08/16/utbasics/">Visual Studio unit test framework introduction</a>  </li><li><a href="http://www.jeff.wilcox.name/2008/09/30/rc0-new-test-features/">New features in the RC0/RTW release</a>  </li><li><a href="http://www.jeff.wilcox.name/2008/03/31/silverlight2-unit-testing/">Original MIX post and overview</a></li></ul> <p>There were some key design principles and goals in place for this framework to be useful for a broad range of needs. The principles are...</p> <ul> <li>Simple</li> <li>Visual Studio's unit test framework</li> <li>Good for Silverlight</li> <li>Extensible</li> <li>And, finally, <em>in your hands</em>!</li></ul> <p></p> <h3>Simple</h3> <p>At Microsoft, often our internal teams spin up a new test framework every few months. Each slightly different, incompatible, and not always with enough dedication for it to be successful over the lifetime of several releases. But this framework is a little different.</p> <p>From the start, you've been able to run a Silverlight unit test framework application just like any other Silverlight application. Same tools, nothing fancy. Just hit the app from a web browser; store it on a team web server; or open it from the file system.</p> <p>It uses the same Silverlight runtime, no need to install custom patches or customize the environment for the tests to run.</p> <p>By emphasizing simple, basic test scenarios, this framework is something you'll want to use. Yet, there are some simple extensibility points and even a simple test dispatcher design that will let you do amazing things.</p> <p>This means that the Silverlight unit test framework does <em>not</em> have a thousand types with a thousand custom testing APIs for specific features; instead, you are free to build up your own library of utility methods, libraries, and components. If you look through the source to the Silverlight Toolkit tests, you'll see that some simple base class work will let you achieve powerful results, without being forced to test a specific way. The entire Controls.Testing.Common project will be an interesting look, for sure.</p> <p>I bet that you could even spend half an hour with any of your designers and (gasp!) show them how to run the acceptance unit tests that you've created, right inside Blend. Simple!</p> <h3>Visual Studio's unit test framework</h3> <p>We've collaborated with the Visual Studio Team Test (VSTT) team, and that means that that unit test metadata that is in the Silverlight Unit Test Framework is the same core metadata that you find with the full desktop Visual Studio 2008 product.</p> <p>This is pretty important because many developers already know how to use the metadata and the assertions. And if you're new to unit testing, it's really easy to pick up. Plus, then you'll be able to take your testing knowledge back to the desktop and the full .NET framework.</p> <p>It is worth pointing out that the limitations of the Silverlight environment, and running in the web browser, do mean that the actual <em>test execution</em> environment in this framework is custom, and not the same as VSTT's today. But there is enough in common that you should be successful.</p> <h3>Good for Silverlight</h3>We have created a set of base classes, all the way up to the 'SilverlightTest' base class, that are built for richer, more functional test scenarios. The trade-off of using the asynchronous and Silverlight-specific functionality is that you lose true compatibility with the desktop unit test framework.  <p>Using the psuedo-asynchronous testing capabilities, you can write tests that wait for controls to be added to the visual tree, have their loaded event fire, and then make changes to them.</p> <p>For instance, from the AutoCompleteBox tests, here is part of a functional test written in this style:</p> <p></p> <div class="wlWriterSmartContent" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:6b0ed6ca-9e53-400e-863a-f8e6d8b5b667" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px"><pre class="brush: c-sharp">[TestClass]
+
+public class AutoCompleteBoxTest : SilverlightTest
+
+{
+
+// (snip)
+
+
+
+[TestMethod]
+
+[Description("Validate that the IsTextCompletionEnabled property is updated in the standard AutoCompleteBox scenario.")]
+
+[Asynchronous]
+
+public void TextCompletionValidation()
+
+{
+
+    OverriddenAutoCompleteBox control = GetDerivedAutoComplete();
+
+    bool isLoaded = false;
+
+    control.Loaded += delegate { isLoaded = true; };
+
+    EnqueueCallback(() =&gt; TestPanel.Children.Add(control));
+
+    EnqueueConditional(() =&gt; isLoaded);
+
+    Enqueue(() =&gt; Assert.IsNotNull(control.TextBox, "The TextBox part could not be retrieved."));
+
+    Enqueue(() =&gt; control.TextBox.Text = "accounti");
+
+    EnqueueConditional(() =&gt; control.SearchText == "accounti");
+
+    Enqueue(() =&gt; StringAssert.Equals(control.TextBox.Text, "accounting"));
+
+    Enqueue(() =&gt; Assert.IsTrue(control.IsDropDownOpen));
+
+    EnqueueTestComplete();
+
+}
+
+}</pre></div>
+
+<p></p>
+
+<p>The test waits for the control's loaded event to fire, sets the text in a composite TextBox control, waits for the search text to change, and then performs some quick assertions.</p>
+
+<p>The framework itself is designed for easy execution inside of your web browser, so you can even re-run tests without having to restart your unit test run.</p>
+
+<p><img src="http://media.jeff.wilcox.name/blog/rc0/new_expander_details.png"/> </p>
+
+<h3>Extensible</h3>
+
+<p>By sticking to a simple LogMessage + TestHarness model, you're really free to plug in your own solutions, or build on the source and roll your own.</p>
+
+<p>Write your own custom log providers. Extend the asynchronous testing model for any advanced testing needs. Turn on and off features as you please. Hook up your own unit test provider (I've seen it work with NUnit).</p>
+
+<p>There is a 'TestHarness' base class that you can customize. Teams have developed stress testing harnesses, test generation systems, and other harnesses on top of this - completely skipping the standard unit test harness.</p>
+
+<h3>In your hands</h3>
+
+<p>By releasing the source code, the final piece of the puzzle is in place. Step through, examine how the framework works, learn about it, improve your test coverage, and enjoy it.</p>
+
+<p>That said, although you do have the source, there's a whole slew of updated features and API improvements that will continue to make their way into the toolkit.</p>
+
+<p>So, personally, I hope that people use the source code to create better customizations on top of the framework, instead of making massive alterations to the core unit test framework &amp; platform.</p>
+
+<p>That'll make it easier to take advantage of some of the other related pieces, like continuous integration support, that are built to hook into the test framework and its test service.</p>
+
+<p><em>Hope this helps.</em></p>
+
+<h3><em>Thanks...</em></h3>
+
+<p><em>I would also like to take a moment to thank everyone that has been involved in making Silverlight testing easy, powerful, and available to the world.</em></p>
+
+<p>Outside of Microsoft, I've received helpful feedback from a number of industry experts, MVPs, and passionate individuals - thanks. I'm hoping to highlight some of the posts that I've seen out there in the wild in the coming weeks, like this one on the <a href="http://jonas.follesoe.no/UnitTestingAsynchronousSilverlightCode.aspx">asynchronous testing model</a>, written by <a href="http://jonas.follesoe.no/UnitTestingAsynchronousSilverlightCode.aspx">Jonas Follesø</a>.</p>
+
+<p>Inside Microsoft, I still remember sitting in <strong>Scott Guthrie</strong>'s office before MIX last year when he said something like "we'll ship the source code to this, too, right?" It is great knowing that Scott is so supportive of our efforts to share our work with developers everywhere in order to make them more productive. This also sheds some light on Microsoft's testing efforts, since often you don't get a glimpse behind the curtain.</p>
+
+<p>Thanks are also due to <strong>Shawn Burke</strong> and <strong>Imran Sargusingh</strong> for believing in the vision of a simple, useful test framework that developers and testers could unify around. <strong>Jad Baydoun</strong> for implementing changes to the UnitTestSystem startup design &amp; providing feedback. <strong>Ted Glaza</strong> contributed the tag expression implementation, and <strong>Beatriz Costa</strong> has been a strong supporter of the framework's vision as something that she is willing for us to take a bet on as the senior test lead for the controls team. Thanks to the internal Microsoft community that's been using the framework. And, thanks to everyone I just left out (sorry).</p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Building Silverlight 2 and Silverlight 3 Beta applications on the same machine - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Building Silverlight 2 and Silverlight 3 Beta applications on the same machine">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2009/03/sxs-sl2-sl3-building/">-->Building Silverlight 2 and Silverlight 3 Beta applications on the same machine<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              23 March 2009
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            The Silverlight Tools don't have multi-targeting support today, so if you want to continue building Silverlight 2 applications (for production sites), while experimenting and learning about the Silverlight 3 Beta, it isn't that easy.
+
+
+
+On the Silverlight Toolkit team, we leave it up to individual team members to decide what core development environment they want. By having the Silverlight 2 and Silverlight 3 SDKs checked into our source enlistment, our TFS build server can produce Silverlight 2 <i>and</i> Silverlight 3 binaries, and we can also msbuild the same bits on our machines, regardless of the Silverlight Tools, SDK, or runtime installed on our machines.
+
+
+
+I <a href="http://www.jeff.wilcox.name/2009/01/independent-silverlight-msbuild/">blogged about this back in late January</a> about "building Silverlight code on machines without the SDK installed," though really it was more about "building Silverlight code for multiple Silverlight versions."
+
+
+
+<h3>Select your primary development environment</h3>
+
+Decide whether you would like to do primarily Silverlight 2 or 3 development. Then, install the accompanying tools install, and Expression Blend version.
+
+
+
+It is time consuming to move between the two environments, but you can actually uninstall/reinstall the shipping runtime or developer runtime versions of Silverlight if you need to test an app in a specific configuration, without having to do a full reinstall of the <i>tools</i>.
+
+
+
+<h3>Preparing your source enlistment</h3>
+
+<p>On the Toolkit, we have a directory of external tools and engineering resources. One of these contains the Silverlight SDK’s assemblies, libraries, and build scripts, as shown in the video.</p>
+
+<ul>
+
+<li>Create a directory to store the MsBuild assets for Silverlight, and copy in the files from %programfiles%MSBuild\Microsoft\Silverlight\v2.0. </li>
+
+<li>Copy the “Reference Assemblies” directory from %programfiles%\Microsoft SDKs\Silverlight\v2.0\ into the tools directory. </li>
+
+<li>Copy the “Libraries” directory from %programfiles%\Microsoft SDKs\Silverlight\v2.0\ into the directory. </li>
+
+</ul>
+
+<p>You can then use relative paths in your projects or custom build targets to get things rolling.</p>
+
+
+
+<h3>How we use a custom &lt;Import /&gt; element in projects</h3>
+
+Our source code enlistment is broken up into a Silverlight 2 and a Silverlight 3 branch of nearly-identical trees of code. By using a centralized msbuild .targets file, we're able to leave it up to a single file in the branch to select which verison of Silverlight the application should build with.
+
+
+
+This actually even works when building in Visual Studio, so opening a project that uses this method, while using the Silverlight 3 Tools, but building a Silverlight 2 app, will build with the verison 2 SDK. Do note that the design-time experience won't work in this scenario.
+
+
+
+<h4>Silverlight.CSharp.targets</h4>
+
+All of our VB and C# source projects for Silverlight, within the source enlistment, reference a relative path, typically something like ..\..\Silverlight.CSharp.targets, instead of the standard Silverlight CSharp targets from the Silverlight MSBuild scripts.
+
+
+
+Inside this relative path, it defines the properties. For Silverlight 2:
+
+<pre class="brush: xml">
+
+&lt;Project
+
+  ToolsVersion=&quot;3.5&quot;
+
+  DefaultTargets=&quot;Build&quot;
+
+  xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot;&gt;
+
+
+
+  &lt;PropertyGroup&gt;
+
+    &lt;!-- Define the ExternalTools property first --&gt;
+
+    &lt;SilverlightBuildResources&gt;$(ExternalTools)\Silverlight\v2.0\&lt;/SilverlightBuildResources&gt;
+
+    &lt;TargetFrameworkDirectory&gt;$(SilverlightBuildResources)Reference Assemblies\&lt;/TargetFrameworkDirectory&gt;
+
+    &lt;TargetFrameworkSDKDirectory&gt;$(SilverlightBuildResources)Libraries\Client\&lt;/TargetFrameworkSDKDirectory&gt;
+
+    &lt;SilverlightRuntimeVersion&gt;2.0.31005.0&lt;/SilverlightRuntimeVersion&gt;
+
+  &lt;/PropertyGroup&gt;
+
+  &lt;Import Project=&quot;$(SilverlightBuildResources)Microsoft.Silverlight.CSharp.targets&quot;/&gt;
+
+
+
+&lt;/Project&gt;
+
+</pre>
+
+
+
+And for Silverlight 3 Beta:
+
+<pre class="brush: xml">
+
+&lt;Project
+
+  ToolsVersion=&quot;3.5&quot;
+
+  DefaultTargets=&quot;Build&quot;
+
+  xmlns=&quot;http://schemas.microsoft.com/developer/msbuild/2003&quot;&gt;
+
+
+
+  &lt;PropertyGroup&gt;
+
+    &lt;!-- Define the ExternalTools property first --&gt;
+
+    &lt;SilverlightBuildResources&gt;$(ExternalTools)\Silverlight\v3.0\&lt;/SilverlightBuildResources&gt;
+
+    
+
+    &lt;TargetFrameworkDirectory&gt;$(SilverlightBuildResources)Reference Assemblies\&lt;/TargetFrameworkDirectory&gt;
+
+    &lt;TargetFrameworkSDKDirectory&gt;$(SilverlightBuildResources)Libraries\Client\&lt;/TargetFrameworkSDKDirectory&gt;
+
+    &lt;SilverlightRuntimeVersion&gt;3.0.40217.0&lt;/SilverlightRuntimeVersion&gt;
+
+  &lt;/PropertyGroup&gt;
+
+  &lt;Import Project=&quot;$(SilverlightBuildResources)Microsoft.Silverlight.CSharp.targets&quot;/&gt;
+
+&lt;/Project&gt;
+
+</pre>
+
+
+
+Hope this helps and is useful to you and your development team.
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

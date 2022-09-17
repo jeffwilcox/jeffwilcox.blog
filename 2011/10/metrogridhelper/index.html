@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>MetroGridHelper: A helpful debugging assistant for designers and developers alike - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MetroGridHelper: A helpful debugging assistant for designers and developers alike">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2011/10/metrogridhelper/">-->MetroGridHelper: A helpful debugging assistant for designers and developers alike<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+               7 October 2011
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p>You’ve heard me preach it before: fix those margins, align, and try and make your apps as beautiful and inspiring as you can (see also: <a href="http://www.jeff.wilcox.name/2011/03/metro-design-guide-v1/">my designer tips for developers</a>).</p>  <p>On Thursday, I stopped by the Windows Phone Design Team’s beautiful studio space here on campus. It’s a really creative space, packed with fun people, chill music, and a genuine desire to see even better, more beautiful apps in the marketplace.</p>  <p>While sitting with two of the UX designers, <a href="http://twitter.com/#!/corrinab">Corrina</a> and <a href="http://twitter.com/#!/arturot">Arturo</a>, and talking about some of these design principles, I just happened to be introduced to a nifty, albeit simple, gridline/grid that the team’s been using for some time while working on the Windows Phone. It’s just a set of red squares, 25x25 pixels, offset 12 pixels from one another, and all contained within a page padding of 24px. (Again: the magical Metro number is 12-based on those edges)</p>  <p>The design typically will use a Photoshop layer containing these squares, or maybe some XAML inserted on top of a page in an app, to work on alignment, visualizing the grid, etc., and making tweaks.</p>  <p>I got to thinking: it would be nice if this could be just like the <a href="http://msdn.microsoft.com/en-us/library/gg588380(v=vs.92).aspx">performance counters</a> that we have for the Windows Phone: at debug time, you could opt into overlaying this grid on top of the frame of the entire app, being omnipresent. I coded up a quick implementation during that meeting and here it is!</p>  <p>To use the counter, simply open up the <strong>App.xaml.cs</strong> file (where the other performance counters are) and add this in. I’d recommend just enabling it when you want to do a quick design pass. You can use this then both with apps on your phone as well as the emulator; it’s helpful in the emulator since you can then screenshot the UI and share that with your friends and family who can critique you on your pixel placement.</p>  <pre class="brush: c-sharp">// Show graphics profiling information while debugging.
+if (System.Diagnostics.Debugger.IsAttached)
+{
+    // Display the current frame rate counters.
+    Application.Current.Host.Settings.EnableFrameRateCounter = true;
+
+    // Display the metro grid helper.
+    MetroGridHelper.IsVisible = true;</pre>
+
+<p>Here’s what it looks like at runtime in a very simple app:</p>
+
+<p><img style="background-image: none; border-bottom: 0px; border-left: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top: 0px; border-right: 0px; padding-top: 0px" title="PhoneMetro" border="0" alt="PhoneMetro" src="http://az414997.vo.msecnd.net/wordpress/2011/10/PhoneMetro.png" width="480" height="800" /></p>
+
+<p>In this example, I have one of the classic Windows Phone design “bugs”: one of the TextBlocks has just been inserted, without using the appropriate standard phone style. As a result, it has a Margin value of “0” instead of being 12 pixels offset from the left. It’s more clear now with the squares, since you can see the misalignment easily.</p>
+
+<p>I’ve also added simple static properties for <strong>Opacity</strong> and <strong>Color</strong> if you’d rather not use the Red default color and ~0.15 opacity on the squares. The IsVisible property can be flipped off at runtime, but beware that the grid is still present in the visual tree once you add it – so there will be a performance hit (don’t ship an app that uses the grid in release builds).</p>
+
+<h3>Get the source</h3>
+
+<p>I’ve published the source file on NuGet – that’s a really easy way to get the file into your project, and if I make any fixes or add features in the future, it’ll be easy for you to get those changes:</p>
+
+<ul>
+  <li>Make sure you have NuGet installed (<a href="http://www.nuget.org/">http://www.nuget.org/</a>) </li>
+
+  <li>Install the package using the console or package manager. It is called <a href="http://nuget.org/List/Packages/MetroGridHelper"><strong>MetroGridHelper</strong></a>
+
+    <br /><font style="background-color: #ffff00" size="2" face="Consolas"><strong>PM&gt; Install-Package MetroGridHelper</strong></font></li>
+</ul>
+
+<p>Or you can drop this source code into a new file of your project, MetroGridHelper.cs:</p>
+
+<pre class="brush: c-sharp">// (c) Copyright Microsoft Corporation.
+// This source is subject to the Microsoft Public License (Ms-PL).
+// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+// All other rights reserved.
+
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Shapes;
+
+namespace System.Windows
+{
+    /// &lt;summary&gt;
+    /// A utility class that overlays a designer-friendly grid on top of the 
+    /// application frame, for use similar to the performance counters in
+    /// App.xaml.cs. The color and opacity are configurable. The grid contains 
+    /// a number of squares that are 24x24, offset with 12px gutters, and all
+    /// 24px away from the edge of the device.
+    /// &lt;/summary&gt;
+    public static class MetroGridHelper
+    {
+        private static bool _visible;
+        private static double _opacity = 0.15;
+        private static Color _color = Colors.Red;
+        private static List&lt;Rectangle&gt; _squares;
+        private static Grid _grid;
+
+        /// &lt;summary&gt;
+        /// Gets or sets a value indicating whether the designer grid is 
+        /// visible on top of the application's frame.
+        /// &lt;/summary&gt;
+        public static bool IsVisible
+        {
+            get
+            {
+                return _visible;
+            }
+            set
+            {
+                _visible = value;
+                UpdateGrid();
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Gets or sets the color to use for the grid's squares.
+        /// &lt;/summary&gt;
+        public static Color Color
+        {
+            get { return _color; }
+            set
+            {
+                _color = value;
+                UpdateGrid();
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Gets or sets a value indicating the opacity for the grid's squares.
+        /// &lt;/summary&gt;
+        public static double Opacity
+        {
+            get { return _opacity; }
+            set
+            {
+                _opacity = value;
+                UpdateGrid();
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Updates the grid (if it already has been created) or initializes it
+        /// otherwise.
+        /// &lt;/summary&gt;
+        private static void UpdateGrid()
+        {
+            if (_squares != null)
+            {
+                var brush = new SolidColorBrush(_color);
+                foreach (var square in _squares)
+                {
+                    square.Fill = brush;
+                }
+                if (_grid != null)
+                {
+                    _grid.Visibility = _visible ? Visibility.Visible : Visibility.Collapsed;
+                    _grid.Opacity = _opacity;
+                }
+            }
+            else
+            {
+                BuildGrid();
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Builds the grid.
+        /// &lt;/summary&gt;
+        private static void BuildGrid()
+        {
+            _squares = new List&lt;Rectangle&gt;();
+
+            var frame = Application.Current.RootVisual as Frame;
+            if (frame == null || VisualTreeHelper.GetChildrenCount(frame) == 0)
+            {
+                Deployment.Current.Dispatcher.BeginInvoke(BuildGrid);
+                return;
+            }
+
+            var child = VisualTreeHelper.GetChild(frame, 0);
+            var childAsBorder = child as Border;
+            var childAsGrid = child as Grid;
+            if (childAsBorder != null)
+            {
+                // Not a pretty way to control the root visual, but I did not
+                // want to implement using a popup.
+                var content = childAsBorder.Child;
+                if (content == null)
+                {
+                    Deployment.Current.Dispatcher.BeginInvoke(BuildGrid);
+                    return;
+                }
+                childAsBorder.Child = null;
+                Deployment.Current.Dispatcher.BeginInvoke(() =&gt;
+                {
+                    Grid newGrid = new Grid();
+                    childAsBorder.Child = newGrid;
+                    newGrid.Children.Add(content);
+                    PrepareGrid(frame, newGrid);
+                });
+            }
+            else if (childAsGrid != null)
+            {
+                PrepareGrid(frame, childAsGrid);
+            }
+            else
+            {
+                Debug.WriteLine(&quot;Dear developer:&quot;);
+                Debug.WriteLine(&quot;Unfortunately the design overlay feature requires that the root frame visual&quot;);
+                Debug.WriteLine(&quot;be a Border or a Grid. So the overlay grid just isn't going to happen.&quot;);
+                return;
+            }
+        }
+
+        /// &lt;summary&gt;
+        /// Does the actual work of preparing the grid once the parent frame is
+        /// in the visual tree and we have a Grid instance to work with for
+        /// placing the chilren.
+        /// &lt;/summary&gt;
+        /// &lt;param name=&quot;frame&quot;&gt;The phone application frame.&lt;/param&gt;
+        /// &lt;param name=&quot;parent&quot;&gt;The parent grid to insert the sub-grid into.&lt;/param&gt;
+        private static void PrepareGrid(Frame frame, Grid parent)
+        {
+            var brush = new SolidColorBrush(_color);
+
+            _grid = new Grid();
+            _grid.IsHitTestVisible = false;
+
+            // To support both orientations, unfortunately more visuals need to
+            // be used. An alternate implementation would be to react to the
+            // orientation change event and re-draw/remove squares.
+            double width = frame.ActualWidth;
+            double height = frame.ActualHeight;
+            double max = Math.Max(width, height);
+
+            for (int x = 24; x &lt; /*width*/ max; x += 37)
+            {
+                for (int y = 24; y &lt; /*height*/ max; y += 37)
+                {
+                    var rect = new Rectangle
+                    {
+                        Width = 25,
+                        Height = 25,
+                        VerticalAlignment = System.Windows.VerticalAlignment.Top,
+                        HorizontalAlignment = System.Windows.HorizontalAlignment.Left,
+                        Margin = new Thickness(x, y, 0, 0),
+                        IsHitTestVisible = false,
+                        Fill = brush,
+                    };
+                    _grid.Children.Add(rect);
+                    _squares.Add(rect);
+                }
+            }
+
+            _grid.Visibility = _visible ? Visibility.Visible : Visibility.Collapsed;
+            _grid.Opacity = _opacity;
+
+            // For performance reasons a single surface should ideally be used
+            // for the grid.
+            _grid.CacheMode = new BitmapCache();
+
+            // Places the grid into the visual tree. It is never removed once
+            // being added.
+            parent.Children.Add(_grid);
+        }
+    }
+}</pre>
+
+<p>Hope this helps.</p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

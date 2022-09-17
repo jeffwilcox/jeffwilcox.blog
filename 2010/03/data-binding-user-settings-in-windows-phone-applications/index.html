@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Data binding user settings in Windows Phone applications - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Data binding user settings in Windows Phone applications">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2010/03/data-binding-user-settings-in-windows-phone-applications/">-->Data binding user settings in Windows Phone applications<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              25 March 2010
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p>Thanks to the rich data binding system built into <a href="http://www.silverlight.net/getstarted/devices/windows-phone/">Silverlight for Windows Phone</a>, you can easily store rich user settings without using code behind files.</p>  <p><a href="http://az414997.vo.msecnd.net/wordpress/2010/03/StartupPage1.png"><img style="border-bottom: 0px; border-left: 0px; display: inline; margin-left: 0px; border-top: 0px; margin-right: 0px; border-right: 0px" title="StartupPage" border="0" alt="StartupPage" src="http://az414997.vo.msecnd.net/wordpress/2010/03/StartupPage_thumb1.png" width="301" height="589" /></a> </p>  <p>The canonical example of user settings is a “Show this welcome screen at startup” checkbox so that your application can offer a nice out-of-box experience.</p>  <p>By writing a simple type with some properties, adding a few helper files, and setting up a two-way data binding, you can store any settings without having to write special code.</p>  <p>Here’s what the completed project’s two-way data binding looks like for the checkbox shown to the right:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:31a809df-3c54-45c6-9f71-e3939f303551" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;CheckBox 
+   IsChecked="{Binding Source={StaticResource MySettings}, Path=IsFirstRun, Mode=TwoWay}"
+   Content="Show this page at startup"
+/&gt;</pre></div>
+
+<p>You’ll see these components in the data binding:</p>
+
+<ul>
+  <li>Source is a static resource, a strongly typed settings class you define</li>
+
+  <li>Path points to the property name to bind to</li>
+
+  <li>Binding is two-way so that the value is stored automatically</li>
+
+  <li>Value and type converters can be applied as always in bindings if necessary</li>
+</ul>
+
+<p>Let’s quickly implement this functionality in a quick app. We’ll also add a text box to the main application page, to let the value always be persisted between application runs, and even application updates.</p>
+
+<h3>Getting started</h3>
+
+<p>You can use the free <a href="http://www.silverlight.net/getstarted/devices/windows-phone/">Windows Phone development tools</a>, or just Visual Studio 2010 if you have the phone tools CTP installed already.</p>
+
+<p>Create a new ‘Silverlight for Windows Phone’ application project.</p>
+
+<h3>Adding some helper code</h3>
+
+<p>Either add the class library project I have for download here, or just add the 4 C# files that make up the helper code:</p>
+
+<ul>
+  <li><a href="http://az414997.vo.msecnd.net/wordpress/2010/03/SettingsHelperCode.zip"><strong>SettingsHelperCode.zip</strong></a> (8 KB, zip)</li>
+</ul>
+
+<h3>Creating your configuration/settings type</h3>
+
+<p>Next, we need to create a strongly typed configuration class that derives from my SettingsProvider type. This class must:</p>
+
+<ul>
+  <li>Implement INotifyPropertyChanged, so that bindings work well</li>
+
+  <li>Have properties of the appropriate type for the settings you are interested in. Optionally, include the DefaultValue attribute to provide defaults.</li>
+</ul>
+
+<p>Here is the MySettings.cs file I’ve created for this app. It defines two properties that I always want to have stored:</p>
+
+<ul>
+  <li><strong>HelloWorld</strong> is just some text I let the user edit in the user interface. A more realistic setting might be “best friend” or a list of people to show on the home screen of the app.</li>
+
+  <li><strong>IsFirstRun</strong> is a true/false value that indicates whether the welcome screen should be shown.</li>
+</ul>
+
+<p>
+  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:f4b3a428-cf5a-4044-bad1-2a305d70a31b" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">// (c) Copyright Microsoft Corporation.
+// This source is subject to the Microsoft Public License (Ms-PL).
+// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+// All other rights reserved.
+
+using System.ComponentModel;
+using JeffWilcox.Settings;
+
+namespace Sample
+{
+    /// &lt;summary&gt;
+    /// My settings class for storing application data and setting specific to
+    /// the user.
+    /// &lt;/summary&gt;
+    public class MySettings : SettingsProvider
+    {
+        private bool _isFirstRun;
+        private string _hello;
+
+        public MySettings() : base("MySettings.xml") { }
+
+        [DefaultValue("What's up?")]
+        public string HelloWorld
+        {
+            get { return _hello; }
+            set
+            {
+                _hello = value;
+                NotifyPropertyChanged("HelloWorld");
+            }
+        }
+
+        [DefaultValue(true)]
+        public bool IsFirstRun 
+        {
+            get { return _isFirstRun; }
+            set
+            {
+                bool old = _isFirstRun;
+                _isFirstRun = value;
+                if (value != old)
+                {
+                    NotifyPropertyChanged("IsFirstRun");
+                }
+            }
+        }
+    }
+}</pre></div>
+</p>
+
+<p>Looking closer, inside the MySettings file:</p>
+
+<ul>
+  <li>MySettings type derives from SettingsProvider, part of the helper code downloaded above.</li>
+
+  <li>The constructor calls the base class’s constructor with the name of a settings file to use within the isolated storage area for the phone application</li>
+
+  <li>Properties have backing fields and fire change notifications</li>
+
+  <li>Default values</li>
+</ul>
+
+<h3>Add the settings object to your App.xaml</h3>
+
+<p>Now, open up App.xaml. Add an XMLNS prefix declaration for your project. I named my app project “Sample”, so it’s short:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:acd9bf42-6d28-4915-bf66-d21d8e7c8936" class="wlWriterEditableSmartContent"><pre class="brush: xml">xmlns:local="clr-namespace:Sample"</pre></div>
+
+<p>And then add your settings object to the resources (I’m omitting all the theme resources in App.xaml to make it clear where this goes only).</p>
+
+<p><strong>AlwaysSaveOnChange</strong> needs to be set to true for Windows Phone applications: if you’re building a regular Silverlight app, the Application.Exit event works well and can be used to store. But on the phone, since an app may be in a paused or unknown state, this property tells my helper code to save the settings <em>whenever</em> a binding has a change notification. For performance impact should be minimal.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:13458972-7b46-4eb1-bc09-09a5287a27df" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;Application.Resources&gt;
+        &lt;!-- Settings --&gt;
+        &lt;local:MySettings x:Key="MySettings" AlwaysSaveOnChange="True" /&gt;
+&lt;/Application.Resources&gt;</pre></div>
+
+<h3>A simple TextBox binding</h3>
+
+<p>Now on my MainPage.xaml, I am just going to bind to the Hello World property from the MySettings type. Any time you type characters into the text box, they will be saved, and always there when you run the app. No need to write code to save or read settings.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:30433b15-c4bf-475a-8a49-59b91a731f58" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;TextBox 
+    Text="{Binding Source={StaticResource MySettings}, Path=HelloWorld, Mode=TwoWay}" /&gt;
+</pre></div>
+
+<h3>Good to go</h3>
+
+<p>To pull it in, I’m going to add a page called FirstRun.xaml to the project. This will be the content that I want first-time users to see. Then, I need to add the code to call this from main page at startup:</p>
+
+<p>I define a loaded event for this that checks whether the current instance has run the page yet (hacky, and not a permanent setting), and then checks whether the user wants to see the screen (which defaults to true in my settings file):</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:3ec0659d-8aee-41bc-b130-2bd8f24eca37" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">if (!((App)App.Current).HasFirstRunCheckHappenedYet)
+{
+    ((App)App.Current).HasFirstRunCheckHappenedYet = true;
+
+    MySettings settings = (MySettings)App.Current.Resources["MySettings"];
+    if (settings != null && settings.IsFirstRun)
+    {
+        NavigationService.Navigate(new Uri("/FirstRun.xaml", UriKind.Relative));
+    }
+}</pre></div>
+
+<p>It then uses the navigation service to navigate, if needed.</p>
+
+<p>If you’d like to learn more about Silverlight data binding, do check out this MSDN resource: <a title="http://msdn.microsoft.com/en-us/library/cc278072(VS.95).aspx" href="http://msdn.microsoft.com/en-us/library/cc278072(VS.95).aspx">http://msdn.microsoft.com/en-us/library/cc278072(VS.95).aspx</a></p>
+
+<p>Some people have experimented with directly binding to the isolated storage settings file, but this approach gives your some separation – by having your own class, you can provide default values, even upgrade logic, and do some neat work.</p>
+
+<p>This is based on a classic WPF post by <a href="http://blogs.msdn.com/patrickdanino/archive/2008/07/23/user-settings-in-wpf.aspx">Patrick Danino</a> which used the full .NET configuration classes. Enjoy!</p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

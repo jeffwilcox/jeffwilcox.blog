@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Using mail2bug with Azure App Service, WebJobs and VSTS to handle support mail - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Using mail2bug with Azure App Service, WebJobs and VSTS to handle support mail">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2017/02/mail2bug/">-->Using mail2bug with Azure App Service, WebJobs and VSTS to handle support mail<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              24 February 2017
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            <li>azure</li><li>cloud</li><li>open-source</li>
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p><a href="https://github.com/Microsoft/mail2bug">mail2bug</a> is a service that allows you to create a bug
+from an e-mail thread simply by adding a specific recipient to the mail thread. It also keeps
+the bug up-to-date with information from the mail thread by adding any subsequent replies on
+the thread as comments to the bug. The <a href="https://github.com/Microsoft/mail2bug/blob/master/README.md">mail2bug README</a>
+has useful information if you want to learn more.</p>
+
+<p>Mail2bug was not designed for the cloud - in many cases there’s a server box under someone’s desk
+running their team’s on-premise mail2bug instance, or maybe it’s in a lab, or on a Hyper-V server. That works for
+many folks but it turns out that it’s easy to run this standard .NET app in the cloud, too.</p>
+
+<p>Thanks to Azure App Service, the WebJobs feature of web sites, and a simple tweak to a deployment script, the
+changes I made to mail2bug have enabled my team to use a cloud-hosted mail2bug for almost a year now with
+zero maintenance cost or effort. It just keeps ticking.</p>
+
+<p>In this short post I’ll cover how we use WebJobs to enable automatic deployment and execution
+on Azure of this simple app. It is implemented in .NET and was open sourced a few years ago.</p>
+
+<blockquote>
+  <p>2/27/2017 Update:
+My <a href="https://github.com/Microsoft/mail2bug/pull/39">pull request</a> contributing the changes to mail2bug
+was accepted. Hooray!</p>
+</blockquote>
+
+<p>I am hoping that this post will help the few folks I know who have been asking how this worked for my team.</p>
+
+<h1 id="whats-mail2bug">What’s mail2bug?</h1>
+
+<p>Historically mail2bug was a Microsoft internal tool that a few engineering systems teams implemented. Mail2bug does simple things:</p>
+
+<ul>
+  <li>Creates a Visual Studio Team Services or TFS on-prem work item from an e-mail conversation and maintains the history</li>
+  <li>Integrates with Exchange or Office 365 mail accounts</li>
+  <li>Can reply back to the start of a thread or support incident with a link to the tracking bug and also a templated mail with helpful information or your support SLA</li>
+</ul>
+
+<p>It’s essentially a “poor man’s Zen Desk”, not designed to do much more. On our team this is a good solution for now,
+though there are features I know we want to implement that would make it even better.</p>
+
+<p>Here’s what an auto-response mail looks like from one of our team addresses:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/mail2bug/sample-email.png" class="img-responsive" /></p>
+
+<p>And here is what a Visual Studio Team Services cloud-hosted work item query view looks like, showing the active support
+tickets on our team:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/mail2bug/vsts-tickets.png" class="img-responsive" /></p>
+
+<h1 id="azure-app-service-and-webjobs">Azure App Service and WebJobs</h1>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>App Service is a fully-managed platform for web app hosting, it makes web apps and sites extremely
+easy to use and deploy at scale.</p>
+
+<p>Powering the infrastructure for App Service are the “Advanced Tools”, or Project Kudu. The
+<a href="https://github.com/projectkudu/kudu/wiki">Project Kudu wiki</a> on GitHub has a lot of great
+information that you just won’t find elsewhere, so if you are new to this, take a look.</p>
+
+<p>A feature of App Service and Kudu is a technology called <a href="https://docs.microsoft.com/en-us/azure/app-service-web/websites-webjobs-resources">WebJobs</a> -
+WebJobs are <code class="language-plaintext highlighter-rouge">cron</code>/schedule tasks that run either continuously or triggered based on time or REST calls. It makes a lot of simple automation
+tasks even easier and they’re quick and easy to deploy alongside a site.</p>
+
+<p>Right inside the Azure portal for an app you can explore any WebJobs setup within your app service.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/mail2bug/webjob-portal.png" class="img-responsive" /></p>
+
+<p>You can also drill into the logs for the jobs, and that opens up the Advanced Tools management side of your app.</p>
+
+<h2 id="default-net-console-app-experience">Default .NET console app experience</h2>
+
+<p>Kudu generates a deployment script automatically based on the type of repository that is connected
+to an App Service instance.</p>
+
+<p>When you deploy a .NET Framework console app, it automatically builds the project and deploys it
+as a continuous WebJob.</p>
+
+<p>It just works! For many “lift and shift” .NET console apps, this is a nice win, and easy.</p>
+
+<h2 id="triggered-webjob-changes">Triggered WebJob changes</h2>
+
+<p>In our case we like triggered WebJobs, because you can set an interval - every 2 minutes, every 10 minutes,
+etc., with a <code class="language-plaintext highlighter-rouge">cron</code>-like syntax. This also lets us rotate the password / secret used to
+connect to the mail account regularly, since each time the app runs, it will grab the latest
+rotated account password. More on that soon.</p>
+
+<p>When the WebJob runs, it will store a log of exactly what happened during the run, and by
+default a certain set of the last N runs will be stored. This value is configurable and
+documented as part of the Kudu wiki.</p>
+
+<p>Inside the WebJob mini portal you can see the history for a WebJob:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/mail2bug/kudu-webjob-details.png" class="img-responsive" /></p>
+
+<p>And then you can select any particular instance and find out the console output and
+other data from that run:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/mail2bug/webjob-run-details.png" class="img-responsive" /></p>
+
+<p>Nice.</p>
+
+<h1 id="azure-keyvault-secrets">Azure KeyVault secrets</h1>
+
+<p>To enable cloud-based deployment and still connect to an Office 365 e-mail account to
+check for mail and respond, we have to store a secret: the token or password to access the e-mail account.</p>
+
+<h2 id="keyvault-scenario">KeyVault scenario</h2>
+
+<p>Azure KeyVault is the best bet for this, since we can then authorize our App Service
+instance through Active Directory to be able to GET the secret at runtime. We can also
+handle secrets rotation very easily, since each time the triggered WebJob runs, it will
+refresh the latest secret to use for connecting to the mail account.</p>
+
+<p>This way we can store the KeyVault secret URI inside our source code, since it is not a secret,
+and then the app, if authorized, will be able to resolve the secret at runtime. Our use of
+KeyVault is mostly about preventing developer mistakes and of course to avoid a source code
+evil, which is storing secrets in code (gasp!).</p>
+
+<p>While I won’t walk through the specifics in this post, the steps are:</p>
+
+<ul>
+  <li>Create a new Azure Active Directory (AAD) application that the mail2bug app will use as its identity to connect to the secret store</li>
+  <li>Store the secret in KeyVault, this can be set using the portal, a PowerShell or CLI script, or even our team’s own KeyVault management portal that we have built</li>
+  <li>Authorize the AAD app to be able to GET the secret(s) in the KeyVault instance we have the secret stored in</li>
+</ul>
+
+<p>Then we just need to point the app configuration at the KeyVault secret URI and provide the client ID and secret to the app inside App Service. There is also a
+slightly more secure method using certificates that could be implemented, but that I have chosen to not implement at this time for simplicity sake.</p>
+
+<h2 id="mail2bug-secrets-management">Mail2Bug secrets management</h2>
+
+<p>The mail2bug app was built to use <a href="https://en.wikipedia.org/wiki/Data_Protection_API">DPAPI</a> - the Windows Data Protection API - to keep
+the secret encrypted and safe within a Windows box sitting under a desk somewhere, or in a lab.</p>
+
+<p>In the cloud this is not ideal, and for App Service it just makes sense to use KeyVault instead.</p>
+
+<p>The pull request I have submitted for mail2bug alters the DPAPI code paths to alternatively be able to use Azure KeyVault if the vault and secret
+information is available.</p>
+
+<h1 id="continuous-deployment">Continuous deployment</h1>
+
+<p>Using Azure App Service we have a nice story when we want to update the configuration for
+a mail2bug task, tweak the e-mail template that we use for autoresponse, etc.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/mail2bug/deployment-options.png" class="img-responsive" /></p>
+
+<p>The standard mail2bug configuration story for on-premise users is to remote desktop into a
+machine or otherwise remotely work with the files, restart the service or bump the scheduled task.</p>
+
+<p>For my team it’s even easier, as we just have a Git repo with both the mail2bug source code
+and our configuration files and e-mail template in it. We can just create a branch, code review
+the change, and then push the master branch, at which point App Service updates the app and the WebJob
+and the next time that the triggered WebJob runs it will have the latest configuration. This also
+works for updating the mail2bug app itself.</p>
+
+<p>Here’s the repo:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/mail2bug/mail2bug-github.png" class="img-responsive" /></p>
+
+<p>The structure is pretty basic:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">configuration</code> folder has our e-mail template and various mail2bug XML config files</li>
+  <li><code class="language-plaintext highlighter-rouge">mail2bug</code> folder contains the source code for mail2bug</li>
+  <li><code class="language-plaintext highlighter-rouge">.deployment</code> and <a href="https://gist.github.com/jeffwilcox/5586c219c4e6b7d258c19087fd277dfd"><code class="language-plaintext highlighter-rouge">deploy.cmd</code></a> custom deployment script that Kudu will use whenever our app is deployed instead of the standard auto-generated script</li>
+  <li><code class="language-plaintext highlighter-rouge">settings.job</code>, the triggered WebJob configuration that we want to use for our app</li>
+</ul>
+
+<p>The custom deployment script is up in a <a href="https://gist.github.com/jeffwilcox/5586c219c4e6b7d258c19087fd277dfd">Gist</a> if you need it. It
+just builds the project and moves it into the folder <code class="language-plaintext highlighter-rouge">App_Data/jobs/triggered/mail2bug</code>. This is the location that kudu looks to
+setup WebJobs, etc.</p>
+
+<h1 id="configuration">Configuration</h1>
+
+<p>We need to configure Mail2Bug - nearly the same way as any other mail2bug instance, so that is left as an exercise
+to the reader.</p>
+
+<p>We also need to configure the App Service instance.</p>
+
+<h2 id="mail2bug-configuration-files">Mail2Bug configuration files</h2>
+
+<p>A Mail2Bug configuration file contains info about how to respond to e-mail, where to open bugs, and other data. Here is a sample
+configuration file, partially redacted. They aren’t pretty, but they get the job done.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;Config</span> <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span> <span class="na">xmlns:xsd=</span><span class="s">"http://www.w3.org/2001/XMLSchema"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;Instances&gt;</span>
+    <span class="nt">&lt;InstanceConfig</span> <span class="na">Name=</span><span class="s">"npmjs-admin"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;TfsServerConfig&gt;</span>
+        <span class="nt">&lt;SimulationMode&gt;</span>false<span class="nt">&lt;/SimulationMode&gt;</span>
+        <span class="nt">&lt;CollectionUri&gt;</span>https://ospo.visualstudio.com/DefaultCollection/<span class="nt">&lt;/CollectionUri&gt;</span>
+        <span class="nt">&lt;ServiceIdentityUsername&gt;</span>vstsusername@domain.com<span class="nt">&lt;/ServiceIdentityUsername&gt;</span>
+        <span class="nt">&lt;ServiceIdentityPatKeyVaultSecret&gt;</span>
+          <span class="nt">&lt;KeyVaultPath&gt;</span>https://yourkeyvaultaddress.vault.azure.net/secrets/mail2bug-pat<span class="nt">&lt;/KeyVaultPath&gt;</span>
+          <span class="nt">&lt;ApplicationIdEnvironmentVariableName&gt;</span>DIRECTORY_APPLICATION_ID<span class="nt">&lt;/ApplicationIdEnvironmentVariableName&gt;</span>
+          <span class="nt">&lt;ApplicationSecretEnvironmentVariableName&gt;</span>DIRECTORY_APPLICATION_SECRET<span class="nt">&lt;/ApplicationSecretEnvironmentVariableName&gt;</span>
+        <span class="nt">&lt;/ServiceIdentityPatKeyVaultSecret&gt;</span>
+        <span class="nt">&lt;Project&gt;</span>YourVSTSProjectName<span class="nt">&lt;/Project&gt;</span>
+        <span class="nt">&lt;WorkItemTemplate&gt;</span>Issue<span class="nt">&lt;/WorkItemTemplate&gt;</span>
+        <span class="nt">&lt;CacheQueryFile&gt;</span>configuration\openedissues.wiq<span class="nt">&lt;/CacheQueryFile&gt;</span>
+        <span class="nt">&lt;NamesListFieldName&gt;</span>Assigned To<span class="nt">&lt;/NamesListFieldName&gt;</span>
+      <span class="nt">&lt;/TfsServerConfig&gt;</span>
+      <span class="nt">&lt;WorkItemSettings&gt;</span>
+        <span class="nt">&lt;FieldsToCache&gt;</span>
+          <span class="nt">&lt;string&gt;</span>State<span class="nt">&lt;/string&gt;</span>
+          <span class="nt">&lt;string&gt;</span>Assigned To<span class="nt">&lt;/string&gt;</span>
+        <span class="nt">&lt;/FieldsToCache&gt;</span>
+        <span class="nt">&lt;ApplyOverridesDuringUpdate&gt;</span>true<span class="nt">&lt;/ApplyOverridesDuringUpdate&gt;</span>
+        <span class="nt">&lt;Mnemonics&gt;</span>
+          <span class="nt">&lt;MnemonicDefinition</span> <span class="na">Mnemonic=</span><span class="s">"remove"</span> <span class="na">Field=</span><span class="s">"State"</span> <span class="na">Value=</span><span class="s">"Closed"</span> <span class="nt">/&gt;</span>
+          <span class="nt">&lt;MnemonicDefinition</span> <span class="na">Mnemonic=</span><span class="s">"resolved"</span> <span class="na">Field=</span><span class="s">"State"</span> <span class="na">Value=</span><span class="s">"Closed"</span> <span class="nt">/&gt;</span>
+          <span class="nt">&lt;MnemonicDefinition</span> <span class="na">Mnemonic=</span><span class="s">"close"</span> <span class="na">Field=</span><span class="s">"State"</span> <span class="na">Value=</span><span class="s">"Closed"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/Mnemonics&gt;</span>
+        <span class="nt">&lt;ConversationIndexFieldName&gt;</span>Integration Build<span class="nt">&lt;/ConversationIndexFieldName&gt;</span>
+        <span class="nt">&lt;DefaultFieldValues&gt;</span>
+          <span class="nt">&lt;DefaultValueDefinition</span> <span class="na">Field=</span><span class="s">"Assigned To"</span> <span class="na">Value=</span><span class="s">"username@domain.com"</span> <span class="nt">/&gt;</span>
+          <span class="nt">&lt;DefaultValueDefinition</span> <span class="na">Field=</span><span class="s">"Changed By"</span> <span class="na">Value=</span><span class="s">"##Sender"</span> <span class="nt">/&gt;</span>
+          <span class="nt">&lt;DefaultValueDefinition</span> <span class="na">Field=</span><span class="s">"Description"</span> <span class="na">Value=</span><span class="s">"##MessageBody"</span> <span class="nt">/&gt;</span>
+          <span class="nt">&lt;DefaultValueDefinition</span> <span class="na">Field=</span><span class="s">"Priority"</span> <span class="na">Value=</span><span class="s">"3"</span> <span class="nt">/&gt;</span>
+          <span class="nt">&lt;DefaultValueDefinition</span> <span class="na">Field=</span><span class="s">"Area Path"</span> <span class="na">Value=</span><span class="s">"Path\To\Store\WorkItem\In"</span> <span class="nt">/&gt;</span>
+          <span class="nt">&lt;DefaultValueDefinition</span> <span class="na">Field=</span><span class="s">"Iteration Path"</span> <span class="na">Value=</span><span class="s">"IterationPathValue"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/DefaultFieldValues&gt;</span>
+        <span class="nt">&lt;AttachOriginalMessage&gt;</span>true<span class="nt">&lt;/AttachOriginalMessage&gt;</span>
+        <span class="nt">&lt;AddEmailHeaderToItem&gt;</span>false<span class="nt">&lt;/AddEmailHeaderToItem&gt;</span>
+        <span class="nt">&lt;DefaultAssign&gt;</span>Active<span class="nt">&lt;/DefaultAssign&gt;</span>
+      <span class="nt">&lt;/WorkItemSettings&gt;</span>
+      <span class="nt">&lt;EmailSettings&gt;</span>
+        <span class="nt">&lt;Recipients&gt;</span>emailAddressToKeyOffOf@microsoft.com<span class="nt">&lt;/Recipients&gt;</span>
+        <span class="nt">&lt;ReplyTemplate&gt;</span>configuration\template.htm<span class="nt">&lt;/ReplyTemplate&gt;</span>
+        <span class="nt">&lt;CompletedFolder&gt;</span>foldername<span class="nt">&lt;/CompletedFolder&gt;</span>
+        <span class="nt">&lt;ErrorFolder&gt;</span>processing-errors<span class="nt">&lt;/ErrorFolder&gt;</span>
+        <span class="nt">&lt;EWSKeyVaultSecret&gt;</span>
+          <span class="nt">&lt;KeyVaultPath&gt;</span>https://yourkeyvaultaddress.vault.azure.net/secrets/mailaccount-password<span class="nt">&lt;/KeyVaultPath&gt;</span>
+          <span class="nt">&lt;ApplicationIdEnvironmentVariableName&gt;</span>DIRECTORY_APPLICATION_ID<span class="nt">&lt;/ApplicationIdEnvironmentVariableName&gt;</span>
+          <span class="nt">&lt;ApplicationSecretEnvironmentVariableName&gt;</span>DIRECTORY_APPLICATION_SECRET<span class="nt">&lt;/ApplicationSecretEnvironmentVariableName&gt;</span>
+        <span class="nt">&lt;/EWSKeyVaultSecret&gt;</span>
+        <span class="nt">&lt;EWSMailboxAddress&gt;</span>mailAccount@domain.com<span class="nt">&lt;/EWSMailboxAddress&gt;</span>
+        <span class="nt">&lt;EWSUsername&gt;</span>mailAccount@domain.com<span class="nt">&lt;/EWSUsername&gt;</span>
+        <span class="nt">&lt;ServiceType&gt;</span>EWSByRecipients<span class="nt">&lt;/ServiceType&gt;</span>
+        <span class="nt">&lt;SendAckEmails&gt;</span>true<span class="nt">&lt;/SendAckEmails&gt;</span>
+        <span class="nt">&lt;AckEmailsRecipientsAll&gt;</span>true<span class="nt">&lt;/AckEmailsRecipientsAll&gt;</span>
+        <span class="nt">&lt;AppendOnlyEmailTitleRegex&gt;</span>.*(bug|work item)\s*#*\s*(?<span class="ni">&amp;lt;</span>id<span class="ni">&amp;gt;</span>\d+)<span class="nt">&lt;/AppendOnlyEmailTitleRegex&gt;</span>
+        <span class="nt">&lt;AppendOnlyEmailBodyRegex&gt;</span>!!!(bug|work item)\s*#*\s*(?<span class="ni">&amp;lt;</span>id<span class="ni">&amp;gt;</span>\d+)<span class="nt">&lt;/AppendOnlyEmailBodyRegex&gt;</span>
+        <span class="nt">&lt;ExplicitOverridesRegex&gt;</span>###\s*(?<span class="ni">&amp;lt;</span>fieldName<span class="ni">&amp;gt;</span>[^:]*):\s*(?<span class="ni">&amp;lt;</span>value<span class="ni">&amp;gt;</span>.*)<span class="nt">&lt;/ExplicitOverridesRegex&gt;</span>
+      <span class="nt">&lt;/EmailSettings&gt;</span>
+    <span class="nt">&lt;/InstanceConfig&gt;</span>
+  <span class="nt">&lt;/Instances&gt;</span>
+<span class="nt">&lt;/Config&gt;</span>
+</code></pre></div></div>
+
+<h2 id="application-settings">Application Settings</h2>
+
+<p>The final piece of the puzzle is to give the App Service access to our AAD app’s client ID and secret. This is so that it can
+access the vault. The mail2bug configuration includes KeyVault secret URIs, and also the name of the environment variables
+that will have the app’s client ID and secrets available.</p>
+
+<p>We set these secrets in the Azure portal. I have chosen the variable names <code class="language-plaintext highlighter-rouge">DIRECTORY_APPLICATION_ID</code> and
+<code class="language-plaintext highlighter-rouge">DIRECTORY_APPLICATION_SECRET</code>.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/mail2bug/application-settings.png" class="img-responsive" /></p>
+
+<h1 id="closing">Closing</h1>
+
+<p>Hope this helps you to learn about App Service and WebJobs, and I also hope that the upstream project accepts
+my contribution at some point!</p>
+
+<p>Jeff</p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+                   
+                   
+                        <h4>Microsoft Azure</h4>
+                        <ul class="list">
+                            <li><a href="https://github.com/azure/">Azure on GitHub</a></li>
+                            <li><a href="https://azure.microsoft.com/en-us/documentation/">Azure docs</a></li>
+                            <li><a href="http://azure.github.io/guidelines.html">How to contribute</a></li>
+                        </ul>
+                   
+                    
+            
+                   
+                   
+                    
+            
+                   
+                        <h4>Microsoft Open Source</h4>
+                        <ul class="list">
+                            <li><a href="https://github.com/Microsoft">github.com/microsoft</a></li>
+                            <li><a href="https://opensource.microsoft.com">opensource.microsoft.com</a></li>
+                            <li><a href="https://opensource.microsoft.com/explore">up-for-grabs issues</a></li>
+                        </ul>
+                   
+                   
+                    
+            
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

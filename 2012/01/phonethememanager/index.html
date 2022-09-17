@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>PhoneThemeManager: allow your app to have the Light, Dark, or Inverted theme with 1 line of code - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PhoneThemeManager: allow your app to have the Light, Dark, or Inverted theme with 1 line of code">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2012/01/phonethememanager/">-->PhoneThemeManager: allow your app to have the Light, Dark, or Inverted theme with 1 line of code<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              25 January 2012
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p>I’ve just pushed a small library that I created this evening to the world and wanted to share details on the short project in this post. (<a href="http://nuget.org/packages/PhoneThemeManager">NuGet assembly</a>, <a href="http://nuget.org/packages/PhoneThemeManager.Source">NuGet source</a>, <a href="https://github.com/jeffwilcox/wp-thememanager">project on GitHub</a>)</p>  <p>One of the most common feature requests that I receive for 4th &amp; Mayor is a setting in the app to force it to always use the “Light” theme, overriding the dark/light theme that the user’s set for their theme.</p>  <p>Having a light background is a nice contrasting design look for the phone, and the Mail application always does this. I personally always submit mostly light theme screen shots for my applications to the Windows Phone Marketplace, it just looks better and nice to me – but I rarely use all-light themed apps other than Mail.</p>  <p><img src="http://d2bk44826ux9xe.cloudfront.net/NewMenus.png" /></p>  <p>In preparing for the next update of my app, v3.3, I’ve coded up this capability and I’m sharing it ahead of time.</p>  <h3>Technical Overview</h3>  <p>In 7.0 there were a few ways to do theme overriding, sometimes through a few silly platform bugs that we left in there – but it’s actually not an easy thing to do, and many people end up overriding every single style in their app to get the effect that they are going for.</p>  <p>This helper library is designed for altering the entire application’s running instance, <em>not</em> for providing per-page theme overriding.</p>  <p>In researching possible ways to solve this, I did come across <a href="http://windowsphonegeek.com/articles/Windows-Phone-Mango-Custom-application-Theme-Step-by-Step">this page on windowsphonegeek</a> that talks about ways to merge in styles or to programmatically override resources that are brushes.</p>  <p>I decided to create a system to walk through the known values and names for all the core theme resources of colors, brushes, plus the light/dark theme visibility and opacity properties.</p>  <p>In your app, you simply call `ThemeManager.ToLightTheme()`, `ThemeManager.ToDarkTheme()`, `ThemeManager.InvertTheme`, to force this. You need to have this call happen inside your <strong>App.xaml.cs </strong>file, in the constructor, after the Initialize calls.</p>  <p>You cannot change or call this more than once, so if you offer a setting for users to “Force Light”, use a MessageBox to inform them that their setting will be used the next time they start the app. You will have to read their setting right away when they start up the app. Once styles start applying the values, you could start to get inconsistent results.</p>  <p>The code walks and updates the Color instances, then walks the Brush resources and sets their Colors to be the original Color instances, just in case.</p>  <p>I have placed the ThemeManager class within the Microsoft.Phone.Controls namespace for this to be easy to add to your App.xaml.cs file.</p>  <p>You should have an App constructor like this:</p>  <pre class="brush: c-sharp">/// &lt;summary&gt;
+/// Constructor for the Application object.
+/// &lt;/summary&gt;
+public App()
+{
+    // Global handler for uncaught exceptions. 
+    UnhandledException += Application_UnhandledException;
+
+    // Standard Silverlight initialization
+    InitializeComponent();
+
+    // Phone-specific initialization
+    InitializePhoneApplication();
+
+    ThemeManager.ToLightTheme();
+
+    // Other code that might be here already...
+}</pre>
+
+<h3>What’s themed</h3>
+
+<p>By default this is what happens:</p>
+
+<ul>
+  <li>The <strong>resources</strong> for foreground, background, all the contrast/chrome/etc. colors and brushes are updated</li>
+
+  <li>The light and dark theme visibility and opacity resources are updated</li>
+
+  <li>The background brush of the Frame is set explicitly to the color (may have a negative performance impact!)</li>
+
+  <li>The <strong>System Tray </strong>whenever a page navigation completes</li>
+
+  <li>The <strong>ApplicationBar</strong> of a page if set immediately</li>
+</ul>
+
+<p>I’ve added a simple OverrideOptions enum (static) to the ThemeManager that can be used to disable the auto-behaviors I’ve added.</p>
+
+<h4>Newing up AppBars</h4>
+
+<p>If you have code in your app like “var ab = new ApplicationBar”, beware that that application bar will take on the system’s actual theme colors by default, and not the overridden light/dark coloring that happens with the app.</p>
+
+<p>If you need to new up an ApplicationBar, you should use the convenience method of `ThemeManager.CreateApplicationBar()` <em>or</em> use the extension method on app bar that I added, `MatchOverriddenTheme`, to set the color values.</p>
+
+<h3>What’s not themed</h3>
+
+<p>Unfortunately this cannot theme <strong>MessageBox</strong> at all.</p>
+
+<h3>Talking about fill rate performance</h3>
+
+<p>I’ve designed the system so that resources are <em>only overridden when needed</em>.</p>
+
+<p>If your app uses ToLightTheme to force the light theme, and the user is running the Light theme already, nothing happens – it’s a no-op.</p>
+
+<p>Although updating resources has no negative effect really on the app’s performance, the trouble is setting the Background color of the phone application’s frame.</p>
+
+<p>The frame is always present and may add a fill count of 1.0 to every single page in your app.</p>
+
+<p>Anything above a fill rate of 2-3 is not a good thing, so you may notice a degraded experience. Might want to inform your users of that when providing the option to force the light theme, for example.</p>
+
+<h3>A note about your battery</h3>
+
+<p>Many Windows Phones use AMOLED or similar technology where bright colors, such as the background color used in the Light theme, will use a lot of power. Please respect your users and realize that long-running apps probably should not force the Light option.</p>
+
+<p>Consider only making such a “Force Light Theme” option as a setting that users opt-in to, as opposed to always overriding the theme.</p>
+
+<h3>About custom themes</h3>
+
+<p>When I designed this library, I thought about offering a ton of capability in it for using “branding” colors, modifying the accent brush, etc., but instead decided to tackle just one thing. So the name ThemeManager is a little overkill maybe, but it’s where we are for now.</p>
+
+<h2>Get the bits</h2>
+
+<p><strong>NuGet Binary</strong></p>
+
+<p>The binary is super easy to use. With NuGet just add the <a href="http://nuget.org/packages/PhoneThemeManager">PhoneThemeManager</a> package reference.</p>
+
+<p><strong>NuGet Source File</strong></p>
+
+<p>Instead of adding yet another assembly to your project, just add the single source file (or add it to your existing shared library, etc.) by using the <a href="http://nuget.org/packages/PhoneThemeManager.Source">PhoneThemeManager.Source</a> package.</p>
+
+<p><strong>GitHub Repo</strong></p>
+
+<p>Fork and enjoy <a href="https://github.com/jeffwilcox/wp-thememanager">https://github.com/jeffwilcox/wp-thememanager</a></p>
+
+<p>Hope this helps.</p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>BusyIndicator: David Poll&rsquo;s ActivityControl is now in the Silverlight Toolkit November 2009 Release - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="BusyIndicator: David Poll&rsquo;s ActivityControl is now in the Silverlight Toolkit November 2009 Release">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2009/11/busy-indicator-control/">-->BusyIndicator: David Poll&rsquo;s ActivityControl is now in the Silverlight Toolkit November 2009 Release<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              19 November 2009
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p>Microsoft Program Manager <a href="http://www.davidpoll.com/">David Poll</a> is passionate about improving rich Internet application experiences involving data, and he previously blogged about his nice ActivityControl (<a href="http://www.davidpoll.com/?p=4">here</a> and <a href="http://www.davidpoll.com/2009/09/14/update-2-displaying-background-activity-in-a-silverlight-ria-application/">here</a>). The control is designer to provide a visual hint to users when an asynchronous update operation is going on – the type that can’t be interrupted.</p>  <p>It’s important to provide the user feedback that the UI is not hung, or crashed, but is in fact processing. This fills that void, and is really easy to get going with.</p>  <p>After some initial meetings with David, it became clear that the control would make a nice addition to the portfolio of valuable controls that are inside of the <a href="http://silverlight.codeplex.com/">Silverlight Toolkit</a>, so thanks to everyone who came together to get this added to the November release.</p>  <h3>Quick guide to using the control</h3>  <h4>IsBusy</h4>  <p>The key dependency property on the BusyIndicator control is the IsBusy bool property. It’s easy to data bind to your data model, or programmatically toggle on and off.</p>  <p>When toggled to true, the actual content of the BusyIndicator control (which itself is a ContentControl) will no longer be enabled.</p>  <h4>Place your content inside the control</h4>  <p>In the most simple use case, just place your content inside the control and bind to the model. When IsBusy is set to true, you’ll see the waiting user interface appear.</p>  <p>Your controls that are wrapped by the BusyIndicator control will not be enabled during the busy time, preventing the user from inadvertently altering the data state during the operation.</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1086e259-5fd5-4933-8389-a2248f0a0692" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;Grid x:Name="LayoutRoot" Background="White"&gt;
+    &lt;controlsToolkit:BusyIndicator IsBusy="{Binding DataServicesAreBusy}"&gt;
+
+        &lt;!-- This button will not be enabled when IsBusy is set to True --&gt;
+        &lt;Button Content="This is a button" HorizontalAlignment="Center"  VerticalAlignment="Center" Padding="8"/&gt;
+
+    &lt;/controlsToolkit:BusyIndicator&gt;
+&lt;/Grid&gt;</pre></div>
+
+<h4>Customizing the busy content</h4>
+
+<p>The entire thing is very customizable, you can use data templates and even retemplate the control. David Anson covered this <a href="http://blogs.msdn.com/delay/archive/2009/11/18/silverlight-4-beta-is-out-and-the-toolkit-has-it-covered-silverlight-toolkit-november-2009-release-now-available-for-silverlight-3-and-4.aspx">in his post yesterday on the topic</a>.</p>
+
+<p>Here’s a quick example of changing the text that is displayed – the Content property can take any kind of content, so you could even put a quick game in there if you wanted to go overboard.</p>
+
+<p></p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:43e84fe4-5da5-43da-b964-e31f66aeda88" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;Grid x:Name="LayoutRoot" Background="White"&gt;
+
+    &lt;controlsToolkit:BusyIndicator IsBusy="{Binding DataServicesAreBusy}"&gt;
+            &lt;controlsToolkit:BusyIndicator.BusyContent&gt;
+                &lt;TextBlock Text="Reticulating Splines..." 
+                           FontSize="18" 
+                           FontWeight="Bold" /&gt;
+            &lt;/controlsToolkit:BusyIndicator.BusyContent&gt;
+
+                &lt;!-- This button will not be enabled when IsBusy is set to True --&gt;
+        &lt;Button Content="This is a button" HorizontalAlignment="Center"  VerticalAlignment="Center" Padding="8"/&gt;
+
+    &lt;/controlsToolkit:BusyIndicator&gt;
+&lt;/Grid&gt;</pre></div>
+
+<p></p>
+
+<p>And here’s what that looks like in a real application when IsBusy is true:</p>
+
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="Splines" border="0" alt="Splines" src="http://az414997.vo.msecnd.net/wordpress/2009/11/Splines.png" width="685" height="383" />&#160; </p>
+
+<h3>Find out more in the Silverlight Controls Browser</h3>
+
+<p>Just like all other controls in the Silverlight core runtime, SDK, and the Silverlight Toolkit, you’ll find the Activity Control in the Silverlight Controls Browser. It is under the Toolkit tree view item, near the bottom of the list on the left part of the app.</p>
+
+<p>Silverlight 3 <a href="http://silverlight.net/samples/sl3/toolkitcontrolsamples/run/default.html">samples are here</a>. 
+
+  <br />Silverlight 4 Beta <a href="http://silverlight.net/content/samples/sl4/toolkitcontrolsamples/run/default.html">samples are here</a>, if you’re a developer and have the Silverlight 4 Beta on your machine.</p>
+
+<p><img style="border-right-width: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px" title="BusyIndicatorSample" border="0" alt="BusyIndicatorSample" src="http://az414997.vo.msecnd.net/wordpress/2009/11/BusyIndicatorSample.png" width="685" height="419" />&#160;</p>
+
+<h3>Where to find the control</h3>
+
+<p>You’ll find the BusyIndicator control in the System.Windows.Controls.Toolkit.dll assembly, documentation in the Silverlight Toolkit docs, a few unit tests, and yeah it’s in the sample browser as well. It lives in the System.Windows.Controls namespace.</p>
+
+<p>Hope you enjoy having this control available in the Silverlight Toolkit!</p>
+
+<h3>Download the Silverlight Toolkit November 2009 Release Today</h3>
+
+<p><a href="http://silverlight.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=36060"><img style="border-right-width: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px" title="Toolkit[3]" border="0" alt="Toolkit[3]" src="http://az414997.vo.msecnd.net/wordpress/2009/11/Toolkit3.png" width="685" height="88" /></a> </p>
+
+<p>The Silverlight Toolkit is a collection of Silverlight controls, components and utilities that help make Silverlight development a little easier, more fun, and add value outside the regular Silverlight release cycle.</p>
+
+<p>The sixth release of the Silverlight Toolkit, the November 2009 release targets Silverlight 3. There is also a release available that targets the new Silverlight 4 Beta for developers.</p>
+
+<p>Resources of note:</p>
+
+<ul>
+  <li><a href="http://silverlight.codeplex.com/">Learn more about the Silverlight Toolkit</a> </li>
+
+  <li><a href="http://silverlight.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=36060"><strong>Download the November 2009 Release</strong></a> </li>
+
+  <li><a href="http://silverlight.net/getstarted/">Get started with Silverlight development</a> </li>
+
+  <li>Participate in the <a href="http://silverlight.net/forums/35.aspx">controls community at Silverlight.net</a> </li>
+
+  <li>Check out questions and answers on Stack Overflow using the <a href="http://stackoverflow.com/questions/tagged/silverlight-toolkit">‘silverlight-toolkit’ tag</a> </li>
+
+  <li>The <a href="http://silverlight.codeplex.com/WorkItem/List.aspx">Issue Tracker</a> can be used to report issues, add to the feature wish list, and vote on the work to be done by the Microsoft team </li>
+</ul>
+
+<p><em>Hope you enjoy our new release!</em></p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

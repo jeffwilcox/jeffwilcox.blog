@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Windows Phone performance progress bar update: part 2, remember to turn IsIndeterminate off when not needed! - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Windows Phone performance progress bar update: part 2, remember to turn IsIndeterminate off when not needed!">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2010/08/progressbarperftips2/">-->Windows Phone performance progress bar update: part 2, remember to turn IsIndeterminate off when not needed!<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              17 August 2010
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <h2>2/17/2011 Update</h2>
+
+<p><strong>2/17/2011 update - this post is no longer needed:</strong> a performance progress bar is now included in the <a href="http://silverlight.codeplex.com/">Silverlight for Windows Phone Toolkit</a>.</p>
+
+<h2>Original post:</h2>
+
+<p>If you are using the indeterminate ProgressBar (“process indicator”) control in Windows Phone applications, please follow these two easy steps to remove stuttering, inefficient animations from the control. If you see anyone not doing this, please send them here!</p>  <p>Your application’s progress bar should look good, but it should minimize its cost as much as possible to ensure that the available CPU cycles are spent doing your hard work – parsing code, making and processing web requests, and responding to the user’s touch input – all of which happens on the UI thread.</p>  <p><em>Updated 9/15/2010: Grammatical improvements and additional information per feedback. Moved the back story to the bottom of the post.</em></p>  <h3>1: Use PerformanceProgressBar instead of just the built-in ProgressBar style</h3>  <p><a href="http://www.jeff.wilcox.name/2010/08/performanceprogressbar/">Step one: please use my PerformanceProgressBar in your application.</a> It’s very easy to add in about 5 minutes and will pay dividends as your app gets faster. Progress bars as especially important to have low cost as they typically are only shown during potentially expensive operations.</p>  <p>As a recap, the <font size="2" face="Consolas">&lt;ProgressBar <strong>IsIndeterminate=”True”</strong>/&gt;</font> control built into the platform has an adverse effect on the user interface thread’s frame rate. This is because it the indeterminate animation is built up of 5 sliding rectangles, built from Slider controls with custom thumbs, and all that work needs to happen five times over every single frame on the UI stack. You can <a href="http://www.jeff.wilcox.name/2010/08/performanceprogressbar/">read more about it</a> if you like.</p>  <h3>2: Turn off IsIndeterminate when not needed</h3>  <p>When looking at this particular app, this was being used to show/hide the indeterminate progress bar. It means that the continuous animations and storyboard is <em>always</em> costing computing resources, so this is not what you want.</p>  <p><strong>Try not to do this (hardcoded to <font style="background-color: #ffff00">True</font>):</strong></p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:194ce6bf-4647-4269-9dcf-fb8b96de8bf4" class="wlWriterSmartContent">   <pre class="brush: xml">&lt;ProgressBar
+
+    HorizontalAlignment=&quot;Left&quot; 
+
+    VerticalAlignment=&quot;Center&quot; 
+
+    IsIndeterminate=&quot;True&quot; 
+
+    Style=&quot;{StaticResource PerformanceProgressBar}&quot; 
+
+    Visibility=&quot;{Binding IsProgressBarVisible, Converter={StaticResource VisibilityConverter}}&quot;
+
+/&gt;</pre>
+
+</div>
+
+
+
+<p>Now this should have also data bound the IsIndeterminate property. Since there’s a Visibility converter being used already here, this is an easy fix – just directly bind the bool property that the converter was using as an input. So this is additive.</p>
+
+
+
+<p><strong>Do try this (<font style="background-color: #ffff00">bind or set</font>):</strong></p>
+
+
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:cd801c38-ef35-4cec-8d47-52cc11eb6828" class="wlWriterSmartContent">
+
+  <pre class="brush: xml; highlight: [4]">&lt;ProgressBar
+
+    HorizontalAlignment=&quot;Left&quot; 
+
+    VerticalAlignment=&quot;Center&quot; 
+
+    IsIndeterminate=&quot;{Binding IsProgressBarVisible}&quot; 
+
+    Style=&quot;{StaticResource PerformanceProgressBar}&quot; 
+
+    Visibility=&quot;{Binding IsProgressBarVisible, Converter={StaticResource VisibilityConverter}}&quot;
+
+/&gt;</pre>
+
+</div>
+
+
+
+<p>So to properly “turn off” the indeterminate (continuous animation) from the progress bar, whether using the built-in progress bar or the template in my <a href="http://www.jeff.wilcox.name/2010/08/performanceprogressbar/">performance progress bar</a>, you want to:</p>
+
+
+
+<ul>
+
+  <li>Bind or set the IsIndeterminate property: It should be False when you no longer need the continuous animations </li>
+
+
+
+  <li>Collapse the Visibility of the progress bar when not needed </li>
+
+</ul>
+
+
+
+<h3>Back story</h3>
+
+
+
+<p>On top of my previous <a href="http://www.jeff.wilcox.name/2010/08/performanceprogressbar/">post with a high performance progress bar</a>, I’ve identified uses of progress bars where the IsIndeterminate value is hard-coded to True, and only visibility collapsing is used to show/hide the effect. This actually also has a negative effect on performance when not in use, as the animation defined when IsIndeterminate==True is continuous, forever looping, and going to have some effect on the main user interface thread just computing animation states, properties, and communicating with the core platform.</p>
+
+
+
+<p>This came up as I was involved in a code review of a really sweet Windows Phone application that’s under development... Really sweet looking app, world class devs, and quality code – even a nicely architected lightweight model-view design. The application was using multiple indeterminate progress bars, plus my template, but was seeing performance degradation at times of 15-25 fps less than what we would hope for given the concious work to improve perf.</p>
+
+
+
+<p>Turns out, having a bunch of progress bars on screen, with Indeterminate mode on, but collapsed, was still having a toll on the frame rates as all animations incur some cost, even if you never see them on screen.</p>
+
+
+
+<p>This was an easy fix and I wanted to add this as guidance for having a good experience with progress bars in your phone apps.</p>
+
+
+
+<p>Hope this helps.</p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

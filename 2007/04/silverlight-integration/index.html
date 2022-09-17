@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Talking about integrating Silverlight with existing sites and workflows - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Talking about integrating Silverlight with existing sites and workflows">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2007/04/silverlight-integration/">-->Talking about integrating Silverlight with existing sites and workflows<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              16 April 2007
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            [RAW]
+
+<P>I’m interested to see how people integrate Microsoft® Silverlight™ into their design &amp; development workflow…&nbsp; I look forward to hearing what others are thinking about this topic at <A class="" href="http://www.visitmix.com/" mce_href="http://www.visitmix.com/">MIX ’07</A>, or as comments here.&nbsp; </P>
+
+
+
+<P>This is the "talking" component: some day I hope to post a "seeing" post to follow up with examples.</P>
+
+
+
+<H2>A new component, not a replacement for the browser</H2>
+
+<P>One question that I have observed is “what’s up with yet another plug-in?”—and it’s a fair question.&nbsp; I believe that it comes down to giving a creative team access to all the components they may want, and leaving it to them to create something that is interactive, beautiful, usable, and works on all of their target audience’s machines.</P>
+
+
+
+<P>The fact that Silverlight isn’t an imposing download (just a few megs) is good… even with high speed connections these days, I know I’d much rather be using that bandwidth to download awesome video content from <A class="" href="http://www.youtube.com/" mce_href="http://www.youtube.com/">YouTube</A> than downloading a 250MB application framework and class libraries just to open a page!</P>
+
+
+
+<P>I view the promise of Silverlight as a new component: one to be considered in conjunction with AJAX, traditional XHTML, CSS, and web graphics, as opposed to another technology for building “site intro” pages.&nbsp; Oh, I’m sure it’ll create nice intro pages if you’d like those, of course.&nbsp; But this is no replacement for your browser of choice.</P>
+
+
+
+<P>There are 3 levels of integration that I see myself using, depending on the goal… The ability to create a “zero by zero” or hidden control that performs some important functionality for your page.&nbsp; Others may want a large canvas similar to a traditional Flash object for movies.&nbsp; And I expect you’ll probably see some very rich navigation or input controls that use Silverlight and the windowless mode to render on top of your page, only there when you need it to be.</P>
+
+
+
+<P>When I think of Silverlight augmenting a traditional website, I am thinking mostly of the last scenario: a rich navigation or control that goes beyond JavaScript and AJAX.&nbsp; Something that gives me animation, interactive components, and perhaps sound (there’s a built-in MP3 decoder).&nbsp; Obviously, a social video network site is going to probably want to make Silverlight the primary media component—and not just implement nice navigation.</P>
+
+
+
+<H2>Integrating into an existing site</H2>
+
+<P>I try to practice a “minimalist” site design methodology when I first begin a project, while working in parallel on the rich experience.&nbsp; Sometimes it is difficult to schedule time during web site development for the minimalistic implementation, especially if you’re dealing with a designer’s set of spliced images, ready for CSS and tables.</P>
+
+
+
+<P>Part of the reason for this dual design theory is the time I used to spend using the Lynx and Konquerer browsers in the past… understanding that I needed to provide a decent experience for everyone first, followed eventually by the “fun” AJAX version.&nbsp; The same is going to need to apply for many people as they come online with sites powered by Silverlight.</P>
+
+
+
+<P>A very useful resource I’ve come across more recently was while reading <A class="" href="http://www.amazon.com/Bulletproof-Ajax-Voices-That-Matter/dp/0321472667/ref=pd_bbs_sr_1/103-9831312-8228665?ie=UTF8&amp;s=books&amp;qid=1176757202&amp;sr=1-1" mce_href="http://www.amazon.com/Bulletproof-Ajax-Voices-That-Matter/dp/0321472667/ref=pd_bbs_sr_1/103-9831312-8228665?ie=UTF8&amp;s=books&amp;qid=1176757202&amp;sr=1-1">Bulletproof Ajax</A> by Jeremy Keith.&nbsp; He has a chapter entitled “Hijax” which deals exclusively with the conundrum of providing everyone equal access to your web application, while implementing your slick AJAX skills.&nbsp; I really like his method of “hijacking” the links on his own pages, and rewriting them to instead deal with your JavaScript endpoints.&nbsp; I imagine something like this will also be possible for Silverlight—and highly recommend that everyone check out his book.</P>
+
+
+
+<H2>Web Resources</H2>
+
+<P>The MIX ’07 web site: <A href="http://www.visitmix.com/" mce_href="http://www.visitmix.com/">http://www.visitmix.com/</A> <BR>Silverlight Community Site: <A href="http://www.silverlight.net/" mce_href="http://www.silverlight.net/">http://www.silverlight.net/</A> <BR>Silverlight Product Site: <A href="http://www.microsoft.com/silverlight/" mce_href="http://www.microsoft.com/silverlight/">http://www.microsoft.com/silverlight/</A> <BR>Silverlight developer center: <A href="http://msdn2.microsoft.com/en-us/asp.net/bb187358.aspx" mce_href="http://msdn2.microsoft.com/en-us/asp.net/bb187358.aspx">http://msdn2.microsoft.com/en-us/asp.net/bb187358.aspx</A></P>
+
+
+
+[/RAW]
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

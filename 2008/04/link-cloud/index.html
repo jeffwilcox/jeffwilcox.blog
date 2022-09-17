@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Homepage &ldquo;link cloud&quot; application - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Homepage &ldquo;link cloud&quot; application">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2008/04/link-cloud/">-->Homepage &ldquo;link cloud&quot; application<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+               1 April 2008
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p>My new browser start page uses Silverlight to produce a simple link cloud.&nbsp; By targeting the rich class libraries of .NET that are available in Silverlight 2, the app loads quicker than a server-based solution, is useful, and very simple.&nbsp; The <a href="http://media.jeff.wilcox.name/apps/home/index.htm">app</a> I built is a good demonstration of the “zero pixel” Silverlight plugin concept: I’m using the HTML DOM bridge to create and manage all of the elements in the web page document.</p> <p>The app has some key features:</p> <ul> <li>No dependencies on a web server, web service, or database server  </li><li>Links are true HTML links that get larger the more often they’re clicked.&nbsp; They can be added, removed, and rearranged  </li><li>Stores the link information locally, available to all browsers on the platform  </li><li>The data is yours: you can import/export the raw data to easily bring it to another of your computers</li></ul> <p>Special thanks to <a href="http://d-struct.org/">Chris Gansen</a> for letting me borrow the specifics from his <a href="http://www.rubyonrails.org/">RoR</a> implementation of this application, it translated nicely to a client app.</p> <p><a href="http://media.jeff.wilcox.name/apps/home/index.htm"><strong>Experience this application</strong></a><strong> live.</strong>&nbsp; <br />Since the local isolated storage is used, the links are only on your machine, the first time you use the app it’ll have no links.&nbsp; <a href="http://media.jeff.wilcox.name/apps/home/SampleData.txt">Click here</a> for a text file you can paste in using the import/export feature to load a set of sample links.&nbsp; I store my link cloud in <a href="http://mail.google.com/">GMail</a> so that I can always setup another machine in seconds from my mail account.</p> <p><a href="http://media.jeff.wilcox.name/apps/home/index.htm"><img src="http://media.jeff.wilcox.name/blog/view/apps/home/safari-home.png"/></a></p> <p>The .Xap file that represents the app is a miniscule 10kb.&nbsp; By comparison, a server-side version of this app can easily serve 40kb pages once the editing interface is included.&nbsp; The only hard-coded dependency is the stylesheet link that I’m injecting at runtime.</p> <p>This uses many of the less sexy Silverlight 2 Beta 1 features:</p> <ul> <li><a href="http://msdn2.microsoft.com/en-us/library/system.windows.browser(VS.95).aspx">HTML DOM</a> interoperability: the bridge between managed code and the web browser, the entire underlying user interface is generated and managed by managed code  </li><li>Local <a href="http://msdn2.microsoft.com/en-us/library/system.io.isolatedstorage(VS.95).aspx">isolated storage</a>: By storing the data on the local machine, there's no complex web service or database required  </li><li><a href="http://msdn2.microsoft.com/en-us/library/system.io.isolatedstorage.applicationsettings(VS.95).aspx">ApplicationSettings</a>: An easy-to-use way of storing data to the isolated storage area, there's no need to deal with StringReaders and Stream manipulation code  </li><li>Zero pixel 0x0 plugin: By resizing the Silverlight plugin to occupy no space upon load, the application demonstrates the capabilities of managed code without the use of controls and the rich presentation framework  </li><li>.Xap package is easy to deploy and store on a content delivery network, file or web server</li></ul> <p>Although I’m using ApplicationSettings type to store the link cloud data, I just wanted to get this up and running, so I’m not following any best practices, and am actually serializing the cloud data myself into a single string.</p> <p><strong>Downloads</strong><br /><a href="http://media.jeff.wilcox.name/apps/home/index.htm">Live app</a> (10k) – feel free to use this for your homepage<br /><a href="http://media.jeff.wilcox.name/apps/home/SampleData.txt">Sample data file</a> (2k) – can import for sample data<br /><a href="http://media.jeff.wilcox.name/apps/home/LinkPage.zip">Source code</a> (39k) – Zip file with the Visual Studio project, just barebones code, no good code in here<br /><a href="http://media.jeff.wilcox.name/apps/home/LinkPage.cs.txt">LinkPage.cs</a> (21k) – Primary source file</p> <p>Briefly jumping into the code, you’ll find that everything’s really contained inside <a href="http://media.jeff.wilcox.name/apps/home/LinkPage.cs.txt">LinkPage.cs</a>.&nbsp; Some of the things inside the file that I’d like to call out:</p> <h3>Setting the page title</h3> <p><img src="http://media.jeff.wilcox.name/blog/linkcloud/lc1.png"/> </p> <p>This updates the title displayed in the browser’s window.&nbsp; It’s equivalent to the simple JavaScript call of setting document.title.&nbsp; The <a href="http://msdn2.microsoft.com/en-us/library/system.windows.browser.htmldocument(VS.95).aspx">HtmlDocument</a> type, in the System.Windows.Browser namespace, maps directly.</p> <h3>Reading from ApplicationSettings and changing the &lt;body /&gt; element’s CSS class</h3> <p><img src="http://media.jeff.wilcox.name/blog/linkcloud/lc2.png"/> </p> <p>The <a href="http://msdn2.microsoft.com/en-us/library/system.io.isolatedstorage.applicationsettings(VS.95).aspx">ApplicationSettings type</a> is a nice shortcut to having to use Isolated Storage, and is used to store two settings for this link cloud application: the color used for the stylesheet (there’s a few themes available), and the actual link cloud data.&nbsp; The data’s updated and saved whenever a change occurs to avoid having to write the changes at one time.</p> <h3>Injecting a Stylesheet element</h3> <p><img src="http://media.jeff.wilcox.name/blog/linkcloud/lc3.png"/> </p> <p>Pretty standard document object model workflow here: the code’s nothing but spaghetti.&nbsp; The new element is created, attributes set, and then appended.&nbsp; There’s no need to keep a reference to the element unless you intend on interacting with it later.</p> <p>There’s a built-in property HtmlPage.Document.Body that can be used to return the &lt;body /&gt; element on the web page, but not one for the &lt;head /&gt; element.&nbsp; The code above successfully will add to the head of the page, assuming the head exists.</p> <h3>Prompting the user for confirmation</h3> <p>A lot of AJAX applications use ‘confirm(…)’ to get quick verification before deleting data permanently.&nbsp; Both <a href="http://msdn2.microsoft.com/en-us/library/system.windows.browser.htmlwindow.alert(VS.95).aspx">Alert</a> and <a href="http://msdn2.microsoft.com/en-us/library/system.windows.browser.htmlwindow.confirm(VS.95).aspx">Confirm</a> are available within the HtmlWindow type in the HTML DOM bridge, so it’s super easy to do the same in managed code:</p> <p><img src="http://media.jeff.wilcox.name/blog/linkcloud/lc5.png"/> </p> <h3>Navigating to a new web page</h3> <p><img src="http://media.jeff.wilcox.name/blog/linkcloud/lc6.png"/> </p> <p>The links in the link cloud have the href attribute set to point to the destination page – this enables the end user to open the links in a new tab or window easily.&nbsp; However, the click count is only incremented when the link is clicked since the onclick event is used to track and increment the underlying hit data.</p> <p>The <a href="http://msdn2.microsoft.com/en-us/library/system.windows.browser.htmlwindow.navigate(VS.95).aspx">Navigate</a> method of <a href="http://msdn2.microsoft.com/en-us/library/system.windows.browser.htmlwindow(VS.95).aspx">HtmlWindow</a> is used to go to the requested URI.</p> <h3>Creating an HTML button and hooking up to its Click event</h3> <p>The form that’s created on the page uses managed event handlers in C# to process events and read data:</p> <p><img src="http://media.jeff.wilcox.name/blog/linkcloud/lc4.png"/> </p> <p>The button above is used to add the form data into the cloud as a new link.&nbsp; If you examine it you’ll also see use of SetProperty, SetStyleAttribute, GetProperty, and more – these are all at parity with traditional AJAX JavaScript coding, so it should be quite familiar.&nbsp; </p> <p><a href="http://www.wilcob.com/Wilco/News/silverlight-interoperability.aspx">Wilco</a> has a lot <a href="http://www.wilcob.com/Wilco/News/silverlight-interoperability.aspx">more information</a> on the subject of the HTML DOM interoperability feature in Silverlight 2.</p> <p><a href="http://media.jeff.wilcox.name/apps/home/index.htm"><img src="http://media.jeff.wilcox.name/blog/view/apps/home/ie-home.png"/></a> </p> <p><em>Hope you find this useful!</em></p> <p><em>Looking at the spaghetti code, it’s clear that some kind of helpful “managed HTML object” library would make creating this style of application a lot easier in the future.</em></p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

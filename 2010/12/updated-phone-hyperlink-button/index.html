@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>PhoneHyperlinkButton updated: now supports web, email, text and phone call tasks - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PhoneHyperlinkButton updated: now supports web, email, text and phone call tasks">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2010/12/updated-phone-hyperlink-button/">-->PhoneHyperlinkButton updated: now supports web, email, text and phone call tasks<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+               3 December 2010
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p>I’ve updated my extended HyperlinkButton control for Windows Phone 7 to now support all the key tasks. This makes it really easy to build up about pages, user profiles, and of course fully supports data binding.</p>  <p>So the core phone tasks work well with this. Same story, you set the Tag to be effectively the Uri. There are a few reasons for this but I admit Tag is the ultimate hack/general property. I’ve also incorporated some earlier feedback from the first version I did; I’m using StartsWith instead of indexing into the Uris.</p>  <p>I’ve also added simple query string support for the tasks, so you can set the basic properties on the messages as well. Note that with the SMS and phone tasks I’ve deviated from the standard RFC 2806 here, so this syntax is specific to this control and supports additional properties that aren’t standard. So the links build on the standard (like you use when building web apps for phones).</p>  <h2>Adding the control to your project</h2>  <p>Just add the following as a class file in VS or Blend. Then, make sure you setup an xmlns for the namespace, and you use it much like a regular HyperlinkButton at that point, except please set or data bind the Tag property as a string or Uri, instead of NavigateUri.</p>  <h2>Example Tags (URIs) &amp; Tasks</h2>  <p>Here are some examples and the specific tasks that are used. Remember in the tag that, to make the XAML parser happy, you need to escape the ampersand as “&amp;amp;”.</p>  <h3>Phone call</h3>  <p>To allow the user the choice of placing a call, use this syntax in the tag. Understand that this won’t actually place the call; the user will be prompted with a allow/don’t allow prompt. It’s up to you to send it a valid phone number though, I’m not error checking this first!</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:52de7dc4-7186-4698-89cf-8d4f6859a9e4" class="wlWriterSmartContent">   <pre class="brush: xml">&lt;unofficial:PhoneHyperlinkButton
+    Tag=&quot;tel:8005551212&quot;
+    Content=&quot;Call customer support&quot;/&gt;</pre>
+</div>
+
+<p>Optionally you can include a “displayname” property, which will appear to the user along with the phone number that is to be called. Note I’ve encoded the spaces as %20.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:2b5d63c3-b486-4ec9-aca5-c797cb8ea2a7" class="wlWriterSmartContent">
+  <pre class="brush: xml">&lt;unofficial:PhoneHyperlinkButton
+    Tag=&quot;tel:8005551212?displayname=Some%20Company%20Support&quot;
+    Content=&quot;Call customer support&quot;/&gt;</pre>
+</div>
+
+<h3>Text message</h3>
+
+<p>Just like the “tel” URI syntax, text messaging starts with “sms:” and I’ve added another parameter, body, which will be the initial text message content. The user can add to it, remove that body, or use the back button to cancel the sending of the text.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:eea462bb-3f27-4424-bf01-b64c68d817e2" class="wlWriterSmartContent">
+  <pre class="brush: xml">&lt;unofficial:PhoneHyperlinkButton
+    Tag=&quot;sms:8005551212&quot;
+    Content=&quot;Text a friend&quot; /&gt;
+
+&lt;unofficial:PhoneHyperlinkButton
+    Tag=&quot;sms:8005551212?body=Hello&quot;
+    Content=&quot;Text a friend hello&quot; /&gt;</pre>
+</div>
+
+<h3>Email composition</h3>
+
+<p>Building on the earlier implementation that only supported the “to” address, I’m matching most of the standard mailto: URI expectations by now adding support for body, cc, and subject query string parameters.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:4dbd85d2-8872-49cc-9ce2-cd6c83b360e6" class="wlWriterSmartContent">
+  <pre class="brush: xml">&lt;unofficial:PhoneHyperlinkButton
+    Tag=&quot;mailto:spam@spam.com?subject=Hello%20World&amp;cc=spammer@spam.com&amp;body=Hey%20spam.&quot;
+    Content=&quot;Send an email&quot; /&gt;</pre>
+</div>
+
+<h3>Default task: Web browser</h3>
+
+<p>Anything that doesn’t start with mailto, sms, or tel, will be sent to the web browser.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:4db236e2-5c4f-4070-9a01-dfddf68703cc" class="wlWriterSmartContent">
+  <pre class="brush: xml">&lt;unofficial:PhoneHyperlinkButton
+    Tag=&quot;http://create.msdn.com/&quot;
+    Content=&quot;Develop Windows Phone Apps&quot; /&gt;</pre>
+</div>
+
+<h2>Styling note</h2>
+
+<p>So the default hyperlink button will show the text as content, underlined, but I actually prefer a slightly different set of styles in my own applications. Here are two I use: “EmptyHyperlinkButton” and “AccentHyperlinkButton”.</p>
+
+<p>These can be used with <em>any</em> hyperlink button, even if they aren’t my PhoneHyperlinkButton, since the control template is simple and shared among all derived types.</p>
+
+<h3>EmptyHyperlinkButton</h3>
+
+<p>I use this for more complex user interface areas, where I might actually have a stack panel full of a few different things as the content. This is a hyperlink button technically, but hardly looks like it, other than respecting very basic padding/margin values, it has no appearance. I’ve also removed the VSM styles to make it very simple.</p>
+
+<p>I’m also using a content presenter here.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:624b4134-610c-440e-b628-77efd2603a40" class="wlWriterSmartContent">
+  <pre class="brush: xml">&lt;Style x:Key=&quot;EmptyHyperlink&quot; TargetType=&quot;HyperlinkButton&quot;&gt;
+    &lt;Setter Property=&quot;Background&quot; Value=&quot;Transparent&quot; /&gt;
+    &lt;Setter Property=&quot;Padding&quot; Value=&quot;0&quot; /&gt;
+    &lt;Setter Property=&quot;Template&quot;&gt;
+        &lt;Setter.Value&gt;
+            &lt;ControlTemplate TargetType=&quot;HyperlinkButton&quot;&gt;
+                &lt;Border Background=&quot;{TemplateBinding Background}&quot; Margin=&quot;{StaticResource PhoneHorizontalMargin}&quot; Padding=&quot;{TemplateBinding Padding}&quot;&gt;
+                    &lt;ContentPresenter HorizontalAlignment=&quot;{TemplateBinding HorizontalContentAlignment}&quot; VerticalAlignment=&quot;{TemplateBinding VerticalContentAlignment}&quot; Content=&quot;{TemplateBinding Content}&quot; /&gt;
+                &lt;/Border&gt;
+            &lt;/ControlTemplate&gt;
+        &lt;/Setter.Value&gt;
+    &lt;/Setter&gt;
+&lt;/Style&gt;</pre>
+</div>
+
+<h3>AccentHyperlinkButton</h3>
+
+<p>I like this simple style. It gives the text a semi-bold effect, colors them to the user’s personalized accent color.</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:c040e984-a44c-4fc4-8e5b-f43ccbddb93f" class="wlWriterSmartContent">
+  <pre class="brush: xml">&lt;Style
+    x:Key=&quot;AccentHyperlink&quot;
+    TargetType=&quot;HyperlinkButton&quot;&gt;
+    &lt;Setter
+        Property=&quot;Foreground&quot;
+        Value=&quot;{StaticResource PhoneAccentBrush}&quot; /&gt;
+    &lt;Setter
+        Property=&quot;Background&quot;
+        Value=&quot;Transparent&quot; /&gt;
+    &lt;Setter
+        Property=&quot;FontSize&quot;
+        Value=&quot;{StaticResource PhoneFontSizeMedium}&quot; /&gt;
+    &lt;Setter
+        Property=&quot;FontFamily&quot;
+        Value=&quot;{StaticResource PhoneFontFamilySemiBold}&quot; /&gt;
+    &lt;Setter
+        Property=&quot;Padding&quot;
+        Value=&quot;0&quot; /&gt;
+    &lt;Setter
+        Property=&quot;Template&quot;&gt;
+        &lt;Setter.Value&gt;
+            &lt;ControlTemplate
+                TargetType=&quot;HyperlinkButton&quot;&gt;
+                &lt;Border
+                    Background=&quot;{TemplateBinding Background}&quot;
+                    Margin=&quot;{StaticResource PhoneHorizontalMargin}&quot;
+                    Padding=&quot;{TemplateBinding Padding}&quot;&gt;
+                    &lt;VisualStateManager.VisualStateGroups&gt;
+                        &lt;VisualStateGroup
+                            x:Name=&quot;CommonStates&quot;&gt;
+                            &lt;VisualState
+                                x:Name=&quot;Normal&quot; /&gt;
+                            &lt;VisualState
+                                x:Name=&quot;MouseOver&quot; /&gt;
+                            &lt;VisualState
+                                x:Name=&quot;Pressed&quot;&gt;
+                                &lt;Storyboard&gt;
+                                    &lt;DoubleAnimation
+                                        Duration=&quot;0&quot;
+                                        Storyboard.TargetName=&quot;TextElement&quot;
+                                        Storyboard.TargetProperty=&quot;Opacity&quot;
+                                        To=&quot;0.5&quot; /&gt;
+                                &lt;/Storyboard&gt;
+                            &lt;/VisualState&gt;
+                            &lt;VisualState
+                                x:Name=&quot;Disabled&quot;&gt;
+                                &lt;Storyboard&gt;
+                                    &lt;ObjectAnimationUsingKeyFrames
+                                        Storyboard.TargetName=&quot;TextElement&quot;
+                                        Storyboard.TargetProperty=&quot;Foreground&quot;&gt;
+                                        &lt;DiscreteObjectKeyFrame
+                                            KeyTime=&quot;0&quot;
+                                            Value=&quot;{StaticResource PhoneDisabledBrush}&quot; /&gt;
+                                    &lt;/ObjectAnimationUsingKeyFrames&gt;
+                                &lt;/Storyboard&gt;
+                            &lt;/VisualState&gt;
+                        &lt;/VisualStateGroup&gt;
+                    &lt;/VisualStateManager.VisualStateGroups&gt;
+                    &lt;TextBlock
+                        x:Name=&quot;TextElement&quot;
+                        Text=&quot;{TemplateBinding Content}&quot;
+                        HorizontalAlignment=&quot;{TemplateBinding HorizontalContentAlignment}&quot;
+                        VerticalAlignment=&quot;{TemplateBinding VerticalContentAlignment}&quot; /&gt;
+                &lt;/Border&gt;
+            &lt;/ControlTemplate&gt;
+        &lt;/Setter.Value&gt;
+    &lt;/Setter&gt;
+&lt;/Style&gt;</pre>
+</div>
+
+<h2>PhoneHyperlinkButton.cs</h2>
+
+<p>And the goods to drop in your project:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:d01b176e-253c-4bb7-8286-429a58a869bb" class="wlWriterSmartContent">
+  <pre class="brush: c-sharp">// (c) Copyright Microsoft Corporation.
+// This source is subject to the Microsoft Public License (Ms-PL).
+// Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
+// All other rights reserved.
+
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net;
+using System.Windows.Controls;
+using Microsoft.Phone.Tasks;
+
+namespace Microsoft.Phone.Controls.Unofficial
+{
+    /// &lt;summary&gt;
+    /// An extended HyperlinkButton control that uses the Tag property to
+    /// open the web browser, compose an e-mail, text message, or make a call.
+    /// &lt;/summary&gt;
+    public class PhoneHyperlinkButton : HyperlinkButton
+    {
+        /// &lt;summary&gt;
+        /// Handles the click event.
+        /// &lt;/summary&gt;
+        protected override void OnClick()
+        {
+            base.OnClick();
+
+            Debug.Assert(Tag is string, &quot;You need to set the Tag property!&quot;);
+            string tag = Tag as string;
+            if (tag == null)
+            {
+                // This should support data binding to Uri.
+                tag = Tag.ToString();
+            }
+
+            IDictionary&lt;string, string&gt; d;
+
+            if (tag.StartsWith(&quot;mailto:&quot;))
+            {
+                Email(tag.Substring(7));
+            }
+            else if (tag.StartsWith(&quot;tel:&quot;))
+            {
+                // RFC 2806 only defines the basics of a number component.
+                // However, since the Windows Phone supports the concept of 
+                // sending a name to display as well, I have deviated.
+                // tel:8005221212&amp;displayname=Unknown%20Caller
+                PhoneCallTask pct = new PhoneCallTask();
+                pct.PhoneNumber = GetAddress(tag.Substring(4), out d);
+
+                string name;
+                if (d.TryGetValue(&quot;displayname&quot;, out name))
+                {
+                    pct.DisplayName = name;
+                }
+
+                pct.Show();
+            }
+            else if (tag.StartsWith(&quot;sms:&quot;))
+            {
+                // Also not really an official syntax for SMS.
+                // sms:8005551212&amp;body=Hello%20there!
+                SmsComposeTask sct = new SmsComposeTask();
+                sct.To = GetAddress(tag.Substring(4), out d);
+
+                string body;
+                if (d.TryGetValue(&quot;body&quot;, out body))
+                {
+                    sct.Body = body;
+                }
+
+                sct.Show();
+            }
+            else
+            {
+                // Assume the web.
+                WebBrowserTask wbt = new WebBrowserTask
+                {
+                    URL = (string)Tag,
+                };
+                wbt.Show();
+            }
+        }
+
+        private void Email(string s)
+        {
+            IDictionary&lt;string, string&gt; d;
+            string to = GetAddress(s, out d);
+
+            EmailComposeTask ect = new EmailComposeTask
+            {
+                To = to,
+            };
+
+            string cc;
+            if (d.TryGetValue(&quot;cc&quot;, out cc))
+            {
+                ect.Cc = cc;
+            }
+
+            string subject;
+            if (d.TryGetValue(&quot;subject&quot;, out subject))
+            {
+                ect.Subject = subject;
+            }
+
+            string body;
+            if (d.TryGetValue(&quot;body&quot;, out body))
+            {
+                ect.Body = body;
+            }
+
+            ect.Show();
+        }
+
+        private static string GetAddress(string input, out IDictionary&lt;string, string&gt; query)
+        {
+            query = new Dictionary&lt;string, string&gt;(StringComparer.Ordinal);
+            int q = input.IndexOf('?');
+            string address = input;
+            if (q &gt;= 0)
+            {
+                address = input.Substring(0, q);
+                ParseQueryStringToDictionary(input.Substring(q + 1), query);
+            }
+            return address;
+        }
+
+        private static void ParseQueryStringToDictionary(string queryString, IDictionary&lt;string, string&gt; dictionary)
+        {
+            foreach (string str in queryString.Split(&quot;&amp;&quot;.ToCharArray(), StringSplitOptions.RemoveEmptyEntries))
+            {
+                int index = str.IndexOf(&quot;=&quot;, StringComparison.Ordinal);
+                if (index == -1)
+                {
+                    dictionary.Add(HttpUtility.UrlDecode(str), string.Empty);
+                }
+                else
+                {
+                    dictionary.Add(HttpUtility.UrlDecode(str.Substring(0, index)), HttpUtility.UrlDecode(str.Substring(index + 1)));
+                }
+            }
+        }
+    }
+}</pre>
+</div>
+
+<p>Hope this helps.</p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

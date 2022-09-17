@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Creating a MongoDB replica set cluster w/Windows Azure Linux VMs - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Creating a MongoDB replica set cluster w/Windows Azure Linux VMs">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2013/09/mongodb-azure-linux/">-->Creating a MongoDB replica set cluster w/Windows Azure Linux VMs<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              16 September 2013
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            <li>azure</li><li>cloud</li>
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p>I love <a href="http://www.mongodb.org/">MongoDB</a>. I’ve been using it as the NoSQL solution in my production phone app for several years now. I’ve used hosted MongoDB solutions and also run my own replica set clusters in both AWS and Windows Azure. In this post today I’m going to demonstrate creating a full-blown MongoDB replica set cluster in Microsoft’s cloud… but I’ll also touch on hosted and single-instance deployments.</p>
+
+<p>Let’s spin up a new cluster in a California data center. I’m going to do this while sitting at a nice coffee shop in Seattle full of Macs for the proper atmosphere. I’ll be using the Terminal app, the <a href="http://www.jeff.wilcox.name/2013/08/command-line-improvements/">cross-platform Command Line Interface (CLI) tools for Windows Azure</a>, and in future posts I’ll cover the same from Windows PowerShell and from the web-based management portal, too. My dev team on the <a href="http://windowsazure.github.io/">Windows Azure Developer Experience team</a> builds the CLI.</p>
+
+<p>Combined with a simple bash script for bringing online individual MongoDB nodes, I should be able to launch and go live with a cluster in the time it takes to enjoy an Americano.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/mongo/VoxxCoffee.png =700x263" alt="Setting up a MongoDB replica set via Mac command line tools while in a Seattle coffee shop." title="Coffee, Cloud, and a Mac - the Seattle classic." /></p>
+
+<p>I’ll be using these Windows Azure features &amp; technologies in this post:</p>
+
+<ul>
+  <li>Affinity Groups</li>
+  <li>Storage Accounts</li>
+  <li>Virtual Machines running Linux (CentOS) with OS data disks in storage</li>
+  <li>VM Availability Sets to qualify for compute SLA</li>
+  <li>Attached data disks</li>
+  <li>Virtual Networks</li>
+  <li>Exposed VM endpoints</li>
+  <li>Storage blobs for key storage</li>
+  <li>Windows Azure Command Line Interface (CLI) tool on a Mac</li>
+  <li>Windows Azure SDK for Node.js as part of a server node setup script</li>
+</ul>
+
+<blockquote>
+  <p>Disclaimer: I’m sharing my own experience here, but this isn’t official guidance. Consider all facets of your environment, requirements, security, etc., before deploying a production replica set. For the easiest MongoDB experience, why not just consider using MongoLab’s hosted solutions?</p>
+</blockquote>
+
+<h1 id="app-background--my-mongodb-history">App Background &amp; my MongoDB History</h1>
+
+<p>My mobile app is a foursquare client called <a href="http://www.4thandmayor.com/">4th &amp; Mayor</a>. To create great experiences for my users, I have a backend that generates Windows Phone live tiles, stores preferences, plus runs a worker queue for tasks and processing.</p>
+
+<p>The backend is powered by Node.js and MongoDB. I first ran it all on Amazon EC2, over time moved the data tier to hosted MongoDB via <a href="http://www.mongolab.com">MongoLab</a>, and today I’m running my own replica set cluster using Linux virtual machines in Windows Azure. My production cluster is reliable, with great uptime, and is also affordable, cheaper than a hosted, dedicated cluster. For hosting web services, the app’s web site, both HTTP and custom HTTPS, I use Windows Azure Web Sites with its nice, affordable Node.js hosting.</p>
+
+<p>Foursquare actually uses MongoDB very extensively as well. <a href="http://en.wikipedia.org/wiki/MongoDB">Wikipedia</a> notes other large users, including eBay, MetLife, Foursquare, MTV Networks.</p>
+
+<p>Having attended the MongoDB Seattle conference for the past few years learning about modern best practices, including running MongoDB in other cloud providers, this is an area very close to me.
+Although Windows Azure has published some great docs on MongoDB, I felt a need to go in a different direction with a little more automation. I’ve also found very little replica set guidance for Azure.</p>
+
+<p>Deploying and managing MongoDB replica sets makes for a a great case study and functional test for me as a development lead, looking to validate the cloud capabilities that Windows Azure has, along with the development tools and libraries that we ship. (Run into issues? Please <a href="https://github.com/WindowsAzure/azure-sdk-tools-xplat/issues">open issues in our GitHub repo</a>.)</p>
+
+<h1 id="mongodb-basics">MongoDB Basics</h1>
+
+<h2 id="mongo-configurations">Mongo Configurations</h2>
+
+<p>MongoDB can be configured in many ways:</p>
+
+<ul>
+  <li>a local instance running on your development machine,</li>
+  <li>a cloud-connected virtual machine running a single instance,</li>
+  <li>a “replica set” cluster of nodes that back up and distribute copies of data across many machines</li>
+  <li>a master/slave configuration (no longer recommended by MongoDB)</li>
+  <li>a “sharded” configuration for partitioning, extreme performance and availability across many, many, many machines</li>
+</ul>
+
+<h3 id="single-instance">Single instance</h3>
+
+<p>For development and testing scenarios, running a single MongoDB instance is very straightforward and easy. You can even run such an instance on your local machine without the need to spin anything up in the cloud.</p>
+
+<p>Most of the MongoDB hosting providers offer very affordable single instance hosting, often on hardware or VMs that run multiple MongoDB server processes: effectively higher-density shared hosting.</p>
+
+<h3 id="multi-node-replica-set-cluster">Multi-node replica set cluster</h3>
+
+<p>When it comes to data availability and redundancy, MongoDB’s replica set concept is ideal for the cloud. Unlike a single instance, these replica sets are built from multiple virtual machines. The MongoDB node deployments can be dedicated to a single project, customer, or shared among multiple customers.</p>
+
+<p>You can learn about MongoDB replication through the extensive online documentation:</p>
+
+<ul>
+  <li><a href="http://docs.mongodb.org/manual/core/replication-introduction/">Introduction to MongoDB Replication</a></li>
+  <li>MongoDB’s documentation provides a short overview of <a href="http://docs.mongodb.org/manual/core/replica-set-architectures/">replica set deployment architectures</a></li>
+  <li><a href="http://docs.mongodb.org/manual/administration/replica-sets/">A full set of tutorials</a></li>
+</ul>
+
+<h4 id="about-mongodb-elections">About MongoDB Elections</h4>
+
+<p>MongoDB clusters have a voting mechanism for determining the current “primary” node that should accept writes on behalf of all the nodes. Keeping voting fair, this means that you need to avoid ties, and so you’ll need to deploy an odd number of nodes - 3 nodes, for example.</p>
+
+<h4 id="3x-nodes">3x Nodes</h4>
+
+<p>The most “solid” replica set implementation is to spin up a cluster of 3 identical, high-powered VMs, each of which could be an acting primary.</p>
+
+<p>Having an odd number of nodes (3), the nodes can break ties and so properly elect a primary if an instance goes down for maintainence or has problems in the data center.</p>
+
+<p>There are also performance optimizaitons available in this configuration: it is possible to configure client apps to read from any node in the cluster (but still write to the currently elected Primary) - if an eventually consistent, read-heavy application service is OK for your needs.</p>
+
+<h4 id="introducing-the-arbiter">Introducing the Arbiter</h4>
+
+<p>Each typical Node in a cluster can be expensive:</p>
+
+<ul>
+  <li>Powerful compute</li>
+  <li>Large attached disks to hold data</li>
+  <li>Memory to keep important, frequently-accessed data available and cached</li>
+</ul>
+
+<p>It turns out that a very common, affordable alternative to running three dedicated MongoDB nodes is to have <em>two</em> dedicated nodes and then a very cheap, lightweight voting node that does not store data. In the MongoDB world, this is called an “arbiter” node.</p>
+
+<p>An arbiter can, and should:</p>
+
+<ul>
+  <li>Run on super cheap VMs such as Azure’s “Extra Small” (A0) VM instance size</li>
+  <li>Have no attached disks and no copies of the MongoDB data</li>
+  <li>Cost pennies an hour, letting you spend your compute and storage money on more powerful main nodes</li>
+</ul>
+
+<p>The arbiter then communicates with the other members of the cluster, checks for health measures, and then participates in elections when a vote is needed for a new primary.</p>
+
+<p>The arbiter VM could in theory even play the part of Arbiter for multiple MongoDB clusters to further drive down cost.</p>
+
+<h4 id="2x-nodes--an-arbiter">2x Nodes + an Arbiter</h4>
+
+<p>So the most popular MongoDB replica set solution is to have 2 (or an even number) powerful nodes. Good compute SKUs, high memory, attached data disks for storing data and maintaining high IOPS, etc.</p>
+
+<h2 id="architectural-design">Architectural Design</h2>
+
+<p>The design I’m using for production app use today supporting 300,000 clients is a pair of nodes and an arbiter for primary voting. (2 powerful nodes, 1 cheap arbiter)</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/mongo/MongoAvailabilityMap.png =700x480" alt="The infrastructure design for my MongoDB replica set cluster in Windows Azure." title="The infrastructure design for my MongoDB replica set cluster in Windows Azure." /></p>
+
+<p>A slightly more robust architecture might involve additional “hidden” replica set members for backup in other regions or just using a 3rd primary node instead of an arbiter, but you can read about those elsewhere on the Internets.</p>
+
+<h1 id="mongolab-and-the-windows-azure-store">MongoLab and the Windows Azure Store</h1>
+
+<p>The easiest way to get going with MongoDB is actually by using the 3rd-party store right inside Windows Azure: hosted MongoDB offered by MongoLab. It only takes a few seconds and today there is both a paid and free tier.</p>
+
+<p>As a long-time MongoLab customer, I can say, their product is great, and as of this summer, they’re offering more and more solutions inside Windows Azure data centers.</p>
+
+<h2 id="windows-azure-store">Windows Azure Store</h2>
+
+<p>Within the Management Portal, go to “Store”, which will then open a sub-window with the offerings that great third parties have.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/mongo/AzureStore.png =700x215" alt="Management Portal - Azure Add-Ons" title="Management Portal - Azure Add-Ons" /></p>
+
+<p>In the window, find MongoLab listed under the App Services category.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/mongo/StoreSelectAddOn.png =700x458" alt="Management Portal - Azure Add-Ons" title="Management Portal - Azure Add-Ons" /></p>
+
+<p>The wizard will then let you step through the offering, selecting a plan, etc.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/mongo/SelectMongoLabPlan.png =700x458" alt="Management Portal - Azure Add-Ons" title="Management Portal - Azure Add-Ons" /></p>
+
+<p>After provisioning, you will then be able to see a page about the offering within the portal under “Add-Ons”</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/mongo/MongoLabExtraView.png =700x487" alt="Management Portal - Azure Add-Ons" title="Management Portal - Azure Add-Ons" /></p>
+
+<p>You can go to the Connection Info area to get a MongoDB connection string, including the username and password for the service, here:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/mongo/ConnectionInformation.png =700x201" alt="Management Portal - Azure Add-Ons" title="Management Portal - Azure Add-Ons" /></p>
+
+<p>And if you touch Manage, you will go directly into a management interface that MongoLab provides, letting you work with data within your collections.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/mongo/MongoLabManagement.png =700x441" alt="Management Portal - Azure Add-Ons" title="Management Portal - Azure Add-Ons" /></p>
+
+<h2 id="mongolab-product-offerings">MongoLab product offerings</h2>
+
+<p>MongoLab has 2 offerings available right now for Windows Azure Add-On customers. Do check the store for the latest pricing and products.</p>
+
+<table class="table">
+<thead>
+<tr>
+<th>Monthly Plan</th>
+<th>Database Storage</th>
+<th>Type</th>
+<th>Monthly Price</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sandbox</td>
+<td>0.5 GB</td>
+<td>Shared Single Instance</td>
+<td>Free (0 USD)</td>
+</tr>
+<tr>
+<td>Shared Cluster</td>
+<td>8 GB</td>
+<td>Shared Replica Set</td>
+<td>149 USD</td>
+</tr>
+</tbody>
+</table>
+
+<p>MongoLab offers a shared, hosted replica set option, but not in all Windows Azure data centers according to <a href="http://blog.mongolab.com/2013/07/production-mongodb-replica-sets-now-available-on-azure/">their July post announcing the availability</a>, so if you’re looking to have a replica set in Europe, for example, this post might help you run that yourself until they offer such an option/region combination.</p>
+
+<h1 id="replica-set-built-from-linux-vms">Replica set built from Linux VMs</h1>
+
+<p>OK so MongoLab is the easy, smart, managed option. Got it?</p>
+
+<p>If you’d like a very fast, redundant, high capacity solution of your own, you’ll need to build out a MongoDB cluster from a set of virtual machines. These are deployed across many instances for redundancy. MongoDB takes care of replicating writes and other information across the nodes, monitoring for health, and electing the primary node.</p>
+
+<p>Running a multi-instance VM cluster is important for any production app - you can do your dev/test/staging work often with a single instance, but production instances ideally should be backed by the Windows Azure service-level agreement (SLA), which means at least two virtual machine instances. (Azure might take a VM down briefly to install an OS update on the physical machine or do network maint. work)</p>
+
+<blockquote>
+  <p>In order to be eligible for the 99.95% SLA for infrastructure virtual machines in Windows Azure, I need to make sure to actually have multi-instance VMs running my app, coupled with an Availability Set. I can then build the replica set of these instances.</p>
+</blockquote>
+
+<p>Clients actively target all the nodes via connection strings listing the members; when a client connects to Mongo, it locates and then targets the current primary node. The primary node may shift over time as operating system updates happen, virtual machines restart or go down, or data centers have problems.</p>
+
+<h2 id="understanding-memory-management-and-mongodb">Understanding memory management and MongoDB</h2>
+
+<p>MongoDB is very efficient with memory and <a href="http://docs.mongodb.org/manual/faq/storage/">uses operating system-level memory mapped files</a>. Therefore you’ll always want to run 64-bit instances (as all things are in Windows Azure)</p>
+
+<p>So the intended working set of your data (regularly used in computations, scans) is the primary driver for how much memory you should allocate when selecting an instance size.</p>
+
+<p>For my production application use, I maintain several collections of data:</p>
+
+<ul>
+  <li>User and friend documents</li>
+  <li>Push notification queue</li>
+  <li>Metadata &amp; settings store</li>
+  <li>Web site session store (for Node.js + Express)</li>
+</ul>
+
+<p>Since only the user, friend, and push queue documents are regularly used heavily (plus a small subset of the active sessions), I’ve found that this data represents about 1.5 GB of my 3 GB of data. The size of my data doesn’t grow too much month-to-month.</p>
+
+<p>This means that the 1.7 GB afforded to me by a Small instance size is often enough. You can always scale up or down your instance sizes with Windows Azure VMs and MongoDB: changing size would trigger a reboot and may elect a new primary, but the data will remain.</p>
+
+<h2 id="linux-and-mongodb">Linux and MongoDB</h2>
+
+<p>Every year at the MongoDB Seattle Conference (and other conferences held around the world by MongoDB), there have been great sessions by real engineers using and running replica sets in the real world. Key applications out there like <a href="https://foursquare.com">foursquare</a> are powered by MongoDB and using powerful features such as the geo-spatial query features.</p>
+
+<p>I’ve found the AWS-targeted guidance in the past about Linux and MongoDB to be very helpful while fine-tuning MongoDB on Windows Azure, as many of the key principals apply about file system configurations.</p>
+
+<p>The short list of things that I prefer to have setup:</p>
+
+<ul>
+  <li>CentOS rocks ;-) use it!</li>
+  <li>Data drives should be separate from the OS drive. RAID10 if you really want to, but that’s beyond the scope of this today.</li>
+  <li>Data drives should be formatted with extfs4</li>
+  <li>The file system on data drives need not record access times (no atime)</li>
+</ul>
+
+<h2 id="mongodb-clusters-and-applications">MongoDB Clusters and Applications</h2>
+
+<p>Your app will connect to your cluster deployment through the list of nodes to find the primary. Clients take care of figuring out the specifics.</p>
+
+<h3 id="connection-strings">Connection strings</h3>
+
+<p>The latest MongoDB drivers all support MongoClient and associated <a href="http://docs.mongodb.org/manual/reference/connection-string/">MongoDB URIs</a>.</p>
+
+<blockquote>
+  <p>The MongoDB URI format is <code class="language-plaintext highlighter-rouge">mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]</code></p>
+</blockquote>
+
+<p>The URI includes a list of the servers that make up your cluster (as long as you are running straight nodes and not sharding clusters).</p>
+
+<h4 id="with-virtual-networks">With Virtual Networks</h4>
+
+<p>If both your application and data tier sit within the same Windows Azure Virtual Network, then you should use the VM names and Azure-provided virtual network name resolution as you won’t have to expose your servers to the Internet.</p>
+
+<p>You might have a URI in these cases that looks like this:</p>
+
+<pre class="brush: bash">
+mongodb://username:password@MongoNode1,MongoNode2/databaseName
+</pre>
+
+<p>You should run your cluster within a Virtual Network. Replication will then happen within that network boundary, at no cost within the data center, and the response times and replication speed will be improved.</p>
+
+<h4 id="as-internet-accessible-endpoints">As Internet-accessible endpoints</h4>
+
+<p>Most applications will probably need to find a way to use the replica set VMs over the Internet. You can configure machine firewalls via iptables if needed.</p>
+
+<p>Today, if you’re using these app models, you’ll need to expose it to the net:</p>
+
+<ul>
+  <li>Windows Azure Web Sites</li>
+  <li>Other cloud providers</li>
+  <li>Connecting from outside a virtual network</li>
+</ul>
+
+<p>Providers such as MongoLab expose their MongoDB servers to the public Internet more or less without too much trouble, so as long as you follow security best practices, this isn’t too hazardous.</p>
+
+<p>I expose endpoints for the cluster as a chain of incremental ports: MongoNode1 exposes 27017 (MongoDB default), MongoNode2 is 27018. So my MongoDB URI will look more like this:</p>
+
+<pre class="brush: bash">
+mongodb://username:password@cloudmongo.cloudapp.net:27017,cloudmongo.cloudapp.net:27018/databaseName
+</pre>
+
+<p>Note that the connection string doesn’t include the arbiter, since it won’t actually store a replicated data set or be available ever as a primary to your app.</p>
+
+<h3 id="testing-replica-sets-and-clients">Testing replica sets and clients</h3>
+
+<p>Reboot is your friend. Rebooting and shutting down VMs is fun.</p>
+
+<p>MongoLab actually provides an epic service to the community, they have a self-failing MongoDB cluster that really helps with building our robust clients and client applications. They call this “Flip Flop” and you can find out more at <a href="http://mongolab.org/flip-flop/">http://mongolab.org/flip-flop/</a>.</p>
+
+<h2 id="mongodb-on-windows-azure">MongoDB on Windows Azure</h2>
+
+<p>Original Linux VM guidance for Azure is available here: <a href="http://docs.mongodb.org/ecosystem/tutorial/install-mongodb-on-linux-in-azure/">Install MongoDB on Linunx on Azure</a>. This post, and associated scripts, build on this reference documentation, with some slight changes, such as extfs4 instead of extfs3.</p>
+
+<h1 id="windows-azure-virtual-machines">Windows Azure Virtual Machines</h1>
+
+<p>Infrastructure virtual machines from Windows Azure, running Linux (CentOS is my preference), are an awesome and powerful way to bring applications and services such as MongoDB online.</p>
+
+<h2 id="instance-sizes-and-choices">Instance Sizes and Choices</h2>
+
+<p>As previously covered, memory mapped files and MongoDB mean that the common working set of data that your application is using is a key driver for picking an instance size for your primary and secondary nodes.</p>
+
+<p>Arbiters can always be Extra Small (A0) size.</p>
+
+<p>The current table of <a href="http://msdn.microsoft.com/en-us/library/windowsazure/dn197896.aspx">Windows Azure instance sizes is online</a>, along with current [Virtual Machine pricing details](http://www.windowsazure.com/en-us/pricing/details/virtual-machines/#service-non-windows. Make sure to look at the Linux pricing (it is slightly cheaper than Windows right now).</p>
+
+<p>Also, with Windows Azure, you can configure any of your running VMs to actually change sizes - it will cause a reboot, and be subject to available instance size capacity restraints, but you can size up or down your VM post-launch - start with Small to get your cluster running, then move the nodes over time to be larger instances sizes. The reboots will likely cause a small hiccup in the replica set, so the primary nodes will change as part of this.</p>
+
+<p>As of August 2013, here are the instance sizes that we offer in Windows Azure. Note also the maximum number of data disks supported if you’re considering a RAID10 deployment for performance or other purposes (each drive in theory has IOPS of 500).</p>
+
+<table class="table">
+<thead>
+<tr>
+<th>Compute Instance Name</th>
+<th>Virtual Cores</th>
+<th>RAM</th>
+<th>Max # of Data Disks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Extra Small</td>
+<td>Shared</td>
+<td>0.75 GB</td>
+<td>1 data disk</td>
+</tr>
+<tr>
+<td>Small</td>
+<td>1</td>
+<td>1.75 GB</td>
+<td>2 data disks</td>
+</tr>
+<tr>
+<td>Medium</td>
+<td>2</td>
+<td>3.5 GB</td>
+<td>4 data disks</td>
+</tr>
+<tr>
+<td>Large</td>
+<td>4</td>
+<td>7 GB</td>
+<td>8 data disks</td>
+</tr>
+<tr>
+<td>Extra Large</td>
+<td>8</td>
+<td>14 GB</td>
+<td>16 data disks</td>
+</tr>
+<tr>
+<td>A6</td>
+<td>4</td>
+<td>28 GB</td>
+<td>8 data disks</td>
+</tr>
+<tr>
+<td>A7</td>
+<td>8</td>
+<td>56 GB</td>
+<td>16 data disks</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="linux-images">Linux images</h2>
+
+<p>Many people use Ubuntu, but I prefer CentOS. The scripts I’ve created here use <code class="language-plaintext highlighter-rouge">yum</code> as the package manager.</p>
+
+<h2 id="password-less-linux-vms">Password-less Linux VMs</h2>
+
+<p>Previously I provided guidance on creating VMs that use public/private key pairs for authentication. Please refer to <a href="http://www.jeff.wilcox.name/2013/06/secure-linux-vms-with-ssh-certificates/">my post about this using the CLI</a>. I recommend not having password-accessible virtual machines in any scenario.</p>
+
+<h2 id="affinity-groups">Affinity Groups</h2>
+
+<p>We will use a Windows Azure affinity group. This groups a lot of things in nearby racks: storage, network, compute resources, etc.</p>
+
+<h2 id="single-instances-and-maintainence">Single Instances and Maintainence</h2>
+
+<p>If you only run a single Virtual Machine in Windows Azure for a service, you actually won’t be covered by the SLA, since it is likely that at some point the fabric running the data center will need to update the host operating system, replace old hardware, experience downtime that is scheduled, etc.</p>
+
+<p>In July, I was running a small VM doing some statistical analysis, and I received this mail from Windows Azure about my single-instance VM, and that it would experience some downtime (including a reboot). I received emails before and after the work:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/mongo/SingleInstanceEmail.png =700x780" alt="A mail from Windows Azure about a single-instance VM." title="A mail from Windows Azure about a single-instance VM." /></p>
+
+<p>So to make sure that you are SLA compatible and your app is quite available, you need to actually run multiple VMs together using an Availability Set - a group of machines together in a single cloud service - and this is done by using the same location/affinity group, and then making up a name to cluster the machines together for.</p>
+
+<p>If you look under the cloud service details, you’ll see that Azure’s fabric has assigned update and fault domains to these VMs to make sure that they will remain available during updates, etc. Here’s what it looks like in my case (you can see this in the portal under ‘Instances’ for the service):</p>
+
+<table class="table">
+<thead>
+<tr>
+<th>Name</th>
+<th>Status</th>
+<th>Role</th>
+<th>Size</th>
+<th>Update Domain</th>
+<th>Fault Domain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MongoArbiter</td>
+<td>Running</td>
+<td>MongoArbiter</td>
+<td>Extra Small</td>
+<td>2</td>
+<td>0</td>
+</tr>
+<tr>
+<td>MongoNode1</td>
+<td>Running</td>
+<td>MongoNode1</td>
+<td>Medium</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>MongoNode2</td>
+<td>Running</td>
+<td>MongoNode2</td>
+<td>Medium</td>
+<td>1</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+<p>If you look into fault and update domains in the Windows Azure documentation, you’ll be able to learn more about the underlying concepts.</p>
+
+<h2 id="geo-redundancy--storage">Geo-redundancy + Storage</h2>
+
+<p>When it comes to the geo-redundancy features built in to Windows Azure, effectively we make sure with writes to distribute the information across the local region (there will be 3 confirmed writes to a set of storage servers before we return a successful write for local redundancy) - but with geo-redundancy, we’ll also send this to another entire data center.</p>
+
+<p>If you want to do any kind of RAID configuration, you won’t want georedundancy, because it isn’t guaranteed. I disable geo replication.</p>
+
+<h1 id="preparing-the-infrastructure-networks-compute-storage-and-disks">Preparing the infrastructure: Networks, compute, storage and disks</h1>
+
+<p>Make sure you’ve installed the <a href="http://www.windowsazure.com/en-us/downloads/#cmd-line-tools">Windows Azure Command Line Tools on your Mac</a>. This will add an <code class="language-plaintext highlighter-rouge">azure</code> command to your path. (Node.js users: simply run <code class="language-plaintext highlighter-rouge">sudo npm install azure-cli</code> and the command will be globally installed).</p>
+
+<p>LET’S DO THIS!</p>
+
+<h2 id="ensure-you-have-credentials-and-management-certs-installed">Ensure you have credentials and management certs installed</h2>
+
+<p>The first time you use the tool, you need to run <code class="language-plaintext highlighter-rouge">azure account import</code> to pull in management credentials for your account. If this is the first time, quickly set things up by following the <a href="http://www.windowsazure.com/en-us/manage/linux/how-to-guides/command-line-tools/">How to download and import publish settings</a> section of the CLI tutorial.</p>
+
+<h2 id="create-an-affinity-group">Create an Affinity Group</h2>
+
+<p>This will be a service management group for storage, virtual networks, etc. I’m going to give it a name: California. And it will be located in the US West data center.</p>
+
+<pre class="brush: bash">
+$ azure account affinity-group create \
+-l "West US" \
+-d "Web Services and MongoDB" \
+California
+</pre>
+
+<p>From this point on, I won’t provide locations to any commands: an affinity group is a much better container than a data center.</p>
+
+<h2 id="create-a-storage-account">Create a Storage Account</h2>
+
+<p>I need to store some things in blob storage:</p>
+
+<ul>
+  <li>VM VHDs storing the operating system</li>
+  <li>VM VHD attached disks storing my MongoDB data for each node</li>
+  <li>My cluster key, used for authenticating my nodes</li>
+</ul>
+
+<pre class="brush: bash">
+$ azure storage account create \
+--affinity-group California \
+--description "Disks for VMs and Mongo keys" \
+california
+</pre>
+
+<p>Note that this storage account will be in the West US, but I’m just including the affinity group name: the affinity group is set to that data center location already.</p>
+
+<h3 id="consider-turning-off-geo-replication">Consider turning off geo-replication</h3>
+
+<p>Now the default storage account includes geo replication. I prefer not to for my VM VHDs, though everyone has their own opinion. If you want to do any kind of RAID distribution, you need to turn this off.</p>
+
+<pre class="brush: bash">
+$ azure storage account update \
+--geoReplicationEnabled false \
+california
+</pre>
+
+<h3 id="getting-the-storage-account-keys">Getting the storage account keys</h3>
+
+<p>We will use the keys at some point with the script for working with the cluster authentication key:</p>
+
+<pre class="brush: bash">
+$ azure storage account keys list california --json
+</pre>
+
+<p>Just copy the primary key into your clipboard for now.</p>
+
+<h2 id="create-a-virtual-network">Create a Virtual Network</h2>
+
+<p>Inside the affinity group, I create the virtual network.</p>
+
+<pre class="brush: bash">
+$ bin/azure network vnet create \
+--subnet-name VMs \
+--affinity-group California \
+CaliforniaNetwork
+</pre>
+
+<h2 id="launch-compute">Launch Compute</h2>
+
+<p>Time to create some virtual machines.</p>
+
+<h3 id="selecting-the-os-image">Selecting the OS image</h3>
+
+<p>I want to use CentOS, offered as images created by OpenLogic.</p>
+
+<p>I’ll grep the standard image list to get OpenLogic’s current image for CentOS:</p>
+
+<pre class="brush: bash">
+$ azure vm image list --json | grep OpenLogic
+</pre>
+
+<p>Today this returns <code class="language-plaintext highlighter-rouge">5112500ae3b842c8b9c604889f8753c3__OpenLogic-CentOS-63APR20130415</code>. Keep that handy.</p>
+
+<h3 id="create-the-initial-primary-node-linux-vm">Create the initial Primary Node (Linux VM)</h3>
+
+<p>Now to create the primary VM in Azure:</p>
+
+<ul>
+  <li>My affinity group, California</li>
+  <li>A new availability set, MongoDB</li>
+  <li>Specifying a blob URL for the OS VHD</li>
+  <li>Medium size instance - lots of RAM</li>
+  <li>Password-less VM, with a cert, etc.</li>
+  <li>A virtual network we created, including the subnet</li>
+  <li>The cloud service name, <code class="language-plaintext highlighter-rouge">cloudmongo</code>, for <code class="language-plaintext highlighter-rouge">cloudmongo.cloudapp.net</code></li>
+  <li>The username for the main user</li>
+</ul>
+
+<pre class="brush: bash">
+$ bin/azure vm create \
+--affinity-group California \
+--availability-set MongoDB \
+--blob-url http://california.blob.core.windows.net/vhds/mongonode1.vhd \
+--vm-size medium \
+--vm-name MongoNode1 \
+--ssh 22001 \
+--ssh-cert ./mongouser.pem \
+--no-ssh-password \
+--virtual-network-name CaliforniaNetwork \
+--subnet-names VMs \
+cloudmongo \
+5112500ae3b842c8b9c604889f8753c3__OpenLogic-CentOS-63APR20130415 \
+mongouser
+</pre>
+
+<h3 id="create-the-initial-secondary-node">Create the initial Secondary Node</h3>
+
+<p>Almost the same command, except:</p>
+
+<ul>
+  <li>Connecting to an existing cloud service, <code class="language-plaintext highlighter-rouge">cloudmongo</code></li>
+  <li>Different SSH port</li>
+  <li>Same size, Medium instance</li>
+</ul>
+
+<pre class="brush: bash">
+$ azure vm create \
+--connect \
+--availability-set MongoDB \
+--blob-url http://california.blob.core.windows.net/vhds/mongonode2.vhd \
+--vm-size medium \
+--vm-name MongoNode2 \
+--ssh 22002 \
+--ssh-cert ./mongouser.pem \
+--no-ssh-password \
+--virtual-network-name CaliforniaNetwork \
+--subnet-names VMs \
+cloudmongo \
+5112500ae3b842c8b9c604889f8753c3__OpenLogic-CentOS-63APR20130415 \
+mongouser
+</pre>
+
+<h3 id="create-the-arbiter-or-3rd-node">Create the Arbiter <em>or</em> 3rd node</h3>
+
+<p>This is the lightweight guy.</p>
+
+<ul>
+  <li>Connect to an existing service</li>
+  <li>Extra small instance size</li>
+</ul>
+
+<pre class="brush: bash">
+$ azure vm create \
+--connect \
+--availability-set MongoDB \
+--blob-url http://california.blob.core.windows.net/vhds/mongoarbiter.vhd \
+--vm-size extrasmall \
+--vm-name MongoArbiter \
+--ssh 22003 \
+--ssh-cert ./mongouser.pem \
+--no-ssh-password \
+--virtual-network-name CaliforniaNetwork \
+--subnet-names VMs \
+cloudmongo \
+5112500ae3b842c8b9c604889f8753c3__OpenLogic-CentOS-63APR20130415 \
+mongouser
+</pre>
+
+<p>Now if you’d rather setup another data-storing node (more expensive cluster), instead fashion this command after the previous secondary instance command, matching the initial compute instance size, etc.</p>
+
+<h2 id="create-and-attach-data-disks">Create and attach data disks</h2>
+
+<p>The primary MongoDB instances (this excludes MongoArbiter) should use data disks to improve IOPS throughput and also not collide with the operating system files. By default the OS disk will use a read/write cache setting with the storage service, while an attached data disk will not have any local caching, leading to better consistency of data.</p>
+
+<p>This is easy: <code class="language-plaintext highlighter-rouge">attach-new</code> adds an empty disk. We then need to partition and format these extra disks.</p>
+
+<pre class="brush: bash">
+$ azure vm disk attach-new \
+MongoNode1 60 https://california.blob.core.windows.net/vhds/MongoNode1-data.vhd
+$ azure vm disk attach-new \
+MongoNode2 60 https://california.blob.core.windows.net/vhds/MongoNode2-data.vhd
+</pre>
+
+<h2 id="add-tcp-network-endpoints-for-mongodb">Add TCP network endpoints for MongoDB</h2>
+
+<p>Next, we expose TCP endpoints to the MongoDB socket. I’m exposing the first node on the public port <code class="language-plaintext highlighter-rouge">27017</code> and the second on <code class="language-plaintext highlighter-rouge">27018</code>, and have no need to expose the arbiter. These will be exposed on the <code class="language-plaintext highlighter-rouge">cloudmongo.cloudapp.net</code> DNS name. Keep in mind that if the primary node fails, port <code class="language-plaintext highlighter-rouge">27018</code> (MongoNode2 VM) will be elected the primary node - so over time the roles may shift, an important reason that the connection string URIs for MongoDB include the list of machines participating in the replica set cluster.</p>
+
+<pre class="brush: bash">
+$ azure vm endpoint create MongoNode1 27017 27017
+$ azure vm endpoint create MongoNode2 27018 27017
+</pre>
+
+<blockquote>
+  <p>Note: Our 0.7.1 CLI release has a bug here. So… we’re fixing that. Like soon. So… sorry. The fix is in the dev branch.</p>
+</blockquote>
+
+<p>The only scenario in which you don’t need to setup these endpoints is if your application is located within the same virtual network as the MongoDB cluster. Keeping everything within the virtual network boundaries is ideal for very secure scenarios and applications.</p>
+
+<h2 id="installing-and-preparing-mongodb-on-your-virtual-machines">Installing and Preparing MongoDB on your Virtual Machines</h2>
+
+<p>There’s a lot of guidance for doing this manually both in the Windows Azure documentation as well as the MongoDB tutorial pages.</p>
+
+<p>I’ve written a script that has been working great for me for initializing and bringing online MongoDB on top of CentOS Linux to save time. The script:</p>
+
+<ul>
+  <li>Partitions, formats and configures any attached data disks</li>
+  <li>Providing or entering a name for the replica set</li>
+  <li>Providing Windows Azure storage account name and key credentials</li>
+  <li>Installs helper utilities and software (Node.js, a Windows Azure storage service script)</li>
+  <li>Adds MongoDB’s official MongoDB rpm repos to the system</li>
+  <li>Installs any <code class="language-plaintext highlighter-rouge">yum</code> updates to the OS</li>
+  <li>Installs the latest official MongoDB server build</li>
+  <li>Configures or joins a MongoDB replica set cluster</li>
+  <li>Generates and stores the MongoDB replica set private key in the cloud</li>
+  <li>Starts up and configures MongoDB</li>
+  <li>Configures the primary cluster administrator user</li>
+  <li>Allows you to view replica set status</li>
+</ul>
+
+<p>This script is open source and located at <a href="https://github.com/jeffwilcox/waz-mongodb">https://github.com/jeffwilcox/waz-mongodb</a>. It is named <code class="language-plaintext highlighter-rouge">setupMongoNode.sh</code>.</p>
+
+<h3 id="how-to-use">How to use</h3>
+
+<p>Easy. Run it!</p>
+
+<pre class="brush: bash">
+wget https://github.com/jeffwilcox/waz-mongodb/blob/master/setupMongoNode.sh &amp;&amp; chmod a+x ./setupMongoNode.sh &amp;&amp; ./setupMongoNode.sh
+</pre>
+
+<p>As the script runs, it will ask you questions:</p>
+
+<ul>
+  <li>Is this the first primary node, or is it another node being added to the cluster?</li>
+  <li>Is this an arbiter?</li>
+  <li>Will you be using a data disk?</li>
+  <li>What are the Azure storage account credentials?</li>
+  <li>What will you name the replicaset?</li>
+  <li>What password do you want for the replicaset administrator?</li>
+</ul>
+
+<h3 id="source-code">Source code</h3>
+
+<p>The source for the Bash script is up on GitHub: <a href="setupMongoNode.sh at https://github.com/jeffwilcox/waz-mongodb/">https://github.com/jeffwilcox/waz-mongodb/blob/master/setupMongoNode.sh</a></p>
+
+<blockquote>
+  <p>No real warranty or support, sorry. I’ve had the script fail a few times at replica set initialization, I believe simple timing issues. The <code class="language-plaintext highlighter-rouge">/tmp</code> path will have log files and some simple scripts present if you need to diagnose issues.</p>
+</blockquote>
+
+<h2 id="creating-databases-and-user-accounts">Creating databases and user accounts</h2>
+
+<p>Now you should have a fully-functional MongoDB replica set. To use it in your applications, you will want to create at least one database, and ideally create separate app (user) accounts and administrative accounts for security.</p>
+
+<p>Since the last step of the script asks if you would like to connect to the primary MongoDB node, I’d recommend using this as the time to prepare the initial database(s) and users. You can learn about this process by reading about <a href="http://docs.mongodb.org/manual/reference/user-privileges/">user privilege roles</a> and the tutorial <a href="http://docs.mongodb.org/manual/tutorial/add-user-to-database/">add a user to a database</a>.</p>
+
+<p>Let’s quickly create a database called “myDatabase” and a user that can only read and write data (but not actually administer the db), intended for use by a web site application. Here’s what this looks like (assuming MongoNode1 is currently the primary):</p>
+
+<pre class="brush: bash">
+$ mongo MongoNode1/admin -u clusteradmin -p
+use myDatabase;
+db.addUser({user:'webapp1', pwd:'webApp1PasswordGoesHere', roles:['readWrite']});
+</pre>
+
+<p>You can then connect to the MongoDB shell directly as that new user:</p>
+
+<pre class="brush: bash">
+$ mongo MongoNode1/myDatabase -u webapp1 -p
+db.testcollection.insert({'hello':'world'});
+db.testcollection.find();
+</pre>
+
+<h2 id="configuring-your-applications">Configuring your applications</h2>
+
+<p>At this point you should be allset to deploy your applications, using the credentials created above, once you include and use the appropriate MongoDB connection string for the replica set.</p>
+
+<p>Here’s my connection string for this app example:</p>
+
+<pre class="brush: bash">
+mongodb://webapp1:webApp1PasswordGoesHere@cloudmongo.cloudapp.net:27017,cloudmongo.cloudapp.net:27018/myDatabase?replicaSet=rs0
+</pre>
+
+<h2 id="other-considerations">Other considerations</h2>
+
+<p>There are plenty of other advanced issues that can come up with running a MongoDB in production, as well as scaling to very large databases and use cases. Your search engine of choice will help you find more information.</p>
+
+<h3 id="raid-data-disks">RAID Data Disks</h3>
+
+<p>Larger VM instance sizes in Windows Azure support many data disk attachments. Some people report success using RAID10 data disk configurations on Linux to help keep high performance and availability with data disks, plus increase overall storage IOPS by splitting work and data across multiple attached drives.</p>
+
+<p>I haven’t found the need for this yet myself, but understand that it is best practice for a number of cloud providers.</p>
+
+<h3 id="secondary-read">Secondary Read</h3>
+
+<p>For high-performance application needs where immediate, up-to-date ‘truth’ reads are not as important, there are configuration settings for MongoDB clients that can be used to enable reading from secondary nodes.</p>
+
+<p>In this scenarios, the app may read from either node for data, but writes will still go to the primary.</p>
+
+<h3 id="sharding">Sharding</h3>
+
+<p>MongoDB supports a horizontal partitioning and scaling technology called Sharding; it is designed for deploying very large databases supporting hundreds of millions of users. Foursquare, for example, uses such massive sharded databases.</p>
+
+<h3 id="backups-other-data-centers-silent-replica-set-participants">Backups, other data centers, silent replica set participants</h3>
+
+<p>It is also possible to configure additional members of a replica set that are “hidden”, for purposes such as backing up data in other regions or data centers.</p>
+
+<h2 id="viewing-the-final-windows-azure-infrastructure">Viewing the final Windows Azure infrastructure</h2>
+
+<p>Here’s what the deployed services look like when I open the management portal; you’ll see everything denoted here.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/mongo/DeployedServices.png =700x200" alt="The various Windows Azure infrastructure services deployed for my MongoDB replica set." title="The various Windows Azure infrastructure services deployed for my MongoDB replica set." /></p>
+
+<h1 id="resources">Resources</h1>
+
+<p>While preparing the post, I’ve found all of these resources very helpful. Maybe you will, too.</p>
+
+<h2 id="from-mongodb-inc">From MongoDB Inc.</h2>
+
+<ul>
+  <li><a href="http://docs.mongodb.org/ecosystem/platforms/azure/">Collected Windows Azure resources</a></li>
+  <li><a href="http://docs.mongodb.org/ecosystem/tutorial/install-mongodb-on-linux-in-azure/">MongoDB tutorial, Linux VMs</a></li>
+  <li><a href="http://docs.mongodb.org/ecosystem/tutorial/install-mongodb-on-azure/">MongoDB tutorial, Windows</a></li>
+</ul>
+
+<h2 id="from-windows-azure">From Windows Azure</h2>
+
+<ul>
+  <li><a href="http://bit.ly/19HU8D8">MongoDB and Web Site tutorial using a Mac</a></li>
+</ul>
+
+<h2 id="closing">Closing</h2>
+
+<p>Hope this helps, let me know. Feel free to fork my Git repo with the setup script, interact with our team on Twitter, and let me know if things go well for you. We’re open source and love sharing our hard work with you.</p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+                   
+                   
+                        <h4>Microsoft Azure</h4>
+                        <ul class="list">
+                            <li><a href="https://github.com/azure/">Azure on GitHub</a></li>
+                            <li><a href="https://azure.microsoft.com/en-us/documentation/">Azure docs</a></li>
+                            <li><a href="http://azure.github.io/guidelines.html">How to contribute</a></li>
+                        </ul>
+                   
+                    
+            
+                   
+                   
+                    
+            
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

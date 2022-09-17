@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="jumbotron" title="A photo of the Belltown neighborhood and downtown Seattle, the Space Needle, and rooftop wireless backhaul networking equipment" style="margin-top:-69px;padding-right:0;margin-left:-32px;margin-right:0">
+  <div class="img" style="margin-bottom:-48px; margin-right: 0px; background: url('//az414997.vo.msecnd.net/waz/2018network/rooftop-pano-web.jpg') no-repeat left center; background-size: cover; overflow: hidden; min-height: 500px;"></div>
+</div>
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2018/04/seattle-network/">-->My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+                <small>
+                  BELLTOWN
+                  &bull;
+                </small>
+            
+            
+                <small>
+                  SEATTLE, WA USA
+                  &bull;
+                </small>
+            
+            <small>
+              10 April 2018
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            <li>tech</li>
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p>WiFi that just works with multiple mounted access points. Symmetric 1000 Mbps 
+symmetric gigabit Internet. Centrally managed enterprise network gear. Pulling 
+new CAT6 while dealing with old CAT3 in a condo.</p>
+
+<p>This is my story, long overdue, about some of the experiences, challenges, and 
+information about the connectivity tech I enjoyed at home. I love not having to 
+worry about my WiFi ever having issues, even in the dense city, thanks to 
+enterprise-grade gear.</p>
+
+<p>In Seattle we’re lucky to have broad access in apartments/condominiums to
+gigabit Internet from providers such as 
+<a href="https://waveg.wavebroadband.com/">Wave G</a> (a.k.a. CondoInternet). Having a 
+zippy connection without bandwidth caps means that I’m free to stream 4K content,
+backup my on-premise storage to the cloud, and not worry about keeping 
+operating system installation disc images around.</p>
+
+<p>My building’s gigabit is provided by a 10G fiber link to a data center just a 
+few blocks away, which then has its own 40G link to classic peering location in
+Seattle - . Our rooftop also has several 60GHz millimeter wave radio links, 
+available either as backup or to serve nearby buildings. In this post 
+I wanted to share how that infrastructure is deployed in my condo building.</p>
+
+<p>With fiber to our building there are minimal hops between major cloud 
+providers and big networks thanks to the many peering opportunities in downtown
+Seattle. The 
+<a href="https://www.westinbldg.com/">Westin Building Exchange</a> carrier hotel/colo is 
+home to the important non-profit 
+<a href="https://www.seattleix.net/">Seattle Internet Exchange</a>, moving terabits per second, 
+with a transparent approach that lets you peek at their stats, story and customers.</p>
+
+<p>Having fast Internet creates pressure to be able to move a lot of packets to 
+take advantage of the speed, and that’s where enterprise-grade managed network
+equipment comes in. There’s a lot of value in the data and featureset of the 
+UniFi line from <a href="https://www.ubnt.com/">Ubiquiti Networks</a> when it comes to 
+routing, switching, and access points.</p>
+
+<p>I’ve been running a Ubiquiti network at home for over 2 years and have been very
+happy with that investment.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/post-collage.jpg" class="img-responsive" title="From left-to-right: UniFi security gateway pro, PoE switch, and other rack gear; a screenshot of the deep packet inspection features of the UniFi Controller; an access point glowing; screenshot of my 2G RF environment; picture of one of the intermediate distribution frame (IDF) near my unit" /></p>
+
+<p>Finally, I wanted to document some of the challenges with old CAT3 and 
+pulling new pulling CAT6 within the constraints of my condo building, mostly to
+share my pain.</p>
+
+<p>Apologies in advance, this post is full of up-optimized images and is much too
+long.</p>
+
+<p><small>Disclaimer:<br />
+I’m a tech enthusiast in this space but don’t represent any of the companies 
+mentioned. While my initial Ubiquiti buildout in Feb. 2016 was my own, in 
+Dec. 2017 I was provided a demo AC-HD access point to evaluate. 
+I’ve since purchased my own AC-HD.</small></p>
+
+<p><strong>4/15/18 update:<br />
+Through follow-up conversations on Twitter following this post, I discovered 
+something amazing: our building was originally provided Internet through 
+millimeter wave, and still has it as a backup and to provide coverage to other 
+nearby buildings, but our building is actually connected directly through a 
+10 Gigabit fiber link. Cool!
+</strong></p>
+
+<p><strong>4/16/18 update:<br />
+Wave G (Spectrum and family) actually has at least 1x 100 Gbit fiber connection 
+to the SIX, soon to have a second.
+</strong></p>
+
+<!-- ---------------- WAVE G ---------------- -->
+
+<h1 id="wave-g--condointernet">Wave G / CondoInternet</h1>
+
+<p>Even today, I remember a conversation with my friend Alex a decade ago when 
+15 Mbps down, 2 Mbps up cable Internet was a common offering from Comcast and 
+competitors, and if you used DSL, it’d be even slower.</p>
+
+<blockquote>
+  <p>Alex (in 2008): “My apartment building just got CondoInternet. 100 Mbps up and down, no caps or contracts.”</p>
+
+  <p>Jeff: “That’s hard to believe, that’s like what I had in my university dorm room, but no commercial providers offer that sort of speed. There must be caps or something. It can’t be  that fast!”</p>
+
+  <p>Alex: “It’s true, and I hear you can also get a 1000 Mbps connection. This is the future.”</p>
+</blockquote>
+
+<p>Alex was right, I was wrong. 
+If you live in an apartment or condo in Seattle, chances are you’re reading this 
+via your <a href="https://waveg.wavebroadband.com">Wave G</a> connection, but for those 
+that are not familiar with the service, this is a primer.</p>
+
+<p>Wave G, formerly known as CondoInternet before being acquired by the Wave 
+conglomerate, was founded a decade ago by techies who ran their own wholesale 
+bandwidth business and wanted to have fast Internet at home in their condos.</p>
+
+<p>Today, the Wave G gigabit product is the gold standard for everyone from tech 
+employees working from home to being the best ISP in town to stream content with.
+It’s basically the opposite of Comcast: no contracts, no upward pricing pressure,
+quick service, no cable modem required, no bundling.</p>
+
+<p>If your multi-family building is connected to Wave G (hundreds are), often you
+only need to make a phone call and patch your unit’s home run network cable 
+to your router or computer.</p>
+
+<p>From the home run, a nearby comms closet holds Wave G’s managed switch equipment,
+at which point you’re on their network: fiber from our building runs to a 
+nearby data center, then Seattle’s central peering fiber hotel.</p>
+
+<h2 id="locations">Locations</h2>
+
+<p>Wave G is available today in several cities in Western Washington including 
+Seattle, Bellevue and Everett; Portland, Oregon; and in California, Roseville 
+and then San Francisco all the way to San Jose.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/wave-locator.png" class="img-responsive" title="A screenshot of the Wave G service locator" /></p>
+
+<p>There’s some competition, too - while Wave acquired a previous similar company,
+Cascadelink, Google Fiber’s Webpass is available in the neighborhood,
+and I’m seeing more expansion there. Wave was recently purchased by a 
+leveraged buyout and investment firm, TPG Capital, and I’m interesting to see 
+what happens to the service. Hopefully no change.</p>
+
+<h2 id="pricing">Pricing</h2>
+
+<p>If you pay for gigabit, Wave G configures your switch port for full duplex 
+1000 Mbps negotiation; otherwise your link will negotiate to 100 Mbps.</p>
+
+<p>The pricing as far as I can remember has been $60/month for 100 Mbps 
+or $80/month for 1000 Mbps. A few years ago gigabit was double the price of the 
+hundred megs, so there was a price reduction.</p>
+
+<h2 id="most-of-the-web-is-slow">Most of the web is slow…</h2>
+
+<p>While you can stream 4K content just fine without buffering, or download an OS 
+image in seconds, at home you don’t really need a gigabit connection for most 
+daily web tasks (yet).</p>
+
+<p>While just under 1000 Mbps is the theoretical gigabit maximum, most web sites 
+and cloud services aren’t going to be able to make full use of your connection 
+in a sustained manner. Large files hosted on CDNs should be quick at least:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/quick-windows-download.png" class="img-responsive" title="At least you can download Windows and Linux ISO images in a few minutes" /></p>
+
+<p>Having gigabit at least feels like a key requirement to experiment with 4K
+content, keeping all your storage in the cloud, VR, and other up-and-coming 
+advancements.</p>
+
+<h2 id="wave-gs-network">Wave G’s network</h2>
+
+<p>Once your home is connected to Wave G’s network, they have their own 
+efficient gear that connects to their fiber, eventually peering with 
+others inside data centers and nearby colo facilities like the 
+<a href="https://www.westinbldg.com/">Westin Building Exchange (WBX)</a> and the 
+<a href="https://www.seattleix.net/">Seattle Internet Exchange (SIX)</a>,
+providing short hops and low latency. Buildings near ours connect to the 
+10 Gbit fiber backhaul our building has underground using millimeter wave 
+radios on the roof of our building.</p>
+
+<p>This is where the original Condo Internet company took advantage of their
+parent company, Spectrum Networks, and their wholesale bandwidth offerings and
+connectivity.</p>
+
+<p>From my home network, my CAT6 networked machines get sub-millisecond - to - 1ms
+ping times to Google, Microsoft, and all the major modern Internet services, just 
+a few hops away…</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/waveg-ping-times.png" class="img-responsive" title="" /></p>
+
+<h2 id="890-940-mbps-typical-test-speeds">890-940 Mbps typical test speeds</h2>
+
+<p>Testing with <a href="http://www.speedtest.net/">SpeedTest.net</a> I’ll usually see 
+download speeds between 850-950 Mbps depending on the test site selected, and 
+interestingly, my upload speeds are usually measured consistently around 950 Mbps.</p>
+
+<p>In my home, only wired equipment experiences the full potential of this
+connectivity, since WiFi is very dense in my neighborhood - lots of interference 
+means that devices individually often connect at a slower line rate.</p>
+
+<p>According to Netflix’s <a href="https://fast.com">fast.com</a>, when I recently checked, 
+my connection was approximated to 920 Mbps. Fast.com does a nice job of 
+estimating various data sources to find a number that represents how your 
+Netflix experience should be.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/netflix-fast.png" class="img-responsive" style="max-width: 360px" title="According to Netflix fast.com, the connection speed is approximately 920 Mbps." /></p>
+
+<h2 id="fiber-backbone">Fiber backbone</h2>
+
+<p>While many buildings in Wave G’s network are connected by millimeter wave 
+rooftop connections, our building has a 10G fiber connection. Our building also
+has rooftop millimeter wave dishes to serve other nearby buildings that do not
+have fiber runs.</p>
+
+<p>If you look out from our tower’s roof toward Elliott Bay, you can see a few of
+the other nearby buildings that we connect to:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/other-buildings.jpg" class="img-responsive" title="A look toward Elliott Bay, highlighting microwave Internet rooftop connections as part of the neighborhood mesh network." /></p>
+
+<p>Turning around and facing downtown Seattle, looking across the Belltown
+neighborhood, there are many rooftop sites, likely all part of the Wave G
+network:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/other-buildings2.jpg" class="img-responsive" title="Looking across the Belltown neighborhood, nearly every rooftop has microwave backhaul equipment." /></p>
+
+<p>Our roof has 6+ <a href="https://bridgewave.com/bw64/">BridgeWave 60GHz millimeter wave radios</a>.
+Each of these antennas provides a 1 Gbps full-duplex encrypted link between locations,
+essentially a large private mesh network.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/rooftop-microwaves.jpg" class="img-responsive" title="Rooftop 60GHz microwave backhaul equipment." /></p>
+
+<p>In our building’s garage basement, that network connects to the 10 Gigabit 
+backbone network that Spectrum networks and Wave G runs.</p>
+
+<h2 id="static-ipv4-ipv6-blocks">Static IPv4, IPv6 blocks</h2>
+
+<p>I don’t actually know the latest on this story (whether it’s a monthly or a
+one-time charge now), but when I requested my static IP years ago, it was a one-time 
+$15 fee for a static static IPv4 address, and now I also have my own IPv6 block.</p>
+
+<p>When moving between buildings and units, I’ve needed to get a new static IP 
+address, but have been happy with the great support experience in requesting 
+those changes and coordinating my moves.</p>
+
+<h2 id="great-tech-support">Great tech support</h2>
+
+<p>I’ve never experienced a large outage, but when I was first setting up my
+connection, due to the CAT3 wiring to my unit, I was only able to get 100 Mbps
+connection to the carrier switch.</p>
+
+<p>Wave G’s primary equipment has commercial UPS units present, and the switching
+gear throughout the building runs off of the emergency generator circuit in
+our building.</p>
+
+<p>When I first moved to my condo, I had a tech come out to help me look into why 
+I was only able to get a 100 Mbps connection, and in the end I learned a lot
+about CAT3 and the heavy signal degradation I was experiencing. (More about my
+CAT3 woes later in this post)</p>
+
+<p>The tech even came out with a box of CAT5e cable in case we wanted to pull a new
+home run to my unit. Appreciate the enthusiasm and free support.</p>
+
+<h2 id="easy-activation">Easy activation</h2>
+
+<p>Since there are no contracts, and so many multi-family buildings are already
+wired for Wave G - with a switch near you - it’s easy to get going.</p>
+
+<p>If your unit has been served by Wave G in the past, chances are you have an
+Ethernet jack in your unit that is still patched into to their switch, with
+a disabled port. This can be remotely reactivated once you establish an
+account.</p>
+
+<p>I’ve lived in 3 different buildings with Wave G service in the past, and in all
+cases was able to get up and running over the phone or quickly after signing up
+for the service.</p>
+
+<p>If your unit hasn’t been served by them in the past, there are a few different
+scenarios, but they all play out quickly by a tech:</p>
+
+<ul>
+  <li>Your unit’s cable may need to be punched down or patched to a Wave G switch port</li>
+  <li>Your unit’s interior network closet may need to get patched to the Wave G uplink</li>
+  <li>You may need to have an existing telephone jack converted to a CAT6 keystone jack (if you’re served by CAT3, which was my case)</li>
+  <li>You might need a VDSL or other device to handle very old wiring (probably more rare today)</li>
+</ul>
+
+<h2 id="a-valuable-building-amenity">A valuable building amenity</h2>
+
+<p>I made it a point while looking to purchase a home that I know what current
+Internet offerings available for each potential property.</p>
+
+<p>I’m surprised that more apartment rental ads and real estate listings don’t
+clearly call out that they are served by a gigabit Internet provider beyond the
+cable company. I still meet fellow tech employees and residents in my building
+who aren’t aware of how great the offering is.</p>
+
+<p>One other small branding issue - when Wave renamed Condo Internet to Wave G,
+I’ve found that some of my building’s residents believe that Wave G is the same
+thing as the Wave cable/coax-based broadband product.</p>
+
+<p>I try to tell them that Wave G is an amazing product, great connectivity and all.</p>
+
+<p>Seems worth highlighting, similar to letting people know that your property
+is within walking distance of a Microsoft Connector bus stop for employees.</p>
+
+<h2 id="building-infrastructure">Building infrastructure</h2>
+
+<p>Having helped maintain and upgrade some of our building’s tech, I’m familiar
+with its communication infrastructure. Here’s how our building’s communications
+equipment works.</p>
+
+<p>The Main Distribution Frame (MDF) is located 3 levels below ground (the “C level garage”) 
+in the core of our high-rise tower. The MDF is where the phone company, multiple cable
+companies, and other services come together. For Wave G, this is where they 
+have installed their core switching equipment, fiber splices, and UPS backup.</p>
+
+<p>Here’s our MDF:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/2018-mdf-2.jpg" class="img-responsive" title="A look at the main distribution frame (comms room) serving the building, including traditional telco, multiple cable providers, DirecTV, and our rooftop microwave backhaul provider." /></p>
+
+<p>From left to right::</p>
+
+<ul>
+  <li>traditional telephone provider</li>
+  <li>various business phone lines</li>
+  <li>fire equipment</li>
+  <li>VoIP lines and our building’s private network</li>
+  <li>Comcast coax cable</li>
+  <li>Wave G network rack</li>
+  <li>Wave G fiber underground run from a nearby data center</li>
+  <li>Wave Broadband coax cable</li>
+  <li>DirecTV cable</li>
+</ul>
+
+<p>Focusing on Wave G, from the MDF, fiber and CAT5 runs in 3 directions: the fiber
+splits off - it runs up 15 floors to the rooftop, another connects 
+hundreds of feet away to the other tower in our building, into its first 
+communications room, and the backbone comes from an armored fiber run 
+that goes several blocks away to the data center at 3101 Western Ave.</p>
+
+<p>Within the core of the building, telco rooms alternate with power generation 
+and electric meter utility rooms as you move up the risers. The communication 
+rooms are also known as Intermediate Distribution Frame (IDF) rooms.</p>
+
+<p>The IDFs are  a mess, mostly the cable companies who leave the rooms full of
+splitters and amplifiers. I respect the contractors who visit and leave the IDF
+cleaner than they found ‘em!</p>
+
+<p>Here’s the IDF on my floor… from left to right: a panel where the fiber 
+and some network cabling goes up to the rooftop, Comcast, some of our building’s 
+private network cable, Wave G equipment and switch, traditional telco, 
+individual unit CAT3 patch panels, coax and other equipment, and a bunch of messy 
+coax splitters and amplifiers.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/idf-11.jpg" class="img-responsive" title="A sample IDF, full of equipment, switch, lots of different communications providers in one place." /></p>
+
+<p>Each unit in our building has a choice between multiple providers, so a unit’s 
+coax cable connects to either Comcast, Wave broadband, or DirecTV in the IDF.</p>
+
+<p>The network home run for our units is a single CAT3 6-pair cable that can carry
+both network signals and POTS. Wave G patch cable is then punched into the network
+terminals for customer units.</p>
+
+<p>Here’s a closer look at the short patch runs from the switch down to the
+CAT3 patch panels:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/idf-patch.jpg" style="max-width: 300px" class="img-responsive" title="A closer look at the patch connections between the Wave G switch, individual units punchdown terminals, and telco pairs" /></p>
+
+<p>From the punchdown panels, the cables for all the units run to the ceiling 
+and then into conduit embedded in the concrete slab.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/idf-conduit-homeruns.jpg" class="img-responsive" title="Conduit homeruns embedded in the slab" /></p>
+
+<!-- ---------------- SIX, WBX ---------------- -->
+
+<h1 id="seattles-internet-connectivity">Seattle’s Internet connectivity</h1>
+
+<p>Not counting my favorite Azure data center where I spend a lot of my days
+virtually, the Pacific Northwest’s Internet gravity is at the edge of Belltown, 
+at the corner of Virginia Street and 6th Avenue… not because of the thousands 
+of Amazonians looking for lunch around there every day, but because of the 
+Westin Building office tower next to the Westin hotel.</p>
+
+<p>The Westin Building, named for the corporate headquarters of the Westin hotel 
+chain (before they were purchased by Starwood Hotels and then a much more boring hotel
+conglomerate), is an office building turned carrier and fiber hotel.</p>
+
+<p>From my condo building we have fiber to a data center a few blocks away at 
+3101 Western Ave - home of the NYI SEA1 DC - and Wave / Spectrum has multiple 
+fiber connections to the Westin Building from there, at least one of which is 
+a 100 Gbit connection. Spectrum is also an extension member of the Seattle Internet Exchange 
+hosted in the Westin Building.</p>
+
+<h2 id="westin-building-exchange">Westin Building Exchange</h2>
+
+<p>Today the 34-story Westin Building is mostly colo space, tons of network gear 
+and fiber, and I can only imagine the building’s bandwidth, as they are home to 
+over 200 ISPs. According to 
+<a href="https://www.westinbldg.com/Content/PDF/WBX_Fact_Sheet.pdf">the Westin Building Exchange datasheet</a>,
+they have over 19.5 megawatts of backup generation available from 17 diesel
+generators.</p>
+
+<p>While a lot of the classic hosters and companies are located here, an example 
+of the scale is Equinix, a major connectivity company: their SE2 data
+center is located within the Westin Building, and a few years ago they built
+an orange/concrete-colored 8-story building, SE3, located right next door to the
+Westin Building’s garage… and Palace Kitchen. Tasty.</p>
+
+<h2 id="seattle-internet-exchange-six">Seattle Internet Exchange (SIX)</h2>
+
+<p>The <a href="https://www.seattleix.net/about">Seattle Internet Exchange</a> (SIX) has a cool 
+story… as a non-profit that is now more than 20 years old, they offer the 
+community a great service by peering terabits of traffic. They started out in 
+a small closet in the Westin Building.</p>
+
+<p>SIX is completely transparent, their website is full of near real-time graphs 
+of their aggregate traffic, lists of all their peering members, etc. 
+<a href="https://www.seattleix.net/statistics/">Really do go check out the SIX statistics page now</a>. 
+While you’re at it, I also enjoyed a <a href="https://www.youtube.com/watch?v=N2ChhZcH2ok">YouTube video about SIX with Jared Reimer</a> that helps share some of this story from a conference.</p>
+
+<p>The story about SIX is that a few engineers were super frustrated to find that 
+they were seeing “a 111ms round trip time between 2 companies on the very same 
+19th floor of the Westin Exchange”… turns out their traffic was going from 
+the 19th floor… to Texas… back to the 19th floor of the building. Peering 
+sure could help.</p>
+
+<p>As of 2017 they had 284 participants in the exchange who pay a one-time
+reasonable fee for their port; today at peak they aggregate over a
+terabit of traffic, and their members have over 4 Tbps of capacity.</p>
+
+<p>Here’s <a href="https://www.seattleix.net/topology">their topology, including the switch equipment and models</a>.</p>
+
+<p>If you happen to be sitting nearby to SIX, they do not charge monthly port 
+connection fees, just the one-time… $100 for a 1000 Mbps port, $2,000 for 10 GbE, 
+and $10,000 for 40 GbE or 100 GbE SFP modules.</p>
+
+<p>Since they are very transparent in all things, you can review <a href="https://www.seattleix.net/participants/">the whole list</a> or 
+<a href="https://www.seattleix.net/participants/switches/SIX_7512R.txt">this list</a> and 
+<a href="https://www.seattleix.net/participants/switches/SIX_7508E.txt">that list</a> of 
+the companies and providers who peer with them, including:</p>
+
+<ul>
+  <li>Amazon</li>
+  <li>Dropbox</li>
+  <li>Facebook</li>
+  <li>Google</li>
+  <li>GitHub</li>
+  <li>Microsoft</li>
+  <li>Netflix</li>
+</ul>
+
+<p>Having all the cloud computing providers close is great. Wave G / Spectrum is 
+part of the SIX extension and has a 100 Gbps port between its network and SIX, 
+<a href="https://twitter.com/jwvo/status/986104140307750912">soon to be more</a>.</p>
+
+<p>If I <code class="language-plaintext highlighter-rouge">traceroute</code> from my home to a VM I have in Azure, I see just a hops,
+each a millisecond or two at most:</p>
+
+<ol>
+  <li>My UniFi router</li>
+  <li>My building’s router</li>
+  <li>Wave G / Spectrum network</li>
+  <li>Seattle Internet Exchange router</li>
+  <li>Microsoft’s network edge at the Seattle Internet Exchange</li>
+  <li>A few hops around Microsoft</li>
+</ol>
+
+<p>If I trace the route to Google, they peer directly with Spectrum, so it’s even
+fewer hops to them (8 hops from my PC to 8.8.8.8).</p>
+
+<!-- ---------------- UBIQUITI ---------------- -->
+
+<h1 id="ubiquiti-unifi">Ubiquiti UniFi</h1>
+
+<p>With a very fast Internet connection comes the responsibility of managing your
+home network with a mind toward simplicity, performance, and awesomeness.</p>
+
+<p>While many customers of CondoInternet enjoy the typical consumer gear - Asus,
+Linksys, Apple - it makes sense to invest in business-grade equipment that
+will last longer, offer advanced features, and be able to move as many packets
+as possible.</p>
+
+<p>I invested in a set of Ubiquiti Networks gear in 2016 after deciding I had had 
+enough with consumer WiFi equipment. I had a decent Cisco managed switch sitting 
+behind an Asus router, and an Apple AirPort Extreme acting as an additional AP. 
+Nothing fit together, I had to reboot the router constantly, and I knew there 
+had to be something better out there.</p>
+
+<p>While I first adopted their EdgeRouter PoE device, and appreciated its declarative 
+configuration story, I found myself wanting the integrated experience and dashboards 
+that the Ubiquiti <a href="https://unifi-sdn.ubnt.com/">UniFi line of enterprise WiFi systems”</a>
+had.</p>
+
+<p>Today my home network is built from:</p>
+
+<ul>
+  <li>UniFi Security Gateway Pro</li>
+  <li>UniFi 24-port 250W PoE switch</li>
+  <li>2x UniFi UAP AC-HD Access Points</li>
+  <li>UniFi 8-port PoE switch</li>
+  <li>UniFi CloudKey</li>
+</ul>
+
+<p>With 2 years of experience with UniFi, I must say, I am a very happy customer, as
+evidenced by the build-outs I’ve done in my unit, in my building at large,
+convinced friends to do, and yes, my Twitter feed. I love their stuff!</p>
+
+<p>I enjoyed reading <a href="https://www.troyhunt.com/ubiquiti-all-the-things-how-i-finally-fixed-my-dodgy-wifi/">Troy Hunt’s post</a>;
+also, a shoutout to <a href="https://twitter.com/ClintRutkas">Clint Rutkas</a> for sharing his
+experience - he embarked on a similar journey around the same time as I did,
+and I know many of my coworkers at Microsoft also have great Ubiquiti experiences.</p>
+
+<p>I absolutely love the advanced features that Ubiquiti offers at in easy-to-use manner. From
+VLAN tagging to multiple wireless networks, guest network features and advanced
+connectivity options, its all there.</p>
+
+<p>So, what are some of the components, features, and so on?</p>
+
+<h2 id="rackmount">Rackmount</h2>
+
+<p>A favorite of mine is that the UniFi line has a silver distinctive finish that 
+looks great in a home media rack.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/2018-rack.jpg" class="img-responsive" title="My home media rack, including a UniFi Security Gateway Pro, UniFi 24-port PoE switch, a Synology storage device, and an Xbox One" /></p>
+
+<p>While the Security Gateway Pro router that I have is rackmount-only, the 
+Security Gateway model does a great job for home use and is tiny, like a simple 
+network switch.</p>
+
+<p>The UniFi 8-port switches are desktop friendly, and with the 16-port switches 
+you have a choice of included rack ears for mounting or keeping it on a shelf 
+or desktop. The 24+ switches are rackmount only.</p>
+
+<!--
+<img src="//az414997.vo.msecnd.net/waz/2018network/updated-home-network-rack.jpg" class="img-responsive" title="" />
+-->
+<!--
+<img src="//az414997.vo.msecnd.net/waz/2018network/rackview.jpg" class="img-responsive" title="" />
+-->
+<!--
+<img src="//az414997.vo.msecnd.net/waz/2018network/rack-with-sgpro.jpg" class="img-responsive" title="" />
+-->
+
+<h2 id="unifi-cloudkey-controller">UniFi CloudKey Controller</h2>
+
+<p>All of your UniFi equipment’s managed through the central UniFi controller. 
+While you could install the controller software on a notebook or a
+server, the best route to go is to pick up the UniFi CloudKey - that way you 
+can avoid having to install the Java runtime. The CloudKey
+has the controller installed on it and then you can access the management
+website from anywhere.</p>
+
+<p>Instead of independently configuring your router’s via its IP address and its
+portal, then the same for your managed switches, everything is consistent in
+the controller.</p>
+
+<p>Think of the CloudKey as the best $100 investment in the UniFi lineup, saving 
+you from Java. It’s a nice, small PoE-powered Raspberry Pi-like server. Here 
+is the key attached to a simple rack tray.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/cloudkeytray1.jpg" class="img-responsive" title="A CloudKey controller attached to a rack tray, providing UniFi Controller services to manage the network" /></p>
+
+<p>Here’s a look at the home screen in the controller, where you can see overall
+site status, stats on connected devices, throughput.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/unifi-overview-home.png" class="img-responsive" title="Accessible from anywhere online, the UniFi controller software provides a simple, clean interface that lets you manage the family of network devices from a central place." /></p>
+
+<h3 id="devices-view">Devices view</h3>
+
+<p>All of the UniFi network devices that are a part of your network site appear within
+the ‘Devices’ page.</p>
+
+<h4 id="device-adoption">Device adoption</h4>
+
+<p>New devices need to be “adopted” into your managed network.  In this “devices”
+view of my home UniFi network, you can see:</p>
+
+<ul>
+  <li>My USG Security Gateway Pro (router)</li>
+  <li>Multiple UniFi managed switches</li>
+  <li>An access point</li>
+  <li>A new UniFi AP AC-HD access point that is ready to be adopted</li>
+  <li>A disconnected/disabled device - an old access point (that I was replacing in this screenshot)</li>
+</ul>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/unifi-device-adoption-screen.png" class="img-responsive" title="When you connect a new UniFi device to your local network, you 'adopt' the device through the controller, at which point you can configure and control it. You can also see devices that are disabled or not currently connected, but that have been adopted." /></p>
+
+<p>Here’s my condo building’s security camera and office network - it has more devices, and I’ve
+opened up the details for one of the PoE switches in this view.</p>
+
+<p>For each connected port, you get high-level status, information about whether it is powered
+by PoE, and then a summary for the device - stats including how long it’s been up, what version
+of the UniFi firmware it is running, overall power consumption and temperature.</p>
+
+<h4 id="wan-config">WAN config</h4>
+
+<p>The security gateway can be configured with multiple WAN connections, in case 
+you need redundant providers.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/unifi-sg-home.png" class="img-responsive" title="" style="max-width:480px" /></p>
+
+<h4 id="configuring-a-switch">Configuring a switch</h4>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/unifi-devices-building.png" class="img-responsive" title="In the Devices view, you see all the Ubiquiti UniFi equipment you have such as access points, the router, and managed switches. This view is from a larger network deployment for our condo building common areas and staff use." /></p>
+
+<h4 id="access-point-properties">Access point properties</h4>
+
+<p>For each access point you can configure the various wireless networks that 
+should be broadcast by the AP, radio settings, and get an idea of the RF 
+utilization near the device.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/unifi-rf-utilized.png" class="img-responsive" title="Access point properties and RF utilization information" style="max-width:420px" /></p>
+
+<h3 id="clients-view">Clients view</h3>
+
+<p>Within the controller you can drill down into the client view that shows you
+individual devices that have connected.</p>
+
+<p>For each device you can learn how it is connected to the network, whether a switch
+port or a specific wireless network, its current activity level and stats, and how
+long it has been on the network.</p>
+
+<p>You can filter and sort the view by type of connection or other properties.</p>
+
+<p>You can also manually add clients or view all configured clients if you are managing
+devices that have static IPs, specific tags or properties, but are currently not
+connected.</p>
+
+<p>This view is of the clients connected to my condo building’s private network (this is
+not my home network). It has more clients connected so looks more interesting.</p>
+
+<p>On the right side, there’s a panel open taking a look at one of the UniFi PoE switches
+on the network and also one of the access points - you can have multiple configuration
+panels open at once to maintain your productivity in managing the site.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/unifi-clients-building.png" class="img-responsive" title="The  clients view shows all of the connected devices, high-level stats, current activity, and the ability to configure, tag and customize connections for that client." /></p>
+
+<h3 id="events">Events</h3>
+
+<p>A rolling stream of events can be accessed within the UniFi Controller, and I also have these events
+streamed to a remote syslog server running on my network-attached storage server.</p>
+
+<p>It’s especially interesting to watch access points that experience interference and need to switch
+channels and watch clients come and go.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/unifi-events-building.png" class="img-responsive" title="Events such as interference on wireless channels, administrators signing into the controller, PoE devices coming online, and new clients are all shown in this area. I also pipe all of these events to my network attached storage." /></p>
+
+<h3 id="topology">Topology</h3>
+
+<p>While my home network is rather simple - a router, a primary switch, two access
+points and a switch under my desk, the topology view for the UniFi network is
+super interesting and helpful when building out larger networks.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/unifi-topology-home-simple.png" class="img-responsive" title="" /></p>
+
+<p>By being able to visualize the network, understand which ports are uplinks and
+downlinks, the channels in use by various access points, all in one place is
+super.</p>
+
+<!--
+<img src="//az414997.vo.msecnd.net/waz/2018network/unifi-topology-home.png" class="img-responsive" title="" />
+-->
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/unifi-topology-building.png" class="img-responsive" title="" /></p>
+
+<p>You can toggle link labels and clients on/off.</p>
+
+<h3 id="switch-stats">Switch stats</h3>
+
+<p>Similar to the topology view, there are multiple ways to dig through the
+data regarding your switch ports. In the Switch Stats view you can see aggregate 
+stats for individual ports over time, the name and type of connection for the 
+client connected to a port, etc.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/unifi-switchstats-graphs-home.png" class="img-responsive" title="The switch stats view helps show per-port aggregated stats and other information, such as the name of the connected client" /></p>
+
+<p>For any individual switch, you can always see the summary of its ports and types 
+of connections from any part of the UniFi UI.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/unifi-switch-view-southb.png" class="img-responsive" style="max-width:420px" title="" /></p>
+
+<h3 id="vpn">VPN</h3>
+
+<p>Lots of great VPN support is of course built into the UniFi Security Gateway.</p>
+
+<h4 id="remote-vpn">Remote VPN</h4>
+
+<p>Being able to remotely connect via L2TP is nice to let me get to my home 
+network and its devices from anywhere in the world, whether that’s my iPhone,
+a notebook computer somewhere, etc.</p>
+
+<p>It’s easy to setup and configure, and the latest release of the UniFi controller 
+software has a built-in RADIUS server - so for me, I’ve found it even easier 
+than before, when I used to run a RADIUS server on my network storage server instead.</p>
+
+<h4 id="site-to-site-vpn">Site-to-site VPN</h4>
+
+<p>Although I no longer utilize it, I used to run an Azure site-to-site VPN 
+connection between my local network and my personal vnet in the cloud. This
+made it super simple to connect to and debug a Kubernetes cluster I was
+experimenting with.</p>
+
+<h4 id="virtual-lans">Virtual LANs</h4>
+
+<p>I make use of VLAN tagging to keep my guest network separate from my primary 
+network, and also to separate most of my “Internet of Things” connections from 
+my other gear.</p>
+
+<h2 id="unifi-access-points">UniFi Access Points</h2>
+
+<p>Power over Ethernet makes it super simple to add access points exactly where
+you want them, instead of where it’s close to your Internet router or cable
+modem.</p>
+
+<p>The only job of an AP is to make wireless happen; being able to offload that
+from the router makes diagnostics easier.</p>
+
+<p>Here’s one of the access points I’ve installed along an edge of a kitchen living
+area. Plenum CAT6 runs through the soffit to where the access point is mounted
+on the wall.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/ubnt-wifi-hallway.jpg" class="img-responsive" title="A UniFi access point is wall mounted above a hallway" /></p>
+
+<p>In a bedroom, I have installed another access point.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/ubnt-wifi-bedroom.jpg" class="img-responsive" title="A UniFi access point mounted alongside a bedroom wall" /></p>
+
+<h3 id="wall-or-ceiling-mount">Wall or ceiling mount</h3>
+
+<p>UniFi Access Points (UAP) are easy to mount to the wall or ceiling.</p>
+
+<p>While I would love to have this mounted on the ceiling for the best reception
+and range, my ceiling is concrete, so no options there without running exposed
+CAT6 or conduit along the ceiling.</p>
+
+<p>While you could mount the access point around a low voltage old work box or
+near a CAT6 keystone, I’ve chosen to keep a service loop of CAT6 in the wall
+and then simply attached a CAT6 end that I’ve poked through the wall.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/ubnt-uap-wall-install.jpg" class="img-responsive" title="Wall mounting an access point" style="max-width:500px" /></p>
+
+<p>The access point rotates onto the base frame, and to remove it, you can use a
+paperclip or removal tool to wedge tab and allow you to rotate the AP.</p>
+
+<h3 id="led-indicator-light">LED indicator light</h3>
+
+<p>At the site-wide level you can toggle LED indicator lights on and off, and then
+per Ubiquiti device, you can configure whether to override that setting by
+forcing the LED on or off.</p>
+
+<p>The soft blue glow when the access point may be nice in a business setting or
+a living room to indicate that the connectivity is good, but I have chosen to
+turn off the glow in my other location in a bedroom.</p>
+
+<p>The indicator light can also illuminate in different colors and patterns if
+it is upgrading firmware, having connectivity issues, etc.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/ubnt-uap-blue-night.jpg" class="img-responsive" title="A soft blue glow indicates that the access point is powered, connected and healthy" /></p>
+
+<h3 id="pro-mounting-system">Pro mounting system</h3>
+
+<p>While installing some access points in shared community areas of my condo
+building, I discovered the <a href="https://store.ubnt.com/products/unifi-professional-mounting-plate">UniFi Professional Mounting System</a>
+which is a $9 precision-crafted bracket.</p>
+
+<p>We’ve used this system in our parking garage to easily mount to j-boxes on
+the ceiling.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/unifi-pro-kit.jpg" class="img-responsive" title="The pro mounting kit, useful in commercial or business environments" /></p>
+
+<p><em>In the above photo, on the left: the bracket mounted to a 4”x4” square junction
+box. Flexible conduit attaches to the j-box and CAT6 runs through it into the box
+and then through the hole to be plugged into the AP. On the right, the access
+point once mounted and powered up via PoE with its signature blue glow.</em></p>
+
+<p>The brackets are a fair value and have holes for traditional wall mount, 
+T-bar ceiling mounts (common commercial drop ceilings), 3.5” round j-boxes, 
+4” square j-boxes, 1-gang outlet boxes, 4” round j-boxes, and European outlet 
+boxes.</p>
+
+<h3 id="configuring-wifi-networks">Configuring WiFi networks</h3>
+
+<p>You can configure several WiFi networks, for your corporate or private use, 
+guests, and other purposes.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/unifi-wireless-networks.png" class="img-responsive" title="The controller configuration screen" /></p>
+
+<p>With VLAN tagging, the ability to configure different auth profiles, you can 
+setup a more advanced RADIUS-backed network for yourself, then let everyone 
+else use a more general traffic network when they visit.</p>
+
+<p>While I don’t use the guest portal features, there’s a whole system to setup 
+accepting payments, generating use tokens, etc., if you feel the urge to 
+start a cybercafe.</p>
+
+<h3 id="neighboring-access-point-data">Neighboring access point data</h3>
+
+<p>One of the unfortunate side effects of living in the city is that you are
+competing with hundreds of other access points, wireless devices, even radar.</p>
+
+<p>If I open my Mac and try and pick a wireless connection, there are hundreds to
+scroll through.</p>
+
+<p>The UniFi controller is also always collecting data on neighboring access points. In
+the past they called this the “Rogue AP report”, but it was renamed.</p>
+
+<p>I could imagine a business using this to keep tabs on whether people are bringing
+their own wireless access points or routers into the corporate environment,
+but in a city, it’s mostly interesting to just get a bird’s eye view of how
+much connectivity is around.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/unifi-neighboring-access-points-home.png" class="img-responsive" title="" /></p>
+
+<p>I regularly see 200-300 access points listed in this report.</p>
+
+<h2 id="rf-environment">RF environment</h2>
+
+<p>If you are OK to take an access point offline for a few minutes, UniFi APs are
+able to perform a scan of the 2G and 5G wireless utilization around that access
+point. This can be very helpful in planning how to allocate channels and
+diagnose performance issues.</p>
+
+<p>Here’s a side-by-side of the 2G and 5G environment in my main living area. The
+2G wireless spectrum is almost entirely bogged down by all of the competing
+devices, but the 5G channels are much more readily available.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/unifi-wireless-rf-environment.png" class="img-responsive" title="A screenshot after performing radio frequency (RF) scans of both the 2.4GHz and 5GHz spectrum near one of my access points. Lots of contention in the 2G space." /></p>
+
+<p>I must use 5GHz wireless devices as much as possible!</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/living-room-problem-connection.png" class="img-responsive" title="" /></p>
+
+<h2 id="uap-ac-hd-upgrade">UAP AC-HD Upgrade</h2>
+
+<p>In late 2017 I moved to the <a href="https://unifi-hd.ubnt.com/">UAP AC-HD</a>
+and have been very happy with this beefier 
+access point. A swap-in replacement for the UAP AC Pro, it can reuse the pro’s 
+mounting bracket, making it a very quick swap out.</p>
+
+<p>The HD access points are 802.11ac Wave 2 MU‑MIMO (Multi‑User, Multiple Input, Multiple Output) 
+devices, designed to support tons of clients. For me, I believe this helps me 
+better cut through the noise and still get decent performance in the 
+interference-ridden city.</p>
+
+<p>Comparing specs, the pro has a radio rate 450 Mbps (2.4 GHz) and 1300 Mbps (5 GHz), 
+the HD has respective rates of 800 Mbps and 1733 Mbps max.</p>
+
+<p>The units are physically larger; here’s an overhead shot of the UAP AC HD on the 
+left of the previous UAP AC Pro model.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/unifi-hd-pro-overhead.jpg" class="img-responsive" title="An overhead look at the UniFi UAP AC Pro next to the beefier UAP AC HD." /></p>
+
+<p>And a side view shows that the AC HD does protrude more from the mounting surface.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/unifi-hd-pro-side-by-side.jpg" class="img-responsive" title="A side view of the UniFi UAP AC Pro next to the beefier UAP AC HD." /></p>
+
+<p>After upgrading to the UAP AC-HD, I’m able to get 400 Mbps+ from my wireless devices,
+where before I was more often in the 140 Mbps range.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/wireless-speed-testing.png" class="img-responsive" title="Over WiFi, a speed test showing download speeds of 423 Mbp and upload of 474 Mbps with the UAP AC-HD" /></p>
+
+<p>Getting 400+ up an down over WiFi is quite an accomplishment for me, with all
+the interference in the city, this is about the most that I’ve ever been able
+to maintain beyond the wired network.</p>
+
+<h2 id="unifi-deep-packet-inspection">UniFi deep packet inspection</h2>
+
+<p>If you turn deep packet inspection (DPI) on, you begin to collect statistics 
+and all sorts of interesting information about how your WAN connection is being
+used by clients.</p>
+
+<p>At a high level, in aggregate, you’ll be able to learn where your household 
+or business spends a lot of time, and at the individual client connection level, 
+you can get summary stats there, too.</p>
+
+<p>Since many web sites and services are encrypted these days (a good thing!), you 
+end up with some easily identified sources of data and then a lot falls by the 
+wayside… most sites are just “encrypted”, and then the really big cloud 
+services and streaming services I think are identified by IP range/bucket:</p>
+
+<ul>
+  <li>406 GB of HTTP over TLS (encrypted web traffic, could be nearly any site)</li>
+  <li>216 GB of HBO streaming</li>
+  <li>193 GB of Netflix</li>
+  <li>130 GB of SSL/TLS</li>
+  <li>51 GB of YouTube</li>
+</ul>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/unifi-traffic-home.png" class="img-responsive" title="" /></p>
+
+<p>If I select a client from the clients view, like my Apple TV, I can then see
+its individualized totals…</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/unifi-clients-home-plus-dpi-apple-tv.png" class="img-responsive" title="In this screenshot, I've selected my Apple TV client entry. The Deep Pack Inspection experience lets me see a summary of the services that the client has been using. Looks like we use most of our media streaming bandwidth on HBO Now, Netflix, etc." /></p>
+
+<!--
+<img src="//az414997.vo.msecnd.net/waz/2018network/unifi-dpi-my-phone.png"
+style="max-width: 320px"
+class="img-responsive"
+     title="The DPI view for my iPhone shows details about how I use my phone on the home network." />
+-->
+
+<!--
+<img src="//az414997.vo.msecnd.net/waz/2018network/unifi-traffic-building.png" class="img-responsive" title="" />
+-->
+
+<h2 id="fan-noise">Fan noise</h2>
+
+<p>The higher-end PoE and security gateway products are not quiet. They aren’t
+really designed for my use case - home office, media cabinet.</p>
+
+<p>If sound is an issue, do note that the 8-port PoE switch would be a great 
+product to buy if you want quiet, and the standard Security Gateway is very 
+nice, too.</p>
+
+<p>I replaced the Ubiquiti stock fans with Noctua’s quiet fans. It’s very quiet
+now, though my warranty is probably void.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/unifi-fan-modification.jpg" class="img-responsive" title="Noctua replacement fans I have put in the security gateway device." /></p>
+
+<!-- ---------------- CONDO WIRING ---------------- -->
+
+<h1 id="condo-wiring">Condo wiring</h1>
+
+<p>Many condos today are built with at least a modern Ethernet network in mind, so 
+when they pull coax to the media jacks in the unit, they also pull CAT5e or CAT6.</p>
+
+<p>These then terminate in a structured media cabinet (SMC) enclosure embedded in a 
+wall. Usually made by Leviton, they tend to be in an office or by the electrical 
+panel.</p>
+
+<p>Here’s one from a condo I used to live in at Hotel 1000 / Madison Tower in 
+Seattle. Pretty good work was done, and I was able to add a CAT6 patch panel to 
+the SMC to easily build a wired network in that unit. The SMC has:</p>
+
+<ul>
+  <li>A simple map of the unit and the jack identifiers</li>
+  <li>CAT5e punch-down block</li>
+  <li>Simple switch for the VOIP phone system</li>
+  <li>Unterminated coax running to all the wall plates</li>
+  <li>Terminated CAT5e (though not patched to wall jacks)</li>
+  <li>Home runs from the various providers</li>
+</ul>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/leviton-in-wall.jpg" class="img-responsive" title="A Leviton SMC with unterminated and terminated cables including network and coax, VOIP switch, etc." /></p>
+
+<p>The building I live in was built in 2003, a time when CAT5 or CAT5e would be 
+an entirely common cabling choice, but … yeah, I wasn’t so lucky. While I was 
+aware of this before closing my real estate transaction, this isn’t the sort of 
+thing that is a deal breaker.</p>
+
+<p>Even worse than not having an SMC were 2 other things: the home run to my unit 
+was not modern network cable, and also that the units in my building were 
+not built with network drops running throughout the units!</p>
+
+<h2 id="office-rack">Office rack</h2>
+
+<p>My network terminates in the office/media closet: a simple small rack that
+houses the UniFi network equipment, UPS, storage, media and IoT systems.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/office-rack6.jpg" class="img-responsive" title="In the office closet is a simple small rack with the network equipment, 3-zone media receiver, and other devices like an Xbox One and an Apple TV" /></p>
+
+<p>The CAT6 I’ve pulled through my walls terminates into keystone jacks along the 
+closet ceiling, and then patch cables connect to the switch.</p>
+
+<p>This was different than a more traditional commercial termination where you 
+might bring the network bundles together to a patch panel in the rack itself.
+This way, if and when I move out, the keystone jacks will be able to stay as-is.</p>
+
+<!--
+<img src="//az414997.vo.msecnd.net/waz/2018network/closet-running-cat6.jpg" class="img-responsive" title="A photo from the process of running wire down to the rack during installation" style="max-width: 420px" />
+-->
+
+<p>Getting here took a lot of time and effort…</p>
+
+<h2 id="cat3">CAT3</h2>
+
+<p>My building’s developer was cheap, and unfortunately that means that we were 
+cursed with <em>Category 3</em> (CAT3) cable daisy-chained throughout the individual 
+unit, running all the way from the telecommunication room through to the last 
+RJ11 jack in the unit after being terminated at 5 wall plates along the way.</p>
+
+<p>Not knowing the intentions of the developer, my guess is that they saw CAT3 as 
+a great way to save money when building out 200 units… while our original 
+building electrical plan includes reference to structured media centers and 
+network cable, all we got was CAT3.</p>
+
+<p>What’s CAT3? <a href="https://en.wikipedia.org/wiki/Category_3_cable">According to wikipedia</a>, it “was widely
+used in computer networking in the early 1990s for 10BASE-T Ethernet”.</p>
+
+<p>My building used 6-pair CAT3 (12 conductors), the idea being that it was a 
+compromise: you could offer a 10/100 network potentially alongside traditional 
+telephone service on the same cable.</p>
+
+<h2 id="home-run-risky-to-replace">Home run: risky to replace</h2>
+
+<p>A conundrum with the CAT3 run between my unit and the IDF runs 
+through 1/4” flex conduit that’s embedded in the concrete slab of the ceiling. 
+It isn’t an entirely straight shot.</p>
+
+<p>While it does have a pull string, preliminary testing and planning to replace 
+the CAT3 with 2x CAT6 cables indicates that there may be snags or other 
+obstacles in the conduit.</p>
+
+<p>The risk: trying to replace the CAT3 could risk being left without phone or 
+Internet service to the unit. The decision was to not try and replace it at all.</p>
+
+<h2 id="cat3-terminating-daisy-chain">CAT3: Terminating daisy chain</h2>
+
+<p>For units in my building, the daisy chain design means that at most you can 
+punch down a single network jack in the unit, and in the name of not making 
+large alterations to units, this means that when Condo Internet first came by 
+to install their service for a previous owner of my unit, they punched down 
+the jack without terminating the CAT3 cable there…</p>
+
+<p>As a result, by my estimates after poking around inside the walls, the length 
+of the CAT3 wire being used was:</p>
+
+<ul>
+  <li>60 feet from the IDF to the conduit termination in the ceiling above my kitchen</li>
+  <li>15 feet from the conduit to a blank wall plate and junction box in a closet</li>
+  <li>300 feet from the j-box past 4 RJ11 jacks and a few rooms</li>
+  <li>The office Ethernet jack</li>
+  <li>150 feet of additional cable past 2 RJ11 jacks</li>
+</ul>
+
+<p>This means an effective cable distance of 525 feet, likely leading to cross-talk or 
+general signal degradation. Higher-grade CAT6 spec cable should only be 
+run 328 ft. (100 m).</p>
+
+<p>My link was therefore negotiating to 100 Mbps full duplex. Not horrible, but 
+also not 1000 Mbps, and not as future-friendly.</p>
+
+<p>I went into experimentation mode and tested punching down network jacks at all 
+the RJ11 jacks in the unit to see what my network test equipment would say for 
+distance, as well as the negotiated link quality with Condo Internet, and nothing 
+improved much.</p>
+
+<p>This is not your standard T56B coloring, by the way, since the 
+orange and blue pairs are used for POTS.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/cat3-jack.jpg" class="img-responsive" title="Connecting to CAT3 - note the conductor colors, not traditional T56B" style="max-width: 420px" /></p>
+
+<p>At one of the closer jacks in terms of cable distance, I finally was able to 
+get a full duplex 1000 Mbps connection negotiated, but then the connection was 
+rather poor: speed test results around 200 Mbps, lots of dropped packets, etc.</p>
+
+<p>Back at the original blank wall plate (where a structured media cabinet really 
+should’ve been), I decided to clip and terminate the 4 pairs of network wire 
+right there.</p>
+
+<p>While not clean, you’ll see that this 2-gang junction box is stuffed with the 
+coax splitter and cables, CAT3 cable, and now I’ve added to it keystone jacks 
+for CAT6 I later pulled. This lets me tap into whichever segment I need.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/cat6-cat3-wall-mess3.jpg" class="img-responsive" title="" style="max-width: 420px" /></p>
+
+<p>I connected my Asus router I was using as a test, turned it on, and was 
+happy to discover a 1000 Mbps full duplex gigabit connection to Condo Internet, 
+yielding speed tests over 900 Mbps up and down. Low latency. No dropped packets. 
+Hooray! Good outcome.</p>
+
+<h2 id="pulling-cat6-in-unit">Pulling CAT6 in-unit</h2>
+
+<p>While I wouldn’t be able to replace the home run CAT3 to my unit easily, I did 
+decide that having a wired network is very important to my home network 
+configuration.</p>
+
+<p>I wanted to be able to install a small rack as a media closet, and that was 
+located 80 feet away from the termination point. I also wanted to hardwire my 
+office computers, pull CAT6 to the television mounts to do HDMI-over-HDBase, etc.</p>
+
+<!--
+<img src="//az414997.vo.msecnd.net/waz/2018network/cat6-splicing.jpg" class="img-responsive" title="CAT6 keystone punchdown" />
+-->
+
+<p>In the end I pulled over 2,400 feet of CAT6 throughout my condo and was able to 
+bring online 20 CAT6 jacks.</p>
+
+<h2 id="steel-studs">Steel studs</h2>
+
+<p>My condo does not have wood studs, but instead steel, supporting the walls.</p>
+
+<p>Metal studs are perforated already with holes for wires to be pulled through, 
+as long as you remember to use wire grommits to protect from fraying and damaging 
+the wire.</p>
+
+<p>A positive for metal studs is that there’s no drilling through wood fire blocks 
+or studs themselves, as long as you can carefully fish wire through the 
+existing wire holes.</p>
+
+<h2 id="interior-vs-exterior-walls">Interior vs exterior walls</h2>
+
+<p>Our condo association rules are well-defined and strict about any changes to 
+“limited common” shared walls. While it’s easy to run wires within my interior 
+walls, I’m not able to just run cable through the shared walls, and instead 
+would need to use exposed concrete, wire behind the baseboards, or under the 
+floors. I’ve had to use all of these approaches in my unit.</p>
+
+<p>In my office I run speaker wire, several CAT6 pulls, and 2x digital optical 
+audio cables through the floor instead of the shared wall with an adjacent 
+unit.</p>
+
+<h3 id="drop-ceilings">Drop ceilings</h3>
+
+<p>Thankfully my unit’s utilities tend to run in the ceiling above the kitchen, 
+bathrooms and other spaces. The living areas have no drop ceiling, so there is 
+only concrete above, leaving no wiring space.</p>
+
+<p>Here’s a look inside the ceiling above a bathroom - lots of electrical 
+steel conduit.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/electrical-in-ceiling.jpg" class="img-responsive" title="A peek inside the ceiling above a bathroom at the electrical flex conduit" /></p>
+
+<p>Challenges include:</p>
+
+<ul>
+  <li>Not running network cable parallel to electrical when close</li>
+  <li>Pulling conduit and wire with minimal wall damage and patching</li>
+  <li>Navigating obstacles including fire systems and forced air ducts</li>
+</ul>
+
+<p>In several locations I decided to run flex conduit to make pulling wire later 
+easier, and then have both CAT6 and speaker wire running inside. Here you 
+can see a flex conduit coupling, ductwork, sprinker system water pipes, and 
+the hot and cold water pipes running above the kitchen cabinets:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/ceiling-running-cables.jpg" class="img-responsive" title="Running conduit and cabling in the ceiling above the kitchen cabinets" style="max-width: 420px" /></p>
+
+<p>Old work low voltage boxes are used where CAT6 terminates in closets, along 
+walls and other locations. Besides the service loop with 2x CAT6 runs is also 
+pull cord to make future changes easier.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/2018network/cat6-wiring-service-loop.jpg" class="img-responsive" title="A 2-gang old work low voltage opening with pull cord and CAT6" style="max-width: 420px" /></p>
+
+<!--
+<img src="//az414997.vo.msecnd.net/waz/2018network/ubntuap.jpg" class="img-responsive" title="" />
+-->
+
+<h1 id="references">References</h1>
+
+<p>Some interesting resources I found while researching parts of this post:</p>
+
+<ul>
+  <li>https://www.reddit.com/r/IAmA/comments/2m3awz/we_are_the_founders_of_condointernet_and_were/</li>
+  <li>http://www.bbpmag.com/2013mags/october/BBC_Oct13_CondoInternet.pdf</li>
+  <li>http://www.geekwire.com/2013/spectrum-wave-condointernet/</li>
+  <li>http://www.geekwire.com/2013/condointernet-expands-service-ballard/</li>
+  <li>http://www.bbpmag.com/2013mags/october/BBC_Oct13_CondoInternet.pdf</li>
+  <li>https://twitter.com/TimB0nd/status/985638564984573952</li>
+</ul>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+                   
+                   
+                    
+            
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+        <li><span>24 Feb 2017</span> &raquo; <a href="/2017/02/mail2bug/">Using mail2bug with Azure App Service, WebJobs and VSTS to handle support mail</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

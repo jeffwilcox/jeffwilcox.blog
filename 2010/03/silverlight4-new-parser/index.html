@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Silverlight 4: New parser implementation. New parser features. - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Silverlight 4: New parser implementation. New parser features.">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2010/03/silverlight4-new-parser/">-->Silverlight 4: New parser implementation. New parser features.<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              29 March 2010
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="XamlNewFeatures" border="0" alt="XamlNewFeatures" src="http://az414997.vo.msecnd.net/wordpress/2010/03/XamlNewFeatures.png" width="685" height="28" /> </p>  <p><a href="http://www.flickr.com/photos/lara604/2369412952/"><img style="border-bottom: 0px; border-left: 0px; display: inline; margin-left: 0px; border-top: 0px; margin-right: 0px; border-right: 0px" title="Designers wear black turtlenecks. Photo by Lara604 - http://www.flickr.com/photos/lara604/2369412952/ (creative commons)" border="0" alt="Designers wear black turtlenecks. Photo by Lara604 - http://www.flickr.com/photos/lara604/2369412952/ (creative commons)" align="right" src="http://az414997.vo.msecnd.net/wordpress/2010/03/XamlLimitations.png" width="350" height="281" /></a> XAML is such an important thing for enabling modern user interfaces that it’s easy to forget how complex and integral the parser is to the Silverlight platform.</p>  <p>It’s the thing that lets us geek out in code when we need to, yet still talk to our designer friends who wear black turtlenecks, dream in Adobe Illustrator actions, and love Expression Blend.</p>  <p>Your designer friends are going to like Silverlight 4 more than Silverlight 3, thanks to new features like direct content.</p>  <p>Developers are going to like Silverlight 4 more, since there are new, better error messages both while using Visual Studio, and at runtime. This means fewer <a href="http://www.bing.com/search?q=Silverlight+AG_E_UNKNOWN">AG_E_UNKNOWN errors</a>.</p>  <h2>What’s new?</h2>  <p>In Silverlight 4, more than a year of development went into a modern, improved parser to offer new XAML features, fix some common requests and complaints, and develop a modern platform for future parser improvements to build upon.</p>  <p>A number of expert engineers at Microsoft came together to make this possible, and hopefully you’ll find the improvements worthwhile.</p>  <p>In no particular order, and not necessarily exhaustive, here’s a look at some of the changes (more comprehensive information in <a href="http://www.davidpoll.com/2010/03/15/new-in-the-silverlight-4-rc-xaml-features/">David Poll’s similar blog post</a>).</p>  <h3>Whitespace treatment</h3>  <p>XAML in Silverlight 4 is parsed as you’d expect for XML in general: newlines, for instance, don’t show up unless you add the xml:space=’preserve’ attribute first.</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:c9caf72d-2517-4c96-a327-fe3cc6edae67" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;StackPanel Orientation="Horizontal"&gt;
+    &lt;TextBlock&gt;
+       &lt;TextBlock.Text&gt;
+          This is the first line of the text block, 
+          and this is still the first line.
+       &lt;/TextBlock.Text&gt;
+    &lt;/TextBlock&gt;
+    &lt;TextBlock xml:space="preserve"&gt;
+       &lt;TextBlock.Text&gt;
+          This is the first line of the text block, 
+          and this is the second line.
+       &lt;/TextBlock.Text&gt;
+    &lt;/TextBlock&gt;
+&lt;/TextBlock&gt;</pre></div>
+
+<p><strong>Upgrade warning: </strong>This change is double-edged. When we moved the Silverlight Toolkit samples to use the new parser, we were bit by the source code that displays in the source viewer: it was all one line! The preservation line had to be added, since previously we depended on the parser just grabbing and using the newlines from the parser input for breaks in the text boxes.</p>
+
+<h3>Direct content</h3>
+
+<p>Buttons work better now. You couldn’t do this before:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:70aae754-352e-48b4-b8f6-387c0353b5c6" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;Button&gt;Ok&lt;/Button&gt;</pre></div>
+
+<h3>Error messages</h3>
+
+<p>Many, many bugs around error message handling have been fixed thanks to the new parser’s error service implementation. In most situations, errors are more descriptive, similar to their WPF counterparts, and will contain useful line and column number information.</p>
+
+<p>In Silverlight 3, many times XAML parsing problems resulted in errors being identified as being at line 0, column 0, and those days are mostly over.</p>
+
+<h3>Dictionaries done right</h3>
+
+<p>If a type or property implements IDictionary, you can now use x:Key to add entries into dictionaries. <em>Note</em> that we’re talking about the non-generic IDictionary interface.</p>
+
+<h3>ISupportInitialize</h3>
+
+<p>A feature WPF developers have enjoyed, begin and end initialization calls are made before and after properties are defined in XAML.</p>
+
+<h3>Template bindings require CLR getters and setters</h3>
+
+<p>Dependency properties must have defined CLR getters and settings to be used in template bindings, consistent with WPF.</p>
+
+<h3>XmlnsDefinitionAttribute</h3>
+
+<p>Especially when using the Silverlight Toolkit and other control libraries, you needed to define a new XMLNS definition in every page, for every assembly you wanted to use.</p>
+
+<p>xmlns:controlsToolkit=”…”, xmlns:navigation=”…”, etc.</p>
+
+<p>Now with <a href="http://msdn.microsoft.com/en-us/library/system.windows.markup.xmlnsdefinitionattribute.aspx">XmlnsDefinitionAttribute</a> (an assembly-level attribute) support, you often can get by with less. All the assemblies in a single product can share a namespace which you can then just define one time.</p>
+
+<h3>x:Uid support</h3>
+
+<p>Uids are better supported, paving the way for localization tools and other uses of <a href="http://msdn.microsoft.com/en-us/library/bb613571.aspx">x:Uid</a>.</p>
+
+<h3>Root default namespace restriction removed</h3>
+
+<p>Prior to Silverlight 4, the root XAML namespace had to be one of the supported standard namespaces. This restriction is removed. Note that you still need it if you want to reference set properties that come from the core Silverlight elements.</p>
+
+<h2>What about backward compatibility?</h2>
+
+<p>Compatibility with previous versions of Silverlight is one of the most important goals for the development and test teams working on Silverlight. As a result, there are a fair number of “quirks mode” checks throughout the codebase.</p>
+
+<p>Whenever a bug fix or new feature is implemented, a quirks mode check often needs to be inserted to maintain the previous codepaths for compatibility reasons.</p>
+
+<p>It’s a good technical challenge, and though “quirking” probably has a bad reputation from the Internet Explorer 5 &amp; 6 days, it really does work well in Silverlight.</p>
+
+<h3>Dual parser implementations</h3>
+
+<p>Beyond just quirks mode checks in the Silverlight runtime, we have decided to also include the Silverlight 3 parser inside of Silverlight 4 for compatibility reasons.</p>
+
+<p>At the start of the code path that parses XAML and eventually returns an object or tree, there’s an if/else check that keeps the parser versions completely separate:</p>
+
+<div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:70b52b1a-1d05-448a-9f8c-170dc7bae926" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">    if (CQuirksMode::ShouldUseSL3Parser(pCore))
+    {
+        // ... Old parser code path
+    }
+    else
+    {
+        // ... New, awesome parser code path
+    }</pre></div>
+
+<p>And the underlying quirks mode check whether the application’s major version is less than 4.</p>
+
+<h3>Which parser will be used?</h3>
+
+<p>The <strong>target application’s Silverlight runtime version</strong> is what determines which parser will be used at runtime. This value gets placed inside of the application manifest XAML file, in the application’s .Xap, at build time.</p>
+
+<p>If you examine a .Xap file (rename to .Zip, extract the contents), inside the root directory you will find a file named AppManifest.xaml.</p>
+
+<p>In the Deployment element there is an attribute called RuntimeVersion. This needs to start with 4.0 to use the new parser, such as:</p>
+
+<p>
+  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:1afce63e-d1e9-4770-8ba5-d7d3c2649e41" class="wlWriterEditableSmartContent"><pre class="brush: xml">&lt;Deployment 
+    xmlns="http://schemas.microsoft.com/client/2007/deployment" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+    EntryPointAssembly="SilverBugger" 
+    EntryPointType="JeffWilcox.SilverBugger.App" 
+    RuntimeVersion="4.0.50303.0" /&gt;</pre></div>
+</p>
+
+<p><em>Note that I’ve removed the rest of the file contents for brevity.</em></p>
+
+<p>This means that control and component developers need to be aware of this for new controls: if you have a control whose default styles and templates expect the Silverlight 4 XAML parser to be used (if you’re using direct Button content, for example), then you need to make sure your customers only use those components with Silverlight 4 applications.</p>
+
+<h2>What about System.Xaml?</h2>
+
+<p>System.Xaml shipped with WPF 4, and is a modern managed XAML parser implementation. We had signifcant knowledge and code sharing on the team to make sure that the implementations were similar, common, and yet they are different.</p>
+
+<p>The parser in Silverlight is a complex implementation because it often has to bridge the native/managed code gap: so much of the core Silverlight runtime is implemented in native code, so properties and other information need to be shared between the two.</p>
+
+<p>Though this is not a technical discussion of the implementation, I will note that there is a crisp interface shared by both a XamlNativeRuntime and XamlManagedRuntime, and it’s pretty impressive.</p>
+
+<p><em>Let me know how your experiences are with the new Silverlight 4 parser.</em></p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

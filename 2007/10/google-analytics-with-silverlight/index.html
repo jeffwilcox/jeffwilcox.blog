@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Using Google Analytics with rich (managed) web applications in Silverlight - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Using Google Analytics with rich (managed) web applications in Silverlight">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2007/10/google-analytics-with-silverlight/">-->Using Google Analytics with rich (managed) web applications in Silverlight<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+               1 October 2007
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            [RAW]
+
+Microsoft Silverlight 1.1 and the HTML DOM bridge can easily interface with <A href="http://www.google.com/analytics/" mce_href="http://www.google.com/analytics/">Google Analytics</A> to help you analyze, track, and better understand your web site visitors.<SPAN>&nbsp; </SPAN>Already a common activity for <A href="http://www.google.com/support/analytics/bin/answer.py?answer=27243&amp;hl=en" mce_href="http://www.google.com/support/analytics/bin/answer.py?answer=27243&amp;hl=en">Flash</A> and <A href="http://www.chrisrebstock.com/blog/?p=16" mce_href="http://www.chrisrebstock.com/blog/?p=16">Flex</A> developers, the concept of tracking within a rich web application may be new to traditional client application developers, and probably not something done with common WPF applications, but it's simple to add and very useful to advertisers.<SPAN><BR></SPAN>
+
+<P>If you’d like to see how many people click “Skip Intro” on your rich Silverlight video intro, or perhaps click the “Details/More” button on your rich advertisement, Google Analytics can provide that data.<SPAN>&nbsp; </SPAN>Analytics events fired from within your rich client application show up in site traffic reports just as if they were page views within your web site, so you can organize the event names however you like—they’re just relative URLs that you create (but do not actually exist).<SPAN>&nbsp; </SPAN></P>
+
+
+
+<P>Although there is a web services API for all of this, the simple tracker functions exposed by Google’s JavaScript is the quickest way to get off the ground using the DOM bridge.</P>
+
+
+
+<P>Here's a working v1.1 CTP application that you can execute.&nbsp; If you're using a tool like Fiddler to examine HTTP calls, you'll see the events heading back over the wire when you click the buttons [<A href="http://www.jeff.wilcox.name/blog/sampleApps/analytics/" mce_href="http://www.jeff.wilcox.name/blog/sampleApps/analytics/">http://www.jeff.wilcox.name/blog/sampleApps/analytics/</A>].</P>
+
+
+
+<P><A href="http://www.jeff.wilcox.name/blog/sampleApps/analytics/" mce_href="http://www.jeff.wilcox.name/blog/sampleApps/analytics/"><IMG height=62 src="http://media.jeff.wilcox.name/blog/view/silverlight/analytics-mac.jpg" width=540 border=0 mce_src="http://media.jeff.wilcox.name/blog/view/silverlight/analytics-mac.jpg"></A> </P>
+
+
+
+<P>And a quick look at a sample Analytics page that shows events that were fired through managed code Button.Click events:</P>
+
+
+
+<P><IMG height=267 src="http://media.jeff.wilcox.name/blog/view/silverlight/analytics-sl-1.jpg" width=540 border=0 mce_src="http://media.jeff.wilcox.name/blog/view/silverlight/analytics-sl-1.jpg">&nbsp;</P>
+
+
+
+<H2>Simple call</H2>
+
+<P>If you’re already including Google’s urchin.js script on your site’s pages, then you only need to evaluate the urchinTracker function with the relative URL you’d like recorded in your reports:</P>
+
+
+
+<P><TT><SPAN style="COLOR: rgb(0,0,255)">string</SPAN>&nbsp;eventUrl&nbsp;=&nbsp;<SPAN style="COLOR: rgb(163,21,21)">"/testing/mySilverlightApp1/skipIntro/"</SPAN>;<BR><SPAN style="COLOR: rgb(0,0,255)">string</SPAN>&nbsp;jsCode&nbsp;=&nbsp;<SPAN style="COLOR: rgb(163,21,21)">"urchinTracker('"</SPAN>&nbsp;+&nbsp;eventUrl&nbsp;+&nbsp;<SPAN style="COLOR: rgb(163,21,21)">"')"</SPAN>;<BR><BR><SPAN style="COLOR: rgb(43,145,175)">HtmlElement</SPAN>&nbsp;js&nbsp;=&nbsp;<SPAN style="COLOR: rgb(43,145,175)">HtmlPage</SPAN>.Document.CreateElement(<SPAN style="COLOR: rgb(163,21,21)">"script"</SPAN>);<BR>js.SetAttribute(<SPAN style="COLOR: rgb(163,21,21)">"type"</SPAN>,&nbsp;<SPAN style="COLOR: rgb(163,21,21)">"text/javascript"</SPAN>);<BR>js.SetProperty(<SPAN style="COLOR: rgb(163,21,21)">"text"</SPAN>,&nbsp;jsCode);<BR><SPAN style="COLOR: rgb(43,145,175)">HtmlPage</SPAN>.Document.GetElementsByTagName(<SPAN style="COLOR: rgb(163,21,21)">"body"</SPAN>)[0].AppendChild(js);</TT> </P>
+
+
+
+<P>This same code if you’re also compiling in my <A href="http://blogs.msdn.com/jeffwilcox/archive/2007/09/30/useful-managed-html-dom-methods-for-microsoft-silverlight.aspx" mce_href="/jeffwilcox/archive/2007/09/30/useful-managed-html-dom-methods-for-microsoft-silverlight.aspx">HtmlExtensions</A> class is a little shorter: </P>
+
+
+
+<P><TT><SPAN style="COLOR: rgb(0,0,255)">string</SPAN>&nbsp;eventUrl&nbsp;=&nbsp;<SPAN style="COLOR: rgb(163,21,21)">"/testing/mySilverlightApp1/skipIntro/"</SPAN>;<BR><SPAN style="COLOR: rgb(0,0,255)">string</SPAN>&nbsp;jsCode&nbsp;=&nbsp;<SPAN style="COLOR: rgb(163,21,21)">"urchinTracker('"</SPAN>&nbsp;+&nbsp;eventUrl&nbsp;+&nbsp;<SPAN style="COLOR: rgb(163,21,21)">"')"</SPAN>;<BR><BR><SPAN style="COLOR: rgb(43,145,175)">HtmlExtensions</SPAN>.Eval(jsCode);</TT></P>
+
+
+
+<H2>Managed analytics interface</H2>
+
+<P>Building a static managed class allows quick insertion into your Silverlight project’s code pretty easily.<SPAN>&nbsp; </SPAN>You could then insert any events you’d like to track into button events, timers, or at the start of a MediaElement in your managed content player.<SPAN>&nbsp; </SPAN></P>
+
+
+
+<P>Here's the one-liner that will send the "page view":</P>
+
+
+
+<P><TT><SPAN style="COLOR: rgb(43,145,175)">AnalyticsManager</SPAN>.SendEvent(<SPAN style="COLOR: rgb(163,21,21)">"/testing/mySilverlightApp1/skipIntro/"</SPAN>);</TT></P>
+
+
+
+<P><SPAN></SPAN>In this managed miniature library I also added code to include Google's analytics script, so you don’t have to worry about including your analytics code anywhere in your HTML pages.&nbsp; Simply call the static InitializeAnalytics method with your Analytics Account ID (string) within your canvas OnLoaded method.<BR></P>
+
+
+
+<P>The size of the retail build of this static class is 5KB + the 5KB <A href="http://www.jeff.wilcox.name/blog/code/HtmlExtensions.cs.txt" mce_href="http://www.jeff.wilcox.name/blog/code/HtmlExtensions.cs.txt">HtmlExtensions</A> bits means that this functionality costs about the same as a small image on your web site.</P>
+
+
+
+<P><A href="http://www.jeff.wilcox.name/blog/code/AnalyticsManager.cs.txt" mce_href="http://www.jeff.wilcox.name/blog/code/AnalyticsManager.cs.txt">AnalyticsManager.cs</A> is also available for download <A href="http://www.jeff.wilcox.name/blog/code/AnalyticsManager.cs.txt" mce_href="http://www.jeff.wilcox.name/blog/code/AnalyticsManager.cs.txt">here</A>.&nbsp;</P>
+
+
+
+<P><TT><SPAN style="COLOR: rgb(0,128,0)">//&nbsp;NOTE:&nbsp;Uses&nbsp;HtmlExtensions&nbsp;class&nbsp;as&nbsp;found&nbsp;at&nbsp;<BR>//&nbsp;http://blogs.msdn.com/jeffwilcox/archive/2007/09/30/useful-managed-html-dom-methods-for-microsoft-silverlight.aspx<BR><BR></SPAN><SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;</SPAN><SPAN style="COLOR: rgb(128,128,128)">&lt;summary&gt;<BR>///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;Static&nbsp;class&nbsp;which&nbsp;is&nbsp;able&nbsp;to&nbsp;fire&nbsp;events&nbsp;to&nbsp;Google&nbsp;Analytics.&nbsp;&nbsp;It&nbsp;<BR></SPAN><SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;can&nbsp;also&nbsp;initialize&nbsp;the&nbsp;Urchin&nbsp;script&nbsp;when&nbsp;it&nbsp;has&nbsp;not&nbsp;been&nbsp;<BR></SPAN><SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;included&nbsp;in&nbsp;the&nbsp;web&nbsp;page.<BR></SPAN><SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;</SPAN><SPAN style="COLOR: rgb(128,128,128)">&lt;/summary&gt;<BR></SPAN><SPAN style="COLOR: rgb(0,0,255)">public</SPAN>&nbsp;<SPAN style="COLOR: rgb(0,0,255)">static</SPAN>&nbsp;<SPAN style="COLOR: rgb(0,0,255)">class</SPAN>&nbsp;<SPAN style="COLOR: rgb(43,145,175)">AnalyticsManager<BR></SPAN>{<BR><SPAN style="COLOR: rgb(0,0,255)">&nbsp;&nbsp;&nbsp;&nbsp;#region</SPAN>&nbsp;Constants<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;</SPAN><SPAN style="COLOR: rgb(128,128,128)">&lt;summary&gt;</SPAN><SPAN style="COLOR: rgb(0,128,0)">Variable&nbsp;Analytics&nbsp;expects&nbsp;set</SPAN><SPAN style="COLOR: rgb(128,128,128)">&lt;/summary&gt;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(0,0,255)">private</SPAN>&nbsp;<SPAN style="COLOR: rgb(0,0,255)">const</SPAN>&nbsp;<SPAN style="COLOR: rgb(0,0,255)">string</SPAN>&nbsp;UrchinAccountVariable&nbsp;=&nbsp;<SPAN style="COLOR: rgb(163,21,21)">"_uacct"</SPAN>;<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;</SPAN><SPAN style="COLOR: rgb(128,128,128)">&lt;summary&gt;</SPAN><SPAN style="COLOR: rgb(0,128,0)">Urchin.js&nbsp;location</SPAN><SPAN style="COLOR: rgb(128,128,128)">&lt;/summary&gt;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(0,0,255)">private</SPAN>&nbsp;<SPAN style="COLOR: rgb(0,0,255)">const</SPAN>&nbsp;<SPAN style="COLOR: rgb(0,0,255)">string</SPAN>&nbsp;RemoteAnalyticsScript&nbsp;=&nbsp;<SPAN style="COLOR: rgb(163,21,21)">"http://www.google-analytics.com/urchin.js"</SPAN>;<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;</SPAN><SPAN style="COLOR: rgb(128,128,128)">&lt;summary&gt;</SPAN><SPAN style="COLOR: rgb(0,128,0)">Method&nbsp;that&nbsp;fires&nbsp;Analytics&nbsp;events</SPAN><SPAN style="COLOR: rgb(128,128,128)">&lt;/summary&gt;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(0,0,255)">private</SPAN>&nbsp;<SPAN style="COLOR: rgb(0,0,255)">const</SPAN>&nbsp;<SPAN style="COLOR: rgb(0,0,255)">string</SPAN>&nbsp;RemoteAnalyticsFunction&nbsp;=&nbsp;<SPAN style="COLOR: rgb(163,21,21)">"urchinTracker"</SPAN>;<BR><BR><SPAN style="COLOR: rgb(0,0,255)">&nbsp;&nbsp;&nbsp;&nbsp;#endregion<BR><BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;</SPAN><SPAN style="COLOR: rgb(128,128,128)">&lt;summary&gt;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;Send&nbsp;an&nbsp;event&nbsp;to&nbsp;Google&nbsp;Analytics&nbsp;remotely&nbsp;using&nbsp;the&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;Google&nbsp;Analytics&nbsp;(Urchin)&nbsp;JavaScript&nbsp;library.&nbsp;&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;The&nbsp;Silverlight&nbsp;HTML&nbsp;DOM&nbsp;bridge&nbsp;is&nbsp;used&nbsp;for&nbsp;this&nbsp;call&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;into&nbsp;JavaScript&nbsp;instead&nbsp;of&nbsp;creating&nbsp;an&nbsp;HTTP&nbsp;web&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;request&nbsp;or&nbsp;anything&nbsp;purely&nbsp;in&nbsp;managed&nbsp;code.<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;See&nbsp;also:&nbsp;Google&nbsp;reference&nbsp;at&nbsp;http://www.google.com/support/analytics/bin/answer.py?answer=27243&amp;hl=en&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;</SPAN><SPAN style="COLOR: rgb(128,128,128)">&lt;/summary&gt;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;</SPAN><SPAN style="COLOR: rgb(128,128,128)">&lt;example&gt;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;AnalyticsManager.SendEvent("/myBigAdCampaign/detailsButton/");<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;</SPAN><SPAN style="COLOR: rgb(128,128,128)">&lt;/example&gt;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;</SPAN><SPAN style="COLOR: rgb(128,128,128)">&lt;param&nbsp;name="relativeLink"&gt;</SPAN><SPAN style="COLOR: rgb(0,128,0)">String&nbsp;Google&nbsp;Analytics&nbsp;would&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;recognize&nbsp;as&nbsp;an&nbsp;interesting&nbsp;event</SPAN><SPAN style="COLOR: rgb(128,128,128)">&lt;/param&gt;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(0,0,255)">public</SPAN>&nbsp;<SPAN style="COLOR: rgb(0,0,255)">static</SPAN>&nbsp;<SPAN style="COLOR: rgb(0,0,255)">void</SPAN>&nbsp;SendEvent(<SPAN style="COLOR: rgb(0,0,255)">string</SPAN>&nbsp;relativeLink)<BR>&nbsp;&nbsp;&nbsp;&nbsp;{<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(0,0,255)">if</SPAN>&nbsp;(<SPAN style="COLOR: rgb(0,0,255)">false</SPAN>&nbsp;==&nbsp;IsAnalyticsScriptInstalled())&nbsp;{<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(0,0,255)">throw</SPAN>&nbsp;<SPAN style="COLOR: rgb(0,0,255)">new</SPAN>&nbsp;<SPAN style="COLOR: rgb(43,145,175)">InvalidOperationException</SPAN>(<SPAN style="COLOR: rgb(163,21,21)">"Analytics&nbsp;script&nbsp;has&nbsp;not&nbsp;been&nbsp;initialized&nbsp;yet."</SPAN>);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(0,0,255)">if</SPAN>&nbsp;(<SPAN style="COLOR: rgb(43,145,175)">String</SPAN>.IsNullOrEmpty(relativeLink))&nbsp;{<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(0,0,255)">throw</SPAN>&nbsp;<SPAN style="COLOR: rgb(0,0,255)">new</SPAN>&nbsp;<SPAN style="COLOR: rgb(43,145,175)">ArgumentNullException</SPAN>(<SPAN style="COLOR: rgb(163,21,21)">"relativeLink"</SPAN>);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(0,0,255)">if</SPAN>&nbsp;(<SPAN style="COLOR: rgb(0,0,255)">false</SPAN>&nbsp;==&nbsp;relativeLink.StartsWith(<SPAN style="COLOR: rgb(163,21,21)">"/"</SPAN>))&nbsp;{<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(0,0,255)">throw</SPAN>&nbsp;<SPAN style="COLOR: rgb(0,0,255)">new</SPAN>&nbsp;<SPAN style="COLOR: rgb(43,145,175)">ArgumentException</SPAN>(<SPAN style="COLOR: rgb(163,21,21)">"relativeLink&nbsp;must&nbsp;begin&nbsp;with&nbsp;a&nbsp;forward&nbsp;slash"</SPAN>,&nbsp;<SPAN style="COLOR: rgb(163,21,21)">"relativeLink"</SPAN>);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(0,128,0)">//&nbsp;Silverlight&nbsp;v1.1&nbsp;CTP&nbsp;hack&nbsp;to&nbsp;permit&nbsp;evaluation&nbsp;of&nbsp;JavaScript&nbsp;code<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(43,145,175)">HtmlExtensions</SPAN>.Eval(RemoteAnalyticsFunction&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+&nbsp;<SPAN style="COLOR: rgb(163,21,21)">"(\""</SPAN>&nbsp;+&nbsp;relativeLink&nbsp;+&nbsp;<SPAN style="COLOR: rgb(163,21,21)">"\");"</SPAN>);<BR>&nbsp;&nbsp;&nbsp;&nbsp;}<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;</SPAN><SPAN style="COLOR: rgb(128,128,128)">&lt;summary&gt;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;Check&nbsp;whether&nbsp;analytics&nbsp;has&nbsp;been&nbsp;initialized&nbsp;by&nbsp;simply&nbsp;looking&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;for&nbsp;the&nbsp;Urchin&nbsp;account&nbsp;ID.&nbsp;&nbsp;A&nbsp;better&nbsp;and&nbsp;more&nbsp;concrete&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;implementation&nbsp;would&nbsp;look&nbsp;for&nbsp;a&nbsp;known&nbsp;global&nbsp;function&nbsp;or&nbsp;other&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;variable&nbsp;exposed&nbsp;by&nbsp;Google's&nbsp;urchin.js&nbsp;script.<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;</SPAN><SPAN style="COLOR: rgb(128,128,128)">&lt;/summary&gt;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(0,0,255)">private</SPAN>&nbsp;<SPAN style="COLOR: rgb(0,0,255)">static</SPAN>&nbsp;<SPAN style="COLOR: rgb(0,0,255)">bool</SPAN>&nbsp;IsAnalyticsScriptInstalled()<BR>&nbsp;&nbsp;&nbsp;&nbsp;{<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(0,0,255)">return</SPAN>&nbsp;(<SPAN style="COLOR: rgb(43,145,175)">HtmlPage</SPAN>.Window.GetProperty&lt;<SPAN style="COLOR: rgb(0,0,255)">string</SPAN>&gt;(UrchinAccountVariable)<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;!=&nbsp;<SPAN style="COLOR: rgb(0,0,255)">null</SPAN>&nbsp;);<BR>&nbsp;&nbsp;&nbsp;&nbsp;}<BR><BR><SPAN style="COLOR: rgb(0,0,255)">&nbsp;&nbsp;&nbsp;&nbsp;#region</SPAN>&nbsp;Optional&nbsp;Initialization&nbsp;Code<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;</SPAN><SPAN style="COLOR: rgb(128,128,128)">&lt;summary&gt;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;Equivalent&nbsp;to&nbsp;the&nbsp;tracking&nbsp;JavaScript&nbsp;code&nbsp;that&nbsp;must&nbsp;be&nbsp;inserted&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;into&nbsp;all&nbsp;pages&nbsp;that&nbsp;you&nbsp;want&nbsp;to&nbsp;track&nbsp;using&nbsp;Google&nbsp;Analytics.&nbsp;&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;This&nbsp;method&nbsp;could&nbsp;be&nbsp;called&nbsp;during&nbsp;the&nbsp;OnLoaded&nbsp;canvas&nbsp;event&nbsp;of&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;your&nbsp;application&nbsp;to&nbsp;ensure&nbsp;that&nbsp;Urchin&nbsp;methods&nbsp;are&nbsp;available&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;when&nbsp;you&nbsp;need&nbsp;to&nbsp;track&nbsp;events.<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;It&nbsp;is&nbsp;still&nbsp;easiest&nbsp;of&nbsp;course&nbsp;to&nbsp;simply&nbsp;include&nbsp;the&nbsp;traditional&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;Google&nbsp;Analytics&nbsp;code&nbsp;on&nbsp;your&nbsp;pages,&nbsp;but&nbsp;I&nbsp;wanted&nbsp;to&nbsp;present&nbsp;an&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;alternative&nbsp;using&nbsp;the&nbsp;HTML&nbsp;DOM&nbsp;and&nbsp;the&nbsp;creation&nbsp;of&nbsp;new&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;HtmlElement&nbsp;objects&nbsp;here.<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(128,128,128)">///</SPAN><SPAN style="COLOR: rgb(0,128,0)">&nbsp;</SPAN><SPAN style="COLOR: rgb(128,128,128)">&lt;/summary&gt;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(0,0,255)">public</SPAN>&nbsp;<SPAN style="COLOR: rgb(0,0,255)">static</SPAN>&nbsp;<SPAN style="COLOR: rgb(0,0,255)">void</SPAN>&nbsp;InitializeAnalytics(<SPAN style="COLOR: rgb(0,0,255)">string</SPAN>&nbsp;analyticsAccountId)<BR>&nbsp;&nbsp;&nbsp;&nbsp;{<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(0,128,0)">//&nbsp;If&nbsp;already&nbsp;included&nbsp;on&nbsp;the&nbsp;page<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(0,0,255)">if</SPAN>&nbsp;(IsAnalyticsScriptInstalled())&nbsp;{<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(0,0,255)">return</SPAN>;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<BR><BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(43,145,175)">HtmlElement</SPAN>&nbsp;jsInclude&nbsp;=&nbsp;<SPAN style="COLOR: rgb(43,145,175)">HtmlExtensions</SPAN>.CreateJavaScriptInclude(<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;RemoteAnalyticsScript);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(43,145,175)">HtmlElement</SPAN>&nbsp;jsScript&nbsp;=&nbsp;<SPAN style="COLOR: rgb(43,145,175)">HtmlExtensions</SPAN>.CreateJavaScriptElement(<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;UrchinAccountVariable&nbsp;+&nbsp;<SPAN style="COLOR: rgb(163,21,21)">"&nbsp;=&nbsp;\""</SPAN>&nbsp;+&nbsp;analyticsAccountId&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+&nbsp;<SPAN style="COLOR: rgb(163,21,21)">"\";"</SPAN>&nbsp;+&nbsp;RemoteAnalyticsFunction&nbsp;+&nbsp;<SPAN style="COLOR: rgb(163,21,21)">"();"</SPAN>);<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(43,145,175)">HtmlExtensions</SPAN>.HeadElement.AppendChildren(jsInclude,&nbsp;jsScript);&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<BR>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(0,128,0)">//&nbsp;NOTE:&nbsp;Upon&nbsp;return,&nbsp;the&nbsp;browser&nbsp;will&nbsp;need&nbsp;to&nbsp;parse&nbsp;the&nbsp;updated&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(0,128,0)">//&nbsp;page&nbsp;DOM,&nbsp;load&nbsp;the&nbsp;Urchin&nbsp;script,&nbsp;and&nbsp;then&nbsp;finally&nbsp;be&nbsp;available&nbsp;<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<SPAN style="COLOR: rgb(0,128,0)">//&nbsp;for&nbsp;our&nbsp;use.<BR></SPAN>&nbsp;&nbsp;&nbsp;&nbsp;}<BR><BR><SPAN style="COLOR: rgb(0,0,255)">&nbsp;&nbsp;&nbsp;&nbsp;#endregion<BR></SPAN>}</TT></P>
+
+<SPAN style="FONT-SIZE: 11pt; LINE-HEIGHT: 115%; FONT-FAMILY: 'Calibri','sans-serif'">Hope this helps!</SPAN>
+
+[/RAW]
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

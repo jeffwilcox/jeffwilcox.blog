@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Windows Azure Web Sites + custom SSL certificate for my app - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Windows Azure Web Sites + custom SSL certificate for my app">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2013/06/waz-web-sites-ssl/">-->Windows Azure Web Sites + custom SSL certificate for my app<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              18 June 2013
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            <li>azure</li><li>cloud</li><li>nodejs</li><li>4thandmayor</li>
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p>To start June 2013 off, <a href="http://www.windowsazure.com/en-us/manage/services/web-sites/">Windows Azure Web Sites</a> released in preview form custom SSL hosting options for Windows Azure Web Sites.</p>
+
+<p>Last night I flipped the switch (CNAME DNS updated) to redirect traffic directly to my Azure Web Site vs using a reverse proxy solution I had in production use before. Things are working great and later today I will spin down and delete the cloud service that was providing the SSL capability for me in the past.</p>
+
+<p>The <a href="https://www.4thandmayor.com/">https://www.4thandmayor.com/</a> secure site and underlying web services are now being hosted by Azure Web Sites with my custom certificate.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thsnissl/AddressLookup.png =700x530" alt="Querying DNS for my site's CNAME." title="Querying DNS for my site's CNAME." /></p>
+
+<p>Previously, the CNAME resolved to <code class="language-plaintext highlighter-rouge">4thssl.cloudapp.net</code>, a Cloud Service Web Role that I was running that sat between clients and my Azure Web Site.</p>
+
+<p>In the spirit of showing how much easier things are now, I wanted to show the certificate upload process, describe some differences and options, and then follow with general information about how I host my site on Azure today.</p>
+
+<p>Note that SSL bindings require the paid Web Sites options. For 4th &amp; Mayor and its app traffic of hundreds of thousands of mobile phones, I’m using multiple Small reserved instances.</p>
+
+<h1 id="a-great-value">A great value</h1>
+
+<p>This change has a financial impact on my mobile application as I’ll be able to cut out the 2-instance Small (A1) Cloud Service deployment that was costing me $60 per instance x 2 = $120 US per month in base compute cost on top of the standard Web Sites costs.</p>
+
+<p>Removing the workaround is a solid win for me and I believe Azure is providing a very good value with its custom SSL service, especially when I compare it to the former costs I had on Amazon with ELB.</p>
+
+<p>I’m going to be using SNI SSL support with Web Sites which currently costs $6/month (this price includes a 33% preview discount) as of 6/18/13. So my savings now will be $112 per month or $1,344 yearly.</p>
+
+<p>When I was using Amazon Web Services with multiple EC2 instances and an elastic load balancer (I had the load balancer do the SSL work with my custom certificate), the load balancer cost me $18/month plus data transfer - a clear win over the Cloud Service workaround, but also a comparable value to the SNI SSL pricing. In general Windows Azure provides load balancing for free as a valuable service on top of the underlying cloud or web site services.</p>
+
+<p>My custom SSL wildcard certificate runs me about $199/year, so ~$17 per month. This is through a 3rd party SSL reseller service.</p>
+
+<h1 id="ssl-support-in-windows-azure-web-sites">SSL support in Windows Azure Web Sites</h1>
+
+<p>Basic SSL is available at no cost with Azure Web Sites, but custom certificates (in preview form) are an additional cost. Custom SSL certs were not available prior to 6/2013 without going through workarounds such as reverse proxies.</p>
+
+<h2 id="free-built-in-microsoft-certificate-and-ssl">Free built-in Microsoft certificate and SSL</h2>
+
+<p>You can offer a secure connection between your Web Site and your customers today: Microsoft produces a wildcard <code class="language-plaintext highlighter-rouge">*.azurewebsites.net</code> certificate and built-in SSL server support. This is often enough for a secure application on the simple scale, mobile apps, or web services.</p>
+
+<p>However clearly providing a custom SSL certificate is a professional feature for a professional web presence, application or corporate deployment. Let’s look at these options that are in preview form as of mid-June.</p>
+
+<h2 id="uploading-my-custom-ssl-certificate-4thandmayorcom">Uploading my custom SSL certificate *.4thandmayor.com</h2>
+
+<p>The <a href="https://manage.windowsazure.com/">Windows Azure Management Portal</a> now exposes SSL certificates within the ‘Configure’ tab for your web sites.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thsnissl/ConfigureTab.png =700x137" alt="The Configure tab in the Windows Azure portal." title="The Configure tab in the Windows Azure portal." /></p>
+
+<p>From the Configure tab you can set properties such as environment variables, associated domain names, connection strings, .NET and PHP runtime versions, etc.</p>
+
+<p>Under the new “certificates” section you first off need to upload a passcode-protected PFX certificate (PKCS12 package). Select the “Upload a certificate” option, find the file on your machine, and then provide the passcode.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thsnissl/UploadCertificate.png =552x393" alt="Uploading a PFX PKCS12 certificate." title="Uploading a PFX PKCS12 certificate." /></p>
+
+<p>If you’re new to this process, you can follow my previous post about <a href="http://www.jeff.wilcox.name/2013/04/4thandmayor-azure-websites/">SSL certificates in general</a> when it comes to the CSR, creating the PFX file, etc.</p>
+
+<p>Once uploaded, you should see the certificate appear along with its thumbprint and other information.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thsnissl/UploadedCertificates.png =700x141" alt="Viewing uploaded certificates." title="Viewing uploaded certificates." /></p>
+
+<p>Once the certificate is uploaded there’s still a few more things to do:</p>
+
+<ul>
+  <li>Make sure the custom domain name is setup and authorized</li>
+  <li>Setup an SSL binding for the Web Site</li>
+</ul>
+
+<h2 id="domain-names">Domain names</h2>
+
+<p>Make sure that your domain name is setup for the Web Site. In the Configure tab this is done with the “Manage Domains” button. You may need to create CNAME or other verification DNS entries for this to work properly and prove that you control the domain.</p>
+
+<p>This is pretty easy and just involves your DNS provider.</p>
+
+<h2 id="looking-at-pricing-and-technical-implementation-options">Looking at pricing and technical implementation options</h2>
+
+<p>Two options exist in preview form for Web Sites right now. You can find current pricing information on the Windows Azure site at <a href="http://www.windowsazure.com/en-us/pricing/details/web-sites/">http://www.windowsazure.com/en-us/pricing/details/web-sites/</a> under the “SSL Connections” tab.</p>
+
+<p>There is currently a preview pricing discount of 33% as of 6/18/2013. Reproducing this list here:</p>
+
+<table class="table">
+<thead>
+	<tr><th>Technology</th>
+	<th>Preview Price</th>
+	<th>Compatibility</th>
+	</tr>
+</thead>
+<tbody>
+<tr>
+	<td>*.azurewebsites.net SSL</td>
+	<td>Free</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SNI SSL</td>
+	<td>$6/month per certificate</td>
+	<td>Modern browsers</td>
+</tr>
+<tr>
+	<td>IP SSL</td>
+	<td>$26/month per cert</td>
+	<td>All browsers</td>
+</tr>
+</tbody>
+</table>
+
+<p>Briefly let’s go over what SNI is: yes, more affordable and modern, but why?</p>
+
+<h3 id="about-ssl-server-name-indication-sni">About SSL Server Name Indication (SNI)</h3>
+
+<p>Per <a href="http://en.wikipedia.org/wiki/Server_Name_Indication">Wikipedia’s page about SNI</a>, Server Name Indication (SNI) is effectively the protocol-level support for secure server certificate exchange for virtual hosts and servers. It is to SSL what HTTP 1.1 was for basic HTTP traffic: an excellent enabler.</p>
+
+<p>It is well-supported today in a variety of modern browser and operating system implementations but SNI is not universal.</p>
+
+<p>SNI helps effectively reduce the price and implementation complexity of SSL because you no longer need dedicated virtual IPs (VIPs) per host name that is being served by a web server, load balancer, or other infrastructure component - these components can instead implement their SSL by performing a certificate lookup and then presenting that custom cert as part of the TLS handshake for that web site.</p>
+
+<h4 id="sni-browserserverstack-compat">SNI: Browser/server/stack compat</h4>
+
+<p>You can read up on the support notes of <a href="http://en.wikipedia.org/wiki/Server_Name_Indication">Wikipedia for SNI</a> but the basics go like this. Do your own testing and research before you commit to your technical SSL implementation choice, of course.</p>
+
+<p>For 4th &amp; Mayor, I have decided that SNI SSL is perfect: my application targets Windows Phone, which supports SNI SSL; I also expose some management functionality through the web site, and for this, I’m expecting modern browsers only. The value is good for my business needs.</p>
+
+<p>Supported:</p>
+
+<ul>
+  <li>IE7 and newer on Windows Vista, Windows 7, Windows 8 and newer</li>
+  <li>Firefox 2.0 and newer</li>
+  <li>Google Chrome</li>
+  <li>Safari 3.0 and newer (OS X 10.5.6, Vista)</li>
+  <li>Android default browser on Honeycomb (v3.x+)</li>
+  <li>Windows Phone</li>
+  <li>Pretty much all modern servers and libraries</li>
+</ul>
+
+<p>Not supported per Wikipedia on 6/18/13:</p>
+
+<ul>
+  <li>IE, Safari on Windows XP</li>
+  <li>Python 2.x</li>
+  <li>BlackBerry browser</li>
+  <li>Windows Mobile (pre-Windows Phone devices)</li>
+  <li>Android &lt;= 2.0</li>
+  <li>wget before 1.14</li>
+  <li>Java before 1.7</li>
+  <li>Some Symbian OS do not have support</li>
+</ul>
+
+<h2 id="creating-ssl-bindings">Creating SSL Bindings</h2>
+
+<p>In the Configure tab for the Web Site, you can configure bindings for the paid SSL options. The free shared certificate for yoursitename.azurewebsites.net just works without a need for any configuration, fyi.</p>
+
+<p>When creating a binding, you create a new entry and pick the underlying SSL technology option. I’m using SNI SSL:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thsnissl/SNI_or_IP.png =226x144" alt="Selecting the technical SSL implementation option." title="Selecting the technical SSL implementation option." /></p>
+
+<p>Finally you select the certificate, associated domain name, etc.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/4thsnissl/SSLBindings.png =700x121" alt="Preparing SSL bindings" title="Preparing SSL bindings" /></p>
+
+<p>This change should be fairly quick, just hit the Save button in the toolbar.</p>
+
+<p>You should now be live on the hosting side.</p>
+
+<h2 id="updating-dns">Updating DNS</h2>
+
+<p>Finally you need to update your DNS entries using CNAMEs to redirect your www (or other custom domain) traffic to the site - in my example this is <code class="language-plaintext highlighter-rouge">4th.azurewebsites.net</code>.</p>
+
+<p>Before updating DNS, I tested by updates my machine’s local <code class="language-plaintext highlighter-rouge">/etc/hosts</code> file (or <code class="language-plaintext highlighter-rouge">%SystemRoot%\System32\Drivers\Etc\LMHOSTS</code> on Windows) to redirect <code class="language-plaintext highlighter-rouge">www.4thandmayor.com</code> to the new <code class="language-plaintext highlighter-rouge">4th.azurewebsites.net</code> name.</p>
+
+<p>This allowed me to use my browser to navigate to the HTTPS endpoint and make sure everything looked OK, certificate was being resolved properly, the cert chain was present, etc.</p>
+
+<p>Once I was happy, I updated my DNS CNAME entry, initially with a short 60 second TTL setting - and since then I have now popped that up to a multiple-hour TTL since things are working great.</p>
+
+<h1 id="background">Background</h1>
+
+<p>For more than a year the cloud backend for my mobile application, 4th &amp; Mayor, has been powered by Node.js, a powerful server-side JavaScript framework.</p>
+
+<p>In the past I hosted this in the Amazon cloud, but during the month of April 2013, I worked to start moving it over to Windows Azure and have been very happy with the results. Full disclosure, I work on the team!</p>
+
+<p>Windows Azure Web Sites is a really powerful hosting environment that lets me pay for reserved computing power with an easy deployment model (just Git pushes of Node.js JS source files). It is a lot easier than standing up my own EC2 or Azure VM instances, configuring software, <code class="language-plaintext highlighter-rouge">yum install</code>s, etc.</p>
+
+<p>My earlier workaround is detailed here: <a href="http://www.jeff.wilcox.name/2013/04/4thandmayor-azure-websites/">http://www.jeff.wilcox.name/2013/04/4thandmayor-azure-websites/</a></p>
+
+<p>Hope this all helps. Happy secure web hosting!</p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+                   
+                   
+                        <h4>Microsoft Azure</h4>
+                        <ul class="list">
+                            <li><a href="https://github.com/azure/">Azure on GitHub</a></li>
+                            <li><a href="https://azure.microsoft.com/en-us/documentation/">Azure docs</a></li>
+                            <li><a href="http://azure.github.io/guidelines.html">How to contribute</a></li>
+                        </ul>
+                   
+                    
+            
+                   
+                   
+                    
+            
+                   
+                   
+                    
+            
+                   
+                   
+                    
+                        <h4>4th &amp; Mayor</h4>
+                        <ul class="list">
+                            <li><a href="http://www.4thandmayor.com/">4th &amp; Mayor site</a></li>
+                            <li><a href="http://www.windowsphone.com/en-us/store/app/4th-mayor/c7d13b8d-9951-e011-854c-00237de2db9e">Download the app</a></li>
+                            <li><a href="https://github.com/jeffwilcox/">Jeff on GitHub</a></li>
+                            <li><a href="https://github.com/jeffwilcox/mpns">MPNS Node.js module</a></li>
+                        </ul>
+                    
+            
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

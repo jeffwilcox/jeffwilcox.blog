@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Silverlight v1.1 authoring and debugging tips for Visual Studio 2005 - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Silverlight v1.1 authoring and debugging tips for Visual Studio 2005">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2007/06/silverlight-debugging-2005/">-->Silverlight v1.1 authoring and debugging tips for Visual Studio 2005<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              19 June 2007
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            [RAW]
+
+<P>As the Silverlight tools story is still young (Visual Studio 2008 really is looking amazing though), I thought I’d share a few solutions I’ve come across while working on Silverlight.</P>
+
+
+
+<P>If you’re <A class="" href="http://blogs.sqlxml.org/bryantlikes/archive/2007/05/02/silverlight-hello-world-in-c-from-vs-2005.aspx" mce_href="http://blogs.sqlxml.org/bryantlikes/archive/2007/05/02/silverlight-hello-world-in-c-from-vs-2005.aspx">using Visual Studio 2005 for Silverlight application development</A> (also <A class="" href="http://silverlight.net/forums/t/370.aspx" mce_href="http://silverlight.net/forums/t/370.aspx">here</A>), these tips are for you!</P>
+
+
+
+<H2>Build straight into IIS folders</H2>
+
+<P>Depending on your personal preference for web development, you may find it handy to simply have your Silverlight class libraries build directly into your <TT>%systemdrive%\inetpub\wwwroot\<EM>projectDirectory</EM>\</TT> folder.</P>
+
+
+
+<P>If you’re also deploying ASP.NET pages, you’ll want to convert the directory into a virtual directory application also.</P>
+
+
+
+<OL>
+
+<LI>Open your project’s Properties [Project | very bottom menu item]</LI>
+
+
+
+<LI>Click on the Build tab</LI>
+
+
+
+<LI>Within the Output group, modify the Output path to point at your virtual directory</LI>
+
+
+
+<LI>In the Debug tab, optionally also update the browser URL and/or command line arguments to point at your local web server &amp; the virtual directory</LI>
+
+</OL>
+
+
+
+<H2>Setup project configurations for Firefox and IE</H2>
+
+<P>Managed debugging works with both Firefox &amp; Internet Explorer, and often you can track down bugs and unknown behavior by intercepting all managed exceptions from within Visual Studio.&nbsp; Instead of having to attach to the Firefox.exe process with each execution, you can just add a new configuration to start it with a press of F5.</P>
+
+
+
+<P><IMG title="Debug tab open, Project Configuration, Visual Studio 2005" style="WIDTH: 540px; HEIGHT: 378px" height=378 alt="Debug tab open, Project Configuration, Visual Studio 2005" src="http://media.jeff.wilcox.name/blog/view/silverlight/vs05-debug-config-sl.jpg" width=540 border=0 mce_src="http://media.jeff.wilcox.name/blog/view/silverlight/vs05-debug-config-sl.jpg"></P>
+
+
+
+<P mce_keep="true">In Visual Studio 2005, you can easily add new project configurations &amp; set the debugging parameters to save time:</P>
+
+
+
+<OL>
+
+<LI>
+
+<DIV mce_keep="true">With the ‘Debug’ configuration selected, I’d recommend these settings for typical IE Silverlight development in VS’05:</DIV></LI>
+
+
+
+<UL>
+
+<LI>
+
+<DIV mce_keep="true">Debug Start Action: Start external program “<TT>d:\program files\Internet Explorer\iexplore.exe</TT>” (adjust to point at your %systemdrive%, and if on an x64 machine, point to your 32-bit Internet Explorer installation)</DIV></LI>
+
+
+
+<LI>
+
+<DIV mce_keep="true">Start Options: Command line arguments should be the URL to your local web server and the virtual directory you deploy to</DIV></LI>
+
+
+
+<LI>
+
+<DIV mce_keep="true">Make sure that ‘Enable unmanaged code debugging’ is -not- checked</DIV></LI>
+
+</UL>
+
+
+
+<LI>
+
+<DIV mce_keep="true">Use the solution Configuration Manager to add/edit project configurations.&nbsp; Edit the ‘Debug’ configuration to use a name such as ‘WebDebugIE’<BR><BR><IMG title="Configuration dropdown in Visual Studio" style="WIDTH: 200px; HEIGHT: 102px" height=102 alt="Configuration dropdown in Visual Studio" src="http://media.jeff.wilcox.name/blog/view/silverlight/vs05-project-configurations-sl.jpg" width=200 border=0 mce_src="http://media.jeff.wilcox.name/blog/view/silverlight/vs05-project-configurations-sl.jpg"><BR></DIV></LI>
+
+
+
+<LI>
+
+<DIV mce_keep="true">Create a new configuration, based on WebDebugIE, and name it WebDebugFirefox.&nbsp; With the new configuration selected, set the external program start path to your Firefox installation, such as “<TT>d:\program files\mozilla firefox\firefox.exe</TT>”</DIV></LI>
+
+</OL>
+
+
+
+<P mce_keep="true">Just select the configuration you’d like to execute your application with and debug away!</P>
+
+
+
+<P mce_keep="true">Once you’ve created one of these projects, you can use the “Export Template” wizard within the File menu to save this as a new template too. </P>
+
+
+
+<H2>Debug symbols and your web server</H2>
+
+<P>A friendly reminder that your web server should be serving PDBs in order to get anything useful out of your debugging experience.&nbsp; You should probably enable serving .pdb, .xaml, and .dll files from any directories where you’re wanting to place your applications created for Silverlight.</P>
+
+
+
+<P><STRONG>On IIS</STRONG>:&nbsp; Add appropriate MIME types in inetmgr.&nbsp; You can use application/x-msdownload, application/xaml+xml, application/octet-steam, as long as it’s a servable type it should be good to go.</P>
+
+
+
+<P><STRONG>On Apache</STRONG>: I’m able to have xaml, pdb, and dll all served out of the box running Apache 2.2.2 on Linux, without any configuration changes or new directives.</P>
+
+
+
+<H2>Don’t use Scriptable objects right out of the gate</H2>
+
+<P>I’ve seen some people utilize the WebApplication.CreateScriptableObject method in their loaded event, and then on their JavaScript page assuming that immediately after calling CreateSilverlight() you can access Control1.content.YourScriptableObject.YourScriptableProperty. </P>
+
+
+
+<P>This isn’t the case, please make sure to check whether Control1 &amp;&amp; Control1.content are null, or use the onLoad event of the Silverlight createObjectEx method in Silverlight.js.&nbsp;</P>
+
+
+
+<P><BR><EM>Hope this helps everyone out there playing around with the Silverlight MIX CTP bits!</EM></P>
+
+
+
+[/RAW]
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

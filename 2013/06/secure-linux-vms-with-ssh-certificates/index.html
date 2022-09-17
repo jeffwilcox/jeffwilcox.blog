@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Creating secure Linux VMs in Azure with SSH key pairs - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Creating secure Linux VMs in Azure with SSH key pairs">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2013/06/secure-linux-vms-with-ssh-certificates/">-->Creating secure Linux VMs in Azure with SSH key pairs<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+              19 June 2013
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            <li>azure</li><li>cloud</li>
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p>A fairly standard security best practice for cloud-connected Linux virtual machines is to create “password-less” virtual machines. This is easy to do with Windows Azure but not the default if you use the “quick create” menu within the <a href="https://manage.windowsazure.com/">Windows Azure Management Portal</a>.</p>
+
+<p>This post briefly describes how to go about creating VMs in a more secure manner, and also what we’re doing to make this easier from command line tools as well.</p>
+
+<h1 id="general-tips-for-securing-ssh">General tips for securing SSH</h1>
+
+<p>Essentially a secure SSH connection is the window to any Linux virtual machine andmore fun than the Remote Desktop experience for Windows VMs (note: remote PowerShell is available and a good option these days, too).</p>
+
+<p>Though very easy to administer from anywhere, exposing SSH to the Internet from the cloud is a potential attack vector through bad passwords, lazy users, denial of service attacks, etc.</p>
+
+<p>Secure SSH should probably be built on top of:</p>
+
+<ul>
+  <li>A username that is not standard such as <code class="language-plaintext highlighter-rouge">root</code> or <code class="language-plaintext highlighter-rouge">admin</code></li>
+  <li>Private key/certificate SSH authentication</li>
+  <li>No password for the user; no password-based login permitted</li>
+  <li>A randomized public SSH port</li>
+</ul>
+
+<p>Your operations staff should work to secure your instances, provide a clear process for getting credentials and access to machines, and considering what audit information may be necessary to maintain for your organization with it comes to key pairs, passwords, connection strings, etc.</p>
+
+<p>To check that your users cannot use passwords to login, once connected to your instance, <code class="language-plaintext highlighter-rouge">sudo tail -n 10 sshd_config</code> and you should see a line about password authentication.</p>
+
+<p>If you created a VM with the password checkbox not checked in the portal, you should see the good line: <code class="language-plaintext highlighter-rouge">PasswordAuthentication no</code></p>
+
+<p>If you have password authentication enabled, once you have the proper keys setup on the machine (this is beyond the scope of this guide, try <a href="http://www.bing.com/">Bing</a>!), you can turn off password authentication.</p>
+
+<h1 id="secure-linux-vms-wssh-on-windows-azure">Secure Linux VMs w/SSH on Windows Azure</h1>
+
+<p>It is easy to create a secure VM by providing a PEM certificate associated with your private key at creation time. This is only available when using the “From Gallery” functionality in the portal, or a command line tool.</p>
+
+<h2 id="avoid-quick-create-for-production-vms">Avoid “Quick Create” for production VMs</h2>
+
+<p>If you use the default “Quick Create” functionality built into the Windows Azure Management Portal, you’ll find that you can set the DNS name, pick a Linux image (I’m a CentOS fan, its from my years of using EC2 + Amazon AMI Linux) and then specify a password.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vmssh/QuickCreateOptions.png =692x497" alt="Quick creation does not allow for custom username and certificate use." title="Quick creation does not allow for custom username and certificate use." /></p>
+
+<p>This is not ideal IMO:</p>
+
+<ul>
+  <li>The username is <code class="language-plaintext highlighter-rouge">azureuser</code>, which is our equivalent of EC2’s <code class="language-plaintext highlighter-rouge">ec2-user</code>: why not go ahead and create a custom username instead that is on the sudoers list?</li>
+  <li>Password-based authentication is currently the only option here. No certificate upload option.</li>
+</ul>
+
+<p>Instead, use the “From Gallery” virtual machine creation option and get more control over your instances! You’ll also be able to work on adding it to a virtual network, setting a custom username, etc.</p>
+
+<h2 id="generating-a-privatepublic-key-pair">Generating a private/public key pair</h2>
+
+<p>Before we can use SSH private/public key pairs, we need to generate them. I recommend using OpenSSL for this, and thankfully every modern operating system has it available… even Windows, if you have <a href="http://git-scm.com/">Git</a> installed.</p>
+
+<p>There is a more in-depth guide available within the Windows Azure documentation - <a href="http://www.windowsazure.com/en-us/manage/linux/how-to-guides/ssh-into-linux/">How to use SSH with Linux on Windows Azure</a>.</p>
+
+<p>I recommend checking that out, too! The <code class="language-plaintext highlighter-rouge">openssl</code> parameters I’ve used here come straight from that guide.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vmssh/GenerateKey.png =699x522" alt="Generating a key pair using openssl on a Mac." title="Generating a key pair using openssl on a Mac." /></p>
+
+<p>To generate a key pair, use this command:</p>
+
+<pre class="brush: bash">
+openssl req -x509 -nodes -days 365 \
+-newkey rsa:2048 \
+-keyout filename.key \
+-out filename.pem
+</pre>
+
+<p>You’ll then be asked for some information you can optionally enter.</p>
+
+<blockquote>
+  <p>Although you’ll be asked for organization information for the cert request, this information is not used. It can be bogus.</p>
+</blockquote>
+
+<p>If you’re using Windows, as long as you have Git installed, you can use the shortcut to Git Bash to get to a terminal with built-in <code class="language-plaintext highlighter-rouge">ssh</code> and <code class="language-plaintext highlighter-rouge">openssl</code> support. The commands will be the same in this case.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vmssh/GenerateKeyWindows.png =700x429" alt="Using Git Bash with built-in openssl to generate a key pair." title="Using Git Bash with built-in openssl to generate a key pair." /></p>
+
+<p>Once you generate a key pair, save the <code class="language-plaintext highlighter-rouge">.pem</code> file - this is the public portion that you’ll upload whenever you create a new virtual machine in Windows Azure.</p>
+
+<p>Store the <code class="language-plaintext highlighter-rouge">.key</code> file safely somewhere on your machine, somewhere that others cannot access. If you’re using a Linux system or a Mac, make sure to <code class="language-plaintext highlighter-rouge">chmod 0600 *.key</code> to secure it from others’ access. Many SSH clients will not allow you to connect to a machine if the key file is unsecured.</p>
+
+<h2 id="creating-a-secured-linux-vm-in-azure">Creating a secured Linux VM in Azure</h2>
+
+<p>OK let’s create a virtual machine now in the Windows Azure Management Portal. Go to the big New button in the bottom left and select Compute, Virtual Machine, and From Gallery.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vmssh/NewVirtualMachine.png =700x459" alt="Creating a new VM with the From Gallery option in the management portal." title="Creating a new VM with the From Gallery option in the management portal." /></p>
+
+<p>Next, pick the OS. I prefer CentOS myself but there are several Linux distribution images provided by third parties that are great, too.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vmssh/SelectOperatingSystem.png =700x503" alt="In the Gallery, selecting the OpenLogic CentOS Linux VM image." title="In the Gallery, selecting the OpenLogic CentOS Linux VM image." /></p>
+
+<p>Next, you need to give the machine a name and specify affinity group / network / region options. I’m creating this VM in California, so I’ve selected “West US” as the region.</p>
+
+<p>I recommend that you also create a storage account for each region you deploy VMs so that you can use that account. There is also an “auto-generate storage account” option which will create a GUID-named storage account for you. These are not pretty!</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vmssh/MachineName.png =700x503" alt="Specifying a DNS name for the machine, region, and storage account." title="Specifying a DNS name for the machine, region, and storage account." /></p>
+
+<p>Now for <em>the real configuration page</em>. This is where we tell Azure that we want a VM configured with a key pair but no password.</p>
+
+<p>Make sure to not check the “provide a password” checkbox.</p>
+
+<p>Next, upload a certificate. This is the <code class="language-plaintext highlighter-rouge">.pem</code> file you generated above.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vmssh/MachineAuthentication.png =700x503" alt="Virtual machine configuration - this is where you specify key-only authentication for a new Linux VM." title="Virtual machine configuration - this is where you specify key-only authentication for a new Linux VM." /></p>
+
+<p>You can then hit Next, skip that page’s options for simple VMs (but where you would create an availability group required for redundancy), then finish by pressing the finalize/check at the end of the wizard.</p>
+
+<p>The certificate will be added to the account, VM will now be provisioned, and then eventually the new VM will boot and be available.</p>
+
+<p>The operational status bar at the bottom of the portal will provide status; you can expand it for details of which step(s) that the portal is currently processing.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vmssh/StatusBar.png =700x119" alt="The operational status bar at the bottom of the management portal will provide information about the provisioning of the virtual machine in Windows Azure." title="The operational status bar at the bottom of the management portal will provide information about the provisioning of the virtual machine in Windows Azure." /></p>
+
+<p>Once the VM is up, you can explore its page within the portal.</p>
+
+<p>There is a quick glance pane on the right side that shows the SSH port that you can connect to, the DNS name, virtual IP, and other core values.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vmssh/QuickLook.png =247x608" alt="The right pane of the management page for a VM will provide information about SSH endpoints, hostname, VIP, etc." title="The right pane of the management page for a VM will provide information about SSH endpoints, hostname, VIP, etc." /></p>
+
+<p>Also keep an eye on the cores count. Each core is typically billed as 1 Small VM instance unit, with the exception of Extra Small (A0) types.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vmssh/CoresView.png =651x135" alt="Keep an eye on your cores." title="Keep an eye on your cores." /></p>
+
+<h2 id="connecting-to-a-virtual-machine">Connecting to a virtual machine</h2>
+
+<p>To actually connect, you need an SSH client.</p>
+
+<ul>
+  <li>Linux: use <code class="language-plaintext highlighter-rouge">ssh</code></li>
+  <li>Mac: use <code class="language-plaintext highlighter-rouge">ssh</code> in the Terminal app</li>
+  <li>Windows: use <code class="language-plaintext highlighter-rouge">ssh</code> within a <a href="http://git-scm.com/">Git</a> Bash shell session -or- download and use <a href="http://www.putty.org/">Putty</a></li>
+</ul>
+
+<p>Simply SSH, providing various parameters:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">-p PORT</code>: the port to connect to, or 22 if using the default endpoint</li>
+  <li><code class="language-plaintext highlighter-rouge">username@hostname</code>: the username you use at the cloud service DNS name. Alternatively you may use the <code class="language-plaintext highlighter-rouge">-l USERNAME</code> parameter.</li>
+  <li><code class="language-plaintext highlighter-rouge">-i PRIVATE_KEY_FILE</code>: point to the <code class="language-plaintext highlighter-rouge">.pem</code> file. On Mac/Linux, make sure it is chmod’d to 0600 to connect</li>
+</ul>
+
+<p>So in this example I used this command:</p>
+
+<pre class="brush: bash">
+ssh -i ./jeffwilcox.key jwilcox@cloudwebx.cloudapp.net -p22
+</pre>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vmssh/SSH.png =699x480" alt="Using SSH to connect to your new VM." title="Using SSH to connect to your new VM." /></p>
+
+<p>If you use Putty on Windows, you will need to do some conversion of your private key to be in a format that Putty enjoys.</p>
+
+<p>I just use Git these days.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/vmssh/GitBashSsh.png =700x178" alt="Using Git Bash and its built-in openssl to SSH into your new VM." title="Using Git Bash and its built-in openssl to SSH into your new VM." /></p>
+
+<p>Anyone remember Cygwin?</p>
+
+<h2 id="consider-creating-a-virtual-network">Consider creating a Virtual Network</h2>
+
+<p>Production services should consider not exposing SSH to the Internet at all. Instead, you can actually remove any and all SSH access from the “ENDPOINTS” configuration options in the management portal.</p>
+
+<p>You can then use the VPN functionality to connect your site to the virtual network, for example. There is a cost associated with this.</p>
+
+<p>Another option is to use another VM, for development use, to essentially act as a secure intermediary between the Internet and your virtual network-connected VMs.</p>
+
+<p>By connecting to such an in-between VM (it could be an Extra Small instance, which costs $0.02 per hour) from the Internet, you can then SSH to any other machine within your virtual network, regardless of the underlying endpoints configuration for the Internet and load balancer.</p>
+
+<p>You can still use OS-level firewalls to prevent access to most clients and work off a whitelist of connections, too.</p>
+
+<h2 id="modifying-endpoints">Modifying endpoints</h2>
+
+<p>You can change the SSH endpoint, or delete it, from the management portal. Check the “ENDPOINTS” tab.</p>
+
+<p>Remember that you need to specify the port to connect to SSH with, so when using the <code class="language-plaintext highlighter-rouge">ssh</code> command, you’ll need to include the <code class="language-plaintext highlighter-rouge">-p PORTNUMBER</code> parameter if you’re not using the default value of port 22.</p>
+
+<h1 id="support-in-tools-apis-and-the-portal">Support in tools, APIs and the portal</h1>
+
+<p>We’re working to make sure that you can create Linux VMs easily without a password. On the SDK team, we’re busy updating our tools to enable this scenario in the coming sprints &amp; releases.</p>
+
+<p>I’ll update this post once we ship some updated tooling!</p>
+
+<h2 id="command-line-tooling-support">Command line tooling support</h2>
+
+<p>We’d like to support creating “password-less” Linux virtual machines via our command line tools for Mac, Linux and Windows, and are working toward supporting it.</p>
+
+<h3 id="cross-platform-command-line-tools">Cross-platform command line tools</h3>
+
+<p>I’ve submitted pull requests to the Azure Node SDK as well as the cross-platform command line tool to enable a new parameter <code class="language-plaintext highlighter-rouge">--no-ssh-password</code>. We’ll still discuss naming and other options before shipping this.</p>
+
+<p>You can follow the progress in this issue: <a href="https://github.com/WindowsAzure/azure-sdk-tools-xplat/issues/586">586: azure vm create: Cannot create a passwordless Linux VM</a>.</p>
+
+<h3 id="powershell">PowerShell</h3>
+
+<p>A similar fix should be taken to add the new feature to the Windows Azure PowerShell, too. I’ve opened an issue: <a href="https://github.com/WindowsAzure/azure-sdk-tools/issues/1627">1627: Add-AzureProvisioningConfig -Linux should support creating passwordless VMs</a>.</p>
+
+<h3 id="service-management-rest-support">Service Management REST support</h3>
+
+<p>SSH certificate-only virtual machines can be created via the service management REST interface that Windows Azure exposes.</p>
+
+<p>In order to do this, some steps include:</p>
+
+<ul>
+  <li>Adding the SSH certificate information</li>
+  <li>Within a LinuxProvisioningConfigurationSet, setting <code class="language-plaintext highlighter-rouge">DisableSshPasswordAuthentication</code> to True in the REST options.</li>
+  <li>The UserPassword XML element must still be present, but be just an empty XML element. Omitting the XML element will cause an error to be raised by the server-side validation.</li>
+</ul>
+
+<p>See also <a href="http://msdn.microsoft.com/en-us/library/windowsazure/jj157194.aspx">the service management REST endpoint documentation on MSDN</a>.</p>
+
+<h3 id="management-portal-support">Management portal support</h3>
+
+<p>The portal supports certificate-only VMs (no passwords) when you create a new VM via the “From Gallery” custom window view. Make sure not to check the “Password” option on the Virtual Machine Configuration screen.</p>
+
+<p>Have a nice, secure day.</p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+                   
+                   
+                        <h4>Microsoft Azure</h4>
+                        <ul class="list">
+                            <li><a href="https://github.com/azure/">Azure on GitHub</a></li>
+                            <li><a href="https://azure.microsoft.com/en-us/documentation/">Azure docs</a></li>
+                            <li><a href="http://azure.github.io/guidelines.html">How to contribute</a></li>
+                        </ul>
+                   
+                    
+            
+                   
+                   
+                    
+            
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

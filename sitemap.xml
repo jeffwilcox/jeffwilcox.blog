@@ -1,0 +1,1719 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">   
+  
+<url>
+  <loc></loc>
+    <lastmod>2022-09-17T20:19:42+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>http://www.jeffwilcox.blog/about/</loc>
+    <lastmod>2022-09-17T20:19:42+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>  
+  
+  <url>
+    <loc>/2019/11/evcondo/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2019/06/scaling-25k/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2018/04/seattle-network/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2017/02/azure-private-npm/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2017/02/mail2bug/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2015/11/azure-on-github/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2014/04/wamlmaml/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2013/09/tpm/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2013/09/mongodb-azure-linux/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2013/08/command-line-improvements/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2013/06/portal-double-click/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2013/06/secure-linux-vms-with-ssh-certificates/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2013/06/waz-web-sites-ssl/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2013/06/creative-cloud-costs/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2013/04/4thandmayor-azure-websites/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2013/04/windows-azure-table-explorer/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2012/05/favoring-active-users-for-tiles-and-processing/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2012/03/4th-march-28th/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2012/03/one-year-of-4thandmayor/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2012/02/to-the-cloud/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2012/01/jeffwilcox-maps/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2012/01/windows-phone-apps-built-out-of-the-3-ps-panoramas-pivots-and-pages/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2012/01/phonethememanager/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2012/01/windows-phone-gzip-support-by-morten/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2012/01/metroradio-design/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2012/01/wpqr-control/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/12/my-new-windows-phone-emulator-theme/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/12/node-mpns/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/11/nov2011phonetoolkit/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/10/hyperlinkbutton-empty-style-for-phone/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/10/screenshots-cs-how-to-capture-screenshots-of-your-app-on-your-device/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/10/metrogridhelper/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/10/node-express-imagemagick-square-resizing/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/09/a-note-about-remote-uris-in-windows-phone-secondary-tiles/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/09/build-wp-performance/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/08/august2011phonetoolkit/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/07/my-app-about-page/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/07/creating-a-global-progressindicator-experience-using-the-windows-phone-7-1-sdk-beta-2/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/07/slm-perf-blog/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/06/4am-v2/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/06/updated-ut-mango-bits/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/05/april11-was-busy/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/04/speaker-evaluations-please/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/04/mix11-wilcox-talk/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/04/focus-theme/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/03/wp7-talking-about-analytics/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/03/metro-design-guide-v1/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/03/announcing-4thandmayor/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/03/4am-leaderboard-notification/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/03/upcoming-2011-speaking-engagements/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/03/building-an-unofficial-4sq-app-for-wp7/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/03/acb-in-pivot/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/02/pivot-title-textwrapping/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/02/feb2011-sl4wptk/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2011/02/notes-for-2011/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/12/betterscrollviewer/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/12/updated-phone-hyperlink-button/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/11/phonehyperlinkbutton/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/11/toolkit-page-transitions/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/11/demo-myphotoapp/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/11/smooth-loading-performanceprogressbar/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/11/wp7-panorama-smooth-background-changing/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/11/dec2010-firestarter-event/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/11/oredev-talks-2010/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/10/my-jaoo-2010-talk/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/09/slm-media/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/09/codeplex-controls-transition-guide-online/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/09/phone-tools-toolkit-and-more-released/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/08/progressbarperftips2/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/08/list-capacity-info/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/08/using-blend-to-find-default-style-xaml/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/08/looking-ahead-at-panorama-and-pivot/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/08/windows-phone-performance/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/08/tiltcontentcontrol/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/08/performanceprogressbar/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/07/counters/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/05/sl3-utf-bits/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/05/phone-developers-phone-developers/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/05/my-childwindow-design/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/05/zunelike-contextmenu-style/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/05/silverlight-testing-at-teched-2010/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/05/new-2010-test-framework/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/04/propertychangedbase-crossthread/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/04/template-part-tips/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/03/silverlight4-new-parser/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/03/windowsphone-barcode/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/03/peppermint-src/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/03/no-march-release/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/03/data-binding-user-settings-in-windows-phone-applications/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/03/office-memorial/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/03/toolkit-and-the-windows-phone/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/03/sxs-sl3-sl4-build-machine/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/03/mix10-testing-talk-online/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/03/inserttagsnippet-win7/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/03/syntax-highlighting-text-block/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/03/mix10-cl59-intro/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/03/vsixcodesigning/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/02/codesigning101/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/02/visualstudio2010guides/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/02/wpfautocompletebox/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2010/02/silverlight-snippets/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/12/useless-cs-regions/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/11/november-walkthrough/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/11/out-of-browser-tutorial/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/11/busy-indicator-control/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/11/app-library-caching-nov-2009/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/11/toolkit-webpi/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/10/roundtripping-silverlight-with-2010/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/10/toolkit-extmaps/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/10/toolkit-october-2009/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/09/quick-read-silverlight-barcodes/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/09/silverlight-toargb/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/09/football-plus-an-accordion-control/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/08/vb-highlighting-textblock/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/08/sl3-highlighting-text-block/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/08/custom-controls-simple-code-guidelines/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/07/silverlight-3-unit-test-framework-binaries-available/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/07/dlr-test-links/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/07/whats-jeff-been-up-to/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/07/three-great-screencasts-on-silverlight-unit-testing/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/07/silverlight-2-unit-test-framework-binaries-updated/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/06/wpf-charting-release/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/06/09-ee-awards/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/04/might-remove-extra-drop-down-events/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/04/autocompletebox-api-feedback/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/04/mix09-source/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/03/sl3-highlighting-autocompletebox/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/03/autocompletebox-march-09/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/03/sxs-sl2-sl3-building/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/03/silverlight-toolkit-installer/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/03/mymix09-session/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/03/gravatar-control/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/03/themetool/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/03/communityupdatemarch09/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/03/mix09-talks/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/03/asynchronous-testing/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/02/other-cloud-services/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/02/comparing-toolkit-build-times/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/02/toolkit-community/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/02/thanks-to-ssd/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/01/silverlight-msbuild-tricks-video/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/01/independent-silverlight-msbuild/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/01/acb-selecteditem-on-commit-only/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/01/uniform-grid/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/01/default-style-task/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/01/nunit-and-silverlight/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/01/write-a-vb-text-filter/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/01/bunch-of-posts/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/01/are-you-using-the-toolkit/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/01/popular-2008-posts/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2009/01/housekeeping-2009/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/12/textsearchlistbox/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/12/selecteditem-dcr/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/12/codeplex-silverlight-hosting/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/12/pageup-pagedown/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/12/r-integration-for-the-silverlight-unit-test-framework/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/12/cycle-navigation/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/12/december-autocompletebox/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/12/charting-rich-tooltips/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/12/toolkit-december-2008/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/12/silverlight-unit-testing-december-2008/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/12/md5-release-mspl/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/12/testable-webclient/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/11/autocompletebox-missing-guide/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/11/managed-html-controls-source/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/11/highlighting-autocompletebox/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/11/silverlight-toolkit-folks/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/11/silverlight-2-unleashed-book/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/11/editable-combo-box/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/11/test-framework-source/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/11/unblock-chms/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/11/cross-domain-encoder-media-player/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/11/xap-mime-type/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/11/long-live-renaming/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/10/video-autocompletebox/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/10/introducing-autocompletebox/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/10/fivethings-autocompletebox/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/10/open-source-silverlight-toolkit/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/10/ut-docs/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/10/final-ut-templates/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/10/controls-are-coming/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/10/html-controls-for-silverlight/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/09/rc0-new-test-features/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/09/unit-testing-rc0-changes/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/09/do-it-in-js-and-cs/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/09/using-ielaunchurl-to-launch-and-retrieve-the-pid-of-a-protected-mode-ie7-window/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/09/using-ielaunchurl-in-c-to-launch-a-protected-mode-internet-explorer-7-window/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/09/silverlight-unit-test-framework-will-be-updated-for-the-release-candidate-tomorrow/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/09/ut-on-code-gallery/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/08/quickzeropixel/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/08/linq-example-correction/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/08/late-to-the-linq-party/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/08/utbasics/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/07/visibility-type-converter/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/07/my-summer-silverlight-blogging/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/07/fjcore-source/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/07/0807misc/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/06/browserscreeninformation/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/06/silverlight-unit-test-framework-download-for-silverlight-2-beta-2/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/06/unit-testing-templates-for-microsoft-silverlight-2-beta-2/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/06/tech-ed-08-talk/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/05/dennis-dietrich/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/05/clipboard-access/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/05/blog-syntax/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/04/bookprocsharp2008/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/04/js-arrays/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/04/link-cloud/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/03/silverlight2-unit-testing/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/03/test-templates/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/03/vid-silverlight-control-ut/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/03/silverlight-posts-1/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/03/silverlight-unit-testing/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/03/silverlight2-htmlextensions/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/03/silverlight-controls-source-code/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/03/silverlight-2-md5/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/03/mix08-preview/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/03/join-microsoft-sdet/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/02/starbucks-to-become-chill-once-again/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/02/blog-upgrade/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2008/01/book-review-pro-javascript-design-patterns-by-harmes-and-diaz/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2007/11/vista-multiple-clocks/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2007/10/silverlight-md5/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2007/10/beautiful-redmond/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2007/10/silverlight-os-button/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2007/10/google-analytics-with-silverlight/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2007/09/managed-html-extensions/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2007/09/fluxify/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2007/09/blog-update/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2007/09/adobe-cs3-is-great/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2007/08/silverlight-debugging-pdb-reminder/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2007/07/silverlight-javascript-injection/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2007/06/silverlight-debugging-2005/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2007/05/xml-dom-for-silverlight/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2007/04/silverlight-integration/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2007/04/silverlight-great-new-tool/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2007/03/vista-file-restore/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2007/03/comparing-power-usage-at-home/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2007/02/framework-design-guidelines/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2007/01/aspnet-full-iis7-install/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2006/12/aspnet-upgraging-pipeline-mode/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2006/11/testing-asp-net-for-vista/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2006/11/aspnet-v11-vista-install/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>/2005/07/startup/</loc>
+    <lastmod>2022-09-17 20:19:42 +0000</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+</urlset>

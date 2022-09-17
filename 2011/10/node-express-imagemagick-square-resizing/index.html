@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Resizing images to square, aspect-ratio friendly bits with Node, Express, and ImageMagick - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Resizing images to square, aspect-ratio friendly bits with Node, Express, and ImageMagick">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2011/10/node-express-imagemagick-square-resizing/">-->Resizing images to square, aspect-ratio friendly bits with Node, Express, and ImageMagick<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+               5 October 2011
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p><em>I’ve been playing around with Node.js a little more recently and wanted to share a little short lesson I had. A quick little break from the phone client…</em></p>  <p>As part of the cloud environment for my application, I have a service that dynamically resizes a given image from Foursquare into a Windows Phone tile size (173x173 pixels). This is used for the “pin to start” feature of 4th and Mayor.</p>  <p>The initial implementation of this service was done in PHP.</p>  <p>However, the new version of my cloud infrastructure is powered by Node.js for the most part, and I ran into some fun problems trying to get ImageMagick to properly resize images to be aspect-aware. I am using Express for servicing notifications and other endpoints.</p>  <h3>How the resized image is used</h3>  <p>Here’s an image from a Foursquare user of Microsoft Building 40, where my office is right now. I like to keep it pinned to my start screen, and the source image from fsq is actually much larger and not properly sized or cropped for tile display.</p>  <p><a href="http://az414997.vo.msecnd.net/wordpress/2011/10/Pinned4th.png"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="Pinned4th" border="0" alt="Pinned4th" src="http://az414997.vo.msecnd.net/wordpress/2011/10/Pinned4th_thumb.png" width="466" height="417" /></a></p>  <p>When the pinned tile is created, the remote URI points to the 4thandmayor.com cloud presence, and then server-side I resize the Foursquare image provided in the query string. (I also validate that it’s actually an image from there, etc.)</p>  <h3>Resizing images using node-imagemagick</h3>  <p>I’m wanting to use the <a href="https://github.com/rsms/node-imagemagick/">node-imagemagick module</a> with Node to do the resizing (similar to what PHP was doing with ImageMagick before). It really just shells out to the ImageMagick ‘convert’ program.</p>  <p>There is a built-in “resize” function, however I don’t exactly want to use that: here’s what happens when I resize the image the standard way. I just assumed that it would figure out a good size and crop. It’s been a while since I used this stuff in college!</p>  <pre class="brush: js">var im = require(&quot;imagemagick&quot;);
+im.resize({
+    srcData : img,
+    strip : false,
+    width : 173,
+    height : 173
+}, function(err, stdout, stderr)
+{
+    if (err){
+        redirectToStandardTile(res);
+    } else {
+        res.contentType(&quot;image/jpeg&quot;);
+        res.end(stdout, 'binary');
+    }
+});</pre>
+
+<p><a href="http://az414997.vo.msecnd.net/wordpress/2011/10/173tall.jpg"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="173tall" border="0" alt="173tall" src="http://az414997.vo.msecnd.net/wordpress/2011/10/173tall_thumb.jpg" width="130" height="173" /></a></p>
+
+<p>The aspect ratio is maintained.</p>
+
+<h3>Trying to crop the image instead</h3>
+
+<p>There’s a separate crop function as well, but it works only on files, no streams. I’d like to not use temporary files if I can and instead just pipe around the raw image bytes. There is also a thumbnail command built into ImageMagick, but I don’t want to reinvent the wheel and not be able to use the helpful node library created by <a href="https://github.com/rsms">Rasmus</a>.</p>
+
+<h3>Trying the width x height ! option</h3>
+
+<p>You can also force to be a specific size, such as this, by appending an exclamation point to the height (as a string literal). Not good for me (the photo is stretched):</p>
+
+<pre class="brush: js">var im = require(&quot;imagemagick&quot;);
+im.resize({
+    srcData : img,
+    strip : false,
+    width : 173,
+    height : &quot;173!&quot; // force the sizing.
+}, function(err, stdout, stderr)
+{
+    if (err){
+        redirectToStandardTile(res);
+    } else {
+        res.contentType(&quot;image/jpeg&quot;);
+        res.end(stdout, 'binary');
+    }
+});</pre>
+<a href="http://az414997.vo.msecnd.net/wordpress/2011/10/173aspectforced.jpg"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="173aspectforced" border="0" alt="173aspectforced" src="http://az414997.vo.msecnd.net/wordpress/2011/10/173aspectforced_thumb.jpg" width="173" height="173" /></a> 
+
+<h3>Using resize plus extents to create a square 173x173 thumbnail</h3>
+
+<p>Instead, I decided to append custom arguments for ImageMagick’s convert program, and finally came up with a combination of extent values, etc., that work for my needs. Here’s what finally worked for me:</p>
+
+<ul>
+  <li>Using the hat appended to the height value (173^ in a string literal instead of 173) </li>
+
+  <li>Including the gravity argument </li>
+
+  <li>Setting the extent to be the square 173x173 area of interest </li>
+</ul>
+
+<pre class="brush: js">// Resize a photo for use in a live tile or secondary place tile.
+app.get('/tile.php', function (req, res) {
+    var original = req.param(&quot;i&quot;);
+    if (original) {
+        getImage(original, function (err, img) {
+            if (!err &amp;&amp; img) {
+                var im = require(&quot;imagemagick&quot;);
+                im.resize({
+                    srcData : img,
+                    strip : false,
+                    width : 173,
+                    height : &quot;173^&quot;,
+                    customArgs: [ 
+                         &quot;-gravity&quot;, &quot;center&quot;
+                        ,&quot;-extent&quot;, &quot;173x173&quot;
+                        ]
+                }, function(err, stdout, stderr)
+                {
+                    if (err){
+                        redirectToStandardTile(res);
+                    } else {
+                        res.contentType(&quot;image/jpeg&quot;);
+                        res.end(stdout, 'binary');
+                    }
+                });
+            } else {
+                redirectToStandardTile(res);
+            }
+        });
+    }
+});
+
+function redirectToStandardTile(res) {
+    res.redirect(&quot;http://www.4thandmayor.com/app/genericTile.png&quot;);
+}
+
+function getImage(uri, callback) { // (err, res)
+    request(
+    {
+        encoding: 'binary',
+        uri: uri,
+    }, function (error, response, body) {
+        if (!error &amp;&amp; response.statusCode == 200) {
+            callback(null, body);
+        } else {
+            callback(error, null);
+        }
+    });
+}</pre>
+
+<p><a href="http://az414997.vo.msecnd.net/wordpress/2011/10/173tile.jpg"><img style="background-image: none; border-right-width: 0px; padding-left: 0px; padding-right: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px; padding-top: 0px" title="173tile" border="0" alt="173tile" src="http://az414997.vo.msecnd.net/wordpress/2011/10/173tile_thumb.jpg" width="173" height="173" /></a></p>
+
+<p>This implementation includes the Express code, in case you were wondering about doing that part. I’m attaching to the same former PHP URI for this functionality so that I don’t have to update paths and can continue to serve older versions of the app as appropriate.</p>
+
+<p>Hope this helps.</p>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>

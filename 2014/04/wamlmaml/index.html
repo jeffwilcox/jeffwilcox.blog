@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Introducing the Microsoft Azure Management Libraries - Jeff Wilcox</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Introducing the Microsoft Azure Management Libraries">
+    <meta name="author" content="Jeff Wilcox">
+    
+
+    <link href="http://feeds.feedburner.com/jeffwilcox" rel="alternate" title="Jeff Wilcox" type="application/atom+xml" />
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+    <link href="/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/css/jmw.css" rel="stylesheet"/>
+    <script src="//ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/toc.js"></script>
+    <script src="/js/jmw.js"></script>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shCore.css"/>
+    <link type="text/css" rel="stylesheet" href="//az414997.vo.msecnd.net/waz/syntax/styles/shThemeDefault.css"/>
+  </head>
+<body data-spy="scroll" data-target=".wiki-sidebar">
+    <div class="navbar navbar-inverse" role="navigation"><!-- formerly navbar-fixed-top -->
+        <div class="navbar-inner">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">Jeff Wilcox</a>
+                </div>
+                <div class="collapse navbar-collapse navbar-ex1-collapse">
+                    <ul class="nav navbar-nav">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about/">About</a></li>
+                    <li><a href="/posts/">Posts</a></li>
+                    <li><a href="https://github.com/jeffwilcox">//github.com/jeffwilcox</a></li>
+                    <li><a href="https://twitter.com/jeffwilcox">@jeffwilcox</a></li>
+                    <li><a href="http://linkedin.com/in/jeffreywilcox">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="container">
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-8">
+
+        <div id="post">
+          <h2 class="post-title"><!--<a href="/2014/04/wamlmaml/">-->Introducing the Microsoft Azure Management Libraries<!--</a>--></h2>
+          <div class="pull-right">
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="jeffwilcox" data-count="none">Tweet</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></p>
+          </div>
+          <p id="date" class="muted">
+            
+            
+            <small>
+               5 April 2014
+            </small>
+            
+            <!--
+            <ul class="categories nav nav-pills">
+            <li>azure</li><li>microsoft-azure</li><li>cloud</li>
+            </ul>
+            -->
+            
+          </p>
+
+          <div class="blogcontent">
+            <p>I’ve been very pleased with the positive energy circling around Microsoft recently. I wanted to take a moment to share some information about the great work done by the Azure SDK team in <a href="http://azure.microsoft.com/en-us/updates/management-libraries-for-net-release-announcement/">releasing v1.0 of the Microsoft Azure Management Libraries for .NET</a>.</p>
+
+<p>The Microsoft Azure Management Libraries (MAML) are a collection of REST wrapper assemblies that compose together with a common library and shared lightweight dependencies to offer service automation, management and software-as-a-service capabilities to Azure developers.</p>
+
+<p>With this release, REST management libraries are now available for a majority of today’s Azure services. The libraries are straightforward, easy to use, and approachable: they are great building blocks.</p>
+
+<p><a href="http://www.nuget.org/packages?q=Microsoft.WindowsAzure.Management">Shipped via NuGet</a>, automating Azure is now as easy as installing the package(s) for the services you want to work with, hooking up the necessary credentials, and creating clients using the centralized CloudContext type.</p>
+
+<p>The .NET libraries embrace the expectations of modern developers and are fully async/await, portable class libraries with platform light-up, use Semantice Versioning (SemVer), have very few dependencies (HttpClient and Json.NET), <a href="https://github.com/Azure/azure-sdk-for-net">are open source on GitHub</a>, and ship with useful IntelliSense documentation and symbol/source packages for easy debugging.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/wamlmaml/nuget.png =700x543" alt="Grab individual service libraries or pull in a good starting point by installing Microsoft.WindowsAzure.Management.Libraries from the NuGet package manager or console." title="Grab individual service libraries or pull in a good starting point by installing Microsoft.WindowsAzure.Management.Libraries from the NuGet package manager or console." /></p>
+
+<p>I’d strongly recommend that you take a moment to open Brady Gaster’s post about the release in another tab: <a href="http://www.bradygaster.com/post/announcing-the-general-availability-of-the-microsoft-azure-management-libraries-for-net">Announcing the General Availability of the Microsoft Azure Management Libraries for .NET</a>. He also gave a one hour talk on <a href="http://channel9.msdn.com/Events/Build/2014/3-621">Azure automation at Build 2014</a> that is worth a watch.</p>
+
+<p>Please join me in congratulating the SDK engineering team in this important 1.0 milestone. Do share your feedback with the team and go build something awesome!</p>
+
+<h1 id="a-battle-tested-investment-in-the-future">A battle-tested investment in the future</h1>
+
+<p>The underlying technology developed as part of this effort has great potential for keeping Azure libraries much more current across a large swatch of supported cloud development languages.</p>
+
+<p>The management libraries are built from a service definition specification using a sophisticated code generator that takes into account each target platform’s ideal libraries and patterns for asynchronous coding, REST communication, JSON and XML serialization and deserialization, tracing and pipelining, and more.</p>
+
+<p>The team has already released libraries for Node.js, is working hard on a Java solution, and some day will be able to simultaneously release updates across languages and services very rapidly.</p>
+
+<p>A small surprise: although the 1.0 General Availability (GA) has just happened, MAML has been powering the Azure PowerShell experience since <a href="https://github.com/Azure/azure-sdk-tools/releases/tag/v0.7.0-October2013">October 2013’s v0.7.0 release</a>. We did call the libraries WAML back then, because Microsoft’s public cloud had a different name at the time.</p>
+
+<p>The old management code was replaced with the new MAML code and has shipped in 7 releases since then with minimal regressions.</p>
+
+<blockquote>
+  <p>To make an automotive comparison, the team did a great job of essentially ripping out the engine of a running diesel car and replacing it with a sweet new electric motor.</p>
+</blockquote>
+
+<p>Building the Azure PowerShell Cmdlets on top of MAML has been a great success. I still remember the joy the team had when we were approving a commit that removed over 125,000 lines of code with the move to MAML.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/wamlmaml/powershelllayering.png =700x228" alt="The Azure PowerShell product has actually been layered on top of the management libraries for over 6 months." title="The Azure PowerShell product has actually been layered on top of the management libraries for over 6 months." /></p>
+
+<p>Node.js (JavaScript) libraries are also being created from the same specifications and power much of the <code class="language-plaintext highlighter-rouge">azure</code> cross-platform command line interface for Mac, Windows and Linux. Using our codegen technology and the same service specs helps to drive down defects and improve the team’s engineering efficiency.</p>
+
+<h1 id="azures-rest-management-apis">Azure’s REST Management APIs</h1>
+
+<p>Automating Azure has been possible for years but never very fun. The <a href="http://msdn.microsoft.com/en-us/library/ee460799.aspx">MSDN Service Management REST documentation</a> is rather complete, but as more services and releases come online across the huge organization, the docs have become less easy to grok. We’re aware of times when new functionality has shipped but the documentation has lagged. We have to do better.</p>
+
+<p><em>I still keep the MSDN page in my favorites while using MAML, but it is a pleasure to no longer have to hand-roll tedious REST calls. We’ve incorporated a lot of the MSDN docs into the inline IntelliSense documentation in the .NET libraries.</em></p>
+
+<p>When you look at an Azure REST API on the wire you can identify where it lives in today’s world:</p>
+
+<ul>
+  <li>a front-end management APIs that flow through the red dog front-end (<code class="language-plaintext highlighter-rouge">RDFE</code>)</li>
+  <li>a separate service endpoints</li>
+</ul>
+
+<p>MAML focuses on the RDFE and a few service endpoints for specific clients.</p>
+
+<h2 id="rdfe-service-management-endpoints">RDFE: Service Management endpoints</h2>
+
+<p>RDFE is the front end to Azure’s services and powers authentication, service provisioning, deprovisioning, configuration, and other operations related to billing operations.</p>
+
+<p>Today these APIs live at <code class="language-plaintext highlighter-rouge">https://management.core.windows.net</code> for public Azure. RDFE is also a part of the <a href="http://www.microsoft.com/en-us/server-cloud/products/azure-pack/default.aspx#fbid=Jb4QGsmKNQ2">on-premise Azure Pack</a> and other clouds such as <a href="http://windowsazure.cn/zh-cn/?l=zh-cn">Windows Azure in China</a> with different endpoints.</p>
+
+<p>Authentication with RDFE is performed using client management certificates for security, although a bearer-token alternative is now available thanks to the power of Azure Active Directory.</p>
+
+<h2 id="service-specific-endpoints">Service-specific endpoints</h2>
+
+<p>Separately, there are service APIs, and they often live off of slightly different URLs: the storage service is a good example, where you’ll find that you can provision storage accounts within a subscription using management APIs, but then actually dealing with blobs, tables and queues, you interact with different endpoints.</p>
+
+<p>When you use Azure’s Storage Service, for example to store a blob, you actually use a set of storage-specific credentials and then communicate with the blob service through the <code class="language-plaintext highlighter-rouge">https://MYACCOUNT.blob.core.windows.net</code>, where MYACCOUNT is the name of your storage account.</p>
+
+<h2 id="resource-management-apis-tomorrows-service-management-endpoints">Resource Management APIs: Tomorrow’s Service Management endpoints</h2>
+
+<p>Announced at Build, there are new automation and management endpoints coming online for Azure services this year. Available in preview form now and accessible through the <a href="https://portal.azure.com">Azure Preview Portal</a>, the APIs will be much more consistent. A great deal of effort has gone into defining a more consistent, friendly set of REST APIs for the future, and we’ll have plenty more to share here in the future as we look to offer newer experiences beyond RDFE’s management surface area.</p>
+
+<h1 id="azure-management-wherever-you-want-it">Azure Management wherever you want it</h1>
+
+<p>I am excited by the emphasis on allowing for management wherever you like:</p>
+
+<ul>
+  <li>the Azure portal,</li>
+  <li>REST APIs,</li>
+  <li>PowerShell</li>
+  <li>cross-platform command line tools,</li>
+  <li>Visual Studio’s Azure tooling,</li>
+  <li>the new preview Azure management and automation services,</li>
+  <li>and tools, apps and services you build with MAML or the REST APIs!</li>
+</ul>
+
+<p>Several teams within Azure have had service management implementations for .NET for many years now, powering internal test infrastructure, Azure services and tools, even parts of the developer tooling, but for this project the teams came together across Azure to work to deliver something more polished, focusing on newer APIs, programming practices and design.</p>
+
+<p><em>Let’s look at the technology, decisions and features that make the Microsoft Azure Management Libraries great.</em></p>
+
+<h2 id="best-practices---modern-net-design">Best practices - modern .NET design</h2>
+
+<p>.NET development in 2014 is very different and the management libraries fully embrace the more modern developer ecosystem:</p>
+
+<ul>
+  <li>fully embracing NuGet</li>
+  <li>portable class libraries</li>
+  <li>semantic versioning</li>
+  <li>async/await</li>
+  <li>only dependent on BCL packages, BCL HttpClient and Json.NET</li>
+  <li>open source on GitHub w/Apache 2 license</li>
+  <li>extensibility hooks for diagnostics, debugging and tracing</li>
+  <li>central HTTP pipeline handler design using the BCL’s portable HttpClient</li>
+  <li>secure by default with HTTPS</li>
+</ul>
+
+<p>I’m very happy about the design effort that went into the libraries as well as the general approach. The guidance created as part of this effort should help to continue to blur the lines between the dozens of service teams and approaches within the organization.</p>
+
+<p>Some of the design features and principles that went into this product are noted in this section.</p>
+
+<h3 id="portable-class-libraries-profile158">Portable Class Libraries (Profile158)</h3>
+
+<p>Each individual management library that makes up MAML is built for the <code class="language-plaintext highlighter-rouge">portable-net45+sl50+wp80+win</code> (Profile158) portable class library target, and for a limited time, also .NET 4.0.</p>
+
+<p>The PCL target enables the most broad use across areas of interest to today’s developers as we continue to see strong adoption of .NET Framework 4.5 and newer, as well as Windows Phone 8 and the recently-announced Windows Phone 8.1 universal platform.</p>
+
+<h3 id="asynchronous-first-awaitasynctask-aat-design">Asynchronous-first: Await/Async/Task (AAT) design</h3>
+
+<p>.NET Framework 4.5 introduced the <a href="http://msdn.microsoft.com/en-us/library/hh191443.aspx">await/async asychronous programming model</a> and today the async pattern and compiler support is even available in portal class libraries and earlier frameworks using the <a href="https://www.nuget.org/packages/Microsoft.Bcl.Async/1.0.166">Microsoft.Bcl.Async NuGet package</a> that supports .NET 4, Silverlight 4-5, Windows Phone 7.5 and newer, and PCL.</p>
+
+<p>All of the management libraries are async first and by default.</p>
+
+<h4 id="extension-methods-for-common-scenarios">Extension methods for common scenarios</h4>
+
+<p>We also bundle extension methods for all of the service methods to make the lives of our developers that much easier.</p>
+
+<p><em>Simple async method</em>: Although the core implementation of a method is its asynchronous method that takes a CancellationToken parameter, we know that many developers do not need to use the cancellation token system very often, and so the additional parameter is a nuisance.</p>
+
+<p>An extension method is available that does not have the cancellation token parameter, passing <code class="language-plaintext highlighter-rouge">CancellationToken.None</code> automatically.</p>
+
+<p><em>Synchronous method</em>: Although modern client developers should always be using the async/await system in their .NET and Windows Store applications, we know that a lot of people are building simple command line tools, using PowerShell, or other scenarios where a synchronous call is actually desired for quick and dirty work.</p>
+
+<p>We generate a synchronous extension method as well for these users. Please do not use them in modern client applications!</p>
+
+<h4 id="long-running-operation-support">Long-running operation support</h4>
+
+<p>Some Azure service management APIs are actually long-running operations: calling the REST API begins the operation, returning a operation identifier that can be then polled for information about the operation.</p>
+
+<p>MAML supporst these long-running operations and offers easy methods that will return after the entire LRO is complete, as well as the building blocks, such as <code class="language-plaintext highlighter-rouge">BeginDeleting</code>, that can then be used with your own smarter logic to do runtime polling and operation management.</p>
+
+<p>A good example API of this it the Virtual Machine Delete operation.</p>
+
+<h3 id="platform-specific-light-up">Platform-specific light-up</h3>
+
+<p>Although individual libraries are PCL, the Common library and its NuGet package provide a base Common library which is PCL and then additional platform-specific light-up libraries.</p>
+
+<p>Shipping in the NuGet today are light-up components for Windows Store apps as well as Windows Phone 8 apps.</p>
+
+<p>Unfortunately the PCL surface area for Windows Phone 8 does not include the X.509 Certificate capabilities that .NET Framework 4.5 does; the <code class="language-plaintext highlighter-rouge">X509Certificate2</code> type therefore cannot be used. This means that RDFE management certificate (the majority of today’s management uses) won’t be able to be used or called from phone apps.</p>
+
+<p>Brady has a post on <a href="http://www.bradygaster.com/post/writing-a-windows-phone-8-application-that-uses-the-azure-management-libraries-for-on-the-go-cloud-management">Windows Phone 8 and MAML</a> that offers some suggestions to working around these challenges, such as using OAuth and Azure Active Directory.</p>
+
+<h3 id="professionally-designed-api-surface-area">Professionally-designed API surface area</h3>
+
+<p>We’ve taken the time to project many of the REST endpoint specifications into more useful .NET libraries. Our first priority is to offer simple REST wrappers as opposed to “fat” client libraries, but we can do some peanut-buttering over some pain points to make the library as friendly as possible.</p>
+
+<p>Taking into account the .NET Framework Naming Guidelines, we’ve really studied all our options to build a great .NET experience and then map to the underlying wire protocol defined by the REST spec.</p>
+
+<h4 id="known-values-static-string-helpers">Known Values static string helpers</h4>
+
+<p>There are places that we have had to make trade-offs: instead of offering a rich enumeration for all the possible virtual machine sizes, and taking that enum as a parameter in the virtual machine creation process, we’ve instead had to expose just a string for the virtual machine instance size.</p>
+
+<p>This is to enable the broad set of scenarios that this area has in the real world: as we introduce additional compute sizes, experiment with specialized hardware and other specific opt-in projects for customers, we need to use the string parameter for maximum flexibility instead.</p>
+
+<p>We then ship a “known values” static class helper, though, for the most simple scenarios: if you are using the Compute library and have included its management library namespace, you can then type <code class="language-plaintext highlighter-rouge">VirtualMachineSizes</code> and be greeted with an enum-like object exposing known common sizes like ExtraLarge and A7, returning the string value.</p>
+
+<p><em>You’ll find that MAML libraries for other languages, like Node.js, will be generated to look native and properly named and patterned for those platforms, part of the excellent generation system.</em></p>
+
+<h3 id="intellisense">IntelliSense</h3>
+
+<p>While working to build the right .NET surface area, we’ve also made sure to have top-notch documentation available through IntelliSense. Working with the MSDN documentation teams and our staff writers, we’ve been able to include a lot of useful service information that will pop right inside VS as you are using the library.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/wamlmaml/intellisense.png =700x65" alt="Rich IntelliSense documentation exists for all the service functions and libraries, although it is still handy to keep the Azure REST documentation handy while using the libraries." title="Rich IntelliSense documentation exists for all the service functions and libraries, although it is still handy to keep the Azure REST documentation handy while using the libraries." /></p>
+
+<h3 id="operation-groups">Operation Groups</h3>
+
+<p>Having IntelliSense is an important part of the developer experience, but so is reducing the cluster and noise that many REST libraries tend to have.</p>
+
+<p>By placing types of service and management operations into “operation groups”, client instances are much more useful and fun to use in an IDE.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/wamlmaml/operationgroups.png =356x201" alt="Individual service clients are broken up into multiple operation groups, separating logical service surface area into easy-to-see groups of functions, improving IntelliSense development opportunities." title="Individual service clients are broken up into multiple operation groups, separating logical service surface area into easy-to-see groups of functions, improving IntelliSense development opportunities." /></p>
+
+<p>A basic library like the infrastructure management library (Microsoft.WindowsAzure.Management) has these groups:</p>
+
+<ul>
+  <li>AffinityGroups</li>
+  <li>Locations</li>
+  <li>ManagementCertificates</li>
+  <li>RoleSizes</li>
+  <li>Subscriptions</li>
+</ul>
+
+<p>A client such as <em>Compute</em> will have these logical groups:</p>
+
+<ul>
+  <li>Deployments</li>
+  <li>HostedServices</li>
+  <li>OperatingSystems</li>
+  <li>ServiceCertificates</li>
+  <li>VirtualMachineDisks</li>
+  <li>VirtualMachineExtensions</li>
+  <li>VirtualMachineOSImages</li>
+  <li>VirtualMachines</li>
+  <li>VirtualMachineVMImages</li>
+</ul>
+
+<p>Expanding the <em>OperatingSystems</em> operation group will give you all of these methods:</p>
+
+<table class="table">
+<thead>
+<tr>
+<th>Method Name</th>
+<th>Parameters</th>
+<th>Async/Await?</th>
+<th>Implementation Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>List</td>
+<td>None</td>
+<td>Synchronous</td>
+<td>Extension method</td>
+</tr>
+<tr>
+<td>ListAsync</td>
+<td>None</td>
+<td>Yes</td>
+<td>Extension method</td>
+</tr>
+<tr>
+<td>ListAsync</td>
+<td>CancellationToken</td>
+<td>Synchronous</td>
+<td>Method</td>
+</tr>
+<tr>
+<td>ListFamilies</td>
+<td>None</td>
+<td>Synchronous</td>
+<td>Extension method</td>
+</tr>
+<tr>
+<td>ListFamiliesAsync</td>
+<td>None</td>
+<td>Yes</td>
+<td>Extension method</td>
+</tr>
+<tr>
+<td>ListFamiliesAsync</td>
+<td>CancellationToken</td>
+<td>Yes</td>
+<td>Method</td>
+</tr>
+</tbody>
+</table>
+
+<h3 id="semantic-versioning">Semantic Versioning</h3>
+
+<p>Each component in the set of libraries is free to independently version, following the SemVer pattern.</p>
+
+<p>During the preview period for these assemblies, when the Azure compute and fabric teams added new high-memory virtual machine sizes (A6, A7), the addition of the new sizes to the libraries was an incremental minor feature, so the increment did not alter the major or minor versions of that assembly at release time.</p>
+
+<p>If the Compute team were to introduce a major new feature without any breaking changes, they would increment the minor version, moving from 1.0 to 1.1, and effectively letting people know that it is relatively safe to update the NuGet packages in their projects, as the work is non-breaking and iterative.</p>
+
+<p>When more libraries come online for the next generation of Azure APIs for management, you will likely see these independent components move into v2.x and beyond, given there will be breaking changes in many cases.</p>
+
+<p>Rest easy knowing that the teams will be rapidly iterating and following SemVer to make sure that you can trust NuGet updates. The open source releases are tagged as well offering the ability to see what changes and differences are in releases.</p>
+
+<h3 id="composable-component-libraries-independent-service-packages">Composable component libraries: independent service packages</h3>
+
+<p>Azure has many services and more are being added regularly. Instead of building all of these services into a single large assembly, we ship many packages, giving developers the power to opt-in to which components they need to work with.</p>
+
+<p>This helps reduce the memory footprint, performance, and enables Azure service teams to iteratively innovate, hotfix and release their work independent of other teams and their schedules.</p>
+
+<p>This is much more efficient than having to wait for an Azure-wide update like you might be used to seeing with the primary Azure SDK for .NET that tends to ship alongside major developer events.</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/wamlmaml/independentsemver.png =700x400" alt="With Semantic Versioning (SemVer), each service library is independent, enabling pay-for-play and hotfix scenarios." title="With Semantic Versioning (SemVer), each service library is independent, enabling pay-for-play and hotfix scenarios." /></p>
+
+<p>We also expect that more services and components will begin to leverage the management library engineering system instead of rolling their own. Within Azure itself teams are now able to use these libraries, improving engineering efficiency, and making sure that our developer customers use the same essential bits that we do in running our cloud-scale products &amp; services.</p>
+
+<h4 id="cloudcontext-for-centralized-client-discoverability">CloudContext for centralized client discoverability</h4>
+
+<p>As a result of shipping a large number of libraries and offering a “pay-for-play” model when it comes to selecting assemblies to use in a project, we’ve created a discovery mechanism powered by extension methods to identify the available clients within an application, again making IntelliSense development much more enjoyable.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">CloudContext</code> type is located inside the Common library and offers centralized services, namely a static <code class="language-plaintext highlighter-rouge">CloudContext.Clients</code> method &amp; type that loaded libraries expose extension methods for creation into.</p>
+
+<p>If you’ve added, for example, only the NuGet package for Web Sites Management to your project, and no other packages, you will have only its 2 client types available to you with IntelliSense:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/wamlmaml/cloudcontextdiscovery1.png =700x204" alt="The common CloudContext type uses extension methods to light up available service clients." title="The common CloudContext type uses extension methods to light up available service clients." /></p>
+
+<p>The Web Site management package includes a single portable assembly that has 2 clients: a general WebSiteManagementClient and then a WebSiteExtensionsClient: one for core management (creating, deleting and configuring Azure Web Sites) and another for interacting with the extensions service.</p>
+
+<p>If we instead go ahead and add the uber-package Microsoft.WindowsAzure.Management.Libraries, it will pull in all the other released packages that make up MAML 1.0.</p>
+
+<p>If you again take a look in the IDE at CloudContext.Clients, you will see many more clients available with handy creation methods:</p>
+
+<p><img src="//az414997.vo.msecnd.net/waz/wamlmaml/cloudcontextdiscovery2.png =700x212" alt="After adding additional libraries to a project from NuGet, you will note that the CloudContext.Clients area expands to show all referenced clients." title="After adding additional libraries to a project from NuGet, you will note that the CloudContext.Clients area expands to show all referenced clients." /></p>
+
+<p>CloudContext also is a good place for general configuration and extensions, so it is where we have exposed the ability to dynamically grab and parse connection strings using Service Runtime.</p>
+
+<h3 id="modern-and-minimal-package-dependencies">Modern and minimal package dependencies</h3>
+
+<p>Dependency management is a real nightmare in complicated applications. We’ve worked to offer a very minimal spanning set of dependencies that all the management libraries use.</p>
+
+<p>Teams that decide to offer more full-featured packages can either take a dependency on the basic REST wrapper library from the MAML group, add additional dependencies, and then ship that component as a separate NuGet package. This will help to keep the most basic REST surface area completely available to most applications without having to place the dependency management game.</p>
+
+<p>These core dependencies today are:</p>
+
+<h4 id="httpclient-from-the-bcl-team">HttpClient from the BCL team</h4>
+
+<p>By using the <a href="http://www.nuget.org/packages/Microsoft.Net.Http/2.2.18">BCL team’s HttpClient implementation</a>, libraries are able to span multiple platforms and build on the good work the team did to support the set of Microsoft frameworks. Their NuGet package supports PCL and many platforms with the modern async/await HttpClient methods.</p>
+
+<p>This is dependency #1 of 2 for the MAML (although it pulls in the good BCL packages for async/await and enabling build support).</p>
+
+<h4 id="jsonnet">Json.NET</h4>
+
+<p>The Json.NET component is a favorite of developers across all the .NET frameworks today and is where we have chosen to depend for the MAML libraries when it comes to JSON parsing.</p>
+
+<p>The component’s developer, James Newton-King, is a great member of the community and we are proud to be able to use his important library in lighting up Azure management.</p>
+
+<h3 id="smart-http-retry-handler">Smart HTTP retry handler</h3>
+
+<p>The Patterns and Practices team at Microsoft has done excellent work in supporting real customers &amp; enterprises on Azure. We’ve been able to work together to deliver a built-in <a href="https://github.com/Azure/azure-sdk-for-net/tree/master/src/Common/TransientFaultHandling">TransientFaultHandling</a> system that has a smart retry policy turned on by default.</p>
+
+<p>Of course you can build your own fault handling and retry policies, but the default experience is fantastic and should meet the needs of most developers. The entire HttpClient pipeline is available for your own handler improvements to be integrated. This is also super useful for unit testing.</p>
+
+<h3 id="flexible-authentication-choices">Flexible Authentication Choices</h3>
+
+<p>Various credential providers ship in both the Common library and various platform-specific light-ups.</p>
+
+<p>When you’re using .NET Framework 4.5 or newer, after including the Common NuGet package you’ll see references to both <code class="language-plaintext highlighter-rouge">Microsoft.WindowsAzure.Common</code> and <code class="language-plaintext highlighter-rouge">Microsoft.WindowsAzure.Common.NetFramework</code>. The .NET-specific assembly includes the <a href="https://github.com/Azure/azure-sdk-for-net/blob/master/src/Common.NetFramework/CertificateCloudCredentials.cs">CertificateCloudCredentials</a> type that takes a <code class="language-plaintext highlighter-rouge">X509Certificate2</code> management certificate and a subscription ID string.</p>
+
+<p>Other credential types are in Common including <a href="https://github.com/Azure/azure-sdk-for-net/blob/master/src/Common/Credentials/TokenCloudCredentials.cs">TokenCloudCredentials</a> for use with Azure Active Directory, <a href="https://github.com/Azure/azure-sdk-for-net/blob/master/src/Common/Credentials/AnonymousCloudCredentials.cs">AnonymousCloudCredentials</a> and then <a href="https://github.com/Azure/azure-sdk-for-net/blob/master/src/Common/Credentials/BasicAuthenticationCloudCredentials.cs">BasicAuthenticationCloudCredentials</a> for specialized uses in the right APIs.</p>
+
+<p>Brady Gaster has a post about <a href="http://www.bradygaster.com/post/using-azure-active-directory-to-authenticate-the-management-libraries">using Azure Active Directory to authenticate with and use the management libraries</a>, and I’m sure the team will work to continue to drive improvements in this space over time.</p>
+
+<h3 id="extensionlight-up-packages-for-logging-and-more">Extension/light-up packages for logging and more</h3>
+
+<p>You’ll find that components such as an extension for <a href="http://www.nuget.org/packages/Microsoft.WindowsAzure.Common.Tracing.Log4Net/">log4net</a>, supporting Windows Store applications, an <a href="http://www.nuget.org/packages/Microsoft.WindowsAzure.Common.Tracing.Etw/">ETW tracing provider</a> are all additive and unique NuGet packages, making great new functionality a click away inside the NuGet Package Manager, keeping simple apps light and robust.</p>
+
+<p>By packaging extensions as separate packages, we again adhere to the opt-in, pay-for-play model, while allowing such extensions to then further depend on other systems that not every developer would want to pull in.</p>
+
+<p>We look to you to help provide input on which additional extensions we should build, and would <a href="http://azure.github.io/guidelines.html">love your open source contributions as well</a>.</p>
+
+<h3 id="support-for-service-wrapper-libraries-too">Support for service wrapper libraries, too</h3>
+
+<p>Although MAML is focused mostly on management surface area, the technology can power general REST libraries for Microsoft Azure as well.</p>
+
+<p><a href="http://azure.microsoft.com/en-us/services/scheduler/">Microsoft Azure Scheduler</a> allows you to invoke actions such as calling web endpoints or posting a message to a storage queue on any schedule. If you install the Scheduler management library, you’ll find it contains 2 clients: a SchedulerClient and a SchedulerManagementClient. The management library allows you to create job collections and then the actual SchedulerClient lets you manage the jobs within that collection.</p>
+
+<p>Over time we want to support more and more Azure services as proper MAML components, using the same consistent API patterns, Common library, and multi-language support.</p>
+
+<h3 id="a-commitment-to-minimal-common-library-changes">A commitment to minimal Common library changes</h3>
+
+<p>The Common library is the core component that all of the service team’s management libraries depend on. It is so important that it should not be updated or broken very often. It contains the core hooks to add tracing, diagnostics, HTTP pipeline code, smart retry policies, and the CloudContext type.</p>
+
+<p>The team is committed to try and minimize breaking changes to the Common library, ideally taking incremental work (SemVer minor version changes) but not breaking changes more than once a year if possible. This isn’t a SLA commitment but rather a goal that the team has. Clearly hotfixes, security issues and other scenarios might lead to a newer release at some point in the future.</p>
+
+<p>Note that the v2.0 of the Common assembly will likely ship sooner, as the next generation of Resource Management APIs (announced at Build) will likely move the management libraries forward to v2.0. I’m sure the team will have further guidance in this space in the future.</p>
+
+<h1 id="supported-rest-services">Supported REST services</h1>
+
+<p>Many components have now shipped at the 1.0 GA quality bar, and others are in preview. Here’s a look at the release packages as of early April.</p>
+
+<table class="table">
+<thead>
+<tr>
+<th>NuGet Package</th>
+<th>Clients</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Microsoft.WindowsAzure.Management.Libraries</td>
+<td>All current GA+ clients</td>
+<td>1.0</td>
+</tr>
+<tr>
+<td>Microsoft.WindowsAzure.Management</td>
+<td>ManagementClient, SubscriptionClient</td>
+<td>1.0</td>
+</tr>
+<td>Microsoft.WindowsAzure.Management.Network</td>
+<td>NetworkManagementClient</td>
+<td>1.0</td>
+&lt;/tr&gt;
+<tr>
+<tr>
+<td>Microsoft.WindowsAzure.Management.Compute</td>
+<td>ComputeManagementClient</td>
+<td>1.0</td>
+</tr>
+<tr>
+<td>Microsoft.WindowsAzure.Management.ExpressRoute</td>
+<td>ExpressRouteManagementClient</td>
+<td>Preview</td>
+</tr>
+<tr>
+<td>Microsoft.WindowsAzure.Management.MediaServices</td>
+<td>MediaServicesManagementClient</td>
+<td>1.0</td>
+</tr>
+<tr>
+<td>Microsoft.WindowsAzure.Management.Monitoring</td>
+<td>AlertsClient, AutoscaleClient, MetricClient</td>
+<td>Preview</td>
+</tr>
+<tr>
+<td>Microsoft.WindowsAzure.Management.Scheduler</td>
+<td>Scheduler, SchedulerManagement</td>
+<td>1.0</td>
+</tr>
+<tr>
+<td>Microsoft.WindowsAzure.Management.ServiceBus</td>
+<td>ServiceBusManagement</td>
+<td>Preview</td>
+</tr>
+<tr>
+<td>Microsoft.WindowsAzure.Management.Storage</td>
+<td>StorageManagementClient</td>
+<td>1.0</td>
+</tr>
+<tr>
+<td>Microsoft.WindowsAzure.Management.Store</td>
+<td>StoreManagementClient</td>
+<td>Preview</td>
+</tr>
+<tr>
+<td>Microsoft.WindowsAzure.Management.Sql</td>
+<td>SqlManagementClient</td>
+<td>Preview</td>
+</tr>
+<tr>
+<td>Microsoft.WindowsAzure.Management.WebSites</td>
+<td>WebSiteManagement, WebSiteExtensions</td>
+<td>1.0</td>
+</tr>
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+## Supporting Azure Pack and other environments
+
+Each client has a constructor that by default tends to just take a credential instance that will contain information about your subscription ID, the management certificate used to communicate over secured client HTTPS (or an Azure Active Directory bearer token that is in a properly-configured domain environment for service management).
+
+The constructors also offer an optional additional parameter to provide the Base URI to the management service surface area.
+
+This enables using the libraries with other environments, where supported, such as the Azure Pack or the Microsoft Azure China cloud (or, in the case of Microsoft internal service operations teams, the ability to target staging and test environments and clusters).
+
+## Support across key languages
+
+Azure has to be the best platform for Microsoft developers, so of course we take great pride in this new set of .NET libraries; but it's a new world and the only way that we're going to be successful as a cloud platform is if we also take the time to fully support the other languages and frameworks that our developers are asking for.
+
+Thankfully Azure is very serious about Java, Node.js, and many other languages like Python, Ruby and PHP.
+
+On the SDK team there's been a real excitement over Node.js as it has enabled the great cross-platform tooling, and so today there are MAML-style libraries for .NET and Node.js, with more on the way in the future I hope!
+
+## Open Source
+
+Like all of the Azure SDK components we have been introducing over the past few years, we are continuing to maintain the open source story here:
+
+- Apache 2 license
+- Ship on GitHub at [https://github.com/azure/](https://github.com/azure/)
+- We accept contributions, especially to extension libraries and common components
+- Part of the .NET Foundation
+
+### How to best contribute today
+
+If you'd like to contribute to the Common libraries, build extensions such as the tracing components, we welcome your contributions per the standard Azure open source code contribution guidelines.
+
+Until the code generation technology can be open sourced entirely, please consider opening Issues in GitHub if you think you find any typos, REST call bugs, etc. Submitting code changes to files marked with the header indicating code generation is not ideal.
+
+#### For Microsoft Azure teams
+
+If you're like to learn more about the MAML technologies and learn about onboarding, please visit the [Azure SDK SharePoint](http://aka.ms/spazuresdk/).
+
+#### If you read this far...
+
+I hope you love this new set of libraries. Let us know what you build! Install the `Microsoft.WindowsAzure.Management.Libraries` NuGet uber package today.
+</tr></tbody></table>
+
+          </div>
+        </div>
+
+      </div>
+
+      <div class="col-md-4 wiki-sidebaZr" style="margin-top:18px">
+            
+    <p style="position: relative; width: 100%; height:195px; min-height: 120px; background: url(/jeffwilcox.png) no-repeat"></p>
+    
+
+    
+<p class="lead" style="font-size:20px">
+  Jeff Wilcox is a Software Engineer at Microsoft in the
+  Open Source Programs Office (OSPO), helping Microsoft engineers
+  use, contribute to and release open source at scale.
+  
+</p>
+<!--
+<p>
+  Jeff is an alumnus of the University of Michigan, Ann Arbor, with
+  a degree in Computer Science.
+</p>
+-->
+    <p><a href="https://twitter.com/jeffwilcox" class="twitter-follow-button" data-show-count="true" data-size="medium">Follow @jeffwilcox</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+
+    
+       <div style="margin-top: 24px">
+           <!-- small -->
+               
+                   
+                   
+                        <h4>Microsoft Azure</h4>
+                        <ul class="list">
+                            <li><a href="https://github.com/azure/">Azure on GitHub</a></li>
+                            <li><a href="https://azure.microsoft.com/en-us/documentation/">Azure docs</a></li>
+                            <li><a href="http://azure.github.io/guidelines.html">How to contribute</a></li>
+                        </ul>
+                   
+                    
+            
+                   
+                   
+                    
+            
+                   
+                   
+                    
+            
+           <!-- /small -->
+       </div>
+    
+
+    <div id="toc" class="wiki-sidebar" style="margin-top: 24px">
+    </div>
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toc').toc({
+            listType: 'ul',
+            noBackToTopLinks: true,
+            showEffect: 'none',
+            extraListGoo: ' class="nav wiki-sidenav"',
+            extraListGoo2: ' class="nav"',
+            showSpeed: 0,
+            title: '<h4>Blog Post Explorer</h4>',
+            headers: '.blogcontent h1, .blogcontent h2',
+            firstItemHtml: '<li><a href="#top">Start</a></li>',
+        });
+        $('body').scrollspy('refresh');
+    });
+    </script>
+
+      </div>
+
+    </div><!-- row -->
+  </div><!-- container 1 -->
+
+  <div id="related">
+    <h4>Other posts</h4>
+    <ul class="posts">
+      
+        <li><span>25 Nov 2019</span> &raquo; <a href="/2019/11/evcondo/">My $6,000 Tesla Wall Connector: the story of bringing Electric Vehicle charging to a high-rise condo tower in Seattle</a></li>
+      
+        <li><span>25 Jun 2019</span> &raquo; <a href="/2019/06/scaling-25k/">Scaling from 2,000 to 25,000 engineers on GitHub at Microsoft</a></li>
+      
+        <li><span>10 Apr 2018</span> &raquo; <a href="/2018/04/seattle-network/">My home network: Ubiquiti UniFi gear, fiber gigabit Internet, CAT6 and CAT3 wiring</a></li>
+      
+        <li><span>28 Feb 2017</span> &raquo; <a href="/2017/02/azure-private-npm/">Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services</a></li>
+      
+    </ul>
+  </div>
+
+  
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'jeffwilcox';
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+</div><!-- container 2 -->
+
+<div class="container">  
+<hr />
+
+<footer class="wiki-footer">
+  <p class="pull-right"><a href="#top">Back to top</a></p>
+  <div class="links">
+    <a href="/">jeffwilcox.blog</a> |
+    <a href="https://twitter.com/jeffwilcox">@jeffwilcox</a> |
+    <a href="https://github.com/jeffwilcox/">github.com/jeffwilcox</a> |
+    <a href="http://linkedin.com/in/jeffreywilcox">linkedin profile</a> |
+    <a href="http://www.google.com/recaptcha/mailhide/d?k=01Tv_GmcqyJ7mtRaeIIZEB4w==&c=PqTaC_u8CDIyO7wQDBRbQC1w7tGtyj-TDjnJupt4zLw=">email</a> |
+    <a href="http://feeds.feedburner.com/jeffwilcox">rss</a>
+  </div>
+  <p><small>&copy; Jeff Wilcox<br />
+  <span class="muted">Disclaimer: The content on this site represents my own personal opinions and thoughts at the time of posting, and does not reflect those of my employer in any way.</span></small></p>
+</footer>
+
+</div><!-- /container -->
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shCore.js" type="text/javascript"></script>
+<script src="//az414997.vo.msecnd.net/waz/syntax/scripts/shAutoloader.js" type="text/javascript"></script>
+<script type="text/javascript">
+function stxpath()
+{
+  var args = arguments, result = [];
+  for(var i = 0; i < args.length; i++) {
+      result.push(args[i].replace('@', '//az414997.vo.msecnd.net/waz/syntax/scripts/'));
+  }
+  return result;
+};
+SyntaxHighlighter.autoloader.apply(null, stxpath(
+  'bash shell             @shBrushBash.js',
+  'c# c-sharp csharp      @shBrushCSharp.js',
+  'js jscript javascript  @shBrushJScript.js',
+  'text plain             @shBrushPlain.js',
+  'xml xhtml xslt html    @shBrushXml.js'
+));
+SyntaxHighlighter.defaults['gutter'] = false;
+SyntaxHighlighter.defaults['tab-size'] = 2;
+SyntaxHighlighter.defaults['class-name'] = 'code';
+SyntaxHighlighter.all(); //'code', false, true: tag, showGutter, showControls
+</script>
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-2695771-1");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+  </body>
+</html>
