@@ -8,13 +8,19 @@ on:
     branches:
       - gh-pages
   workflow_dispatch:
+  workflow_run:
+    workflows: [Build Jekyll blog]
+    types:
+      - completed
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+        with:
+          ref: gh-pages
 
       - name: Set up Node.js version
         uses: actions/setup-node@v1
