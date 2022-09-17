@@ -24,7 +24,7 @@ science part, but we still owe it to our engineers to help reduce friction and l
 do their best work. Instead this exercise was about taking the best of open source and hacking
 something together along with GitHub's API to automate the things that we can.
 
-![My view of the Azure Open Source Portal for GitHub.]({{ site.cdn }}github/my-main-view.png"My view of the Azure Open Source Portal for GitHub.")
+![My view of the Azure Open Source Portal for GitHub.]({{ site.cdn }}github/my-main-view.png)
 
 I first hacked together an early version of this portal over the holidays almost a year ago
 and am very happy to be able to point people to the [azure-oss-portao open source repo](https://github.com/Azure/azure-oss-portal)
@@ -38,7 +38,7 @@ few comments about what might be next.
 
 > FYI: this post is my personal take on the portal work. Opinions are mine. Oh, and this post is going to be very long. It might be time to grab a venti coffee, cozy up, and use some bandwidth to download some screenshots.
 
-![The Azure Portal with various Open Source Portal resources pinned to the Start experience.]({{ site.cdn }}github/chrome.png"The Azure Portal with various Open Source Portal resources pinned to the Start experience.")
+![The Azure Portal with various Open Source Portal resources pinned to the Start experience.]({{ site.cdn }}github/chrome.png)
 
 _A few Azure services help to run the experience. Here you can see my view of the Azure Portal with interesting stats and use info, including Redis cache hits and misses._
 
@@ -118,7 +118,7 @@ Redmond area and resembles a pretty classic tech work day schedule. Here's a loo
 the traffic graph that Visual Studio Application Insights produces for us in the
 Azure Portal:
 
-![Application Insights use pattern.]({{ site.cdn }}github/use1.png"Application Insights use pattern.")
+![Application Insights use pattern.]({{ site.cdn }}github/use1.png)
 
 This portal as implemented can likely support organizations or engineering groups from
 1-10,000 members if the organizations are already established.
@@ -204,7 +204,7 @@ single sign-on to cloud apps and can integrate with on-premises Active Directory
 makes use of the Microsoft tenant and also the team's open source Node.js modules for working with
 it.
 
-![Azure Active Directory sign in lets users authenticate with their corporate identity.]({{ site.cdn }}github/aadsignin.png"Azure Active Directory sign in lets users authenticate with their corporate identity.")
+![Azure Active Directory sign in lets users authenticate with their corporate identity.]({{ site.cdn }}github/aadsignin.png)
 
 With Azure AD we are also able to have corporate multi-factor authentication for extra
 security (separate from GitHub 2FA).
@@ -217,7 +217,7 @@ hosting platform (and a lot more).
 App Service handles running and deploying the web app straight from GitHub, is highly available,
 plus offers role-based access control for the app configuration.
 
-![App Service handles continuous deployment and integration from GitHub to Azure.]({{ site.cdn }}github/portalappservice1.png"App Service handles continuous deployment and integration from GitHub to Azure.")
+![App Service handles continuous deployment and integration from GitHub to Azure.]({{ site.cdn }}github/portalappservice1.png)
 
 The service could also be deployed using [Cloud Services](https://azure.microsoft.com/en-us/services/cloud-services/) (our rock-solid PaaS offering) or with
 Traffic Manager and many multi-region App Service deployments.
@@ -305,7 +305,7 @@ This link is possible because of OAuth:
 - The corporate identity comes next, via Azure Active Directory (or your own Passport provider and a few hacks)
 - Table storage to tie these two values together for the portal and its systems to reason over
 
-![The top of every page shows the virtual link.]({{ site.cdn }}github/topofpage.png"The top of every page shows the virtual link.")
+![The top of every page shows the virtual link.]({{ site.cdn }}github/topofpage.png)
 
 At the top of every page, employees will see both their GitHub and corporate identities.
 
@@ -329,7 +329,7 @@ optionally needed to perform two actions that make a user's experience better:
 We ask at the time that these actions are required to increase the scope so that users are not "scared away" upon
 their first use of the portal. The next time a user signs in to the portal, the increased scope is removed.
 
-![We reduce our GitHub scope the next time the user users the app.]({{ site.cdn }}github/reducinggithubscope.png"We reduce our GitHub scope the next time the user users the app.")
+![We reduce our GitHub scope the next time the user users the app.]({{ site.cdn }}github/reducinggithubscope.png)
 
 Our application does not store user tokens long term.
 
@@ -346,7 +346,7 @@ We surface the high-level basics to a user:
 - Whether they are using multi-factor authentication with GitHub
 - What organization(s) they are a member of, and the ability to join additional organizations
 
-![The top-level overview page in the portal.]({{ site.cdn }}github/overview.png"The top-level overview page in the portal.")
+![The top-level overview page in the portal.]({{ site.cdn }}github/overview.png)
 
 ### Showing corporate identities
 
@@ -359,7 +359,7 @@ large drop-down list with corporate identities first, GitHub usernames second, s
 can quickly use the keyboard to narrow down the employee they want to grant access to, without
 having to lookup the user in a big table.
 
-![Operations within the portal happen based on the corporate identity that co-workers expect to find.]({{ site.cdn }}github/corporatealongsidegithub.png"Operations within the portal happen based on the corporate identity that co-workers expect to find.")
+![Operations within the portal happen based on the corporate identity that co-workers expect to find.]({{ site.cdn }}github/corporatealongsidegithub.png)
 
 ### Corporate and organization resource links
 
@@ -386,7 +386,7 @@ private repo on their march to open source. (Microsoft has great open source int
 and plenty of places to store Git repos... so we do not permit projects to be hosted on
 GitHub which are not intended to be open source and on that path already).
 
-![We show stats for each org including the number of repos, private repos remaining, and plan level that we pay for.]({{ site.cdn }}github/investment.png"We show stats for each org including the number of repos, private repos remaining, and plan level that we pay for.")
+![We show stats for each org including the number of repos, private repos remaining, and plan level that we pay for.]({{ site.cdn }}github/investment.png)
 
 ### Mobile friendly
 
@@ -434,7 +434,7 @@ including multi-factor authentication if it is configured on the tenant.
 Once both GitHub and Active Directory have authenticated and we've decided to authorize the user
 to onboard with us, we ask the user to confirm that they would like to start the onboarding process.
 
-![The virtual link is created when the user agrees and has a chance to review any open source resources that we want to share with them.]({{ site.cdn }}github/link.png"The virtual link is created when the user agrees and has a chance to review any open source resources that we want to share with them.")
+![The virtual link is created when the user agrees and has a chance to review any open source resources that we want to share with them.]({{ site.cdn }}github/link.png)
 
 This page exists so that we can share some helpful resources and links to training, where to go
 for more information, and general policy reminders.
@@ -444,7 +444,7 @@ for more information, and general policy reminders.
 The user then selects the organization that they want to join. At this point in the process, although
 we know who the GitHub user is as an employee, they are not a member of any organization, nor have they been invited to an org yet.
 
-![Users then select the organization they want to join.]({{ site.cdn }}github/pickanorg.png"Users then select the organization they want to join.")
+![Users then select the organization they want to join.]({{ site.cdn }}github/pickanorg.png)
 
 ### Invitation process
 
@@ -454,7 +454,7 @@ After selecting a page, the user is given some overview information about the or
 - The purpose and description of the organization
 - Information about the # of allocated and remaining private repos for the org, if any. (We stage work ahead of events privately on GitHub.)
 
-![The page where the user asks to join the org. If they authorize the GitHub scope, we will invite and automatically accept the invitation for the user behind the scenes.]({{ site.cdn }}github/joinanorg.png"The page where the user asks to join the org. If they authorize the GitHub scope, we will invite and automatically accept the invitation for the user behind the scenes.")
+![The page where the user asks to join the org. If they authorize the GitHub scope, we will invite and automatically accept the invitation for the user behind the scenes.]({{ site.cdn }}github/joinanorg.png)
 
 Now the important part here is that we would like the use to hit the large "Join now" button,
 but we need to warn the user ahead of time that we will need to expand the authorized GitHub
@@ -471,7 +471,7 @@ Behind the scenes, when you hit Join Now, we:
 
 If you do not authorize the additional scope for us to automate the org accept, here's what the alternate looks like:
 
-![The manual invitation process helps the user understand that they need to go to GitHub, accept the invitation, and then come back to the portal.]({{ site.cdn }}github/manual.png =700x351 "The manual invitation process helps the user understand that they need to go to GitHub, accept the invitation, and then come back to the portal.")
+![The manual invitation process helps the user understand that they need to go to GitHub, accept the invitation, and then come back to the portal.]({{ site.cdn }}github/manual.png)
 
 Here we:
 
@@ -492,7 +492,7 @@ If they have, they never see the security check page, they are redirected on the
 
 If 2FA is not turned on, the onboarding process will halt here until they enable it.
 
-![When 2FA is not enabled, we will block the user from continue the onboarding process until they complete this important step.]({{ site.cdn }}github/2fa.png"When 2FA is not enabled, we will block the user from continue the onboarding process until they complete this important step.")
+![When 2FA is not enabled, we will block the user from continue the onboarding process until they complete this important step.]({{ site.cdn }}github/2fa.png)
 
 In the future, if the user removes 2FA from their account, the next time they go to
 the portal we will similarly block them on the same "please enable 2FA" page.
@@ -502,7 +502,7 @@ the portal we will similarly block them on the same "please enable 2FA" page.
 After some feedback this year on the portal, we've added in a "profile review" page
 where we offer the user a chance to see what their profile will look like on GitHub.
 
-![Profile review page.]({{ site.cdn }}github/profilereview.png"Profile review page.")
+![Profile review page.]({{ site.cdn }}github/profilereview.png)
 
 The company has social network guidance and as part of this we want to make sure that
 people understand when they may not be aligned with that preference. We will highlight
@@ -519,7 +519,7 @@ button is an easy way to help people feel good about their participation.
 If they authorized us already to use the `write:org` scope in this session and they
 have decided to make it public, we'll do this on their behalf.
 
-![Publicize your membership.]({{ site.cdn }}github/publish.png"Publicize your membership.")
+![Publicize your membership.]({{ site.cdn }}github/publish.png)
 
 ### Final steps and user education
 
@@ -527,14 +527,14 @@ Finally the user's successful onboarding is acknowledged. They receive a nice 'W
 banner and are on a dual-purpose page: it shows links to resources specific to the
 organization and also an opportunity to request to join teams within the organization.
 
-![Once you are finally a member, organization resources and links appear, and also the opportunity to request to join teams.]({{ site.cdn }}github/welcomejointeams.png"Once you are finally a member, organization resources and links appear, and also the opportunity to request to join teams.")
+![Once you are finally a member, organization resources and links appear, and also the opportunity to request to join teams.]({{ site.cdn }}github/welcomejointeams.png)
 
 #### Join teams
 
 The teams page shows all of the teams in the organization along with any available
 description. The list can get quite long for some orgs and so can be filtered.
 
-![The join experience shows all organization teams, has filter controls, and also shows any recommended teams that you have configured for the org.]({{ site.cdn }}github/joinateam.png"The join experience shows all organization teams, has filter controls, and also shows any recommended teams that you have configured for the org.")
+![The join experience shows all organization teams, has filter controls, and also shows any recommended teams that you have configured for the org.]({{ site.cdn }}github/joinateam.png)
 
 ### Join another org
 
@@ -548,7 +548,7 @@ If users do not authorize us to accept their invitation automatically, we someti
 have found that the standard GitHub e-mails end up getting lost in the ether, and so
 invitations remain unaccepted, and users confused.
 
-![The view when you are the member of an org, pending on another, and not yet a member on the third org.]({{ site.cdn }}github/org-pending.png"The view when you are the member of an org, pending on another, and not yet a member on the third org.")
+![The view when you are the member of an org, pending on another, and not yet a member on the third org.]({{ site.cdn }}github/org-pending.png)
 
 We show the status of org membership, including any pending memberships, on the homepage
 for the portal. Users can pick up with the onboarding process wherever they left off last time.
@@ -615,7 +615,7 @@ to the request sooner.
 From the portal users can request access to join a team. The request generates a GitHub issue to
 have a team maintainer review the request.
 
-![Submitting a request to join a team.]({{ site.cdn }}github/joinrequest.png"Submitting a request to join a team.")
+![Submitting a request to join a team.]({{ site.cdn }}github/joinrequest.png)
 
 This is a very important part of the portal: delegating requests to the individual teams that are
 best positioned to make a decision. This is an important part of scaling out the experience of
@@ -654,7 +654,7 @@ repos on GitHub, mispellings or typos, etc.
 
 Team maintainers are able to go to a URL which is `//site/orgname/teams/team-name/` and provides a full suite of management operations.
 
-![A menu of options for team maintainers.]({{ site.cdn }}github/management.png"A menu of options for team maintainers.")
+![A menu of options for team maintainers.]({{ site.cdn }}github/management.png)
 
 The key concept here is that we let team maintainers make administrative decisions regarding their repos.
 
@@ -829,7 +829,7 @@ the portal, as well as have sudo rights over all the teams in the organization.
 This is useful in the case that a permission request is sitting with a team whose maintainers
 are out on holiday, for example, and can help with escalations.
 
-![The sudoer warning banner across team maintainer pages.]({{ site.cdn }}github/sudo.png"The sudoer warning banner across team maintainer pages.")
+![The sudoer warning banner across team maintainer pages.]({{ site.cdn }}github/sudo.png)
 
 _Inside the portal we have a big warning, though, for the users when they are viewing and
 authorizing as a sudo user._
@@ -1041,15 +1041,15 @@ Select the Active Directory section on the left and then the directory that you 
 
 Go to the "Applications" tab at the top of the directory and then use "Add" in the footer toolbar to create a new app entry.
 
-![Adding an AAD app.]({{ site.cdn }}github/add-ad-app.png"Adding an AAD app.")
+![Adding an AAD app.]({{ site.cdn }}github/add-ad-app.png)
 
 The app will be of the `Web Application and/or Web API` type.
 
-![The type of app is Web Application.]({{ site.cdn }}github/aad-app-properties.png"The type of app is Web Application.")
+![The type of app is Web Application.]({{ site.cdn }}github/aad-app-properties.png)
 
 And finally from the *Configure* tab we'll need the Client ID and also to generate a 1-key client secret key for the app. The key is shown for the secret once you save. Make sure to store it very securely.
 
-![App ID and secrets.]({{ site.cdn }}github/aad-id-and-keys.png"App ID and secrets.")
+![App ID and secrets.]({{ site.cdn }}github/aad-id-and-keys.png)
 
 > This operation needs to be done in the older Azure management portal, not the new one. Hopefully we can fix this at some point in Azure.
 
@@ -1066,14 +1066,14 @@ this is your first time, you will also want to configure a pricing tier (or free
 For this post I'm calling my app service "myopensourceportal", so it will be published to `https://myopensourceportal.azurewebsites.net`, using
 the App Service's SSL wildcard certificate at the load balancer.
 
-![Creating a new app service in the Azure Portal.]({{ site.cdn }}github/new-app-service.png"Creating a new app service in the Azure Portal.")
+![Creating a new app service in the Azure Portal.]({{ site.cdn }}github/new-app-service.png)
 
 [We have a lot of regions these days.](https://azure.microsoft.com/en-us/regions/) I'm publishing this to our `Central US` region in Iowa.
 
 We're able to support our 2,000+ users on a small instance, and for additional resilience and capacity we
 can easily add more instances or cross-deploy to other regions, tying them together with Traffic Manager.
 
-![A view of my new App Service, ready to deploy our portal.]({{ site.cdn }}github/new-view.png"A view of my new App Service, ready to deploy our portal.")
+![A view of my new App Service, ready to deploy our portal.]({{ site.cdn }}github/new-view.png)
 
 ### Configuring Continuous Deployment
 
@@ -1082,14 +1082,14 @@ Within the properties for the service let's drill in to the Continuous Deploymen
 Note: you'll need to fork the GitHub project for the portal if you want to deploy from GitHub. Alternatively you could just
 push from your local clone into a Git repo stored within Azure (the local repo option).
 
-![Selecting a source for CD.]({{ site.cdn }}github/app-service-ci.png"Selecting a source for CD.")
+![Selecting a source for CD.]({{ site.cdn }}github/app-service-ci.png)
 
 As part of the CI setup, if this is your first configuration with the Azure Portal and GitHub deployment,
 you'll do an OAuth dance with GitHub.
 
 Finally, let's set this up to deploy from the `master` branch.
 
-![Setting the branch and other information to use for deploying from the GitHub repo.]({{ site.cdn }}github/app-service-github.png"Setting the branch and other information to use for deploying from the GitHub repo.")
+![Setting the branch and other information to use for deploying from the GitHub repo.]({{ site.cdn }}github/app-service-github.png)
 
 If you'd like to add additional deployments for staging or specific features you're working on (or even to do
 flighting, where a certain percent of your users will get sent to a different version or branch of your app),
