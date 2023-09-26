@@ -1,4 +1,4 @@
-# Source of the blog of Jeff Wilcox
+# Source of jeffwilcox.com
 
 It is transformed using [Jekyll](https://github.com/mojombo/jekyll) into a static site.
 
