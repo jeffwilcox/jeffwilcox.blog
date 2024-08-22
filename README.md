@@ -24,6 +24,6 @@ All other directories and files are MIT Licensed. Feel free to use the HTML and 
 # Special thanks
 
 - Boostrap
-- Jekyll
+- Jekyll (which is trash now)
 - Node.js
 - Markdown
