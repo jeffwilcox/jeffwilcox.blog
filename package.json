@@ -20,7 +20,7 @@
   "homepage": "https://github.com/jeffwilcox/jeffwilcox.blog#readme",
   "dependencies": {
     "debug": "4.3.1",
-    "express": "4.19.2",
+    "express": "4.21.2",
     "http-errors": "1.6.3",
     "morgan": "1.9.1"
   }
