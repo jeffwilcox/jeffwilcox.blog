@@ -11,6 +11,7 @@ on:
 
 jobs:
   build:
+    name: Build 🏗
     runs-on: ubuntu-24.04
 
     steps:
@@ -62,18 +63,16 @@ jobs:
           az account set --subscription ${{ vars.AKS_SUBSCRIPTION_ID }}
           echo West US 3 deployment 🌵
           az webapp config container set \
-            --docker-custom-image-name opensource.azurecr.io/${{ github.event.repository.name }}:${{ github.run_number }} \
-            --docker-registry-server-url https://opensource.azurecr.io \
+            --container-custom-image-name opensource.azurecr.io/${{ github.event.repository.name }}:${{ github.run_number }} \
+            --container-registry-server-url https://opensource.azurecr.io \
             --name jeffwilcox \
             --resource-group webapps \
             --slot staging
 
   swap:
-    # bump
     name: Swap site ⚡️
     runs-on: ubuntu-24.04
     needs: [stage]
-    if: false
     steps:
       - name: Azure ☁️
         uses: azure/login@v2
