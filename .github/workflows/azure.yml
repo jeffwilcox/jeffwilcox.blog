@@ -69,6 +69,7 @@ jobs:
             --slot staging
 
   swap:
+    # bump
     name: Swap site ⚡️
     runs-on: ubuntu-24.04
     needs: [stage]
