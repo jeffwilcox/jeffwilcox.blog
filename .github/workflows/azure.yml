@@ -63,8 +63,8 @@ jobs:
           az account set --subscription ${{ vars.AKS_SUBSCRIPTION_ID }}
           echo West US 3 deployment 🌵
           az webapp config container set \
-            --container-custom-image-name opensource.azurecr.io/${{ github.event.repository.name }}:${{ github.run_number }} \
-            --container-registry-server-url https://opensource.azurecr.io \
+            --docker-custom-image-name opensource.azurecr.io/${{ github.event.repository.name }}:${{ github.run_number }} \
+            --docker-registry-server-url https://opensource.azurecr.io \
             --name jeffwilcox \
             --resource-group webapps \
             --slot staging
