@@ -31,8 +31,6 @@ jobs:
 
       - name: Connect to Azure Container Registry 🔖
         run: |
-          az aks get-credentials --name opensource --resource-group portal --overwrite-existing
-          kubelogin convert-kubeconfig -l azurecli
           az acr login -n opensource
 
       - name: Container build ⛴️
