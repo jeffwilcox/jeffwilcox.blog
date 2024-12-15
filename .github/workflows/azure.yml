@@ -45,3 +45,42 @@ jobs:
         run: |
           docker image push opensource.azurecr.io/${{ github.event.repository.name }}:${{ github.run_number }}
           docker image push opensource.azurecr.io/${{ github.event.repository.name }}:latest
+
+  stage:
+    name: Stage ⚡️
+    runs-on: ubuntu-24.04
+    needs: [build]
+    steps:
+      - name: Azure ☁️
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AKS_CLIENT_ID }}
+          tenant-id: ${{ vars.AKS_TENANT_ID }}
+          subscription-id: ${{ vars.AKS_SUBSCRIPTION_ID }}
+      - name: Prepare staging slots 🎰
+        run: |
+          az account set --subscription ${{ vars.AKS_SUBSCRIPTION_ID }}
+          echo West US 3 deployment 🌵
+          az webapp config container set \
+            --docker-custom-image-name opensource.azurecr.io/${{ github.event.repository.name }}:${{ github.run_number }} \
+            --docker-registry-server-url https://opensource.azurecr.io \
+            --name jeffwilcox \
+            --resource-group webapps \
+            --slot staging
+
+  swap:
+    name: Swap site ⚡️
+    runs-on: ubuntu-24.04
+    needs: [stage]
+    if: false
+    steps:
+      - name: Azure ☁️
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AKS_CLIENT_ID }}
+          tenant-id: ${{ vars.AKS_TENANT_ID }}
+          subscription-id: ${{ vars.AKS_SUBSCRIPTION_ID }}
+      - name: Swap 💃
+        run: |
+          az webapp deployment slot swap --name jeffwilcox --resource-group webapps --slot staging
+        
