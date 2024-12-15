@@ -3,6 +3,7 @@ layout: post
 comments: true
 title: Using the Windows Azure SDK for Node.js to create a Table Service Explorer
 categories: [azure, cloud, nodejs]
+outdated: true
 tags: [azure, table-service, storage, nodejs, cloud, bootstrap, express, github, websites]
 
 # cdni: {{ site.cdn }}table/blog/

@@ -1,27 +1,32 @@
 {
   "name": "jeffwilcox.blog",
-  "version": "1.0.0",
-  "description": "It is transformed using [Jekyll](https://github.com/mojombo/jekyll) into a static site.",
-  "main": "bin/www",
+  "version": "4.0.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"No tests cause we be static\" && exit 0",
-    "start": "node ./bin/www"
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/jeffwilcox/jeffwilcox.blog.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/jeffwilcox/jeffwilcox.blog/issues"
-  },
-  "homepage": "https://github.com/jeffwilcox/jeffwilcox.blog#readme",
   "dependencies": {
-    "debug": "4.3.1",
-    "express": "4.19.2",
-    "http-errors": "1.6.3",
-    "morgan": "1.9.1"
+    "@tailwindcss/postcss": "4.0.0-alpha.13",
+    "geist": "1.3.1",
+    "gray-matter": "^4.0.3",
+    "next": "15.1.0",
+    "postcss": "^8",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "remark": "^15.0.1",
+    "remark-html": "^16.0.1",
+    "sugar-high": "^0.6.0",
+    "tailwindcss": "4.0.0-alpha.13"
+  },
+  "devDependencies": {
+    "@types/node": "22.10.2",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^8",
+    "eslint-config-next": "15.0.3",
+    "typescript": "^5"
   }
 }

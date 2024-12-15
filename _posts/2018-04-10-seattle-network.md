@@ -7,7 +7,7 @@ tags: [network, networking, internet, waveg]
 location: "SEATTLE, WA USA"
 neighborhood: "BELLTOWN"
 jumbotron: true
-jumbotronStyle: "background: url('//az414997.vo.msecnd.net/waz/2018network/rooftop-pano-web.jpg') no-repeat left center; background-size: cover; overflow: hidden; min-height: 500px;"
+jumbotronStyle: "background: url('//waz.blob.core.windows.net/waz/2018network/rooftop-pano-web.jpg') no-repeat left center; background-size: cover; overflow: hidden; min-height: 500px;"
 jumbotronTitle: "A photo of the Belltown neighborhood and downtown Seattle, the Space Needle, and rooftop wireless backhaul networking equipment"
 ---
 WiFi that just works with multiple mounted access points. Symmetric 1000 Mbps 

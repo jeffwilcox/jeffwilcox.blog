@@ -3,6 +3,7 @@ layout: post
 comments: true
 title: "Deploying Node.js apps in Azure App Service using private npm feeds from Visual Studio Team Services"
 categories: [azure, cloud, open-source, vsts, node]
+outdated: true
 tags: [azure, cloud, npm, vsts, node, nodejs, keyvault, deployment]
 ---
 In this post I'm going to walk through using Visual Studio Team Services Package Management as a private npm

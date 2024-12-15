@@ -3,6 +3,7 @@ layout: post
 comments: true
 title: Moving 4th & Mayor to Windows Azure Web Sites
 categories: [azure, cloud, nodejs, 4thandmayor]
+outdated: true
 tags: [azure, 4thandmayor, nodejs, cloud, express, websites]
 ---
 After several years of hosting my mobile application's web server and services with Amazon Web Services (AWS), in April I moved my production services to Windows Azure, and it went really smoothly. Here I am sharing a guide through some of the highlights of this process, including how I went about migrating my Node.js backend to an HTTPS-secured site powered by Windows Azure Web Sites, Cloud Services, and the Windows Azure Store.

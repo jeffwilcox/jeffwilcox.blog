@@ -3,6 +3,7 @@ layout: post
 comments: true
 title: Creating secure Linux VMs in Azure with SSH key pairs
 categories: [azure, cloud]
+outdated: true
 tags: [azure, cloud, vm, ssh]
 ---
 A fairly standard security best practice for cloud-connected Linux virtual machines is to create "password-less" virtual machines. This is easy to do with Windows Azure but not the default if you use the "quick create" menu within the [Windows Azure Management Portal](https://manage.windowsazure.com/).

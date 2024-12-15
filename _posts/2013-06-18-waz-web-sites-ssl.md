@@ -3,6 +3,7 @@ layout: post
 comments: true
 title: Windows Azure Web Sites + custom SSL certificate for my app
 categories: [azure, cloud, nodejs, 4thandmayor]
+outdated: true
 tags: [azure, 4thandmayor, nodejs, cloud, express, websites]
 ---
 To start June 2013 off, [Windows Azure Web Sites](http://www.windowsazure.com/en-us/manage/services/web-sites/) released in preview form custom SSL hosting options for Windows Azure Web Sites.

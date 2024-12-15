@@ -1,0 +1,49 @@
+name: Ship it 🐿️
+
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install packages 📦
+        shell: bash
+        run: |
+          npm ci
+          npm run build
+
+      - name: Azure ☁️
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AKS_CLIENT_ID }}
+          tenant-id: ${{ vars.AKS_TENANT_ID }}
+          subscription-id: ${{ vars.AKS_SUBSCRIPTION_ID }}
+
+      - name: Connect to Azure Container Registry 🔖
+        run: |
+          az aks get-credentials --name opensource --resource-group portal --overwrite-existing
+          kubelogin convert-kubeconfig -l azurecli
+          az acr login -n opensource
+
+      - name: Container build ⛴️
+        run: |
+          docker build \
+            -t ${{ github.event.repository.name }}:${{ github.run_number }} \
+            -t opensource.azurecr.io/${{ github.event.repository.name }}:${{ github.run_number }} \
+            -t opensource.azurecr.io/${{ github.event.repository.name }}:latest \
+            .
+
+      - name: Push to ACR 📌
+        run: |
+          docker image push opensource.azurecr.io/${{ github.event.repository.name }}:${{ github.run_number }}
+          docker image push opensource.azurecr.io/${{ github.event.repository.name }}:latest

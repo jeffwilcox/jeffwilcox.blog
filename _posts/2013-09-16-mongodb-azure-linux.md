@@ -3,6 +3,7 @@ layout: post
 comments: true
 title: Creating a MongoDB replica set cluster w/Windows Azure Linux VMs
 categories: [azure, cloud]
+outdated: true
 tags: [azure, cloud, cli, mongodb, command-line, tools, linux, centos, nosql]
 ---
 I love [MongoDB](http://www.mongodb.org/). I've been using it as the NoSQL solution in my production phone app for several years now. I've used hosted MongoDB solutions and also run my own replica set clusters in both AWS and Windows Azure. In this post today I'm going to demonstrate creating a full-blown MongoDB replica set cluster in Microsoft's cloud... but I'll also touch on hosted and single-instance deployments.

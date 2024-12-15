@@ -29,7 +29,7 @@ tags: []
 ---
 <p><em>Code coverage note: this feature was unfortunately cut due to regressions in dependencies. Also, automated closing of the browser has issues in November and we are hoping to address in the future. Sorry for the troubles.</em></p>
 
-<p>The November 2009 Silverlight Toolkit is essentially a tools and infrastructure release on top of the October 2009 release (where we first introduced Visual Studio 2010 support). It also adds a Silverlight 4 Beta version.</p>  <h2>New infrastructure &amp; test tools ship in the Silverlight Toolkit</h2>  <p>There is a lot in the release that is joining publicly for the first time, based on some of the internal tools and utilities that we use in building and testing the Silverlight Toolkit, plus things we’d like to have as typical Silverlight developers.</p>  <p>These tools join in the Experimental quality band, and over the next few posts, I’ll dig into the details. This post is a literal walkthrough of how you could go about seeing all the utilities in the meantime.</p>  <p>One important thing to call out is that, as an initial release, there are definitely some rough edges: the test tools are centered around Microsoft Build (msbuild) integration, instead of Visual Studio integration; there’s no add-in or nice right-click project support to use these tools today.</p>  <p>We’ll be collecting feedback along the way and making changes in future releases. Until then, hopefully some of you will find the infrastructure useful, if only to peak behind the curtain. We’re also shipping the full source to these tools, you’ll find an Infrastructure.zip file inside the toolkit install folder.</p>  <h4>What we’ll do in this walkthrough</h4>  <p>This walkthrough uses Silverlight 4, though the instructions are virtually identical if you’re using Silverlight 3.</p>  <ul>   <li>Install the Silverlight Toolkit</li>    <li>Create a new Silverlight class library with a simple business object</li>    <li>Add a Silverlight Unit Test Application using the new templates found in the Silverlight Toolkit</li>    <li>Run the tests in Visual Studio</li>    <li>Run the tests from the command line in various browsers</li>    <li>Collect block-level code coverage information for the build</li> </ul>  <p>This is screen-shot heavy, as future posts will dig into the details. I appreciate your patience!</p>  <p>Requirements:</p>  <ul>   <li>Latest Silverlight Toolkit</li>    <li>For test automation:</li>    </ul><ul>     <li>MSBuild on the machine</li>   </ul>    <li>For code coverage:</li>    <ul>     <li>Visual Studio 2010 Beta 2 Ultimate</li>   </ul>   <h2>Installing the tools</h2>  <p>When you install either Silverlight Toolkit drop from November, you’ll see that there’s a new feature listed in the setup: the Tools &amp; Templates feature. It’s selected by default, and adds Visual Studio templates, installs the tools, and prepares the tools if your machine has the proper dependencies on it.</p>  <p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="SetupNewFeature" border="0" alt="SetupNewFeature" src="http://az414997.vo.msecnd.net/wordpress/2009/11/SetupNewFeature.png" width="541" height="430" /> </p>  <h2>Create a Silverlight Class Library</h2>  <p>Open Visual Studio 2010 Beta 2, after installing the toolkit. Create a new <strong>Silverlight Class Library</strong> project, we’ll store a simple business object in it.</p>  <p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioNewSilverlightClassLibraryProject" border="0" alt="VisualStudioNewSilverlightClassLibraryProject" src="http://az414997.vo.msecnd.net/wordpress/2009/11/VisualStudioNewSilverlightClassLibraryProject.png" width="685" height="480" /> </p>  <p>Whichever flavor of Silverlight you use, remember to use the same flavor while creating future projects in the same solution!</p>  <p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioSelectSilverlightVersion" border="0" alt="VisualStudioSelectSilverlightVersion" src="http://az414997.vo.msecnd.net/wordpress/2009/11/VisualStudioSelectSilverlightVersion.png" width="685" height="231" /></p>  <p>Create a new Person.cs type, with a few properties and a method. Here’s the source:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:bc34624e-1aaa-4618-a4cc-6c9dad4c3107" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">using System;
+<p>The November 2009 Silverlight Toolkit is essentially a tools and infrastructure release on top of the October 2009 release (where we first introduced Visual Studio 2010 support). It also adds a Silverlight 4 Beta version.</p>  <h2>New infrastructure &amp; test tools ship in the Silverlight Toolkit</h2>  <p>There is a lot in the release that is joining publicly for the first time, based on some of the internal tools and utilities that we use in building and testing the Silverlight Toolkit, plus things we’d like to have as typical Silverlight developers.</p>  <p>These tools join in the Experimental quality band, and over the next few posts, I’ll dig into the details. This post is a literal walkthrough of how you could go about seeing all the utilities in the meantime.</p>  <p>One important thing to call out is that, as an initial release, there are definitely some rough edges: the test tools are centered around Microsoft Build (msbuild) integration, instead of Visual Studio integration; there’s no add-in or nice right-click project support to use these tools today.</p>  <p>We’ll be collecting feedback along the way and making changes in future releases. Until then, hopefully some of you will find the infrastructure useful, if only to peak behind the curtain. We’re also shipping the full source to these tools, you’ll find an Infrastructure.zip file inside the toolkit install folder.</p>  <h4>What we’ll do in this walkthrough</h4>  <p>This walkthrough uses Silverlight 4, though the instructions are virtually identical if you’re using Silverlight 3.</p>  <ul>   <li>Install the Silverlight Toolkit</li>    <li>Create a new Silverlight class library with a simple business object</li>    <li>Add a Silverlight Unit Test Application using the new templates found in the Silverlight Toolkit</li>    <li>Run the tests in Visual Studio</li>    <li>Run the tests from the command line in various browsers</li>    <li>Collect block-level code coverage information for the build</li> </ul>  <p>This is screen-shot heavy, as future posts will dig into the details. I appreciate your patience!</p>  <p>Requirements:</p>  <ul>   <li>Latest Silverlight Toolkit</li>    <li>For test automation:</li>    </ul><ul>     <li>MSBuild on the machine</li>   </ul>    <li>For code coverage:</li>    <ul>     <li>Visual Studio 2010 Beta 2 Ultimate</li>   </ul>   <h2>Installing the tools</h2>  <p>When you install either Silverlight Toolkit drop from November, you’ll see that there’s a new feature listed in the setup: the Tools &amp; Templates feature. It’s selected by default, and adds Visual Studio templates, installs the tools, and prepares the tools if your machine has the proper dependencies on it.</p>  <p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="SetupNewFeature" border="0" alt="SetupNewFeature" src="http://waz.blob.core.windows.net/wordpress/2009/11/SetupNewFeature.png" width="541" height="430" /> </p>  <h2>Create a Silverlight Class Library</h2>  <p>Open Visual Studio 2010 Beta 2, after installing the toolkit. Create a new <strong>Silverlight Class Library</strong> project, we’ll store a simple business object in it.</p>  <p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioNewSilverlightClassLibraryProject" border="0" alt="VisualStudioNewSilverlightClassLibraryProject" src="http://waz.blob.core.windows.net/wordpress/2009/11/VisualStudioNewSilverlightClassLibraryProject.png" width="685" height="480" /> </p>  <p>Whichever flavor of Silverlight you use, remember to use the same flavor while creating future projects in the same solution!</p>  <p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioSelectSilverlightVersion" border="0" alt="VisualStudioSelectSilverlightVersion" src="http://waz.blob.core.windows.net/wordpress/2009/11/VisualStudioSelectSilverlightVersion.png" width="685" height="231" /></p>  <p>Create a new Person.cs type, with a few properties and a method. Here’s the source:</p>  <div style="padding-bottom: 0px; margin: 0px; padding-left: 0px; padding-right: 0px; display: inline; float: none; padding-top: 0px" id="scid:887EC618-8FBE-49a5-A908-2339AF2EC720:bc34624e-1aaa-4618-a4cc-6c9dad4c3107" class="wlWriterEditableSmartContent"><pre class="brush: c-sharp">using System;
 
 
 
@@ -73,7 +73,7 @@ namespace MyApplication
 
 
 
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioUnitTestTemplate" border="0" alt="VisualStudioUnitTestTemplate" src="http://az414997.vo.msecnd.net/wordpress/2009/11/VisualStudioUnitTestTemplate.png" width="685" height="446" /></p>
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioUnitTestTemplate" border="0" alt="VisualStudioUnitTestTemplate" src="http://waz.blob.core.windows.net/wordpress/2009/11/VisualStudioUnitTestTemplate.png" width="685" height="446" /></p>
 
 
 
@@ -81,7 +81,7 @@ namespace MyApplication
 
 
 
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioTestAppAndClassLibrarySolutionExplorer" border="0" alt="VisualStudioTestAppAndClassLibrarySolutionExplorer" src="http://az414997.vo.msecnd.net/wordpress/2009/11/VisualStudioTestAppAndClassLibrarySolutionExplorer.png" width="283" height="385" /></p>
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioTestAppAndClassLibrarySolutionExplorer" border="0" alt="VisualStudioTestAppAndClassLibrarySolutionExplorer" src="http://waz.blob.core.windows.net/wordpress/2009/11/VisualStudioTestAppAndClassLibrarySolutionExplorer.png" width="283" height="385" /></p>
 
 
 
@@ -89,7 +89,7 @@ namespace MyApplication
 
 
 
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioAddReference" border="0" alt="VisualStudioAddReference" src="http://az414997.vo.msecnd.net/wordpress/2009/11/VisualStudioAddReference.png" width="593" height="478" /></p>
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioAddReference" border="0" alt="VisualStudioAddReference" src="http://waz.blob.core.windows.net/wordpress/2009/11/VisualStudioAddReference.png" width="593" height="478" /></p>
 
 
 
@@ -167,7 +167,7 @@ namespace PersonTestProject {
 
 
 
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioSetAsStartupProject" border="0" alt="VisualStudioSetAsStartupProject" src="http://az414997.vo.msecnd.net/wordpress/2009/11/VisualStudioSetAsStartupProject.png" width="530" height="605" /> </p>
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioSetAsStartupProject" border="0" alt="VisualStudioSetAsStartupProject" src="http://waz.blob.core.windows.net/wordpress/2009/11/VisualStudioSetAsStartupProject.png" width="530" height="605" /> </p>
 
 
 
@@ -207,7 +207,7 @@ namespace PersonTestProject {
 
 
 
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TaskbarCmdPrompt" border="0" alt="TaskbarCmdPrompt" src="http://az414997.vo.msecnd.net/wordpress/2009/11/TaskbarCmdPrompt.png" width="685" height="71" /> </p>
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TaskbarCmdPrompt" border="0" alt="TaskbarCmdPrompt" src="http://waz.blob.core.windows.net/wordpress/2009/11/TaskbarCmdPrompt.png" width="685" height="71" /> </p>
 
 
 
@@ -235,7 +235,7 @@ namespace PersonTestProject {
 
 
 
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioOpenWindowsExplorerForProjectLocation" border="0" alt="VisualStudioOpenWindowsExplorerForProjectLocation" src="http://az414997.vo.msecnd.net/wordpress/2009/11/VisualStudioOpenWindowsExplorerForProjectLocation.png" width="685" height="428" /> </p>
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioOpenWindowsExplorerForProjectLocation" border="0" alt="VisualStudioOpenWindowsExplorerForProjectLocation" src="http://waz.blob.core.windows.net/wordpress/2009/11/VisualStudioOpenWindowsExplorerForProjectLocation.png" width="685" height="428" /> </p>
 
 
 
@@ -267,7 +267,7 @@ namespace PersonTestProject {
 
 
 
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CommandLineMsbuildTest" border="0" alt="CommandLineMsbuildTest" src="http://az414997.vo.msecnd.net/wordpress/2009/11/CommandLineMsbuildTest.png" width="685" height="120" /></p>
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CommandLineMsbuildTest" border="0" alt="CommandLineMsbuildTest" src="http://waz.blob.core.windows.net/wordpress/2009/11/CommandLineMsbuildTest.png" width="685" height="120" /></p>
 
 
 
@@ -275,7 +275,7 @@ namespace PersonTestProject {
 
 
 
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TestRunningInInternetExplorer" border="0" alt="TestRunningInInternetExplorer" src="http://az414997.vo.msecnd.net/wordpress/2009/11/TestRunningInInternetExplorer.png" width="685" height="345" /></p>
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TestRunningInInternetExplorer" border="0" alt="TestRunningInInternetExplorer" src="http://waz.blob.core.windows.net/wordpress/2009/11/TestRunningInInternetExplorer.png" width="685" height="345" /></p>
 
 
 
@@ -283,7 +283,7 @@ namespace PersonTestProject {
 
 
 
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CommandLineMsbuildTestWithResults" border="0" alt="CommandLineMsbuildTestWithResults" src="http://az414997.vo.msecnd.net/wordpress/2009/11/CommandLineMsbuildTestWithResults.png" width="685" height="433" /></p>
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CommandLineMsbuildTestWithResults" border="0" alt="CommandLineMsbuildTestWithResults" src="http://waz.blob.core.windows.net/wordpress/2009/11/CommandLineMsbuildTestWithResults.png" width="685" height="433" /></p>
 
 
 
@@ -303,7 +303,7 @@ namespace PersonTestProject {
 
 
 
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CommandLineMsbuildTestChrome" border="0" alt="CommandLineMsbuildTestChrome" src="http://az414997.vo.msecnd.net/wordpress/2009/11/CommandLineMsbuildTestChrome.png" width="685" height="67" />&#160;</p>
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CommandLineMsbuildTestChrome" border="0" alt="CommandLineMsbuildTestChrome" src="http://waz.blob.core.windows.net/wordpress/2009/11/CommandLineMsbuildTestChrome.png" width="685" height="67" />&#160;</p>
 
 
 
@@ -311,7 +311,7 @@ namespace PersonTestProject {
 
 
 
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TestRunningInChrome" border="0" alt="TestRunningInChrome" src="http://az414997.vo.msecnd.net/wordpress/2009/11/TestRunningInChrome.png" width="685" height="428" /></p>
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TestRunningInChrome" border="0" alt="TestRunningInChrome" src="http://waz.blob.core.windows.net/wordpress/2009/11/TestRunningInChrome.png" width="685" height="428" /></p>
 
 
 
@@ -331,7 +331,7 @@ namespace PersonTestProject {
 
 
 
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TestRunningInFirefox" border="0" alt="TestRunningInFirefox" src="http://az414997.vo.msecnd.net/wordpress/2009/11/TestRunningInFirefox.png" width="685" height="428" /></p>
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TestRunningInFirefox" border="0" alt="TestRunningInFirefox" src="http://waz.blob.core.windows.net/wordpress/2009/11/TestRunningInFirefox.png" width="685" height="428" /></p>
 
 
 
@@ -363,7 +363,7 @@ namespace PersonTestProject {
 
 
 
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TestRunningInInternetExplorerWithTagExpression" border="0" alt="TestRunningInInternetExplorerWithTagExpression" src="http://az414997.vo.msecnd.net/wordpress/2009/11/TestRunningInInternetExplorerWithTagExpression.png" width="685" height="344" /></p>
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="TestRunningInInternetExplorerWithTagExpression" border="0" alt="TestRunningInInternetExplorerWithTagExpression" src="http://waz.blob.core.windows.net/wordpress/2009/11/TestRunningInInternetExplorerWithTagExpression.png" width="685" height="344" /></p>
 
 
 
@@ -371,7 +371,7 @@ namespace PersonTestProject {
 
 
 
-<p>&#160;<img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CommandLineMsbuildTestWithTagExpressionResults" border="0" alt="CommandLineMsbuildTestWithTagExpressionResults" src="http://az414997.vo.msecnd.net/wordpress/2009/11/CommandLineMsbuildTestWithTagExpressionResults.png" width="685" height="433" /> </p>
+<p>&#160;<img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CommandLineMsbuildTestWithTagExpressionResults" border="0" alt="CommandLineMsbuildTestWithTagExpressionResults" src="http://waz.blob.core.windows.net/wordpress/2009/11/CommandLineMsbuildTestWithTagExpressionResults.png" width="685" height="433" /> </p>
 
 
 
@@ -407,7 +407,7 @@ namespace PersonTestProject {
 
 
 
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="LookingInTheBinariesFolderAfterTestsRun" border="0" alt="LookingInTheBinariesFolderAfterTestsRun" src="http://az414997.vo.msecnd.net/wordpress/2009/11/LookingInTheBinariesFolderAfterTestsRun.png" width="685" height="502" /></p>
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="LookingInTheBinariesFolderAfterTestsRun" border="0" alt="LookingInTheBinariesFolderAfterTestsRun" src="http://waz.blob.core.windows.net/wordpress/2009/11/LookingInTheBinariesFolderAfterTestsRun.png" width="685" height="502" /></p>
 
 
 
@@ -415,7 +415,7 @@ namespace PersonTestProject {
 
 
 
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="LookingAtTheTrxFile" border="0" alt="LookingAtTheTrxFile" src="http://az414997.vo.msecnd.net/wordpress/2009/11/LookingAtTheTrxFile.png" width="685" height="524" /></p>
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="LookingAtTheTrxFile" border="0" alt="LookingAtTheTrxFile" src="http://waz.blob.core.windows.net/wordpress/2009/11/LookingAtTheTrxFile.png" width="685" height="524" /></p>
 
 
 
@@ -423,7 +423,7 @@ namespace PersonTestProject {
 
 
 
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudio2008TestResultsTrxFile" border="0" alt="VisualStudio2008TestResultsTrxFile" src="http://az414997.vo.msecnd.net/wordpress/2009/11/VisualStudio2008TestResultsTrxFile.png" width="685" height="312" />&#160;</p>
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudio2008TestResultsTrxFile" border="0" alt="VisualStudio2008TestResultsTrxFile" src="http://waz.blob.core.windows.net/wordpress/2009/11/VisualStudio2008TestResultsTrxFile.png" width="685" height="312" />&#160;</p>
 
 
 
@@ -443,7 +443,7 @@ namespace PersonTestProject {
 
 
 
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioUnloadProject" border="0" alt="VisualStudioUnloadProject" src="http://az414997.vo.msecnd.net/wordpress/2009/11/VisualStudioUnloadProject.png" width="503" height="621" /></p>
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioUnloadProject" border="0" alt="VisualStudioUnloadProject" src="http://waz.blob.core.windows.net/wordpress/2009/11/VisualStudioUnloadProject.png" width="503" height="621" /></p>
 
 
 
@@ -451,7 +451,7 @@ namespace PersonTestProject {
 
 
 
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioEditProject" border="0" alt="VisualStudioEditProject" src="http://az414997.vo.msecnd.net/wordpress/2009/11/VisualStudioEditProject.png" width="492" height="214" /></p>
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioEditProject" border="0" alt="VisualStudioEditProject" src="http://waz.blob.core.windows.net/wordpress/2009/11/VisualStudioEditProject.png" width="492" height="214" /></p>
 
 
 
@@ -459,7 +459,7 @@ namespace PersonTestProject {
 
 
 
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioEditingTestProjectFileOriginal" border="0" alt="VisualStudioEditingTestProjectFileOriginal" src="http://az414997.vo.msecnd.net/wordpress/2009/11/VisualStudioEditingTestProjectFileOriginal.png" width="685" height="435" /></p>
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioEditingTestProjectFileOriginal" border="0" alt="VisualStudioEditingTestProjectFileOriginal" src="http://waz.blob.core.windows.net/wordpress/2009/11/VisualStudioEditingTestProjectFileOriginal.png" width="685" height="435" /></p>
 
 
 
@@ -467,7 +467,7 @@ namespace PersonTestProject {
 
 
 
-<p>&#160;<img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioEditingTestProjectFile2" border="0" alt="VisualStudioEditingTestProjectFile2" src="http://az414997.vo.msecnd.net/wordpress/2009/11/VisualStudioEditingTestProjectFile2.png" width="685" height="435" /> </p>
+<p>&#160;<img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioEditingTestProjectFile2" border="0" alt="VisualStudioEditingTestProjectFile2" src="http://waz.blob.core.windows.net/wordpress/2009/11/VisualStudioEditingTestProjectFile2.png" width="685" height="435" /> </p>
 
 
 
@@ -475,7 +475,7 @@ namespace PersonTestProject {
 
 
 
-<p>&#160;<img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioReloadTestProject" border="0" alt="VisualStudioReloadTestProject" src="http://az414997.vo.msecnd.net/wordpress/2009/11/VisualStudioReloadTestProject.png" width="502" height="400" /> </p>
+<p>&#160;<img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="VisualStudioReloadTestProject" border="0" alt="VisualStudioReloadTestProject" src="http://waz.blob.core.windows.net/wordpress/2009/11/VisualStudioReloadTestProject.png" width="502" height="400" /> </p>
 
 
 
@@ -519,7 +519,7 @@ namespace PersonTestProject {
 
 
 
-<p>&#160;<img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CommandLineMsbuildCoverageTestResults" border="0" alt="CommandLineMsbuildCoverageTestResults" src="http://az414997.vo.msecnd.net/wordpress/2009/11/CommandLineMsbuildCoverageTestResults.png" width="685" height="433" /></p>
+<p>&#160;<img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CommandLineMsbuildCoverageTestResults" border="0" alt="CommandLineMsbuildCoverageTestResults" src="http://waz.blob.core.windows.net/wordpress/2009/11/CommandLineMsbuildCoverageTestResults.png" width="685" height="433" /></p>
 
 
 
@@ -539,7 +539,7 @@ namespace PersonTestProject {
 
 
 
-<h3><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="LookingAtCodeCoverage" border="0" alt="LookingAtCodeCoverage" src="http://az414997.vo.msecnd.net/wordpress/2009/11/LookingAtCodeCoverage.png" width="685" height="428" /></h3>
+<h3><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="LookingAtCodeCoverage" border="0" alt="LookingAtCodeCoverage" src="http://waz.blob.core.windows.net/wordpress/2009/11/LookingAtCodeCoverage.png" width="685" height="428" /></h3>
 
 
 
@@ -547,7 +547,7 @@ namespace PersonTestProject {
 
 
 
-<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CoverageXmlFile" border="0" alt="CoverageXmlFile" src="http://az414997.vo.msecnd.net/wordpress/2009/11/CoverageXmlFile.png" width="685" height="435" /> </p>
+<p><img style="border-bottom: 0px; border-left: 0px; display: inline; border-top: 0px; border-right: 0px" title="CoverageXmlFile" border="0" alt="CoverageXmlFile" src="http://waz.blob.core.windows.net/wordpress/2009/11/CoverageXmlFile.png" width="685" height="435" /> </p>
 
 
 
@@ -559,7 +559,7 @@ namespace PersonTestProject {
 
 
 
-<p><a href="http://silverlight.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=36060"><img style="border-right-width: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px" title="Toolkit32[2][2][2]" border="0" alt="Toolkit32[2][2][2]" src="http://az414997.vo.msecnd.net/wordpress/2009/11/Toolkit32222.png" width="685" height="88" /></a> </p>
+<p><a href="http://silverlight.codeplex.com/Release/ProjectReleases.aspx?ReleaseId=36060"><img style="border-right-width: 0px; display: inline; border-top-width: 0px; border-bottom-width: 0px; border-left-width: 0px" title="Toolkit32[2][2][2]" border="0" alt="Toolkit32[2][2][2]" src="http://waz.blob.core.windows.net/wordpress/2009/11/Toolkit32222.png" width="685" height="88" /></a> </p>
 
 
 

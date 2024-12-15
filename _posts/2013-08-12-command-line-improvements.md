@@ -3,6 +3,7 @@ layout: post
 comments: true
 title: Windows Azure cross-platform command line improvements - Summer 2013
 categories: [azure, cloud]
+outdated: true
 tags: [azure, cloud, cli, command-line, tools]
 ---
 On the Windows Azure team, we're committed to providing great experiences for developers and infrastructure customers with a number of ways to manage your services.
