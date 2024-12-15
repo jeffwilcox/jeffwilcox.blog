@@ -4,17 +4,17 @@ const navItems = {
   '/': {
     name: 'Jeff Wilcox',
   },
-  'https://github.com/jeffwilcox': {
-    name: 'GitHub',
-  },
-  'http://linkedin.com/in/jeffreywilcox': {
-    name: 'LinkedIn',
-  },
+  // 'https://github.com/jeffwilcox': {
+  //  name: 'GitHub',
+  // },
+  // 'http://linkedin.com/in/jeffreywilcox': {
+  //  name: 'LinkedIn',
+  // },
   'https://bsky.app/profile/jeffwilcox.com': {
-    name: 'BlueSky: jeffwilcox.com',
+    name: 'BlueSky',
   },
   'https://x.com/jeffwilcox': {
-    name: 'X: @jeffwilcox',
+    name: 'X',
   },
   '/posts': {
     name: 'Archive',
