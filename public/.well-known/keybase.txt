@@ -1,0 +1,56 @@
+==================================================================
+https://keybase.io/jeffwilcox
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://jeffwilcox.com
+  * I am jeffwilcox (https://keybase.io/jeffwilcox) on keybase.
+  * I have a public key ASD7B-Fo4sFJIZyGw0luGKbvRWXpz68STDIw1JMwegU3cgo
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "01207e31894d3f4ffb078f8fbf7c356db60c886d6b014d0af53c7f7469c1fad9a5f50a",
+      "host": "keybase.io",
+      "kid": "0120fb07e168e2c149219c86c3496e18a6ef4565e9cfaf124c3230d493307a0537720a",
+      "uid": "c3ffb540c4a2cb9ab333904cd016c019",
+      "username": "jeffwilcox"
+    },
+    "merkle_root": {
+      "ctime": 1734307633,
+      "hash": "6a03b016e1a58de8057fbf571907917aea0f3a50410fdcaf4c9ea38eda21d32c8aeb8008e6bb865532f8d941cea4e79556ae09e90bb4cc925b8e84d8553823c7",
+      "hash_meta": "6f69e9b7f61e86a274d0ef5ce7c4a398352eecced76aa5e0dcef74038a34af2f",
+      "seqno": 26380979
+    },
+    "service": {
+      "entropy": "u0caL3ivQ4lGDyEKxcvwJuZq",
+      "hostname": "jeffwilcox.com",
+      "protocol": "https:"
+    },
+    "type": "web_service_binding",
+    "version": 2
+  },
+  "client": {
+    "name": "keybase.io go client",
+    "version": "6.5.0"
+  },
+  "ctime": 1734307668,
+  "expire_in": 504576000,
+  "prev": "1f5ab8a9067cc16804b8ab16228c0ca0a4847cd34d53d30c5bcce9a946ffcf22",
+  "seqno": 177,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+hKRib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEg+wfhaOLBSSGchsNJbhim70Vl6c+vEkwyMNSTMHoFN3IKp3BheWxvYWTES5cCzLHEIB9auKkGfMFoBLirFiKMDKCkhHzTTVPTDFvM6alG/88ixCBa0EBa+uOPOfgIH6N0Ax7vru52hz5lTaj5l18VJFdx4QIBwqNzaWfEQPe5LJ32+9pOuXHjwpmJ5+ag62AH7yPidcWm2d28rIHnWmrUcMh6FjG7EYEvcYmkl2zkjurG316w8J5YguDlMQyoc2lnX3R5cGUgpGhhc2iCpHR5cGUIpXZhbHVlxCBJ1pWNHuOoHekGizj64JjCaohDzJ16Vd50Xhj1yahv6aN0YWfNAgKndmVyc2lvbgE=
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/jeffwilcox
+
+==================================================================
