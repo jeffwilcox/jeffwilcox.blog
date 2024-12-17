@@ -27,6 +27,11 @@ export function BlogPostsHomepage() {
             <div className="mt-6">
               <p className="text-neutral-900 dark:text-neutral-100 tracking-tight">
                 {post.metadata.title}
+                {post.metadata.outdated && (
+                  <span className="ml-2 text-yellow-600 dark:text-yellow-400 text-sm">
+                    (Outdated)
+                  </span>
+                )}
               </p>
               <p className="text-neutral-600 dark:text-neutral-400 tabular-nums">
                 {formatDate(post.metadata.publishedAt || post.metadata.date, false)}
@@ -39,7 +44,7 @@ export function BlogPostsHomepage() {
 }
 
 export function BlogPosts() {
-  const allBlogs = getAllPosts();
+  const allBlogs = getAllPosts(false);
 
   return (
     <div>
@@ -64,6 +69,11 @@ export function BlogPosts() {
               </p>
               <p className="text-neutral-900 dark:text-neutral-100 tracking-tight">
                 {post.metadata.title}
+                {post.metadata.outdated && (
+                  <span className="ml-2 text-yellow-600 dark:text-yellow-400 text-sm">
+                    (Outdated)
+                  </span>
+                )}
               </p>
             </div>
           </Link>

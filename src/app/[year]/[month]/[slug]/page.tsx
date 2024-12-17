@@ -41,6 +41,11 @@ export default async function PostPage(props: Props) {
 
   return (
     <>
+      {post?.metadata?.outdated && (
+        <div className="mb-4 p-4 bg-yellow-100 text-yellow-800 rounded">
+          ⚠️ This post is outdated and may contain information that is no longer accurate.
+        </div>
+      )}
       <Link href="/" className="mb-4 block">← About Jeff</Link>
       <article>
         <h1 className="text-3xl font-semibold leading-tight sm:text-4.5xl sm:font-bold">
