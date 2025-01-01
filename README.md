@@ -1,6 +1,6 @@
 # Source of jeffwilcox.[com|dev|blog]
 
-Next.js static site. Previously Jeykll. And WordPress. Inspired by [pilcrow](https://pilcrowonpaper.com/) and [vercel portfolio](https://vercel.com/templates/next.js/portfolio-starter-kit).
+Next.js static site. Previously Jekyll. And WordPress. Inspired by [pilcrow](https://pilcrowonpaper.com/) and [vercel portfolio](https://vercel.com/templates/next.js/portfolio-starter-kit).
 
 # Identity
 
