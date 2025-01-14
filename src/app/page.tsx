@@ -7,7 +7,7 @@ import Link from "next/link";
 export default function Page() {
   const started = new Date('2005-07-11');
   const today = new Date();
-  const years = today.getFullYear() - started.getFullYear();
+  const years = Math.floor((today.getTime() - started.getTime()) / (1000 * 60 * 60 * 24 * 365));
 
   return (
     <section>
