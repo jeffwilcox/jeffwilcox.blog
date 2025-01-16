@@ -12,7 +12,6 @@ export default function Page() {
   let additive = '';
   if (years < 20) {
     // show the months; if == 11 months, show days
-    const startOfThisYear = new Date(today.getFullYear(), 0, 1);
     const anniversary = new Date(today.getFullYear(), started.getMonth(), started.getDate());
     const months = Math.floor((anniversary.getTime() - today.getTime()) / (1000 * 60 * 60 * 24 * 30));
     additive += ` ${months} months`;
