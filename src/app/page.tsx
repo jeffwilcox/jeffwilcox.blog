@@ -13,7 +13,8 @@ export default function Page() {
   if (years < 20) {
     // show the months; if == 11 months, show days
     const startOfThisYear = new Date(today.getFullYear(), 0, 1);
-    const months = Math.floor((startOfThisYear.getTime() - today.getTime()) / (1000 * 60 * 60 * 24 * 30));
+    const anniversary = new Date(today.getFullYear(), started.getMonth(), started.getDate());
+    const months = Math.floor((anniversary.getTime() - today.getTime()) / (1000 * 60 * 60 * 24 * 30));
     additive += ` ${months} months`;
     if (months === 11) {
       // number of days in that last month
