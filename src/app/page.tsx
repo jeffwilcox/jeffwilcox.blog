@@ -9,6 +9,20 @@ export default function Page() {
   const today = new Date();
   const years = Math.floor((today.getTime() - started.getTime()) / (1000 * 60 * 60 * 24 * 365));
 
+  let additive = '';
+  if (years < 20) {
+    // show the months; if == 11 months, show days
+    const months = Math.floor((today.getTime() - started.getTime()) / (1000 * 60 * 60 * 24 * 30));
+    additive += ` ${months} months`;
+    if (months === 11) {
+      // number of days in that last month
+      const days = Math.floor((today.getTime() - started.getTime()) / (1000 * 60 * 60 * 24));
+      additive = ` 11 months and ${days} days`;
+    } else {
+      additive = `and ${months} months `;
+    }
+  }
+
   return (
     <section>
       <div className="mb-8 mt-8 flex place-items-center gap-x-2 sm:mb-12 sm:gap-x-4">
@@ -24,7 +38,7 @@ export default function Page() {
 
       <p>
         <strong>Seattle, WA, USA</strong> &bull;{' '}
-        {years} years at Microsoft &bull;{' '}
+        {years} years {additive} at Microsoft &bull;{' '}
         University of Michigan graduate &bull;{' '}
         Cities, cycling, &amp; coffee
       </p>
