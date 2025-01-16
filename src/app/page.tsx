@@ -12,12 +12,16 @@ export default function Page() {
   let additive = '';
   if (years < 20) {
     // show the months; if == 11 months, show days
-    const months = today.getMonth() - started.getMonth() + (12 * (today.getFullYear() - started.getFullYear()));
+    const startOfThisYear = new Date(today.getFullYear(), 0, 1);
+    const months = Math.floor((startOfThisYear.getTime() - started.getTime()) / (1000 * 60 * 60 * 24 * 30));
     additive += ` ${months} months`;
     if (months === 11) {
       // number of days in that last month
-      const days = Math.floor((today.getTime() - started.getTime()) / (1000 * 60 * 60 * 24));
-      additive = ` 11 months and ${days} days`;
+      const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+      // diff between that and the 11th
+      const daysUntilEleventh = Math.floor((startOfMonth.getTime() - started.getTime()) / (1000 * 60 * 60 * 24));
+      const days = today.getDate() - daysUntilEleventh;
+      additive = days < 0 ? '' : ` 11 months and ${days} days`;
     } else {
       additive = `and ${months} months `;
     }
