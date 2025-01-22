@@ -4,8 +4,8 @@ Next.js static site. Previously Jekyll. And WordPress. Inspired by [pilcrow](htt
 
 # Identity
 
-In 2018 the primary hostname changed from `jeff.wilcox.name` to `jeffwilcox.blog` and `jeffwilcox.com`.
+In 2018 the primary hostname changed from `jeff.wilcox.name` to `jeffwilcox.blog` and `jeffwilcox.com`. And I guess `jeffwilcox.dev` at some point, too.
 
 # License
 
-MIT.
+MIT for the code, CC BY for content.
