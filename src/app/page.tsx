@@ -12,8 +12,17 @@ export default function Page() {
   let additive = '';
   if (years < 20) {
     // show the months; if == 11 months, show days
-    const anniversary = new Date(today.getFullYear(), started.getMonth(), started.getDate());
-    const months = Math.floor((anniversary.getTime() - today.getTime()) / (1000 * 60 * 60 * 24 * 30));
+    let months = today.getMonth() - started.getMonth();
+    if (months < 0) {
+      months += 12;
+    }
+    // Adjust year count if we haven't reached the anniversary month yet
+    if (
+      today.getMonth() < started.getMonth() ||
+      (today.getMonth() === started.getMonth() && today.getDate() < started.getDate())
+    ) {
+      months = (months + 12) % 12;
+    }
     additive += ` ${months} months`;
     if (months === 11) {
       // number of days in that last month
