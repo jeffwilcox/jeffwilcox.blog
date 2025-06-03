@@ -56,9 +56,12 @@ export default function Page() {
         Cities, cycling, &amp; coffee
       </p>
       <p className="mt-2">
+        I'm a software engineer and work on Microsoft's engineering systems.
+        {/*
         I manage <a target="_new" href="https://opensource.microsoft.com" className="text-main underline">Microsoft&apos;s Open Source Programs Office</a> (OSPO). 
         Open source is an essential part of Microsoft culture: 
         our teams depend on and contribute to open source, and we work in the open across thousands of repos on GitHub.
+        */}
       </p>
       <p className="mt-2">
         You can find me on 
