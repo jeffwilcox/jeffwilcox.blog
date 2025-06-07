@@ -26,9 +26,11 @@ export default function Page() {
     }
     additive += ` ${months} months`;
     if (months === 11) {
-      // number of days until milestone
-      const daysUntilMilestone = Math.floor((milestone.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-      additive = daysUntilMilestone < 0 ? '' : ` 11 months and ${daysUntilMilestone} days`;
+      // number of days since 11 months mark
+      const elevenMonthsAgo = new Date(milestone);
+      elevenMonthsAgo.setDate(elevenMonthsAgo.getDate() - 30);
+      let daysElapsed = Math.floor((today.getTime() - elevenMonthsAgo.getTime()) / (1000 * 60 * 60 * 24));
+      additive = daysElapsed < 0 || daysElapsed > 30 ? '' : ` 11 months and ${daysElapsed} days`;
     } else {
       additive = `and ${months} months `;
     }
