@@ -7,47 +7,10 @@ import Link from "next/link";
 export default function Page() {
   const started = new Date('2005-07-11');
   const today = new Date();
-  const milestone = new Date('2025-07-11');
   
   // Calculate the time difference more accurately
   const timeDiff = today.getTime() - started.getTime();
   const years = Math.floor(timeDiff / (1000 * 60 * 60 * 24 * 365.25)); // Use 365.25 for leap years
-  
-  let additive = '';
-  
-  // If we're approaching the 20-year milestone (within the last year)
-  if (today < milestone) {
-    // Calculate how many days since the last anniversary (start of current year)
-    const lastAnniversary = new Date('2024-07-11');
-    const daysSinceLastAnniversary = Math.floor((today.getTime() - lastAnniversary.getTime()) / (1000 * 60 * 60 * 24));
-    
-    if (daysSinceLastAnniversary >= 0 && daysSinceLastAnniversary < 365) {
-      // Show more precise time for the final year
-      if (daysSinceLastAnniversary >= 335) { // Within 30 days of milestone
-        // Show days when very close to milestone
-        additive = ` and ${daysSinceLastAnniversary} days`;
-      } else {
-        // Calculate months more precisely
-        const yearsSinceStart = today.getFullYear() - started.getFullYear();
-        let monthsSinceStart = today.getMonth() - started.getMonth();
-        
-        if (today.getDate() < started.getDate()) {
-          monthsSinceStart--;
-        }
-        
-        if (monthsSinceStart < 0) {
-          monthsSinceStart += 12;
-        }
-        
-        const totalMonths = yearsSinceStart * 12 + monthsSinceStart;
-        const remainingMonths = totalMonths % 12;
-        
-        if (remainingMonths > 0) {
-          additive = ` and ${remainingMonths} months`;
-        }
-      }
-    }
-  }
 
   return (
     <section>
@@ -64,7 +27,7 @@ export default function Page() {
 
       <p>
         <strong>Seattle, WA, USA</strong> &bull;{' '}
-        {years} years {additive} at Microsoft &bull;{' '}
+        {years} years at Microsoft &bull;{' '}
         University of Michigan graduate &bull;{' '}
         Cities, cycling, &amp; coffee
       </p>
