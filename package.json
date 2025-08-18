@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@tailwindcss/postcss": "4.1.11",
+    "@tailwindcss/postcss": "4.1.12",
     "geist": "1.4.2",
     "gray-matter": "^4.0.3",
     "next": "15.4.6",
