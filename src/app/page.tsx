@@ -27,7 +27,10 @@ export default function Page() {
 
       <p>
         <strong>Seattle, WA, USA</strong> &bull;{' '}
+        {/*
         {years} years at Microsoft &bull;{' '}
+        */}
+        Microsoft engineer &bull;{' '}
         University of Michigan graduate &bull;{' '}
         Cities, cycling, &amp; coffee
       </p>
