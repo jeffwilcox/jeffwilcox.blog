@@ -12,7 +12,7 @@
     "@tailwindcss/postcss": "4.1.14",
     "geist": "1.5.1",
     "gray-matter": "^4.0.3",
-    "next": "15.5.4",
+    "next": "15.5.6",
     "postcss": "^8",
     "react": "19.2.0",
     "react-dom": "19.2.0",
