@@ -18,7 +18,7 @@
     "react-dom": "19.2.0",
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
-    "sugar-high": "0.9.4",
+    "sugar-high": "0.9.5",
     "tailwindcss": "4.1.16"
   },
   "devDependencies": {
