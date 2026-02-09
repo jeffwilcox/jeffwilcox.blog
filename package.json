@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@tailwindcss/postcss": "4.1.18",
-    "geist": "1.5.1",
+    "geist": "1.7.0",
     "gray-matter": "^4.0.3",
     "next": "16.1.6",
     "postcss": "^8",
