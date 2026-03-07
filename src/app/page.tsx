@@ -7,34 +7,10 @@ import Link from "next/link";
 export default function Page() {
   const started = new Date('2005-07-11');
   const today = new Date();
-  const years = Math.floor((today.getTime() - started.getTime()) / (1000 * 60 * 60 * 24 * 365));
-
-  let additive = '';
-  if (years < 20) {
-    // show the months; if == 11 months, show days
-    let months = today.getMonth() - started.getMonth();
-    if (months < 0) {
-      months += 12;
-    }
-    // Adjust year count if we haven't reached the anniversary month yet
-    if (
-      today.getMonth() < started.getMonth() ||
-      (today.getMonth() === started.getMonth() && today.getDate() < started.getDate())
-    ) {
-      months = (months + 12) % 12;
-    }
-    additive += ` ${months} months`;
-    if (months === 11) {
-      // number of days in that last month
-      const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-      // diff between that and the 11th
-      const daysUntilEleventh = Math.floor((startOfMonth.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-      const days = today.getDate() - daysUntilEleventh;
-      additive = days < 0 ? '' : ` 11 months and ${days} days`;
-    } else {
-      additive = `and ${months} months `;
-    }
-  }
+  
+  // Calculate the time difference more accurately
+  const timeDiff = today.getTime() - started.getTime();
+  const years = Math.floor(timeDiff / (1000 * 60 * 60 * 24 * 365.25)); // Use 365.25 for leap years
 
   return (
     <section>
@@ -51,14 +27,20 @@ export default function Page() {
 
       <p>
         <strong>Seattle, WA, USA</strong> &bull;{' '}
-        {years} years {additive} at Microsoft &bull;{' '}
+        {/*
+        {years} years at Microsoft &bull;{' '}
+        */}
+        Microsoft engineer &bull;{' '}
         University of Michigan graduate &bull;{' '}
         Cities, cycling, &amp; coffee
       </p>
       <p className="mt-2">
+        I&apos;m a software engineer and work on Microsoft&apos;s engineering systems.
+        {/*
         I manage <a target="_new" href="https://opensource.microsoft.com" className="text-main underline">Microsoft&apos;s Open Source Programs Office</a> (OSPO). 
         Open source is an essential part of Microsoft culture: 
         our teams depend on and contribute to open source, and we work in the open across thousands of repos on GitHub.
+        */}
       </p>
       <p className="mt-2">
         You can find me on 
