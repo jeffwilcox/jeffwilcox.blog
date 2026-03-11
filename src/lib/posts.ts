@@ -4,6 +4,7 @@ import matter from 'gray-matter';
 import { fileURLToPath } from 'url';
 import { remark } from 'remark';
 import html from 'remark-html';
+import { highlight } from 'sugar-high';
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -89,6 +90,18 @@ export function getPostByRelativeUri(relativeUri: string) {
 
   // CDN
   contentHtml = contentHtml.replaceAll('{{ site.cdn }}', 'https://waz.blob.core.windows.net/waz/');
+
+  // Syntax highlight code blocks using sugar-high
+  contentHtml = contentHtml.replace(/<pre><code(?:\s+class="language-(\w+)")?>([\s\S]*?)<\/code><\/pre>/g, (_match, _lang, code) => {
+    const decoded = code
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'");
+    const highlighted = highlight(decoded);
+    return `<pre><code>${highlighted}</code></pre>`;
+  });
 
   // some ancient html fun
   if (data.title.includes('&amp;')) {

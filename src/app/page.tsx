@@ -5,13 +5,6 @@ import { BlogPostsHomepage } from '@/components/posts';
 import Link from "next/link";
 
 export default function Page() {
-  const started = new Date('2005-07-11');
-  const today = new Date();
-  
-  // Calculate the time difference more accurately
-  const timeDiff = today.getTime() - started.getTime();
-  const years = Math.floor(timeDiff / (1000 * 60 * 60 * 24 * 365.25)); // Use 365.25 for leap years
-
   return (
     <section>
       <div className="mb-8 mt-8 flex place-items-center gap-x-2 sm:mb-12 sm:gap-x-4">

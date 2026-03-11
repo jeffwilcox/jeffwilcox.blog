@@ -10,6 +10,8 @@
 !.yarn/releases
 !.yarn/versions
 
+local-only-content/
+
 # testing
 /coverage
 
