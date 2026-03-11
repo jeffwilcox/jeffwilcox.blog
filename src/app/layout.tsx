@@ -12,10 +12,10 @@ export const metadata: Metadata = {
     default: 'Jeff Wilcox',
     template: '%s | Jeff Wilcox',
   },
-  description: 'Jeff Wilcox is a Principal Manager at Microsoft serving as the director of the Microsoft Open Source Programs Office. Jeff lives in Seattle.',
+  description: 'Jeff Wilcox is a principal engineer at Microsoft working on Microsoft\'s engineering system. Jeff lives in Seattle.',
   openGraph: {
     title: 'Jeff Wilcox',
-    description: 'Jeff Wilcox is a Principal Manager at Microsoft serving as the director of the Microsoft Open Source Programs Office. Jeff lives in Seattle.',
+    description: 'Jeff Wilcox is a principal engineer at Microsoft working on Microsoft\'s engineering system. Jeff lives in Seattle.',
     url: baseUrl,
     siteName: 'Jeff Wilcox',
     locale: 'en_US',
