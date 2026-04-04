@@ -19,7 +19,7 @@
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
     "sugar-high": "0.9.5",
-    "tailwindcss": "4.2.1"
+    "tailwindcss": "4.2.2"
   },
   "devDependencies": {
     "@types/node": "25.5.0",
