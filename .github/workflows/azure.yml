@@ -15,9 +15,9 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: |
             ~/.npm
@@ -33,7 +33,7 @@ jobs:
           npm run build
 
       - name: Azure ☁️
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ vars.AKS_CLIENT_ID }}
           tenant-id: ${{ vars.AKS_TENANT_ID }}
@@ -62,7 +62,7 @@ jobs:
     needs: [build]
     steps:
       - name: Azure ☁️
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ vars.AKS_CLIENT_ID }}
           tenant-id: ${{ vars.AKS_TENANT_ID }}
@@ -87,7 +87,7 @@ jobs:
     needs: [stage]
     steps:
       - name: Azure ☁️
-        uses: azure/login@v2
+        uses: azure/login@v3
         with:
           client-id: ${{ vars.AKS_CLIENT_ID }}
           tenant-id: ${{ vars.AKS_TENANT_ID }}
