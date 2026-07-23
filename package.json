@@ -9,7 +9,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@tailwindcss/postcss": "4.3.2",
+    "@tailwindcss/postcss": "4.3.3",
     "geist": "1.7.2",
     "gray-matter": "^4.0.3",
     "next": "16.2.10",
