@@ -14,7 +14,7 @@
     "gray-matter": "^4.0.3",
     "next": "16.2.10",
     "postcss": "^8.5.19",
-    "react": "19.2.7",
+    "react": "19.2.8",
     "react-dom": "19.2.7",
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
