@@ -2,6 +2,9 @@
   "name": "jeffwilcox.blog",
   "version": "4.0.0",
   "private": true,
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -12,21 +15,21 @@
     "@tailwindcss/postcss": "4.3.3",
     "geist": "1.7.2",
     "gray-matter": "^4.0.3",
-    "next": "16.3.5",
+    "next": "16.3.8",
     "postcss": "^8.5.28",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
-    "sugar-high": "2.1.0",
+    "sugar-high": "2.5.1",
     "tailwindcss": "4.3.3"
   },
   "devDependencies": {
-    "@types/node": "26.1.1",
+    "@types/node": "24.19.1",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "eslint": "^9.39.5",
-    "eslint-config-next": "16.3.1",
+    "eslint-config-next": "16.3.8",
     "typescript": "^6"
   }
 }
