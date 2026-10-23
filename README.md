@@ -19,6 +19,17 @@ Keep `next` and `eslint-config-next` on matching versions. ESLint remains on
 yet support ESLint 10. TypeScript remains on 6 because `typescript-eslint`
 does not yet support TypeScript 7. Node.js types track the Node.js 24 runtime.
 
+For dependency updates, start from the committed `package-lock.json` and use
+`--registry=https://registry.npmjs.org` on npm commands; do not change global npm
+configuration or commit lockfiles rewritten by a corporate proxy. After updating
+the versions in `package.json`, refresh compatible transitive dependencies with
+`npm update --package-lock-only --registry=https://registry.npmjs.org`, then verify
+with `npm ci --registry=https://registry.npmjs.org`, lint, and build. Run both
+`npm audit --registry=https://registry.npmjs.org` and
+`npm audit --omit=dev --registry=https://registry.npmjs.org`; report unresolved
+development-only findings separately rather than forcing incompatible upgrades
+or downgrading the toolchain.
+
 # Identity
 
 In 2018 the primary hostname changed from `jeff.wilcox.name` to `jeffwilcox.blog` and `jeffwilcox.com`. I guess `jeffwilcox.dev` at some point, too.

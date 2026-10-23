@@ -13,23 +13,23 @@
   },
   "dependencies": {
     "@tailwindcss/postcss": "4.3.3",
-    "geist": "1.7.2",
+    "geist": "1.8.2",
     "gray-matter": "^4.0.3",
-    "next": "16.4.0",
-    "postcss": "^8.5.29",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
+    "next": "16.4.2",
+    "postcss": "^8.5.31",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
-    "sugar-high": "2.6.0",
+    "sugar-high": "2.6.2",
     "tailwindcss": "4.3.3"
   },
   "devDependencies": {
-    "@types/node": "24.19.1",
+    "@types/node": "24.19.2",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "eslint": "^9.39.5",
-    "eslint-config-next": "16.4.0",
+    "eslint-config-next": "16.4.2",
     "typescript": "^6"
   }
 }
